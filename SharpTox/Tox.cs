@@ -193,6 +193,7 @@ namespace SharpTox
 
         public void Kill()
         {
+            thread.Abort();
             ToxFunctions.Kill(tox);
         }
 
