@@ -31,6 +31,9 @@ namespace Toxy
                 }
             }
 
+            if (!tox.BootstrapFromAddress("192.184.81.118", 33445, "5CD7EB176C19A2FD840406CD56177BB8E75587BB366F7BB3004B19E3EDC04143", false))
+                MessageBox.Show("Could not \"bootstrap from address\", tell Imperative to update Toxy with a list of nodes to iterate through");
+            
             tox.Start();
 
             ID = tox.GetAddress();
