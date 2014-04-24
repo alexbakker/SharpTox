@@ -21,11 +21,16 @@ namespace Toxy
             tox.OnFriendRequest += OnFriendRequest;
             tox.OnFriendMessage += OnFriendMessage;
             tox.OnFriendAction += OnFriendAction;
-            if (!tox.Load("data"))
+
+            if (File.Exists("data"))
             {
-                MessageBox.Show("Could not load tox data, this program will now exit.");
-                Close();
+                if (!tox.Load("data"))
+                {
+                    MessageBox.Show("Could not load tox data, this program will now exit.");
+                    Close();
+                }
             }
+
             tox.Start();
 
             ID = tox.GetAddress();
