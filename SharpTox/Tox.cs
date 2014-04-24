@@ -91,9 +91,9 @@ namespace SharpTox
             ToxFunctions.AddFriendNoRequest(tox, id);
         }
 
-        public bool BootstrapFromAddress(string address, int port, string public_key, bool ipv6enabled)
+        public bool TryBootstrap(ToxNode node)
         {
-            return ToxFunctions.BootstrapFromAddress(tox, address, ipv6enabled, port, public_key);
+            return ToxFunctions.BootstrapFromAddress(tox, node.Address, node.Ipv6Enabled, node.Port, node.PublicKey);
         }
 
         public bool FriendExists(int friendnumber)

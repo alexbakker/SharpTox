@@ -31,9 +31,22 @@ namespace Toxy
                 }
             }
 
-            if (!tox.BootstrapFromAddress("192.184.81.118", 33445, "5CD7EB176C19A2FD840406CD56177BB8E75587BB366F7BB3004B19E3EDC04143", false))
-                MessageBox.Show("Could not \"bootstrap from address\", tell Imperative to update Toxy with a list of nodes to iterate through");
-            
+            bool bootstrap_success = false;
+            foreach(ToxNode node in Nodes)
+            {
+                if (tox.TryBootstrap(node))
+                {
+                    bootstrap_success = true;
+                    break;
+                }
+            }
+
+            if (!bootstrap_success)
+            {
+                MessageBox.Show("Could not bootstrap from any of the addresses");
+                Close();
+            }
+
             tox.Start();
 
             ID = tox.GetAddress();
@@ -98,5 +111,11 @@ namespace Toxy
             txtConversation.AppendText(Environment.NewLine);
             txtToSend.Text = "";
         }
+
+        private static ToxNode[] Nodes = new ToxNode[] {
+            new ToxNode("192.184.81.118", 33445, "5CD7EB176C19A2FD840406CD56177BB8E75587BB366F7BB3004B19E3EDC04143", false),
+            new ToxNode("107.161.21.13", 33445, "5848E6344856921AAF28DAB860C5816780FE0C8873AAC415C1B7FA7FAA4EF046", false),
+            new ToxNode("37.187.46.132", 33445, "C021232F9AC83914A45DFCF242129B216FED5ED34683F385D932A66BC9178270", false),
+        };
     }
 }
