@@ -19,6 +19,13 @@ namespace SharpTox
         }
 
         [DllImport("libtoxcore.dll", CallingConvention = CallingConvention.Cdecl)]
+        private static extern int tox_bootstrap_from_address(IntPtr tox, string address, byte ipv6enabled, ushort port, byte[] public_key);
+        public static bool BootstrapFromAddress(IntPtr tox, string address, bool ipv6enabled, int port, string public_key)
+        {
+            return tox_bootstrap_from_address(tox, address, ipv6enabled ? (byte)1 : (byte)0, (ushort)port, ToxTools.StringToHexBin(public_key)) == 1 ? true: false;
+        }
+
+        [DllImport("libtoxcore.dll", CallingConvention = CallingConvention.Cdecl)]
         private static extern int tox_isconnected(IntPtr tox);
         public static bool IsConnected(IntPtr tox)
         {
