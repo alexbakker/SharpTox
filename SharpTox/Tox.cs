@@ -186,9 +186,9 @@ namespace SharpTox
             ToxFunctions.SendMessage(tox, friendnumber, message);
         }
 
-        public void Save(string filename)
+        public bool Save(string filename)
         {
-            ToxFunctions.Save(tox, filename);
+            return ToxFunctions.Save(tox, filename);
         }
 
         public void Kill()

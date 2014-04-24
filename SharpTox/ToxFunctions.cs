@@ -148,15 +148,21 @@ namespace SharpTox
         }
 
         [DllImport("libtoxcore.dll")]
-        private static extern uint tox_save(IntPtr tox, byte[] bytes);
-        public static void Save(IntPtr tox, string filename)
+        private static extern void tox_save(IntPtr tox, byte[] bytes);
+        public static bool Save(IntPtr tox, string filename)
         {
-            byte[] bytes = new byte[tox_size(tox)];
-            tox_save(tox, bytes);
+            try
+            {
+                byte[] bytes = new byte[tox_size(tox)];
+                tox_save(tox, bytes);
 
-            FileStream stream = new FileStream(filename, FileMode.Create);
-            stream.Write(bytes, 0, bytes.Length);
-            stream.Close();
+                FileStream stream = new FileStream(filename, FileMode.Create);
+                stream.Write(bytes, 0, bytes.Length);
+                stream.Close();
+
+                return true;
+            }
+            catch { return false; }
         }
 
         [DllImport("libtoxcore.dll")]
