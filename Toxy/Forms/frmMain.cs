@@ -39,14 +39,20 @@ namespace Toxy
 
         private void OnFriendAction(int friendnumber, string action)
         {
-            txtConversation.AppendText(" * " + tox.GetName(friendnumber) + " " + action);
-            txtConversation.AppendText(Environment.NewLine);
+            BeginInvoke(((Action)(() =>
+                {
+                    txtConversation.AppendText(" * " + tox.GetName(friendnumber) + " " + action);
+                    txtConversation.AppendText(Environment.NewLine);
+                })));
         }
 
         private void OnFriendMessage(int friendnumber, string message)
         {
-            txtConversation.AppendText("<" + tox.GetName(friendnumber) + "> " + message);
-            txtConversation.AppendText(Environment.NewLine);
+            BeginInvoke(((Action)(() =>
+                {
+                    txtConversation.AppendText("<" + tox.GetName(friendnumber) + "> " + message);
+                    txtConversation.AppendText(Environment.NewLine);
+                })));
         }
 
         private void OnFriendRequest(string id, string message)
