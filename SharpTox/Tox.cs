@@ -242,11 +242,11 @@ namespace SharpTox
                     OnFriendRequest(ToxTools.HexBinToString(id), Encoding.UTF8.GetString(message));
             }));
 
-            /*ToxFunctions.CallbackConnectionStatus(tox, new ToxDelegates.CallbackConnectionStatusDelegate((IntPtr t, int friendnumber, byte status, IntPtr userdata) =>
+            ToxFunctions.CallbackConnectionStatus(tox, new ToxDelegates.CallbackConnectionStatusDelegate((IntPtr t, int friendnumber, byte status, IntPtr userdata) =>
             {
                 if (OnConnectionStatusChanged != null)
                     OnConnectionStatusChanged(friendnumber, status);
-            }));*/
+            }));
 
             ToxFunctions.CallbackFriendMessage(tox, new ToxDelegates.CallbackFriendMessageDelegate((IntPtr t, int friendnumber, byte[] message, ushort length, IntPtr userdata) =>
             {
