@@ -249,6 +249,7 @@ namespace SharpTox
             int count = (int)tox_count_friendlist(tox);
             return GetFriendlist(tox, count);
         }
+
         public static int[] GetFriendlist(IntPtr tox, int count)
         {
             int[] friends = new int[count];
@@ -402,6 +403,27 @@ namespace SharpTox
         public static int GroupNumberPeers(IntPtr tox, int groupnumber)
         {
             return tox_group_number_peers(tox, groupnumber);
+        }
+
+        [DllImport("libtoxcore.dll", CallingConvention = CallingConvention.Cdecl)]
+        private static extern uint tox_count_chatlist(IntPtr tox);
+        public static int CountChatlist(IntPtr tox)
+        {
+            return (int)tox_count_chatlist(tox);
+        }
+
+        [DllImport("libtoxcore.dll", CallingConvention = CallingConvention.Cdecl)]
+        private static extern uint tox_get_chatlist(IntPtr tox, int[] out_list, uint[] list_size);
+        public static int[] GetChatlist(IntPtr tox)
+        {
+            int[] chats = new int[tox_count_chatlist(tox)];
+            uint[] trunc = new uint[0]; //shouldn't be needed anyways
+            uint result = tox_get_chatlist(tox, chats, trunc);
+
+            if (result == 0)
+                return new int[0];
+            else
+                return chats;
         }
 
         #endregion
