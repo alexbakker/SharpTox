@@ -22,9 +22,9 @@ namespace Toxy
             tox.OnFriendMessage += OnFriendMessage;
             tox.OnFriendAction += OnFriendAction;
 
-            if (File.Exists("data"))
+            if (File.Exists("data_encrypted"))
             {
-                if (!tox.Load("data"))
+                if (!tox.LoadEncrypted("data_encrypted", "omg a key"))
                 {
                     MessageBox.Show("Could not load tox data, this program will now exit.");
                     Close();
@@ -85,7 +85,7 @@ namespace Toxy
 
         private void Main_FormClosing(object sender, FormClosingEventArgs e)
         {
-            tox.Save("data");
+            tox.SaveEncrypted("data_encrypted", "omg a key");
             tox.Kill();
         }
 

@@ -54,7 +54,28 @@ namespace SharpTox
                 stream.Read(bytes, 0, (int)info.Length);
                 stream.Close();
 
-                if (!ToxFunctions.Load(tox, bytes, (ushort)bytes.Length))
+                if (!ToxFunctions.Load(tox, bytes, (uint)bytes.Length))
+                    return false;
+                else
+                    return true;
+            }
+            catch { return false; }
+        }
+
+        public bool LoadEncrypted(string filename, string key)
+        {
+            try
+            {
+                FileInfo info = new FileInfo(filename);
+                FileStream stream = new FileStream(filename, FileMode.Open);
+                byte[] bytes = new byte[info.Length];
+
+                stream.Read(bytes, 0, (int)info.Length);
+                stream.Close();
+
+                byte[] k = Encoding.UTF8.GetBytes(key);
+
+                if (!ToxFunctions.LoadEncrypted(tox, bytes, k))
                     return false;
                 else
                     return true;
@@ -195,6 +216,11 @@ namespace SharpTox
         public bool Save(string filename)
         {
             return ToxFunctions.Save(tox, filename);
+        }
+
+        public bool SaveEncrypted(string filename, string key)
+        {
+            return ToxFunctions.SaveEncrypted(tox, filename, key);
         }
 
         public void Kill()
