@@ -374,6 +374,36 @@ namespace SharpTox
             return tox_invite_friend(tox, friendnumber, groupnumber) == 0 ? true : false;
         }
 
+        [DllImport("libtoxcore.dll", CallingConvention = CallingConvention.Cdecl)]
+        private static extern int tox_join_groupchat(IntPtr tox, int friendnumber, byte[] friend_group_public_key);
+        public static int JoinGroupchat(IntPtr tox, int friendnumber, string friend_group_public_key)
+        {
+            return tox_join_groupchat(tox, friendnumber, ToxTools.StringToHexBin(friend_group_public_key));
+        }
+
+        [DllImport("libtoxcore.dll", CallingConvention = CallingConvention.Cdecl)]
+        private static extern int tox_group_message_send(IntPtr tox, int groupnumber, byte[] message, uint length);
+        public static bool GroupMessageSend(IntPtr tox, int groupnumber, string message)
+        {
+            byte[] msg = Encoding.UTF8.GetBytes(message);
+            return tox_group_message_send(tox, groupnumber, msg, (uint)msg.Length) == 0 ? true: false;
+        }
+
+        [DllImport("libtoxcore.dll", CallingConvention = CallingConvention.Cdecl)]
+        private static extern int tox_group_action_send(IntPtr tox, int groupnumber, byte[] action, uint length);
+        public static bool GroupActionSend(IntPtr tox, int groupnumber, string action)
+        {
+            byte[] act = Encoding.UTF8.GetBytes(action);
+            return tox_group_action_send(tox, groupnumber, act, (uint)act.Length) == 0 ? true : false;
+        }
+
+        [DllImport("libtoxcore.dll", CallingConvention = CallingConvention.Cdecl)]
+        private static extern int tox_group_number_peers(IntPtr tox, int groupnumber);
+        public static int GroupNumberPeers(IntPtr tox, int groupnumber)
+        {
+            return tox_group_number_peers(tox, groupnumber);
+        }
+
         #endregion
 
         #region Callbacks
