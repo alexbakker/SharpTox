@@ -307,6 +307,41 @@ namespace SharpTox
             return tox_get_self_name_size(tox);
         }
 
+        [DllImport("libtoxcore.dll", CallingConvention = CallingConvention.Cdecl)]
+        private static extern int tox_save_encrypted(IntPtr tox, byte[] data, byte[] key, ushort key_length);
+        public static bool SaveEncrypted(IntPtr tox, string filename, string key)
+        {
+            try
+            {
+                byte[] bytes = new byte[tox_size_encrypted(tox)];
+                byte[] k = Encoding.UTF8.GetBytes(key);
+
+                if (tox_save_encrypted(tox, bytes, k, (ushort)k.Length) != 0)
+                    return false;
+
+                FileStream stream = new FileStream(filename, FileMode.Create);
+                stream.Write(bytes, 0, bytes.Length);
+                stream.Close();
+
+                return true;
+            }
+            catch { return false; }
+        }
+
+        [DllImport("libtoxcore.dll", CallingConvention = CallingConvention.Cdecl)]
+        private static extern uint tox_size_encrypted(IntPtr tox);
+        public static uint SizeEncrypted(IntPtr tox)
+        {
+            return tox_size_encrypted(tox);
+        }
+
+        [DllImport("libtoxcore.dll", CallingConvention = CallingConvention.Cdecl)]
+        private static extern int tox_load_encrypted(IntPtr tox, byte[] data, uint length, byte[] key, ushort key_length);
+        public static bool LoadEncrypted(IntPtr tox, byte[] data, byte[] key)
+        {
+            return tox_load_encrypted(tox, data, (uint)data.Length, key, (ushort)key.Length) == 0 ? true : false;
+        }
+
         #endregion
 
         #region Callbacks
