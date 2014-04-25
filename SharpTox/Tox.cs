@@ -72,8 +72,9 @@ namespace SharpTox
         {
             while (true)
             {
+                //tox_do should be called at least 20 times per second
                 ToxFunctions.Do(tox);
-                Thread.Sleep(1);
+                Thread.Sleep(25);
             }
         }
 
