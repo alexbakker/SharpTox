@@ -342,6 +342,38 @@ namespace SharpTox
             return tox_load_encrypted(tox, data, (uint)data.Length, key, (ushort)key.Length) == 0 ? true : false;
         }
 
+        [DllImport("libtoxcore.dll", CallingConvention = CallingConvention.Cdecl)]
+        private static extern int tox_add_groupchat(IntPtr tox);
+        public static int AddGroupchat(IntPtr tox)
+        {
+            return tox_add_groupchat(tox);
+        }
+
+        [DllImport("libtoxcore.dll", CallingConvention = CallingConvention.Cdecl)]
+        private static extern int tox_del_groupchat(IntPtr tox, int groupnumber);
+        public static int DeleteGroupchat(IntPtr tox, int groupnumber)
+        {
+            return tox_del_groupchat(tox, groupnumber);
+        }
+
+        [DllImport("libtoxcore.dll", CallingConvention = CallingConvention.Cdecl)]
+        private static extern int tox_group_peername(IntPtr tox, int groupnumber, int peernumber, byte[] name);
+        public static string GroupPeername(IntPtr tox, int groupnumber, int peernumber)
+        {
+            byte[] name = new byte[ToxConstants.MAX_NAME_LENGTH];
+            if (tox_group_peername(tox, groupnumber, peernumber, name) == -1)
+                throw new Exception("Could not get peer name");
+            else
+                return Encoding.UTF8.GetString(name);
+        }
+
+        [DllImport("libtoxcore.dll", CallingConvention = CallingConvention.Cdecl)]
+        private static extern int tox_invite_friend(IntPtr tox, int friendnumber, int groupnumber);
+        public static bool InviteFriend(IntPtr tox, int friendnumber, int groupnumber)
+        {
+            return tox_invite_friend(tox, friendnumber, groupnumber) == 0 ? true : false;
+        }
+
         #endregion
 
         #region Callbacks
