@@ -5,6 +5,7 @@ using System.Threading;
 
 namespace SharpTox
 {
+    #region Event Delegates
     public delegate void OnFriendRequestDelegate(string id, string message);
     public delegate void OnConnectionStatusDelegate(int friendnumber, byte status);
     public delegate void OnFriendMessageDelegate(int friendnumber, string message);
@@ -13,6 +14,7 @@ namespace SharpTox
     public delegate void OnStatusMessageDelegate(int friendnumber, string newstatus);
     public delegate void OnUserStatusDelegate(int friendnumber, ToxUserStatus status);
     public delegate void OnTypingChangeDelegate(int friendnumber, bool is_typing);
+    #endregion
 
     public class Tox
     {
@@ -24,6 +26,17 @@ namespace SharpTox
         public event OnStatusMessageDelegate OnStatusMessage;
         public event OnUserStatusDelegate OnUserStatus;
         public event OnTypingChangeDelegate OnTypingChange;
+
+        #region Callback Delegates
+        private ToxDelegates.CallbackFriendRequestDelegate friendrequestdelegate;
+        private ToxDelegates.CallbackConnectionStatusDelegate connectionstatusdelegate;
+        private ToxDelegates.CallbackFriendMessageDelegate friendmessagedelegate;
+        private ToxDelegates.CallbackFriendActionDelegate friendactiondelegate;
+        private ToxDelegates.CallbackNameChangeDelegate namechangedelegate;
+        private ToxDelegates.CallbackStatusMessageDelegate statusmessagedelegate;
+        private ToxDelegates.CallbackUserStatusDelegate userstatusdelegate;
+        private ToxDelegates.CallbackTypingChangeDelegate typingchangedelegate;
+        #endregion
 
         private IntPtr tox;
         private Thread thread;
@@ -99,18 +112,18 @@ namespace SharpTox
             }
         }
 
-        public void AddFriend(string id, string message)
+        public int AddFriend(string id, string message)
         {
-            ToxFunctions.AddFriend(tox, id, message);
+            return ToxFunctions.AddFriend(tox, id, message);
         }
-        public void AddFriend(string id)
+        public int AddFriend(string id)
         {
-            ToxFunctions.AddFriend(tox, id, "");
+            return ToxFunctions.AddFriend(tox, id, "");
         }
 
-        public void AddFriendNoRequest(string id)
+        public int AddFriendNoRequest(string id)
         {
-            ToxFunctions.AddFriendNoRequest(tox, id);
+            return ToxFunctions.AddFriendNoRequest(tox, id);
         }
 
         public bool TryBootstrap(ToxNode node)
@@ -213,6 +226,11 @@ namespace SharpTox
             ToxFunctions.SendMessage(tox, friendnumber, message);
         }
 
+        public void SendAction(int friendnumber, string action)
+        {
+            ToxFunctions.SendAction(tox, friendnumber, action);
+        }
+
         public bool Save(string filename)
         {
             return ToxFunctions.Save(tox, filename);
@@ -236,51 +254,50 @@ namespace SharpTox
 
         private void callbacks()
         {
-            ToxFunctions.CallbackFriendRequest(tox, new ToxDelegates.CallbackFriendRequestDelegate((IntPtr t, byte[] id, byte[] message, ushort length, IntPtr userdata) =>
+            ToxFunctions.CallbackFriendRequest(tox, friendrequestdelegate = new ToxDelegates.CallbackFriendRequestDelegate((IntPtr t, byte[] id, byte[] message, ushort length, IntPtr userdata) =>
             {
                 if (OnFriendRequest != null)
                     OnFriendRequest(ToxTools.HexBinToString(id), Encoding.UTF8.GetString(message));
             }));
 
-            ToxFunctions.CallbackConnectionStatus(tox, new ToxDelegates.CallbackConnectionStatusDelegate((IntPtr t, int friendnumber, byte status, IntPtr userdata) =>
+            ToxFunctions.CallbackConnectionStatus(tox, connectionstatusdelegate = new ToxDelegates.CallbackConnectionStatusDelegate((IntPtr t, int friendnumber, byte status, IntPtr userdata) =>
             {
                 if (OnConnectionStatusChanged != null)
                     OnConnectionStatusChanged(friendnumber, status);
             }));
 
-            ToxFunctions.CallbackFriendMessage(tox, new ToxDelegates.CallbackFriendMessageDelegate((IntPtr t, int friendnumber, byte[] message, ushort length, IntPtr userdata) =>
+            ToxFunctions.CallbackFriendMessage(tox, friendmessagedelegate = new ToxDelegates.CallbackFriendMessageDelegate((IntPtr t, int friendnumber, byte[] message, ushort length, IntPtr userdata) =>
             {
                 if (OnFriendMessage != null)
                     OnFriendMessage(friendnumber, ToxTools.RemoveNull(Encoding.UTF8.GetString(message)));
             }));
 
-            ToxFunctions.CallbackFriendAction(tox, new ToxDelegates.CallbackFriendActionDelegate((IntPtr t, int friendnumber, byte[] action, ushort length, IntPtr userdata) =>
+            ToxFunctions.CallbackFriendAction(tox, friendactiondelegate = new ToxDelegates.CallbackFriendActionDelegate((IntPtr t, int friendnumber, byte[] action, ushort length, IntPtr userdata) =>
             {
                 if (OnFriendAction != null)
                     OnFriendAction(friendnumber, ToxTools.RemoveNull(Encoding.UTF8.GetString(action)));
             }));
 
-            ToxFunctions.CallbackNameChange(tox, new ToxDelegates.CallbackNameChangeDelegate((IntPtr t, int friendnumber, byte[] newname, ushort length, IntPtr userdata) =>
+            ToxFunctions.CallbackNameChange(tox, namechangedelegate = new ToxDelegates.CallbackNameChangeDelegate((IntPtr t, int friendnumber, byte[] newname, ushort length, IntPtr userdata) =>
             {
                 if (OnNameChange != null)
                     OnNameChange(friendnumber, ToxTools.RemoveNull(Encoding.UTF8.GetString(newname)));
             }));
 
-            ToxFunctions.CallbackStatusMessage(tox, new ToxDelegates.CallbackStatusMessageDelegate((IntPtr t, int friendnumber, byte[] newstatus, ushort length, IntPtr userdata) =>
+            ToxFunctions.CallbackStatusMessage(tox, statusmessagedelegate = new ToxDelegates.CallbackStatusMessageDelegate((IntPtr t, int friendnumber, byte[] newstatus, ushort length, IntPtr userdata) =>
             {
                 if (OnStatusMessage != null)
                     OnStatusMessage(friendnumber, ToxTools.RemoveNull(Encoding.UTF8.GetString(newstatus)));
             }));
 
-            ToxFunctions.CallbackUserStatus(tox, new ToxDelegates.CallbackUserStatusDelegate((IntPtr t, int friendnumber, ToxUserStatus status, IntPtr userdata) =>
+            ToxFunctions.CallbackUserStatus(tox, userstatusdelegate = new ToxDelegates.CallbackUserStatusDelegate((IntPtr t, int friendnumber, ToxUserStatus status, IntPtr userdata) =>
             {
                 if (OnUserStatus != null)
                     OnUserStatus(friendnumber, status);
             }));
 
-            ToxFunctions.CallbackTypingChange(tox, new ToxDelegates.CallbackTypingChangeDelegate((IntPtr t, int friendnumber, byte typing, IntPtr userdata) =>
+            ToxFunctions.CallbackTypingChange(tox, typingchangedelegate = new ToxDelegates.CallbackTypingChangeDelegate((IntPtr t, int friendnumber, byte typing, IntPtr userdata) =>
             {
-                //note to self: use the ternary operator more often
                 bool is_typing = typing == 0 ? false : true;
 
                 if (OnTypingChange != null)

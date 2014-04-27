@@ -155,6 +155,14 @@ namespace SharpTox
         }
 
         [DllImport("libtoxcore.dll", CallingConvention = CallingConvention.Cdecl)]
+        private static extern uint tox_send_action(IntPtr tox, int friendnumber, byte[] action, int length);
+        public static uint SendAction(IntPtr tox, int friendnumber, string action)
+        {
+            byte[] bytes = Encoding.UTF8.GetBytes(action);
+            return tox_send_action(tox, friendnumber, bytes, bytes.Length);
+        }
+
+        [DllImport("libtoxcore.dll", CallingConvention = CallingConvention.Cdecl)]
         private static extern void tox_save(IntPtr tox, byte[] bytes);
         public static bool Save(IntPtr tox, string filename)
         {
@@ -425,6 +433,8 @@ namespace SharpTox
             else
                 return chats;
         }
+
+
 
         #endregion
 
