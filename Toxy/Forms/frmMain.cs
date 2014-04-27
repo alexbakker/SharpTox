@@ -97,10 +97,6 @@ namespace Toxy
                             listFriends.Items[friendnumber].SubItems[1].Text = "Offline";
                             listFriends.EndUpdate();
                         }
-                        else
-                        {
-                            //looks like we're missing someone in our list!
-                        }
                     }
                     else
                     {
@@ -110,10 +106,6 @@ namespace Toxy
                             listFriends.BeginUpdate();
                             listFriends.Items[friendnumber].SubItems[1].Text = "Online";
                             listFriends.EndUpdate();
-                        }
-                        else
-                        {
-                            //looks like we're missing someone in our list!
                         }
                     }
                 })));
@@ -174,6 +166,9 @@ namespace Toxy
                 return;
 
             listFriends.Items[0].Selected = true;
+
+            lblCurrFriend.Text = tox.GetName(0);
+            lblCurrFriendStatus.Text = tox.GetStatusMessage(0);
         }
 
         private void Main_FormClosing(object sender, FormClosingEventArgs e)
@@ -258,10 +253,14 @@ namespace Toxy
                 return;
 
             int friendnumber = view.SelectedItems[0].Index;
-            currfriendnum = friendnumber;
 
             if (friendnumber == currfriendnum)
                 return;
+
+            currfriendnum = friendnumber;
+
+            lblCurrFriend.Text = tox.GetName(friendnumber);
+            lblCurrFriendStatus.Text = tox.GetStatusMessage(friendnumber);
 
             txtConversation.Text = "";
 

@@ -37,6 +37,8 @@
             this.infoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.btnViewID = new System.Windows.Forms.ToolStripMenuItem();
             this.btnAddFriend = new System.Windows.Forms.ToolStripMenuItem();
+            this.lblCurrFriend = new System.Windows.Forms.Label();
+            this.lblCurrFriendStatus = new System.Windows.Forms.Label();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -75,11 +77,11 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtConversation.Font = new System.Drawing.Font("Consolas", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtConversation.Location = new System.Drawing.Point(264, 27);
+            this.txtConversation.Location = new System.Drawing.Point(264, 60);
             this.txtConversation.Name = "txtConversation";
             this.txtConversation.ReadOnly = true;
             this.txtConversation.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
-            this.txtConversation.Size = new System.Drawing.Size(536, 382);
+            this.txtConversation.Size = new System.Drawing.Size(536, 349);
             this.txtConversation.TabIndex = 1;
             this.txtConversation.Text = "";
             // 
@@ -126,11 +128,32 @@
             this.btnAddFriend.Text = "Add friend";
             this.btnAddFriend.Click += new System.EventHandler(this.btnAddFriend_Click);
             // 
+            // lblCurrFriend
+            // 
+            this.lblCurrFriend.AutoSize = true;
+            this.lblCurrFriend.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblCurrFriend.Location = new System.Drawing.Point(264, 27);
+            this.lblCurrFriend.Name = "lblCurrFriend";
+            this.lblCurrFriend.Size = new System.Drawing.Size(51, 16);
+            this.lblCurrFriend.TabIndex = 5;
+            this.lblCurrFriend.Text = "label1";
+            // 
+            // lblCurrFriendStatus
+            // 
+            this.lblCurrFriendStatus.AutoSize = true;
+            this.lblCurrFriendStatus.Location = new System.Drawing.Point(264, 44);
+            this.lblCurrFriendStatus.Name = "lblCurrFriendStatus";
+            this.lblCurrFriendStatus.Size = new System.Drawing.Size(35, 13);
+            this.lblCurrFriendStatus.TabIndex = 6;
+            this.lblCurrFriendStatus.Text = "label2";
+            // 
             // frmMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(808, 442);
+            this.Controls.Add(this.lblCurrFriendStatus);
+            this.Controls.Add(this.lblCurrFriend);
             this.Controls.Add(this.txtToSend);
             this.Controls.Add(this.txtConversation);
             this.Controls.Add(this.listFriends);
@@ -159,6 +182,8 @@
         private System.Windows.Forms.ToolStripMenuItem infoToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem btnViewID;
         private System.Windows.Forms.ToolStripMenuItem btnAddFriend;
+        private System.Windows.Forms.Label lblCurrFriend;
+        private System.Windows.Forms.Label lblCurrFriendStatus;
 
     }
 }
