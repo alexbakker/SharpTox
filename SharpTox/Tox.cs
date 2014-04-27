@@ -114,11 +114,21 @@ namespace SharpTox
 
         public int AddFriend(string id, string message)
         {
-            return ToxFunctions.AddFriend(tox, id, message);
+            int result = ToxFunctions.AddFriend(tox, id, message);
+
+            if (result < 0)
+                throw new Exception("Could not add friend: " + (ToxAFError)result);
+            else
+                return result;
         }
         public int AddFriend(string id)
         {
-            return ToxFunctions.AddFriend(tox, id, "");
+            int result = ToxFunctions.AddFriend(tox, id, "No message.");
+
+            if (result < 0)
+                throw new Exception("Could not add friend: " + (ToxAFError)result);
+            else
+                return result;
         }
 
         public int AddFriendNoRequest(string id)
