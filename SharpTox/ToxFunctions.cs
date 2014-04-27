@@ -510,7 +510,7 @@ namespace SharpTox
             tox_callback_user_status(tox, callback, IntPtr.Zero);
         }
 
-        [DllImport("libtoxcore.dll", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("libtoxcore.dll", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
         private static extern void tox_callback_typing_change(IntPtr tox, ToxDelegates.CallbackTypingChangeDelegate callback, IntPtr userdata);
         public static void CallbackTypingChange(IntPtr tox, ToxDelegates.CallbackTypingChangeDelegate callback)
         {

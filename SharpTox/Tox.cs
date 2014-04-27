@@ -133,7 +133,12 @@ namespace SharpTox
 
         public int AddFriendNoRequest(string id)
         {
-            return ToxFunctions.AddFriendNoRequest(tox, id);
+            int result = ToxFunctions.AddFriendNoRequest(tox, id);
+
+            if (result < 0)
+                throw new Exception("Could not add friend: " + (ToxAFError)result);
+            else
+                return result;
         }
 
         public bool TryBootstrap(ToxNode node)
@@ -277,7 +282,7 @@ namespace SharpTox
             ToxFunctions.CallbackFriendRequest(tox, friendrequestdelegate = new ToxDelegates.CallbackFriendRequestDelegate((IntPtr t, byte[] id, byte[] message, ushort length, IntPtr userdata) =>
             {
                 if (OnFriendRequest != null)
-                    OnFriendRequest(ToxTools.HexBinToString(id), Encoding.UTF8.GetString(message));
+                    OnFriendRequest(ToxTools.RemoveNull(ToxTools.HexBinToString(id)), Encoding.UTF8.GetString(message));
             }));
 
             ToxFunctions.CallbackConnectionStatus(tox, connectionstatusdelegate = new ToxDelegates.CallbackConnectionStatusDelegate((IntPtr t, int friendnumber, byte status, IntPtr userdata) =>

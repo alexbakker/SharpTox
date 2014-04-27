@@ -14,6 +14,8 @@ namespace SharpTox
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         public delegate void CallbackConnectionStatusDelegate(IntPtr tox, int friendnumber, byte status, IntPtr userdata);
+
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         public delegate void CallbackFriendRequestDelegate(IntPtr tox, [MarshalAs(UnmanagedType.LPArray, SizeConst = 38)] byte[] address, [MarshalAs(UnmanagedType.LPArray, SizeConst = 1003)] byte[] message, ushort length, IntPtr userdata);
     }
 }

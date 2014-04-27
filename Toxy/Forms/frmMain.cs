@@ -61,6 +61,7 @@ namespace Toxy
 
                 ListViewItem item = new ListViewItem(tox.GetName(friendnumber));
                 item.SubItems.Add("Offline");
+                item.Tag = friendnumber;
                 listFriends.Items.Add(item);
             }
 
@@ -76,10 +77,6 @@ namespace Toxy
                     listFriends.BeginUpdate();
                     listFriends.Items[friendnumber].SubItems[0].Text = newname;
                     listFriends.EndUpdate();
-                }
-                else
-                {
-                    //we're missing someone in our list!
                 }
             })));
         }
@@ -152,10 +149,10 @@ namespace Toxy
 
                 ListViewItem item = new ListViewItem(id);
                 item.SubItems.Add("Offline");
+                item.Tag = friendnumber;
 
                 messagedic.Add(friendnumber, new List<string>());
 
-                //should appear at the correct index/id automatically
                 BeginInvoke(((Action)(() => listFriends.Items.Add(item))));
             }
         }
@@ -195,6 +192,7 @@ namespace Toxy
 
                 ListViewItem item = new ListViewItem(form.ID);
                 item.SubItems.Add("Offline");
+                item.Tag = friendnumber;
                 listFriends.Items.Add(item);
             }
         }
@@ -207,6 +205,8 @@ namespace Toxy
 
         private void txtToSend_KeyPress(object sender, KeyPressEventArgs e)
         {
+            TextBox box = (TextBox)sender;
+
             if (e.KeyChar != Convert.ToChar(Keys.Return))
                 return;
 
@@ -215,9 +215,9 @@ namespace Toxy
                 if (tox.GetFriendConnectionStatus(currfriendnum) != 1)
                     return;
 
-                if (txtToSend.Text.StartsWith("/me "))
+                if (box.Text.StartsWith("/me "))
                 {
-                    string action = txtToSend.Text.Substring(4, txtToSend.Text.Length - 1);
+                    string action = box.Text.Substring(4, box.Text.Length - 1);
                     tox.SendAction(currfriendnum, action);
 
                     string line = " * " + tox.GetName(currfriendnum) + " " + action;
@@ -225,7 +225,7 @@ namespace Toxy
 
                     txtConversation.AppendText(line);
                     txtConversation.AppendText(Environment.NewLine);
-                    txtToSend.Text = "";
+                    box.Text = "";
 
                     e.Handled = true;
                 }
@@ -252,8 +252,7 @@ namespace Toxy
             if (view.SelectedItems.Count == 0)
                 return;
 
-            int friendnumber = view.SelectedItems[0].Index;
-
+            int friendnumber = (int)view.SelectedItems[0].Tag;
             if (friendnumber == currfriendnum)
                 return;
 
@@ -277,5 +276,41 @@ namespace Toxy
                 messagedic.Add(friendnumber, new List<string>());
             }
         }
+
+        private void listFriends_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (e.KeyChar != Convert.ToChar(Keys.Delete))
+                return;
+
+            ListView view = (ListView)sender;
+
+            if (view.SelectedItems.Count == 0)
+                return;
+
+            if (currfriendnum == -1)
+                return;
+
+            if (!tox.DeleteFriend(currfriendnum))
+            {
+                MessageBox.Show("Could not delete friend with number: " + currfriendnum);
+                return;
+            }
+
+            view.SelectedItems[0].Remove();
+            messagedic.Remove(currfriendnum);
+
+            e.Handled = true;
+        }
     }
+     static class ListViewExtensions
+     {
+         public static ListViewItem GetItemByTag(this ListView view, int tag)
+         {
+             foreach (ListViewItem item in view.Items)
+                 if ((int)item.Tag == tag)
+                     return item;
+
+             return null;
+         }
+     }
 }

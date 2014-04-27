@@ -60,6 +60,7 @@
             this.listFriends.UseCompatibleStateImageBehavior = false;
             this.listFriends.View = System.Windows.Forms.View.Details;
             this.listFriends.SelectedIndexChanged += new System.EventHandler(this.listFriends_SelectedIndexChanged);
+            this.listFriends.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.listFriends_KeyPress);
             // 
             // columnHeader1
             // 
@@ -134,18 +135,16 @@
             this.lblCurrFriend.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblCurrFriend.Location = new System.Drawing.Point(264, 27);
             this.lblCurrFriend.Name = "lblCurrFriend";
-            this.lblCurrFriend.Size = new System.Drawing.Size(51, 16);
+            this.lblCurrFriend.Size = new System.Drawing.Size(0, 16);
             this.lblCurrFriend.TabIndex = 5;
-            this.lblCurrFriend.Text = "label1";
             // 
             // lblCurrFriendStatus
             // 
             this.lblCurrFriendStatus.AutoSize = true;
             this.lblCurrFriendStatus.Location = new System.Drawing.Point(264, 44);
             this.lblCurrFriendStatus.Name = "lblCurrFriendStatus";
-            this.lblCurrFriendStatus.Size = new System.Drawing.Size(35, 13);
+            this.lblCurrFriendStatus.Size = new System.Drawing.Size(0, 13);
             this.lblCurrFriendStatus.TabIndex = 6;
-            this.lblCurrFriendStatus.Text = "label2";
             // 
             // frmMain
             // 
