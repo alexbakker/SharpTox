@@ -50,6 +50,12 @@
     <Compile Include="Forms\frmAddFriend.Designer.cs">
       <DependentUpon>frmAddFriend.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\frmFriendRequest.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\frmFriendRequest.Designer.cs">
+      <DependentUpon>frmFriendRequest.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\frmID.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -66,6 +72,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Forms\frmAddFriend.resx">
       <DependentUpon>frmAddFriend.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\frmFriendRequest.resx">
+      <DependentUpon>frmFriendRequest.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\frmID.resx">
       <DependentUpon>frmID.cs</DependentUpon>

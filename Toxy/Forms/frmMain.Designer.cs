@@ -33,7 +33,6 @@
             this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.txtConversation = new System.Windows.Forms.RichTextBox();
             this.txtToSend = new System.Windows.Forms.TextBox();
-            this.btnSend = new System.Windows.Forms.Button();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.infoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.btnViewID = new System.Windows.Forms.ToolStripMenuItem();
@@ -48,12 +47,17 @@
             this.listFriends.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.columnHeader1,
             this.columnHeader2});
+            this.listFriends.FullRowSelect = true;
+            this.listFriends.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
+            this.listFriends.HideSelection = false;
             this.listFriends.Location = new System.Drawing.Point(12, 27);
+            this.listFriends.MultiSelect = false;
             this.listFriends.Name = "listFriends";
             this.listFriends.Size = new System.Drawing.Size(246, 408);
             this.listFriends.TabIndex = 0;
             this.listFriends.UseCompatibleStateImageBehavior = false;
             this.listFriends.View = System.Windows.Forms.View.Details;
+            this.listFriends.SelectedIndexChanged += new System.EventHandler(this.listFriends_SelectedIndexChanged);
             // 
             // columnHeader1
             // 
@@ -85,19 +89,9 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtToSend.Location = new System.Drawing.Point(264, 415);
             this.txtToSend.Name = "txtToSend";
-            this.txtToSend.Size = new System.Drawing.Size(455, 20);
+            this.txtToSend.Size = new System.Drawing.Size(536, 20);
             this.txtToSend.TabIndex = 2;
-            // 
-            // btnSend
-            // 
-            this.btnSend.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnSend.Location = new System.Drawing.Point(725, 412);
-            this.btnSend.Name = "btnSend";
-            this.btnSend.Size = new System.Drawing.Size(75, 23);
-            this.btnSend.TabIndex = 3;
-            this.btnSend.Text = "Send";
-            this.btnSend.UseVisualStyleBackColor = true;
-            this.btnSend.Click += new System.EventHandler(this.btnSend_Click);
+            this.txtToSend.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtToSend_KeyPress);
             // 
             // menuStrip1
             // 
@@ -137,7 +131,6 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(808, 442);
-            this.Controls.Add(this.btnSend);
             this.Controls.Add(this.txtToSend);
             this.Controls.Add(this.txtConversation);
             this.Controls.Add(this.listFriends);
@@ -162,7 +155,6 @@
         private System.Windows.Forms.ColumnHeader columnHeader2;
         private System.Windows.Forms.RichTextBox txtConversation;
         private System.Windows.Forms.TextBox txtToSend;
-        private System.Windows.Forms.Button btnSend;
         private System.Windows.Forms.MenuStrip menuStrip1;
         private System.Windows.Forms.ToolStripMenuItem infoToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem btnViewID;
