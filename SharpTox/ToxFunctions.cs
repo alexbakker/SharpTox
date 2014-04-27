@@ -289,6 +289,28 @@ namespace SharpTox
         }
 
         [DllImport("libtoxcore.dll", CallingConvention = CallingConvention.Cdecl)]
+        private static extern int tox_get_status_message(IntPtr tox, int friendnumber, byte[] message, int maxlen);
+        public static string GetStatusMessage(IntPtr tox, int friendnumber)
+        {
+            int size = tox_get_status_message_size(tox, friendnumber);
+            byte[] status = new byte[size];
+            tox_get_status_message(tox, friendnumber, status, status.Length);
+
+            return Encoding.UTF8.GetString(status);
+        }
+
+        [DllImport("libtoxcore.dll", CallingConvention = CallingConvention.Cdecl)]
+        private static extern int tox_get_self_status_message(IntPtr tox, byte[] message, int maxlen);
+        public static string GetSelfStatusMessage(IntPtr tox)
+        {
+            int size = tox_get_self_status_message_size(tox);
+            byte[] status = new byte[size];
+            tox_get_self_status_message(tox, status, status.Length);
+
+            return Encoding.UTF8.GetString(status);
+        }
+
+        [DllImport("libtoxcore.dll", CallingConvention = CallingConvention.Cdecl)]
         private static extern int tox_get_status_message_size(IntPtr tox, int friendnumber);
         public static int GetStatusMessageSize(IntPtr tox, int friendnumber)
         {

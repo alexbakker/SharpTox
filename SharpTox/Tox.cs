@@ -176,6 +176,16 @@ namespace SharpTox
             return ToxFunctions.GetFriendNumber(tox, id);
         }
 
+        public string GetStatusMessage(int friendnumber)
+        {
+            return ToxFunctions.GetStatusMessage(tox, friendnumber);
+        }
+
+        public string GetSelfStatusMessage()
+        {
+            return ToxFunctions.GetSelfStatusMessage(tox);
+        }
+
         public int GetOnlineFriendsCount()
         {
             return (int)ToxFunctions.GetNumOnlineFriends(tox);
