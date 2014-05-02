@@ -39,6 +39,7 @@
             this.btnAddFriend = new System.Windows.Forms.ToolStripMenuItem();
             this.lblCurrFriend = new System.Windows.Forms.Label();
             this.lblCurrFriendStatus = new System.Windows.Forms.Label();
+            this.optionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -99,7 +100,8 @@
             // menuStrip1
             // 
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.infoToolStripMenuItem});
+            this.infoToolStripMenuItem,
+            this.optionsToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(808, 24);
@@ -109,23 +111,23 @@
             // infoToolStripMenuItem
             // 
             this.infoToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.btnViewID,
-            this.btnAddFriend});
+            this.btnAddFriend,
+            this.btnViewID});
             this.infoToolStripMenuItem.Name = "infoToolStripMenuItem";
-            this.infoToolStripMenuItem.Size = new System.Drawing.Size(40, 20);
-            this.infoToolStripMenuItem.Text = "Info";
+            this.infoToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
+            this.infoToolStripMenuItem.Text = "File";
             // 
             // btnViewID
             // 
             this.btnViewID.Name = "btnViewID";
-            this.btnViewID.Size = new System.Drawing.Size(130, 22);
-            this.btnViewID.Text = "View ID";
+            this.btnViewID.Size = new System.Drawing.Size(183, 22);
+            this.btnViewID.Text = "Copy ID to clipboard";
             this.btnViewID.Click += new System.EventHandler(this.btnViewID_Click);
             // 
             // btnAddFriend
             // 
             this.btnAddFriend.Name = "btnAddFriend";
-            this.btnAddFriend.Size = new System.Drawing.Size(130, 22);
+            this.btnAddFriend.Size = new System.Drawing.Size(152, 22);
             this.btnAddFriend.Text = "Add friend";
             this.btnAddFriend.Click += new System.EventHandler(this.btnAddFriend_Click);
             // 
@@ -145,6 +147,13 @@
             this.lblCurrFriendStatus.Name = "lblCurrFriendStatus";
             this.lblCurrFriendStatus.Size = new System.Drawing.Size(0, 13);
             this.lblCurrFriendStatus.TabIndex = 6;
+            // 
+            // optionsToolStripMenuItem
+            // 
+            this.optionsToolStripMenuItem.Name = "optionsToolStripMenuItem";
+            this.optionsToolStripMenuItem.Size = new System.Drawing.Size(61, 20);
+            this.optionsToolStripMenuItem.Text = "Options";
+            this.optionsToolStripMenuItem.Click += new System.EventHandler(this.optionsToolStripMenuItem_Click);
             // 
             // frmMain
             // 
@@ -183,6 +192,7 @@
         private System.Windows.Forms.ToolStripMenuItem btnAddFriend;
         private System.Windows.Forms.Label lblCurrFriend;
         private System.Windows.Forms.Label lblCurrFriendStatus;
+        private System.Windows.Forms.ToolStripMenuItem optionsToolStripMenuItem;
 
     }
 }

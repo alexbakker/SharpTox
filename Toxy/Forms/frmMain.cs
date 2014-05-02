@@ -70,14 +70,11 @@ namespace Toxy
 
         private void OnNameChange(int friendnumber, string newname)
         {
-            BeginInvoke(((Action)(() => 
+            BeginInvoke(((Action)(() =>
             {
-                if ((listFriends.Items.Count - 1) >= friendnumber)
-                {
-                    listFriends.BeginUpdate();
-                    listFriends.Items[friendnumber].SubItems[0].Text = newname;
-                    listFriends.EndUpdate();
-                }
+                listFriends.BeginUpdate();
+                listFriends.GetItemByTag(friendnumber).SubItems[0].Text = newname;
+                listFriends.EndUpdate();
             })));
         }
 
@@ -88,22 +85,17 @@ namespace Toxy
                     if (status == 0)
                     {
                         //went offline
-                        if ((listFriends.Items.Count - 1) >= friendnumber)
-                        {
-                            listFriends.BeginUpdate();
-                            listFriends.Items[friendnumber].SubItems[1].Text = "Offline";
-                            listFriends.EndUpdate();
-                        }
+                        listFriends.BeginUpdate();
+                        listFriends.GetItemByTag(friendnumber).SubItems[1].Text = "Offline";
+                        listFriends.EndUpdate();
+
                     }
                     else
                     {
                         //online
-                        if ((listFriends.Items.Count - 1) >= friendnumber)
-                        {
-                            listFriends.BeginUpdate();
-                            listFriends.Items[friendnumber].SubItems[1].Text = "Online";
-                            listFriends.EndUpdate();
-                        }
+                        listFriends.BeginUpdate();
+                        listFriends.GetItemByTag(friendnumber).SubItems[1].Text = "Online";
+                        listFriends.EndUpdate();
                     }
                 })));
         }
@@ -300,6 +292,12 @@ namespace Toxy
             messagedic.Remove(currfriendnum);
 
             e.Handled = true;
+        }
+
+        private void optionsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            frmOptions form = new frmOptions(tox);
+            form.ShowDialog();
         }
     }
      static class ListViewExtensions
