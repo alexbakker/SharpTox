@@ -32,7 +32,7 @@ namespace Toxy
             {
                 if (!tox.Load("data"))
                 {
-                    MessageBox.Show("Could not load tox data, this program will now exit.");
+                    MessageBox.Show("Could not load tox data, this program will now exit.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     Close();
                 }
             }
@@ -49,7 +49,7 @@ namespace Toxy
 
             if (!bootstrap_success)
             {
-                MessageBox.Show("Could not bootstrap from any of the addresses");
+                MessageBox.Show("Could not bootstrap from any of the default addresses", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 Close();
             }
 
@@ -166,12 +166,6 @@ namespace Toxy
             tox.Kill();
         }
 
-        private void btnViewID_Click(object sender, EventArgs e)
-        {
-            frmID form = new frmID(id);
-            form.ShowDialog();
-        }
-
         private void btnAddFriend_Click(object sender, EventArgs e)
         {
             frmAddFriend form = new frmAddFriend();
@@ -284,7 +278,7 @@ namespace Toxy
 
             if (!tox.DeleteFriend(currfriendnum))
             {
-                MessageBox.Show("Could not delete friend with number: " + currfriendnum);
+                MessageBox.Show("Could not delete friend with number: " + currfriendnum, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
@@ -298,6 +292,16 @@ namespace Toxy
         {
             frmOptions form = new frmOptions(tox);
             form.ShowDialog();
+        }
+
+        private void btnCopyID_Click(object sender, EventArgs e)
+        {
+            Clipboard.SetText(id);
+        }
+
+        private void btnExit_Click(object sender, EventArgs e)
+        {
+            Close();
         }
     }
      static class ListViewExtensions

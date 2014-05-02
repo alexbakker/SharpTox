@@ -35,11 +35,12 @@
             this.txtToSend = new System.Windows.Forms.TextBox();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.infoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.btnViewID = new System.Windows.Forms.ToolStripMenuItem();
             this.btnAddFriend = new System.Windows.Forms.ToolStripMenuItem();
+            this.btnCopyID = new System.Windows.Forms.ToolStripMenuItem();
+            this.optionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.lblCurrFriend = new System.Windows.Forms.Label();
             this.lblCurrFriendStatus = new System.Windows.Forms.Label();
-            this.optionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.btnExit = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -59,7 +60,7 @@
             this.listFriends.Size = new System.Drawing.Size(246, 408);
             this.listFriends.TabIndex = 0;
             this.listFriends.UseCompatibleStateImageBehavior = false;
-            this.listFriends.View = System.Windows.Forms.View.Details;
+            this.listFriends.View = System.Windows.Forms.View.Tile;
             this.listFriends.SelectedIndexChanged += new System.EventHandler(this.listFriends_SelectedIndexChanged);
             this.listFriends.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.listFriends_KeyPress);
             // 
@@ -112,24 +113,32 @@
             // 
             this.infoToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.btnAddFriend,
-            this.btnViewID});
+            this.btnCopyID,
+            this.btnExit});
             this.infoToolStripMenuItem.Name = "infoToolStripMenuItem";
             this.infoToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
             this.infoToolStripMenuItem.Text = "File";
             // 
-            // btnViewID
-            // 
-            this.btnViewID.Name = "btnViewID";
-            this.btnViewID.Size = new System.Drawing.Size(183, 22);
-            this.btnViewID.Text = "Copy ID to clipboard";
-            this.btnViewID.Click += new System.EventHandler(this.btnViewID_Click);
-            // 
             // btnAddFriend
             // 
             this.btnAddFriend.Name = "btnAddFriend";
-            this.btnAddFriend.Size = new System.Drawing.Size(152, 22);
+            this.btnAddFriend.Size = new System.Drawing.Size(183, 22);
             this.btnAddFriend.Text = "Add friend";
             this.btnAddFriend.Click += new System.EventHandler(this.btnAddFriend_Click);
+            // 
+            // btnCopyID
+            // 
+            this.btnCopyID.Name = "btnCopyID";
+            this.btnCopyID.Size = new System.Drawing.Size(183, 22);
+            this.btnCopyID.Text = "Copy ID to clipboard";
+            this.btnCopyID.Click += new System.EventHandler(this.btnCopyID_Click);
+            // 
+            // optionsToolStripMenuItem
+            // 
+            this.optionsToolStripMenuItem.Name = "optionsToolStripMenuItem";
+            this.optionsToolStripMenuItem.Size = new System.Drawing.Size(61, 20);
+            this.optionsToolStripMenuItem.Text = "Options";
+            this.optionsToolStripMenuItem.Click += new System.EventHandler(this.optionsToolStripMenuItem_Click);
             // 
             // lblCurrFriend
             // 
@@ -148,12 +157,12 @@
             this.lblCurrFriendStatus.Size = new System.Drawing.Size(0, 13);
             this.lblCurrFriendStatus.TabIndex = 6;
             // 
-            // optionsToolStripMenuItem
+            // btnExit
             // 
-            this.optionsToolStripMenuItem.Name = "optionsToolStripMenuItem";
-            this.optionsToolStripMenuItem.Size = new System.Drawing.Size(61, 20);
-            this.optionsToolStripMenuItem.Text = "Options";
-            this.optionsToolStripMenuItem.Click += new System.EventHandler(this.optionsToolStripMenuItem_Click);
+            this.btnExit.Name = "btnExit";
+            this.btnExit.Size = new System.Drawing.Size(183, 22);
+            this.btnExit.Text = "Exit";
+            this.btnExit.Click += new System.EventHandler(this.btnExit_Click);
             // 
             // frmMain
             // 
@@ -188,11 +197,12 @@
         private System.Windows.Forms.TextBox txtToSend;
         private System.Windows.Forms.MenuStrip menuStrip1;
         private System.Windows.Forms.ToolStripMenuItem infoToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem btnViewID;
+        private System.Windows.Forms.ToolStripMenuItem btnCopyID;
         private System.Windows.Forms.ToolStripMenuItem btnAddFriend;
         private System.Windows.Forms.Label lblCurrFriend;
         private System.Windows.Forms.Label lblCurrFriendStatus;
         private System.Windows.Forms.ToolStripMenuItem optionsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem btnExit;
 
     }
 }
