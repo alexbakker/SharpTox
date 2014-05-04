@@ -27,6 +27,7 @@ namespace Toxy
             tox.OnFriendAction += OnFriendAction;
             tox.OnConnectionStatusChanged += OnConnectionStatusChanged;
             tox.OnNameChange += OnNameChange;
+            tox.OnTypingChange += OnTypingChange;
 
             if (File.Exists("data"))
             {
@@ -66,6 +67,20 @@ namespace Toxy
             }
 
             id = tox.GetAddress();
+        }
+
+        private void OnTypingChange(int friendnumber, bool is_typing)
+        {
+            if (friendnumber != currfriendnum)
+                return;
+
+            BeginInvoke(((Action)(() =>
+            {
+                if (is_typing)
+                    lblCurrFriend.Text = tox.GetName(friendnumber) + " (typing...)";
+                else
+                    lblCurrFriend.Text = tox.GetName(friendnumber);
+            })));
         }
 
         private void OnNameChange(int friendnumber, string newname)
@@ -244,7 +259,11 @@ namespace Toxy
 
             currfriendnum = friendnumber;
 
-            lblCurrFriend.Text = tox.GetName(friendnumber);
+            if (tox.GetIsTyping(friendnumber))
+                lblCurrFriend.Text = tox.GetName(friendnumber) + " (typing...)";
+            else
+                lblCurrFriend.Text = tox.GetName(friendnumber);
+
             lblCurrFriendStatus.Text = tox.GetStatusMessage(friendnumber);
 
             txtConversation.Text = "";
