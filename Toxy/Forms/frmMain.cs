@@ -95,7 +95,7 @@ namespace Toxy
                     return;
 
                 if (tox.GetIsTyping(friendnumber))
-                    lblCurrFriend.Text = tox.GetName(friendnumber) + " (typing)";
+                    lblCurrFriend.Text = tox.GetName(friendnumber) + " (typing...)";
                 else
                     lblCurrFriend.Text = tox.GetName(friendnumber);
             })));
