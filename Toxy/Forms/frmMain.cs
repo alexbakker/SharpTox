@@ -90,6 +90,14 @@ namespace Toxy
                 listFriends.BeginUpdate();
                 listFriends.GetItemByTag(friendnumber).SubItems[0].Text = newname;
                 listFriends.EndUpdate();
+
+                if (friendnumber != currfriendnum)
+                    return;
+
+                if (tox.GetIsTyping(friendnumber))
+                    lblCurrFriend.Text = tox.GetName(friendnumber) + " (typing)";
+                else
+                    lblCurrFriend.Text = tox.GetName(friendnumber);
             })));
         }
 
