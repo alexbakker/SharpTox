@@ -143,7 +143,7 @@ namespace SharpTox
 
         public bool TryBootstrap(ToxNode node)
         {
-            return ToxFunctions.BootstrapFromAddress(tox, node.Address, node.Ipv6Enabled, node.Port, node.PublicKey);
+            return ToxFunctions.BootstrapFromAddress(tox, node.Address, node.Ipv6Enabled, Convert.ToUInt16(node.Port), node.PublicKey);
         }
 
         public bool FriendExists(int friendnumber)

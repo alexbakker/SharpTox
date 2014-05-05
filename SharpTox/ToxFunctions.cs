@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Net;
 using System.Runtime.InteropServices;
 using System.Text;
 
@@ -20,9 +21,9 @@ namespace SharpTox
 
         [DllImport("libtoxcore.dll", CallingConvention = CallingConvention.Cdecl)]
         private static extern int tox_bootstrap_from_address(IntPtr tox, string address, byte ipv6enabled, ushort port, byte[] public_key);
-        public static bool BootstrapFromAddress(IntPtr tox, string address, bool ipv6enabled, int port, string public_key)
+        public static bool BootstrapFromAddress(IntPtr tox, string address, bool ipv6enabled, ushort port, string public_key)
         {
-            return tox_bootstrap_from_address(tox, address, ipv6enabled ? (byte)1 : (byte)0, (ushort)port, ToxTools.StringToHexBin(public_key)) == 1 ? true: false;
+            return tox_bootstrap_from_address(tox, address, ipv6enabled ? (byte)1 : (byte)0, (ushort)IPAddress.HostToNetworkOrder((short)port), ToxTools.StringToHexBin(public_key)) == 1 ? true: false;
         }
 
         [DllImport("libtoxcore.dll", CallingConvention = CallingConvention.Cdecl)]
@@ -516,6 +517,8 @@ namespace SharpTox
         {
             tox_callback_typing_change(tox, callback, IntPtr.Zero);
         }
+
+
 
         #endregion
     }
