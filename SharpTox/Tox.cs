@@ -312,6 +312,11 @@ namespace SharpTox
             return ToxFunctions.DeleteGroupchat(tox, groupnumber);
         }
 
+        public bool InviteFriend(int friendnumber, int groupnumber)
+        {
+            return ToxFunctions.InviteFriend(tox, friendnumber, groupnumber);
+        }
+
         public bool SendGroupMessage(int groupnumber, string message)
         {
             return ToxFunctions.GroupMessageSend(tox, groupnumber, message);
