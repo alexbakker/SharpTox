@@ -292,6 +292,41 @@ namespace SharpTox
             return ToxFunctions.DeleteFriend(tox, friendnumber);
         }
 
+        public int JoinGroup(int friendnumber, string group_public_key)
+        {
+            return ToxFunctions.JoinGroupchat(tox, friendnumber, group_public_key);
+        }
+
+        public string GetGroupMemberName(int groupnumber, int peernumber)
+        {
+            return ToxFunctions.GroupPeername(tox, groupnumber, peernumber);
+        }
+
+        public int GetGroupMemberCount(int groupnumber)
+        {
+            return ToxFunctions.GroupNumberPeers(tox, groupnumber);
+        }
+
+        public int DeleteGroupChat(int groupnumber)
+        {
+            return ToxFunctions.DeleteGroupchat(tox, groupnumber);
+        }
+
+        public bool SendGroupMessage(int groupnumber, string message)
+        {
+            return ToxFunctions.GroupMessageSend(tox, groupnumber, message);
+        }
+
+        public bool SendGroupAction(int groupnumber, string action)
+        {
+            return ToxFunctions.GroupActionSend(tox, groupnumber, action);
+        }
+
+        public int NewGroup()
+        {
+            return ToxFunctions.AddGroupchat(tox);
+        }
+
         private void callbacks()
         {
             ToxFunctions.CallbackFriendRequest(tox, friendrequestdelegate = new ToxDelegates.CallbackFriendRequestDelegate((IntPtr t, byte[] id, byte[] message, ushort length, IntPtr userdata) =>
