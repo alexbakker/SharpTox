@@ -518,7 +518,33 @@ namespace SharpTox
             tox_callback_typing_change(tox, callback, IntPtr.Zero);
         }
 
+        [DllImport("libtoxcore.dll", CallingConvention = CallingConvention.Cdecl)]
+        private static extern void tox_callback_group_invite(IntPtr tox, ToxDelegates.CallbackGroupInviteDelegate callback, IntPtr userdata);
+        public static void CallbackGroupInvite(IntPtr tox, ToxDelegates.CallbackGroupInviteDelegate callback)
+        {
+            tox_callback_group_invite(tox, callback, IntPtr.Zero);
+        }
 
+        [DllImport("libtoxcore.dll", CallingConvention = CallingConvention.Cdecl)]
+        private static extern void tox_callback_group_message(IntPtr tox, ToxDelegates.CallbackGroupMessageDelegate callback, IntPtr userdata);
+        public static void CallbackGroupMessage(IntPtr tox, ToxDelegates.CallbackGroupMessageDelegate callback)
+        {
+            tox_callback_group_message(tox, callback, IntPtr.Zero);
+        }
+
+        [DllImport("libtoxcore.dll", CallingConvention = CallingConvention.Cdecl)]
+        private static extern void tox_callback_group_action(IntPtr tox, ToxDelegates.CallbackGroupActionDelegate callback, IntPtr userdata);
+        public static void CallbackGroupAction(IntPtr tox, ToxDelegates.CallbackGroupActionDelegate callback)
+        {
+            tox_callback_group_action(tox, callback, IntPtr.Zero);
+        }
+
+        [DllImport("libtoxcore.dll", CallingConvention = CallingConvention.Cdecl)]
+        private static extern void tox_callback_group_namelist_change(IntPtr tox, ToxDelegates.CallbackGroupNamelistChangeDelegate callback, IntPtr userdata);
+        public static void CallbackGroupNamelistChange(IntPtr tox, ToxDelegates.CallbackGroupNamelistChangeDelegate callback)
+        {
+            tox_callback_group_namelist_change(tox, callback, IntPtr.Zero);
+        }
 
         #endregion
     }

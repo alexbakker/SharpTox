@@ -33,5 +33,12 @@
         KILL,
         FINISHED,
         RESUME_BROKEN
-    };
+    }
+
+    public enum ToxChatChange
+    {
+        TOX_CHAT_CHANGE_PEER_ADD,
+        TOX_CHAT_CHANGE_PEER_DEL,
+        TOX_CHAT_CHANGE_PEER_NAME
+    }
 }
