@@ -14,6 +14,11 @@ namespace SharpTox
     public delegate void OnStatusMessageDelegate(int friendnumber, string newstatus);
     public delegate void OnUserStatusDelegate(int friendnumber, ToxUserStatus status);
     public delegate void OnTypingChangeDelegate(int friendnumber, bool is_typing);
+
+    public delegate void OnGroupInviteDelegate(int friendnumber, string group_public_key);
+    public delegate void OnGroupMessageDelegate(int groupnumber, int friendgroupnumber, string message);
+    public delegate void OnGroupActionDelegate(int groupnumber, int friendgroupnumber, string action);
+    public delegate void OnGroupNamelistChangeDelegate(int peernumber, ToxChatChange change);
     #endregion
 
     public class Tox
@@ -27,6 +32,11 @@ namespace SharpTox
         public event OnUserStatusDelegate OnUserStatus;
         public event OnTypingChangeDelegate OnTypingChange;
 
+        public event OnGroupActionDelegate OnGroupAction;
+        public event OnGroupMessageDelegate OnGroupMessage;
+        public event OnGroupInviteDelegate OnGroupInvite;
+        public event OnGroupNamelistChangeDelegate OnGroupNamelistChange;
+
         #region Callback Delegates
         private ToxDelegates.CallbackFriendRequestDelegate friendrequestdelegate;
         private ToxDelegates.CallbackConnectionStatusDelegate connectionstatusdelegate;
@@ -36,6 +46,11 @@ namespace SharpTox
         private ToxDelegates.CallbackStatusMessageDelegate statusmessagedelegate;
         private ToxDelegates.CallbackUserStatusDelegate userstatusdelegate;
         private ToxDelegates.CallbackTypingChangeDelegate typingchangedelegate;
+
+        private ToxDelegates.CallbackGroupInviteDelegate groupinvitedelegate;
+        private ToxDelegates.CallbackGroupActionDelegate groupactiondelegate;
+        private ToxDelegates.CallbackGroupMessageDelegate groupmessagedelegate;
+        private ToxDelegates.CallbackGroupNamelistChangeDelegate groupnamelistchangedelegate;
         #endregion
 
         private IntPtr tox;
@@ -327,6 +342,30 @@ namespace SharpTox
 
                 if (OnTypingChange != null)
                     OnTypingChange(friendnumber, is_typing);
+            }));
+
+            ToxFunctions.CallbackGroupAction(tox, groupactiondelegate = new ToxDelegates.CallbackGroupActionDelegate((IntPtr t, int groupnumber, int friendgroupnumber, byte[] action, ushort length, IntPtr userdata) =>
+            {
+                if (OnGroupAction != null)
+                    OnGroupAction(groupnumber, friendgroupnumber, Encoding.UTF8.GetString(action));
+            }));
+
+            ToxFunctions.CallbackGroupMessage(tox, groupmessagedelegate = new ToxDelegates.CallbackGroupMessageDelegate((IntPtr t, int groupnumber, int friendgroupnumber, byte[] message, ushort length, IntPtr userdata) =>
+            {
+                if (OnGroupMessage != null)
+                    OnGroupMessage(groupnumber, friendgroupnumber, Encoding.UTF8.GetString(message));
+            }));
+
+            ToxFunctions.CallbackGroupInvite(tox, groupinvitedelegate = new ToxDelegates.CallbackGroupInviteDelegate((IntPtr t, int friendnumber, byte[] group_public_key, IntPtr userdata) =>
+            {
+                if (OnGroupInvite != null)
+                    OnGroupInvite(friendnumber, ToxTools.HexBinToString(group_public_key));
+            }));
+
+            ToxFunctions.CallbackGroupNamelistChange(tox, groupnamelistchangedelegate = new ToxDelegates.CallbackGroupNamelistChangeDelegate((IntPtr t, int peernumber, ToxChatChange change, IntPtr userdata) =>
+            {
+                if (OnGroupNamelistChange != null)
+                    OnGroupNamelistChange(peernumber, change);
             }));
         }
     }

@@ -5,11 +5,13 @@ namespace SharpTox
 {
     internal class ToxDelegates
     {
+        /*someone should check my math on some of this stuff*/
+
         public delegate void CallbackTypingChangeDelegate(IntPtr tox, int friendnumber, byte istyping, IntPtr userdata);
         public delegate void CallbackUserStatusDelegate(IntPtr tox, int friendnumber, ToxUserStatus status, IntPtr userdata);
         public delegate void CallbackStatusMessageDelegate(IntPtr tox, int friendnumber, [MarshalAs(UnmanagedType.LPArray, SizeConst = ToxConstants.MAX_STATUSMESSAGE_LENGTH)] byte[] newstatus, ushort length, IntPtr userdata);
         public delegate void CallbackNameChangeDelegate(IntPtr tox, int friendnumber, [MarshalAs(UnmanagedType.LPArray, SizeConst = ToxConstants.MAX_NAME_LENGTH)] byte[] newname, ushort length, IntPtr userdata);
-        public delegate void CallbackFriendActionDelegate(IntPtr tox, int friendnumber, [MarshalAs(UnmanagedType.LPArray, /*someone should check my math on this*/ SizeConst = ToxConstants.MAX_MESSAGE_LENGTH)] byte[] action, ushort length, IntPtr userdata);
+        public delegate void CallbackFriendActionDelegate(IntPtr tox, int friendnumber, [MarshalAs(UnmanagedType.LPArray, SizeConst = ToxConstants.MAX_MESSAGE_LENGTH)] byte[] action, ushort length, IntPtr userdata);
         public delegate void CallbackFriendMessageDelegate(IntPtr tox, int friendnumber, [MarshalAs(UnmanagedType.LPArray, SizeConst = ToxConstants.MAX_MESSAGE_LENGTH)] byte[] message, ushort length, IntPtr userdata);
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
