@@ -396,7 +396,7 @@ namespace SharpTox
             if (tox_group_peername(tox, groupnumber, peernumber, name) == -1)
                 throw new Exception("Could not get peer name");
             else
-                return Encoding.UTF8.GetString(name);
+                return ToxTools.RemoveNull(Encoding.UTF8.GetString(name));
         }
 
         [DllImport("libtoxcore.dll", CallingConvention = CallingConvention.Cdecl)]
@@ -456,8 +456,6 @@ namespace SharpTox
             else
                 return chats;
         }
-
-
 
         #endregion
 

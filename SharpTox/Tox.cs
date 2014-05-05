@@ -387,13 +387,13 @@ namespace SharpTox
             ToxFunctions.CallbackGroupAction(tox, groupactiondelegate = new ToxDelegates.CallbackGroupActionDelegate((IntPtr t, int groupnumber, int friendgroupnumber, byte[] action, ushort length, IntPtr userdata) =>
             {
                 if (OnGroupAction != null)
-                    OnGroupAction(groupnumber, friendgroupnumber, Encoding.UTF8.GetString(action));
+                    OnGroupAction(groupnumber, friendgroupnumber, ToxTools.RemoveNull(Encoding.UTF8.GetString(action)));
             }));
 
             ToxFunctions.CallbackGroupMessage(tox, groupmessagedelegate = new ToxDelegates.CallbackGroupMessageDelegate((IntPtr t, int groupnumber, int friendgroupnumber, byte[] message, ushort length, IntPtr userdata) =>
             {
                 if (OnGroupMessage != null)
-                    OnGroupMessage(groupnumber, friendgroupnumber, Encoding.UTF8.GetString(message));
+                    OnGroupMessage(groupnumber, friendgroupnumber, ToxTools.RemoveNull(Encoding.UTF8.GetString(message)));
             }));
 
             ToxFunctions.CallbackGroupInvite(tox, groupinvitedelegate = new ToxDelegates.CallbackGroupInviteDelegate((IntPtr t, int friendnumber, byte[] group_public_key, IntPtr userdata) =>
@@ -402,11 +402,11 @@ namespace SharpTox
                     OnGroupInvite(friendnumber, ToxTools.HexBinToString(group_public_key));
             }));
 
-            ToxFunctions.CallbackGroupNamelistChange(tox, groupnamelistchangedelegate = new ToxDelegates.CallbackGroupNamelistChangeDelegate((IntPtr t, int peernumber, ToxChatChange change, IntPtr userdata) =>
+            /*ToxFunctions.CallbackGroupNamelistChange(tox, groupnamelistchangedelegate = new ToxDelegates.CallbackGroupNamelistChangeDelegate((IntPtr t, int peernumber, ToxChatChange change, IntPtr userdata) =>
             {
                 if (OnGroupNamelistChange != null)
                     OnGroupNamelistChange(peernumber, change);
-            }));
+            }));*/
         }
     }
 }
