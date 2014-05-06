@@ -473,6 +473,53 @@ namespace SharpTox
                 return chats;
         }
 
+        [DllImport("libtoxcore.dll", CallingConvention = CallingConvention.Cdecl)]
+        private static extern int tox_new_file_sender(IntPtr tox, int friendnumber, ulong filesize, byte[] filename, ushort filename_length); //max filename length is 255 bytes
+        public static int NewFileSender(IntPtr tox, int friendnumber, ulong filesize, string filename)
+        {
+            byte[] name = Encoding.UTF8.GetBytes(filename);
+            if (name.Length > 255)
+                throw new Exception("Filename is too long (longer than 255 bytes)");
+
+            int result = tox_new_file_sender(tox, friendnumber, filesize, name, (ushort)name.Length);
+            if (result != -1)
+                return result;
+            else
+                throw new Exception("Could not create new file sender");
+        }
+
+        [DllImport("libtoxcore.dll", CallingConvention = CallingConvention.Cdecl)]
+        private static extern int tox_file_send_control(IntPtr tox, int friendnumber, byte send_receive, byte filenumber, byte message_id, byte[] data, ushort length);
+        public static int FileSendControl(IntPtr tox, int friendnumber, byte send_receive, byte filenumber, byte message_id, byte[] data, ushort length)
+        {
+            return tox_file_send_control(tox, friendnumber, send_receive, filenumber, message_id, data, length);
+        }
+
+        [DllImport("libtoxcore.dll", CallingConvention = CallingConvention.Cdecl)]
+        private static extern int tox_file_send_data(IntPtr tox, int friendnumber, byte filenumber, byte[] data, ushort length);
+        public static bool FileSendData(IntPtr tox, int friendnumber, int filenumber, byte[] data)
+        {
+            return tox_file_send_data(tox, friendnumber, (byte)filenumber, data, (ushort)data.Length) == 0 ? true : false;
+        }
+
+        [DllImport("libtoxcore.dll", CallingConvention = CallingConvention.Cdecl)]
+        private static extern int tox_file_data_size(IntPtr tox, int friendnumber);
+        public static int FileDataSize(IntPtr tox, int friendnumber)
+        {
+            int result = tox_file_data_size(tox, friendnumber);
+            if (result == -1)
+                throw new Exception("Could not get file data size");
+            else
+                return result;
+        }
+
+        [DllImport("libtoxcore.dll", CallingConvention = CallingConvention.Cdecl)]
+        private static extern int tox_file_data_remaining(IntPtr tox, int friendnumber, byte filenumber, byte send_receive);
+        public static int FileDataRemaining(IntPtr tox, int friendnumber, int filenumber, int send_receive)
+        {
+            return tox_file_data_remaining(tox, friendnumber, (byte)filenumber, (byte)send_receive);
+        }
+
         #endregion
 
         #region Callbacks

@@ -71,6 +71,31 @@ namespace SharpTox
             return ToxFunctions.IsConnected(tox);
         }
 
+        public int NewFileSender(int friendnumber, ulong filesize, string filename)
+        {
+            return ToxFunctions.NewFileSender(tox, friendnumber, filesize, filename);
+        }
+
+        public int FileSendControl(int friendnumber, int send_receive, int filenumber, int message_id, byte[] data)
+        {
+            return ToxFunctions.FileSendControl(tox, friendnumber, (byte)send_receive, (byte)filenumber, (byte)message_id, data, (ushort)data.Length);
+        }
+
+        public bool FileSendData(int friendnumber, int filenumber, byte[] data)
+        {
+            return ToxFunctions.FileSendData(tox, friendnumber, filenumber, data);
+        }
+
+        public int FileDataSize(int friendnumber)
+        {
+            return ToxFunctions.FileDataSize(tox, friendnumber);
+        }
+
+        public int FileDataRemaining(int friendnumber, int filenumber, int send_receive)
+        {
+            return ToxFunctions.FileDataRemaining(tox, friendnumber, filenumber, send_receive);
+        }
+
         public bool Load(string filename)
         {
             try
