@@ -26,5 +26,9 @@ namespace SharpTox
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         public delegate void CallbackGroupNamelistChangeDelegate(IntPtr tox, int groupnumber, int peernumber, ToxChatChange change, IntPtr userdata);
+
+        public delegate void CallbackFileDataDelegate(IntPtr tox, int friendnumber, byte filenumber, [In, MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 4)] byte[] data, ushort length, IntPtr userdata);
+        public delegate void CallbackFileControlDelegate(IntPtr tox, int friendnumber, byte receive_send, byte filenumber, byte control_type, [In, MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 6)] byte[] data, ushort length, IntPtr userdata);
+        public delegate void CallbackFileSendRequestDelegate(IntPtr tox, int friendnumber, byte filenumber, ulong filesize, [MarshalAs(UnmanagedType.LPArray, SizeConst = 255)] byte[] filename, ushort filename_length, IntPtr userdata);
     }
 }

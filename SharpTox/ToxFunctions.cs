@@ -607,6 +607,27 @@ namespace SharpTox
             tox_callback_group_namelist_change(tox, callback, IntPtr.Zero);
         }
 
+        [DllImport("libtoxcore.dll", CallingConvention = CallingConvention.Cdecl)]
+        private static extern void tox_callback_file_send_request(IntPtr tox, ToxDelegates.CallbackFileSendRequestDelegate callback, IntPtr userdata);
+        public static void CallbackFileSendRequest(IntPtr tox, ToxDelegates.CallbackFileSendRequestDelegate callback)
+        {
+            tox_callback_file_send_request(tox, callback, IntPtr.Zero);
+        }
+
+        [DllImport("libtoxcore.dll", CallingConvention = CallingConvention.Cdecl)]
+        private static extern void tox_callback_file_control(IntPtr tox, ToxDelegates.CallbackFileControlDelegate callback, IntPtr userdata);
+        public static void CallbackFileControl(IntPtr tox, ToxDelegates.CallbackFileControlDelegate callback)
+        {
+            tox_callback_file_control(tox, callback, IntPtr.Zero);
+        }
+
+        [DllImport("libtoxcore.dll", CallingConvention = CallingConvention.Cdecl)]
+        private static extern void tox_callback_file_data(IntPtr tox, ToxDelegates.CallbackFileDataDelegate callback, IntPtr userdata);
+        public static void CallbackFileData(IntPtr tox, ToxDelegates.CallbackFileDataDelegate callback)
+        {
+            tox_callback_file_data(tox, callback, IntPtr.Zero);
+        }
+
         #endregion
     }
 }

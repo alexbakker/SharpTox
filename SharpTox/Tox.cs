@@ -19,6 +19,10 @@ namespace SharpTox
     public delegate void OnGroupMessageDelegate(int groupnumber, int friendgroupnumber, string message);
     public delegate void OnGroupActionDelegate(int groupnumber, int friendgroupnumber, string action);
     public delegate void OnGroupNamelistChangeDelegate(int groupnumber, int peernumber, ToxChatChange change);
+
+    public delegate void OnFileControlDelegate(int friendnumber, int receive_send, int filenumber, int control_type, byte[] data);
+    public delegate void OnFileDataDelegate(int friendnumber, int filenumber, byte[] data);
+    public delegate void OnFileSendRequestDelegate(int friendnumber, int filenumber, ulong filesiz, string filename);
     #endregion
 
     public class Tox
@@ -37,6 +41,10 @@ namespace SharpTox
         public event OnGroupInviteDelegate OnGroupInvite;
         public event OnGroupNamelistChangeDelegate OnGroupNamelistChange;
 
+        public event OnFileControlDelegate OnFileControl;
+        public event OnFileDataDelegate OnFileData;
+        public event OnFileSendRequestDelegate OnFileSendRequest;
+
         #region Callback Delegates
         private ToxDelegates.CallbackFriendRequestDelegate friendrequestdelegate;
         private ToxDelegates.CallbackConnectionStatusDelegate connectionstatusdelegate;
@@ -51,6 +59,10 @@ namespace SharpTox
         private ToxDelegates.CallbackGroupActionDelegate groupactiondelegate;
         private ToxDelegates.CallbackGroupMessageDelegate groupmessagedelegate;
         private ToxDelegates.CallbackGroupNamelistChangeDelegate groupnamelistchangedelegate;
+
+        private ToxDelegates.CallbackFileControlDelegate filecontroldelegate;
+        private ToxDelegates.CallbackFileDataDelegate filedatadelegate;
+        private ToxDelegates.CallbackFileSendRequestDelegate filesendrequestdelegate;
         #endregion
 
         private IntPtr tox;
@@ -437,6 +449,24 @@ namespace SharpTox
             {
                 if (OnGroupNamelistChange != null)
                     OnGroupNamelistChange(groupnumber, peernumber, change);
+            }));
+
+            ToxFunctions.CallbackFileControl(tox, filecontroldelegate = new ToxDelegates.CallbackFileControlDelegate((IntPtr t, int friendnumber, byte receive_send, byte filenumber, byte control_type, byte[] data, ushort length, IntPtr userdata) =>
+            {
+                if (OnFileControl != null)
+                    OnFileControl(friendnumber, receive_send, filenumber, control_type, data);
+            }));
+
+            ToxFunctions.CallbackFileData(tox, filedatadelegate = new ToxDelegates.CallbackFileDataDelegate((IntPtr t, int friendnumber, byte filenumber, byte[] data, ushort length, IntPtr userdata) =>
+            {
+                if (OnFileData != null)
+                    OnFileData(friendnumber, filenumber, data);
+            }));
+
+            ToxFunctions.CallbackFileSendRequest(tox, filesendrequestdelegate = new ToxDelegates.CallbackFileSendRequestDelegate((IntPtr t, int friendnumber, byte filenumber, ulong filesize, byte[] filename, ushort filename_length, IntPtr userdata) =>
+            {
+                if (OnFileSendRequest != null)
+                    OnFileSendRequest(friendnumber, filenumber, filesize, Encoding.UTF8.GetString(filename));
             }));
         }
     }
