@@ -92,6 +92,7 @@ namespace SharpTox
 
         public string[] GetGroupNames(int groupnumber)
         {
+            throw new NotImplementedException();
             return ToxFunctions.GroupGetNames(tox, groupnumber);
         }
 
