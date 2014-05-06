@@ -18,7 +18,7 @@ namespace SharpTox
     public delegate void OnGroupInviteDelegate(int friendnumber, string group_public_key);
     public delegate void OnGroupMessageDelegate(int groupnumber, int friendgroupnumber, string message);
     public delegate void OnGroupActionDelegate(int groupnumber, int friendgroupnumber, string action);
-    public delegate void OnGroupNamelistChangeDelegate(int peernumber, ToxChatChange change);
+    public delegate void OnGroupNamelistChangeDelegate(int groupnumber, int peernumber, ToxChatChange change);
     #endregion
 
     public class Tox
@@ -402,11 +402,11 @@ namespace SharpTox
                     OnGroupInvite(friendnumber, ToxTools.HexBinToString(group_public_key));
             }));
 
-            /*ToxFunctions.CallbackGroupNamelistChange(tox, groupnamelistchangedelegate = new ToxDelegates.CallbackGroupNamelistChangeDelegate((IntPtr t, int peernumber, ToxChatChange change, IntPtr userdata) =>
+            ToxFunctions.CallbackGroupNamelistChange(tox, groupnamelistchangedelegate = new ToxDelegates.CallbackGroupNamelistChangeDelegate((IntPtr t, int groupnumber, int peernumber, ToxChatChange change, IntPtr userdata) =>
             {
                 if (OnGroupNamelistChange != null)
-                    OnGroupNamelistChange(peernumber, change);
-            }));*/
+                    OnGroupNamelistChange(groupnumber, peernumber, change);
+            }));
         }
     }
 }
