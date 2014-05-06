@@ -466,7 +466,7 @@ namespace SharpTox
             ToxFunctions.CallbackFileSendRequest(tox, filesendrequestdelegate = new ToxDelegates.CallbackFileSendRequestDelegate((IntPtr t, int friendnumber, byte filenumber, ulong filesize, byte[] filename, ushort filename_length, IntPtr userdata) =>
             {
                 if (OnFileSendRequest != null)
-                    OnFileSendRequest(friendnumber, filenumber, filesize, Encoding.UTF8.GetString(filename));
+                    OnFileSendRequest(friendnumber, filenumber, filesize, ToxTools.RemoveNull(Encoding.UTF8.GetString(filename)));
             }));
         }
     }
