@@ -436,6 +436,22 @@ namespace SharpTox
             return tox_group_number_peers(tox, groupnumber);
         }
 
+        [DllImport("libtoxcore.dll", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+        private static extern int tox_group_get_names(IntPtr tox, int groupnumber, byte[][] names, ushort[] lengths, ushort length);
+        public static string[] GroupGetNames(IntPtr tox, int groupnumber)
+        {
+            int count = tox_group_number_peers(tox, groupnumber);
+            byte[][] names = new byte[count][];
+            ushort[] lengths = new ushort[count];
+            int result = tox_group_get_names(tox, groupnumber, names, lengths, (ushort)count);
+
+            System.Collections.Generic.List<string> n = new System.Collections.Generic.List<string>();
+            foreach (byte[] name in names)
+                n.Add(Encoding.UTF8.GetString(name));
+
+            return n.ToArray();
+        }
+
         [DllImport("libtoxcore.dll", CallingConvention = CallingConvention.Cdecl)]
         private static extern uint tox_count_chatlist(IntPtr tox);
         public static int CountChatlist(IntPtr tox)

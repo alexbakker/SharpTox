@@ -90,6 +90,11 @@ namespace SharpTox
             catch { return false; }
         }
 
+        public string[] GetGroupNames(int groupnumber)
+        {
+            return ToxFunctions.GroupGetNames(tox, groupnumber);
+        }
+
         public bool LoadEncrypted(string filename, string key)
         {
             try
