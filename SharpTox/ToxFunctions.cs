@@ -542,6 +542,20 @@ namespace SharpTox
         }
 
         [DllImport("libtoxcore.dll", CallingConvention = CallingConvention.Cdecl)]
+        private static extern uint tox_get_nospam(IntPtr tox);
+        public static uint GetNospam(IntPtr tox)
+        {
+            return tox_get_nospam(tox);
+        }
+
+        [DllImport("libtoxcore.dll", CallingConvention = CallingConvention.Cdecl)]
+        private static extern void tox_get_nospam(IntPtr tox, uint nospam);
+        public static void SetNospam(IntPtr tox, uint nospam)
+        {
+            tox_get_nospam(tox, nospam);
+        }
+
+        [DllImport("libtoxcore.dll", CallingConvention = CallingConvention.Cdecl)]
         private static extern IntPtr tox_wait_data_size();
         public static IntPtr WaitDataSize()
         {
