@@ -520,6 +520,27 @@ namespace SharpTox
             return tox_file_data_remaining(tox, friendnumber, (byte)filenumber, (byte)send_receive);
         }
 
+        [DllImport("libtoxcore.dll", CallingConvention = CallingConvention.Cdecl)]
+        private static extern int tox_wait_prepare(IntPtr tox, byte[] data);
+        public static int WaitPrepare(IntPtr tox, byte[] data)
+        {
+            return tox_wait_prepare(tox, data);
+        }
+
+        [DllImport("libtoxcore.dll", CallingConvention = CallingConvention.Cdecl)]
+        private static extern int tox_wait_execute(byte[] data, long seconds, long microseconds);
+        public static int WaitExecute(byte[] data, long seconds, long microseconds)
+        {
+            return tox_wait_execute(data, seconds, microseconds);
+        }
+
+        [DllImport("libtoxcore.dll", CallingConvention = CallingConvention.Cdecl)]
+        private static extern int tox_wait_cleanup(IntPtr tox, byte[] data);
+        public static int WaitCleanup(IntPtr tox, byte[] data)
+        {
+            return tox_wait_cleanup(tox, data);
+        }
+
         #endregion
 
         #region Callbacks
