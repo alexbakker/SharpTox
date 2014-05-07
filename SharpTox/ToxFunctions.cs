@@ -541,6 +541,13 @@ namespace SharpTox
             return tox_wait_cleanup(tox, data);
         }
 
+        [DllImport("libtoxcore.dll", CallingConvention = CallingConvention.Cdecl)]
+        private static extern IntPtr tox_wait_data_size();
+        public static IntPtr WaitDataSize()
+        {
+            return tox_wait_data_size();
+        }
+
         #endregion
 
         #region Callbacks
