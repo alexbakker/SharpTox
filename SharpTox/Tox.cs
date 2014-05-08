@@ -68,6 +68,8 @@ namespace SharpTox
         private IntPtr tox;
         private Thread thread;
 
+        private object obj;
+
         public bool Ipv6Enabled { get; private set; }
 
         public Tox(bool ipv6enabled)
@@ -75,83 +77,91 @@ namespace SharpTox
             tox = ToxFunctions.New(ipv6enabled);
             Ipv6Enabled = ipv6enabled;
 
+            obj = new object();
+
             callbacks();
         }
 
         public bool IsConnected()
         {
-            return ToxFunctions.IsConnected(tox);
+            lock (obj) { return ToxFunctions.IsConnected(tox); }
         }
 
         public int NewFileSender(int friendnumber, ulong filesize, string filename)
         {
-            return ToxFunctions.NewFileSender(tox, friendnumber, filesize, filename);
+            lock (obj) { return ToxFunctions.NewFileSender(tox, friendnumber, filesize, filename); }
         }
 
         public int FileSendControl(int friendnumber, int send_receive, int filenumber, int message_id, byte[] data)
         {
-            return ToxFunctions.FileSendControl(tox, friendnumber, (byte)send_receive, (byte)filenumber, (byte)message_id, data, (ushort)data.Length);
+            lock (obj) { return ToxFunctions.FileSendControl(tox, friendnumber, (byte)send_receive, (byte)filenumber, (byte)message_id, data, (ushort)data.Length); }
         }
 
         public bool FileSendData(int friendnumber, int filenumber, byte[] data)
         {
-            return ToxFunctions.FileSendData(tox, friendnumber, filenumber, data);
+            lock (obj) { return ToxFunctions.FileSendData(tox, friendnumber, filenumber, data); }
         }
 
         public int FileDataSize(int friendnumber)
         {
-            return ToxFunctions.FileDataSize(tox, friendnumber);
+            lock (obj) { return ToxFunctions.FileDataSize(tox, friendnumber); }
         }
 
         public int FileDataRemaining(int friendnumber, int filenumber, int send_receive)
         {
-            return ToxFunctions.FileDataRemaining(tox, friendnumber, filenumber, send_receive);
+            lock (obj) { return ToxFunctions.FileDataRemaining(tox, friendnumber, filenumber, send_receive); }
         }
 
         public bool Load(string filename)
         {
-            try
+            lock (obj)
             {
-                FileInfo info = new FileInfo(filename);
-                FileStream stream = new FileStream(filename, FileMode.Open);
-                byte[] bytes = new byte[info.Length];
+                try
+                {
+                    FileInfo info = new FileInfo(filename);
+                    FileStream stream = new FileStream(filename, FileMode.Open);
+                    byte[] bytes = new byte[info.Length];
 
-                stream.Read(bytes, 0, (int)info.Length);
-                stream.Close();
+                    stream.Read(bytes, 0, (int)info.Length);
+                    stream.Close();
 
-                if (!ToxFunctions.Load(tox, bytes, (uint)bytes.Length))
-                    return false;
-                else
-                    return true;
+                    if (!ToxFunctions.Load(tox, bytes, (uint)bytes.Length))
+                        return false;
+                    else
+                        return true;
+                }
+                catch { return false; }
             }
-            catch { return false; }
         }
 
         public string[] GetGroupNames(int groupnumber)
         {
             throw new NotImplementedException();
-            return ToxFunctions.GroupGetNames(tox, groupnumber);
+            lock (obj) { return ToxFunctions.GroupGetNames(tox, groupnumber); }
         }
 
         public bool LoadEncrypted(string filename, string key)
         {
-            try
+            lock (obj)
             {
-                FileInfo info = new FileInfo(filename);
-                FileStream stream = new FileStream(filename, FileMode.Open);
-                byte[] bytes = new byte[info.Length];
+                try
+                {
+                    FileInfo info = new FileInfo(filename);
+                    FileStream stream = new FileStream(filename, FileMode.Open);
+                    byte[] bytes = new byte[info.Length];
 
-                stream.Read(bytes, 0, (int)info.Length);
-                stream.Close();
+                    stream.Read(bytes, 0, (int)info.Length);
+                    stream.Close();
 
-                byte[] k = Encoding.UTF8.GetBytes(key);
+                    byte[] k = Encoding.UTF8.GetBytes(key);
 
-                if (!ToxFunctions.LoadEncrypted(tox, bytes, k))
-                    return false;
-                else
-                    return true;
+                    if (!ToxFunctions.LoadEncrypted(tox, bytes, k))
+                        return false;
+                    else
+                        return true;
+                }
+                catch { return false; }
             }
-            catch { return false; }
         }
 
         public void Start()
@@ -172,207 +182,219 @@ namespace SharpTox
 
         public int AddFriend(string id, string message)
         {
-            int result = ToxFunctions.AddFriend(tox, id, message);
+            lock (obj)
+            {
+                int result = ToxFunctions.AddFriend(tox, id, message);
 
-            if (result < 0)
-                throw new Exception("Could not add friend: " + (ToxAFError)result);
-            else
-                return result;
+                if (result < 0)
+                    throw new Exception("Could not add friend: " + (ToxAFError)result);
+                else
+                    return result;
+            }
         }
         public int AddFriend(string id)
         {
-            int result = ToxFunctions.AddFriend(tox, id, "No message.");
+            lock (obj)
+            {
+                int result = ToxFunctions.AddFriend(tox, id, "No message.");
 
-            if (result < 0)
-                throw new Exception("Could not add friend: " + (ToxAFError)result);
-            else
-                return result;
+                if (result < 0)
+                    throw new Exception("Could not add friend: " + (ToxAFError)result);
+                else
+                    return result;
+            }
         }
 
         public int AddFriendNoRequest(string id)
         {
-            int result = ToxFunctions.AddFriendNoRequest(tox, id);
+            lock (obj)
+            {
+                int result = ToxFunctions.AddFriendNoRequest(tox, id);
 
-            if (result < 0)
-                throw new Exception("Could not add friend: " + (ToxAFError)result);
-            else
-                return result;
+                if (result < 0)
+                    throw new Exception("Could not add friend: " + (ToxAFError)result);
+                else
+                    return result;
+            }
         }
 
         public bool TryBootstrap(ToxNode node)
         {
-            return ToxFunctions.BootstrapFromAddress(tox, node.Address, node.Ipv6Enabled, Convert.ToUInt16(node.Port), node.PublicKey);
+            lock (obj) { return ToxFunctions.BootstrapFromAddress(tox, node.Address, node.Ipv6Enabled, Convert.ToUInt16(node.Port), node.PublicKey); }
         }
 
         public bool FriendExists(int friendnumber)
         {
-            return ToxFunctions.FriendExists(tox, friendnumber);
+            lock (obj) { return ToxFunctions.FriendExists(tox, friendnumber); }
         }
 
         public int GetFriendlistCount()
         {
-            return (int)ToxFunctions.CountFriendlist(tox);
+            lock (obj) { return (int)ToxFunctions.CountFriendlist(tox); }
         }
 
         public int[] GetFriendlist()
         {
-            return ToxFunctions.GetFriendlist(tox);
+            lock (obj) { return ToxFunctions.GetFriendlist(tox); }
         }
 
         public string GetName(int friendnumber)
         {
-            return ToxFunctions.GetName(tox, friendnumber);
+            lock (obj) { return ToxFunctions.GetName(tox, friendnumber); }
         }
 
         public string GetSelfName()
         {
-            return ToxTools.RemoveNull(ToxFunctions.GetSelfName(tox));
+            lock (obj) { return ToxTools.RemoveNull(ToxFunctions.GetSelfName(tox)); }
         }
 
         public long GetLastOnline(int friendnumber)
         {
-            return (long)ToxFunctions.GetLastOnline(tox, friendnumber);
+            lock (obj) { return (long)ToxFunctions.GetLastOnline(tox, friendnumber); }
         }
 
         public string GetAddress()
         {
-            return ToxTools.HexBinToString(ToxFunctions.GetAddress(tox));
+            lock (obj) { return ToxTools.HexBinToString(ToxFunctions.GetAddress(tox)); }
         }
 
         public bool GetIsTyping(int friendnumber)
         {
-            return ToxFunctions.GetIsTyping(tox, friendnumber);
+            lock (obj) { return ToxFunctions.GetIsTyping(tox, friendnumber); }
         }
 
         public int GetFriendNumber(string id)
         {
-            return ToxFunctions.GetFriendNumber(tox, id);
+            lock (obj) { return ToxFunctions.GetFriendNumber(tox, id); }
         }
 
         public string GetStatusMessage(int friendnumber)
         {
-            return ToxFunctions.GetStatusMessage(tox, friendnumber);
+            lock (obj) { return ToxFunctions.GetStatusMessage(tox, friendnumber); }
         }
 
         public string GetSelfStatusMessage()
         {
-            return ToxFunctions.GetSelfStatusMessage(tox);
+            lock (obj) { return ToxFunctions.GetSelfStatusMessage(tox); }
         }
 
         public int GetOnlineFriendsCount()
         {
-            return (int)ToxFunctions.GetNumOnlineFriends(tox);
+            lock (obj) { return (int)ToxFunctions.GetNumOnlineFriends(tox); }
         }
         
         public int GetFriendConnectionStatus(int friendnumber)
         {
-            return ToxFunctions.GetFriendConnectionStatus(tox, friendnumber);
+            lock (obj) { return ToxFunctions.GetFriendConnectionStatus(tox, friendnumber); }
         }
 
         public string GetClientID(int friendnumber)
         {
-            return ToxFunctions.GetClientID(tox, friendnumber);
+            lock (obj) { return ToxFunctions.GetClientID(tox, friendnumber); }
         }
 
         public ToxUserStatus GetUserStatus(int friendnumber)
         {
-            return ToxFunctions.GetUserStatus(tox, friendnumber);
+            lock (obj) { return ToxFunctions.GetUserStatus(tox, friendnumber); }
         }
 
         public ToxUserStatus GetSelfUserStatus()
         {
-            return ToxFunctions.GetSelfUserStatus(tox);
+            lock (obj) { return ToxFunctions.GetSelfUserStatus(tox); }
         }
 
         public void SetName(string name)
         {
-            ToxFunctions.SetName(tox, name);
+            lock (obj) { ToxFunctions.SetName(tox, name); }
         }
 
         public bool SetUserStatus(ToxUserStatus status)
         {
-            return ToxFunctions.SetUserStatus(tox, status);
+            lock (obj) { return ToxFunctions.SetUserStatus(tox, status); }
         }
 
         public bool SetStatusMessage(string message)
         {
-            return ToxFunctions.SetStatusMessage(tox, message);
+            lock (obj) { return ToxFunctions.SetStatusMessage(tox, message); }
         }
 
         public bool SetUserIsTyping(int friendnumber, bool is_typing)
         {
-            return ToxFunctions.SetUserIsTyping(tox, friendnumber, is_typing);
+            lock (obj) { return ToxFunctions.SetUserIsTyping(tox, friendnumber, is_typing); }
         }
 
         public void SendMessage(int friendnumber, string message)
         {
-            ToxFunctions.SendMessage(tox, friendnumber, message);
+            lock (obj) { ToxFunctions.SendMessage(tox, friendnumber, message); }
         }
 
         public void SendAction(int friendnumber, string action)
         {
-            ToxFunctions.SendAction(tox, friendnumber, action);
+            lock (obj) { ToxFunctions.SendAction(tox, friendnumber, action); }
         }
 
         public bool Save(string filename)
         {
-            return ToxFunctions.Save(tox, filename);
+            lock (obj) { return ToxFunctions.Save(tox, filename); }
         }
 
         public bool SaveEncrypted(string filename, string key)
         {
-            return ToxFunctions.SaveEncrypted(tox, filename, key);
+            lock (obj) { return ToxFunctions.SaveEncrypted(tox, filename, key); }
         }
 
         public void Kill()
         {
-            thread.Abort();
-            ToxFunctions.Kill(tox);
+            lock (obj)
+            {
+                thread.Abort();
+                ToxFunctions.Kill(tox);
+            }
         }
 
         public bool DeleteFriend(int friendnumber)
         {
-            return ToxFunctions.DeleteFriend(tox, friendnumber);
+            lock (obj) { return ToxFunctions.DeleteFriend(tox, friendnumber); }
         }
 
         public int JoinGroup(int friendnumber, string group_public_key)
         {
-            return ToxFunctions.JoinGroupchat(tox, friendnumber, group_public_key);
+            lock (obj) { return ToxFunctions.JoinGroupchat(tox, friendnumber, group_public_key); }
         }
 
         public string GetGroupMemberName(int groupnumber, int peernumber)
         {
-            return ToxFunctions.GroupPeername(tox, groupnumber, peernumber);
+            lock (obj) { return ToxFunctions.GroupPeername(tox, groupnumber, peernumber); }
         }
 
         public int GetGroupMemberCount(int groupnumber)
         {
-            return ToxFunctions.GroupNumberPeers(tox, groupnumber);
+            lock (obj) { return ToxFunctions.GroupNumberPeers(tox, groupnumber); }
         }
 
         public int DeleteGroupChat(int groupnumber)
         {
-            return ToxFunctions.DeleteGroupchat(tox, groupnumber);
+            lock (obj) { return ToxFunctions.DeleteGroupchat(tox, groupnumber); }
         }
 
         public bool InviteFriend(int friendnumber, int groupnumber)
         {
-            return ToxFunctions.InviteFriend(tox, friendnumber, groupnumber);
+            lock (obj) { return ToxFunctions.InviteFriend(tox, friendnumber, groupnumber); }
         }
 
         public bool SendGroupMessage(int groupnumber, string message)
         {
-            return ToxFunctions.GroupMessageSend(tox, groupnumber, message);
+            lock (obj) { return ToxFunctions.GroupMessageSend(tox, groupnumber, message); }
         }
 
         public bool SendGroupAction(int groupnumber, string action)
         {
-            return ToxFunctions.GroupActionSend(tox, groupnumber, action);
+            lock (obj) { return ToxFunctions.GroupActionSend(tox, groupnumber, action); }
         }
 
         public int NewGroup()
         {
-            return ToxFunctions.AddGroupchat(tox);
+            lock (obj) { return ToxFunctions.AddGroupchat(tox); }
         }
 
         private void callbacks()
