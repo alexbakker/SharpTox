@@ -88,7 +88,7 @@ namespace SharpTox
 
         private object dummyinvoker(Delegate method, params object[] p)
         {
-            return Invoker(method, p);
+            return method.DynamicInvoke(p);
         }
 
         public bool IsConnected()
