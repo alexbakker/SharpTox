@@ -39,5 +39,10 @@ namespace SharpTox
 
             return s;
         }
+
+        public static DateTime EpochToDateTime(long epoch)
+        {
+            return new DateTime(1970, 1, 1, 0, 0, 0).AddSeconds(Convert.ToDouble(epoch));
+        }
     }
 }

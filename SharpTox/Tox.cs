@@ -351,14 +351,14 @@ namespace SharpTox
             }
         }
 
-        public long GetLastOnline(int friendnumber)
+        public DateTime GetLastOnline(int friendnumber)
         {
             lock (obj) 
             {
                 if (tox == IntPtr.Zero)
                     throw null;
 
-                return (long)ToxFunctions.GetLastOnline(tox, friendnumber); 
+                return ToxTools.EpochToDateTime((long)ToxFunctions.GetLastOnline(tox, friendnumber)); 
             }
         }
 
