@@ -45,6 +45,9 @@ namespace SharpTox
         public event OnFileDataDelegate OnFileData;
         public event OnFileSendRequestDelegate OnFileSendRequest;
 
+        public delegate object InvokeDelegate(Delegate method, params object[] p);
+        public InvokeDelegate Invoker;
+
         #region Callback Delegates
         private ToxDelegates.CallbackFriendRequestDelegate friendrequestdelegate;
         private ToxDelegates.CallbackConnectionStatusDelegate connectionstatusdelegate;
@@ -78,8 +81,14 @@ namespace SharpTox
             Ipv6Enabled = ipv6enabled;
 
             obj = new object();
+            Invoker = new InvokeDelegate(dummyinvoker);
 
             callbacks();
+        }
+
+        private object dummyinvoker(Delegate method, params object[] p)
+        {
+            return Invoker(method, p);
         }
 
         public bool IsConnected()
@@ -668,43 +677,43 @@ namespace SharpTox
             ToxFunctions.CallbackFriendRequest(tox, friendrequestdelegate = new ToxDelegates.CallbackFriendRequestDelegate((IntPtr t, byte[] id, byte[] message, ushort length, IntPtr userdata) =>
             {
                 if (OnFriendRequest != null)
-                    OnFriendRequest(ToxTools.RemoveNull(ToxTools.HexBinToString(id)), Encoding.UTF8.GetString(message));
+                    Invoker(OnFriendRequest, ToxTools.RemoveNull(ToxTools.HexBinToString(id)), Encoding.UTF8.GetString(message));
             }));
 
             ToxFunctions.CallbackConnectionStatus(tox, connectionstatusdelegate = new ToxDelegates.CallbackConnectionStatusDelegate((IntPtr t, int friendnumber, byte status, IntPtr userdata) =>
             {
                 if (OnConnectionStatusChanged != null)
-                    OnConnectionStatusChanged(friendnumber, status);
+                    Invoker(OnConnectionStatusChanged, friendnumber, status);
             }));
 
             ToxFunctions.CallbackFriendMessage(tox, friendmessagedelegate = new ToxDelegates.CallbackFriendMessageDelegate((IntPtr t, int friendnumber, byte[] message, ushort length, IntPtr userdata) =>
             {
                 if (OnFriendMessage != null)
-                    OnFriendMessage(friendnumber, ToxTools.RemoveNull(Encoding.UTF8.GetString(message)));
+                    Invoker(OnFriendMessage, friendnumber, ToxTools.RemoveNull(Encoding.UTF8.GetString(message)));
             }));
 
             ToxFunctions.CallbackFriendAction(tox, friendactiondelegate = new ToxDelegates.CallbackFriendActionDelegate((IntPtr t, int friendnumber, byte[] action, ushort length, IntPtr userdata) =>
             {
                 if (OnFriendAction != null)
-                    OnFriendAction(friendnumber, ToxTools.RemoveNull(Encoding.UTF8.GetString(action)));
+                    Invoker(OnFriendAction, friendnumber, ToxTools.RemoveNull(Encoding.UTF8.GetString(action)));
             }));
 
             ToxFunctions.CallbackNameChange(tox, namechangedelegate = new ToxDelegates.CallbackNameChangeDelegate((IntPtr t, int friendnumber, byte[] newname, ushort length, IntPtr userdata) =>
             {
                 if (OnNameChange != null)
-                    OnNameChange(friendnumber, ToxTools.RemoveNull(Encoding.UTF8.GetString(newname)));
+                    Invoker(OnNameChange, friendnumber, ToxTools.RemoveNull(Encoding.UTF8.GetString(newname)));
             }));
 
             ToxFunctions.CallbackStatusMessage(tox, statusmessagedelegate = new ToxDelegates.CallbackStatusMessageDelegate((IntPtr t, int friendnumber, byte[] newstatus, ushort length, IntPtr userdata) =>
             {
                 if (OnStatusMessage != null)
-                    OnStatusMessage(friendnumber, ToxTools.RemoveNull(Encoding.UTF8.GetString(newstatus)));
+                    Invoker(OnStatusMessage, friendnumber, ToxTools.RemoveNull(Encoding.UTF8.GetString(newstatus)));
             }));
 
             ToxFunctions.CallbackUserStatus(tox, userstatusdelegate = new ToxDelegates.CallbackUserStatusDelegate((IntPtr t, int friendnumber, ToxUserStatus status, IntPtr userdata) =>
             {
                 if (OnUserStatus != null)
-                    OnUserStatus(friendnumber, status);
+                    Invoker(OnUserStatus, friendnumber, status);
             }));
 
             ToxFunctions.CallbackTypingChange(tox, typingchangedelegate = new ToxDelegates.CallbackTypingChangeDelegate((IntPtr t, int friendnumber, byte typing, IntPtr userdata) =>
@@ -712,49 +721,49 @@ namespace SharpTox
                 bool is_typing = typing == 0 ? false : true;
 
                 if (OnTypingChange != null)
-                    OnTypingChange(friendnumber, is_typing);
+                    Invoker(OnTypingChange, friendnumber, is_typing);
             }));
 
             ToxFunctions.CallbackGroupAction(tox, groupactiondelegate = new ToxDelegates.CallbackGroupActionDelegate((IntPtr t, int groupnumber, int friendgroupnumber, byte[] action, ushort length, IntPtr userdata) =>
             {
                 if (OnGroupAction != null)
-                    OnGroupAction(groupnumber, friendgroupnumber, ToxTools.RemoveNull(Encoding.UTF8.GetString(action)));
+                    Invoker(OnGroupAction, groupnumber, friendgroupnumber, ToxTools.RemoveNull(Encoding.UTF8.GetString(action)));
             }));
 
             ToxFunctions.CallbackGroupMessage(tox, groupmessagedelegate = new ToxDelegates.CallbackGroupMessageDelegate((IntPtr t, int groupnumber, int friendgroupnumber, byte[] message, ushort length, IntPtr userdata) =>
             {
                 if (OnGroupMessage != null)
-                    OnGroupMessage(groupnumber, friendgroupnumber, ToxTools.RemoveNull(Encoding.UTF8.GetString(message)));
+                    Invoker(OnGroupMessage, groupnumber, friendgroupnumber, ToxTools.RemoveNull(Encoding.UTF8.GetString(message)));
             }));
 
             ToxFunctions.CallbackGroupInvite(tox, groupinvitedelegate = new ToxDelegates.CallbackGroupInviteDelegate((IntPtr t, int friendnumber, byte[] group_public_key, IntPtr userdata) =>
             {
                 if (OnGroupInvite != null)
-                    OnGroupInvite(friendnumber, ToxTools.HexBinToString(group_public_key));
+                    Invoker(OnGroupInvite, friendnumber, ToxTools.HexBinToString(group_public_key));
             }));
 
             ToxFunctions.CallbackGroupNamelistChange(tox, groupnamelistchangedelegate = new ToxDelegates.CallbackGroupNamelistChangeDelegate((IntPtr t, int groupnumber, int peernumber, ToxChatChange change, IntPtr userdata) =>
             {
                 if (OnGroupNamelistChange != null)
-                    OnGroupNamelistChange(groupnumber, peernumber, change);
+                    Invoker(OnGroupNamelistChange, groupnumber, peernumber, change);
             }));
 
             ToxFunctions.CallbackFileControl(tox, filecontroldelegate = new ToxDelegates.CallbackFileControlDelegate((IntPtr t, int friendnumber, byte receive_send, byte filenumber, byte control_type, byte[] data, ushort length, IntPtr userdata) =>
             {
                 if (OnFileControl != null)
-                    OnFileControl(friendnumber, receive_send, filenumber, control_type, data);
+                    Invoker(OnFileControl, friendnumber, receive_send, filenumber, control_type, data);
             }));
 
             ToxFunctions.CallbackFileData(tox, filedatadelegate = new ToxDelegates.CallbackFileDataDelegate((IntPtr t, int friendnumber, byte filenumber, byte[] data, ushort length, IntPtr userdata) =>
             {
                 if (OnFileData != null)
-                    OnFileData(friendnumber, filenumber, data);
+                    Invoker(OnFileData, friendnumber, filenumber, data);
             }));
 
             ToxFunctions.CallbackFileSendRequest(tox, filesendrequestdelegate = new ToxDelegates.CallbackFileSendRequestDelegate((IntPtr t, int friendnumber, byte filenumber, ulong filesize, byte[] filename, ushort filename_length, IntPtr userdata) =>
             {
                 if (OnFileSendRequest != null)
-                    OnFileSendRequest(friendnumber, filenumber, filesize, ToxTools.RemoveNull(Encoding.UTF8.GetString(filename)));
+                    Invoker(OnFileSendRequest, friendnumber, filenumber, filesize, ToxTools.RemoveNull(Encoding.UTF8.GetString(filename)));
             }));
         }
     }
