@@ -565,6 +565,7 @@ namespace SharpTox
             lock (obj)
             {
                 thread.Abort();
+                thread.Join();
 
                 if (tox == IntPtr.Zero)
                     throw null;
