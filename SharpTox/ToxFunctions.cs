@@ -23,7 +23,7 @@ namespace SharpTox
         private static extern int tox_bootstrap_from_address(IntPtr tox, string address, byte ipv6enabled, ushort port, byte[] public_key);
         public static bool BootstrapFromAddress(IntPtr tox, string address, bool ipv6enabled, ushort port, string public_key)
         {
-            return tox_bootstrap_from_address(tox, address, ipv6enabled ? (byte)1 : (byte)0, (ushort)IPAddress.HostToNetworkOrder((short)port), ToxTools.StringToHexBin(public_key)) == 1 ? true: false;
+            return tox_bootstrap_from_address(tox, address, ipv6enabled ? (byte)1 : (byte)0, (ushort)IPAddress.HostToNetworkOrder((short)port), ToxTools.StringToHexBin(public_key)) == 1;
         }
 
         [DllImport("libtoxcore.dll", CallingConvention = CallingConvention.Cdecl)]
@@ -95,7 +95,7 @@ namespace SharpTox
         private static extern int tox_del_friend(IntPtr tox, int id);
         public static bool DeleteFriend(IntPtr tox, int id)
         {
-            return tox_del_friend(tox, id) == 0 ? true : false;
+            return tox_del_friend(tox, id) == 0;
         }
 
         [DllImport("libtoxcore.dll", CallingConvention = CallingConvention.Cdecl)]
@@ -123,7 +123,7 @@ namespace SharpTox
         private static extern int tox_friend_exists(IntPtr tox, int friendnumber);
         public static bool FriendExists(IntPtr tox, int friendnumber)
         {
-            return tox_friend_exists(tox, friendnumber) == 0 ? false : true;
+            return tox_friend_exists(tox, friendnumber) != 0;
         }
 
         [DllImport("libtoxcore.dll", CallingConvention = CallingConvention.Cdecl)]
@@ -213,7 +213,7 @@ namespace SharpTox
         public static bool SetUserIsTyping(IntPtr tox, int friendnumber, bool is_typing)
         {
             byte typing = is_typing ? (byte)1 : (byte)0;
-            return tox_set_user_is_typing(tox, friendnumber, typing) == 0 ? true : false;
+            return tox_set_user_is_typing(tox, friendnumber, typing) == 0;
         }
 
         [DllImport("libtoxcore.dll", CallingConvention = CallingConvention.Cdecl)]
@@ -230,7 +230,7 @@ namespace SharpTox
         private static extern byte tox_get_is_typing(IntPtr tox, int friendnumber);
         public static bool GetIsTyping(IntPtr tox, int friendnumber)
         {
-            return tox_get_is_typing(tox, friendnumber) == 1 ? true : false;
+            return tox_get_is_typing(tox, friendnumber) == 1;
         }
 
         [DllImport("libtoxcore.dll", CallingConvention = CallingConvention.Cdecl)]
@@ -248,7 +248,7 @@ namespace SharpTox
         public static bool SetStatusMessage(IntPtr tox, string message)
         {
             byte[] msg = Encoding.UTF8.GetBytes(message);
-            return tox_set_status_message(tox, msg, (ushort)msg.Length) == 0 ? true : false;
+            return tox_set_status_message(tox, msg, (ushort)msg.Length) == 0;
         }
 
         [DllImport("libtoxcore.dll", CallingConvention = CallingConvention.Cdecl)]
@@ -371,7 +371,7 @@ namespace SharpTox
         private static extern int tox_load_encrypted(IntPtr tox, byte[] data, uint length, byte[] key, ushort key_length);
         public static bool LoadEncrypted(IntPtr tox, byte[] data, byte[] key)
         {
-            return tox_load_encrypted(tox, data, (uint)data.Length, key, (ushort)key.Length) == 0 ? true : false;
+            return tox_load_encrypted(tox, data, (uint)data.Length, key, (ushort)key.Length) == 0;
         }
 
         [DllImport("libtoxcore.dll", CallingConvention = CallingConvention.Cdecl)]
@@ -403,7 +403,7 @@ namespace SharpTox
         private static extern int tox_invite_friend(IntPtr tox, int friendnumber, int groupnumber);
         public static bool InviteFriend(IntPtr tox, int friendnumber, int groupnumber)
         {
-            return tox_invite_friend(tox, friendnumber, groupnumber) == 0 ? true : false;
+            return tox_invite_friend(tox, friendnumber, groupnumber) == 0;
         }
 
         [DllImport("libtoxcore.dll", CallingConvention = CallingConvention.Cdecl)]
@@ -418,7 +418,7 @@ namespace SharpTox
         public static bool GroupMessageSend(IntPtr tox, int groupnumber, string message)
         {
             byte[] msg = Encoding.UTF8.GetBytes(message);
-            return tox_group_message_send(tox, groupnumber, msg, (uint)msg.Length) == 0 ? true: false;
+            return tox_group_message_send(tox, groupnumber, msg, (uint)msg.Length) == 0;
         }
 
         [DllImport("libtoxcore.dll", CallingConvention = CallingConvention.Cdecl)]
@@ -426,7 +426,7 @@ namespace SharpTox
         public static bool GroupActionSend(IntPtr tox, int groupnumber, string action)
         {
             byte[] act = Encoding.UTF8.GetBytes(action);
-            return tox_group_action_send(tox, groupnumber, act, (uint)act.Length) == 0 ? true : false;
+            return tox_group_action_send(tox, groupnumber, act, (uint)act.Length) == 0;
         }
 
         [DllImport("libtoxcore.dll", CallingConvention = CallingConvention.Cdecl)]
@@ -499,7 +499,7 @@ namespace SharpTox
         private static extern int tox_file_send_data(IntPtr tox, int friendnumber, byte filenumber, byte[] data, ushort length);
         public static bool FileSendData(IntPtr tox, int friendnumber, int filenumber, byte[] data)
         {
-            return tox_file_send_data(tox, friendnumber, (byte)filenumber, data, (ushort)data.Length) == 0 ? true : false;
+            return tox_file_send_data(tox, friendnumber, (byte)filenumber, data, (ushort)data.Length) == 0;
         }
 
         [DllImport("libtoxcore.dll", CallingConvention = CallingConvention.Cdecl)]
