@@ -673,6 +673,28 @@ namespace SharpTox
             }
         }
 
+        public uint GetNospam()
+        {
+            lock (obj)
+            {
+                if (tox == IntPtr.Zero)
+                    throw null;
+
+                return ToxFunctions.GetNospam(tox);
+            }
+        }
+
+        public void SetNospam(uint nospam)
+        {
+            lock (obj)
+            {
+                if (tox == IntPtr.Zero)
+                    throw null;
+
+                ToxFunctions.SetNospam(tox, nospam);
+            }
+        }
+
         private void callbacks()
         {
             ToxFunctions.CallbackFriendRequest(tox, friendrequestdelegate = new ToxDelegates.CallbackFriendRequestDelegate((IntPtr t, byte[] id, byte[] message, ushort length, IntPtr userdata) =>
