@@ -93,40 +93,40 @@ namespace SharpTox
 
         public bool IsConnected()
         {
-            lock (obj) 
+            lock (obj)
             {
                 if (tox == IntPtr.Zero)
                     throw null;
 
-                return ToxFunctions.IsConnected(tox); 
+                return ToxFunctions.IsConnected(tox);
             }
         }
 
         public int NewFileSender(int friendnumber, ulong filesize, string filename)
         {
-            lock (obj) 
+            lock (obj)
             {
                 if (tox == IntPtr.Zero)
                     throw null;
 
-                return ToxFunctions.NewFileSender(tox, friendnumber, filesize, filename); 
+                return ToxFunctions.NewFileSender(tox, friendnumber, filesize, filename);
             }
         }
 
-        public int FileSendControl(int friendnumber, int send_receive, int filenumber, int message_id, byte[] data)
+        public bool FileSendControl(int friendnumber, int send_receive, int filenumber, int message_id, byte[] data)
         {
-            lock (obj) 
+            lock (obj)
             {
                 if (tox == IntPtr.Zero)
                     throw null;
 
-                return ToxFunctions.FileSendControl(tox, friendnumber, (byte)send_receive, (byte)filenumber, (byte)message_id, data, (ushort)data.Length); 
+                return ToxFunctions.FileSendControl(tox, friendnumber, (byte)send_receive, (byte)filenumber, (byte)message_id, data, (ushort)data.Length);
             }
         }
 
         public bool FileSendData(int friendnumber, int filenumber, byte[] data)
         {
-            lock (obj) 
+            lock (obj)
             {
                 if (tox == IntPtr.Zero)
                     throw null;
@@ -137,7 +137,7 @@ namespace SharpTox
 
         public int FileDataSize(int friendnumber)
         {
-            lock (obj) 
+            lock (obj)
             {
                 if (tox == IntPtr.Zero)
                     throw null;
@@ -148,7 +148,7 @@ namespace SharpTox
 
         public int FileDataRemaining(int friendnumber, int filenumber, int send_receive)
         {
-            lock (obj) 
+            lock (obj)
             {
                 if (tox == IntPtr.Zero)
                     throw null;
@@ -186,12 +186,12 @@ namespace SharpTox
         {
             throw new NotImplementedException();
 
-            lock (obj) 
+            lock (obj)
             {
                 if (tox == IntPtr.Zero)
                     throw null;
 
-                return ToxFunctions.GroupGetNames(tox, groupnumber); 
+                return ToxFunctions.GroupGetNames(tox, groupnumber);
             }
         }
 
@@ -285,31 +285,31 @@ namespace SharpTox
             }
         }
 
-        public bool TryBootstrap(ToxNode node)
+        public bool BootstrapFromNode(ToxNode node)
         {
-            lock (obj) 
+            lock (obj)
             {
                 if (tox == IntPtr.Zero)
                     throw null;
 
-                return ToxFunctions.BootstrapFromAddress(tox, node.Address, node.Ipv6Enabled, Convert.ToUInt16(node.Port), node.PublicKey); 
+                return ToxFunctions.BootstrapFromAddress(tox, node.Address, node.Ipv6Enabled, Convert.ToUInt16(node.Port), node.PublicKey);
             }
         }
 
         public bool FriendExists(int friendnumber)
         {
-            lock (obj) 
+            lock (obj)
             {
                 if (tox == IntPtr.Zero)
                     throw null;
 
-                return ToxFunctions.FriendExists(tox, friendnumber); 
+                return ToxFunctions.FriendExists(tox, friendnumber);
             }
         }
 
         public int GetFriendlistCount()
         {
-            lock (obj) 
+            lock (obj)
             {
                 if (tox == IntPtr.Zero)
                     throw null;
@@ -320,56 +320,56 @@ namespace SharpTox
 
         public int[] GetFriendlist()
         {
-            lock (obj) 
+            lock (obj)
             {
                 if (tox == IntPtr.Zero)
                     throw null;
 
-                return ToxFunctions.GetFriendlist(tox); 
+                return ToxFunctions.GetFriendlist(tox);
             }
         }
 
         public string GetName(int friendnumber)
         {
-            lock (obj) 
+            lock (obj)
             {
                 if (tox == IntPtr.Zero)
                     throw null;
 
-                return ToxFunctions.GetName(tox, friendnumber); 
+                return ToxFunctions.GetName(tox, friendnumber);
             }
         }
 
         public string GetSelfName()
         {
-            lock (obj) 
+            lock (obj)
             {
                 if (tox == IntPtr.Zero)
                     throw null;
 
-                return ToxTools.RemoveNull(ToxFunctions.GetSelfName(tox)); 
+                return ToxTools.RemoveNull(ToxFunctions.GetSelfName(tox));
             }
         }
 
         public DateTime GetLastOnline(int friendnumber)
         {
-            lock (obj) 
+            lock (obj)
             {
                 if (tox == IntPtr.Zero)
                     throw null;
 
-                return ToxTools.EpochToDateTime((long)ToxFunctions.GetLastOnline(tox, friendnumber)); 
+                return ToxTools.EpochToDateTime((long)ToxFunctions.GetLastOnline(tox, friendnumber));
             }
         }
 
         public string GetAddress()
         {
-            lock (obj) 
+            lock (obj)
             {
                 if (tox == IntPtr.Zero)
                     throw null;
 
-                return ToxTools.HexBinToString(ToxFunctions.GetAddress(tox)); 
+                return ToxTools.HexBinToString(ToxFunctions.GetAddress(tox));
             }
         }
 
@@ -386,18 +386,18 @@ namespace SharpTox
 
         public int GetFriendNumber(string id)
         {
-            lock (obj) 
+            lock (obj)
             {
                 if (tox == IntPtr.Zero)
                     throw null;
 
-                return ToxFunctions.GetFriendNumber(tox, id); 
+                return ToxFunctions.GetFriendNumber(tox, id);
             }
         }
 
         public string GetStatusMessage(int friendnumber)
         {
-            lock (obj) 
+            lock (obj)
             {
                 if (tox == IntPtr.Zero)
                     throw null;
@@ -408,7 +408,7 @@ namespace SharpTox
 
         public string GetSelfStatusMessage()
         {
-            lock (obj) 
+            lock (obj)
             {
                 if (tox == IntPtr.Zero)
                     throw null;
@@ -419,7 +419,7 @@ namespace SharpTox
 
         public int GetOnlineFriendsCount()
         {
-            lock (obj) 
+            lock (obj)
             {
                 if (tox == IntPtr.Zero)
                     throw null;
@@ -427,10 +427,10 @@ namespace SharpTox
                 return (int)ToxFunctions.GetNumOnlineFriends(tox);
             }
         }
-        
+
         public int GetFriendConnectionStatus(int friendnumber)
         {
-            lock (obj) 
+            lock (obj)
             {
                 if (tox == IntPtr.Zero)
                     throw null;
@@ -441,62 +441,62 @@ namespace SharpTox
 
         public string GetClientID(int friendnumber)
         {
-            lock (obj) 
+            lock (obj)
             {
                 if (tox == IntPtr.Zero)
                     throw null;
 
-                return ToxFunctions.GetClientID(tox, friendnumber); 
+                return ToxFunctions.GetClientID(tox, friendnumber);
             }
         }
 
         public ToxUserStatus GetUserStatus(int friendnumber)
         {
-            lock (obj) 
+            lock (obj)
             {
                 if (tox == IntPtr.Zero)
                     throw null;
 
-                return ToxFunctions.GetUserStatus(tox, friendnumber); 
+                return ToxFunctions.GetUserStatus(tox, friendnumber);
             }
         }
 
         public ToxUserStatus GetSelfUserStatus()
         {
-            lock (obj) 
+            lock (obj)
             {
                 if (tox == IntPtr.Zero)
                     throw null;
 
-                return ToxFunctions.GetSelfUserStatus(tox); 
+                return ToxFunctions.GetSelfUserStatus(tox);
             }
         }
 
-        public void SetName(string name)
+        public bool SetName(string name)
         {
-            lock (obj) 
+            lock (obj)
             {
                 if (tox == IntPtr.Zero)
                     throw null;
 
-                ToxFunctions.SetName(tox, name); 
+                return ToxFunctions.SetName(tox, name);
             }
         }
 
         public bool SetUserStatus(ToxUserStatus status)
         {
-            lock (obj) 
+            lock (obj)
             {
                 if (tox == IntPtr.Zero)
                     throw null;
 
-                return ToxFunctions.SetUserStatus(tox, status); 
+                return ToxFunctions.SetUserStatus(tox, status);
             }
         }
 
         public bool SetStatusMessage(string message)
         {
-            lock (obj) 
+            lock (obj)
             {
                 if (tox == IntPtr.Zero)
                     throw null;
@@ -507,7 +507,7 @@ namespace SharpTox
 
         public bool SetUserIsTyping(int friendnumber, bool is_typing)
         {
-            lock (obj) 
+            lock (obj)
             {
                 if (tox == IntPtr.Zero)
                     throw null;
@@ -516,47 +516,47 @@ namespace SharpTox
             }
         }
 
-        public void SendMessage(int friendnumber, string message)
+        public int SendMessage(int friendnumber, string message)
         {
-            lock (obj) 
+            lock (obj)
             {
                 if (tox == IntPtr.Zero)
                     throw null;
 
-                ToxFunctions.SendMessage(tox, friendnumber, message);
+                return ToxFunctions.SendMessage(tox, friendnumber, message);
             }
         }
 
-        public void SendAction(int friendnumber, string action)
+        public int SendAction(int friendnumber, string action)
         {
-            lock (obj) 
+            lock (obj)
             {
                 if (tox == IntPtr.Zero)
                     throw null;
 
-                ToxFunctions.SendAction(tox, friendnumber, action); 
+                return ToxFunctions.SendAction(tox, friendnumber, action);
             }
         }
 
         public bool Save(string filename)
         {
-            lock (obj) 
+            lock (obj)
             {
                 if (tox == IntPtr.Zero)
                     throw null;
 
-                return ToxFunctions.Save(tox, filename); 
+                return ToxFunctions.Save(tox, filename);
             }
         }
 
         public bool SaveEncrypted(string filename, string key)
         {
-            lock (obj) 
+            lock (obj)
             {
                 if (tox == IntPtr.Zero)
                     throw null;
 
-                return ToxFunctions.SaveEncrypted(tox, filename, key); 
+                return ToxFunctions.SaveEncrypted(tox, filename, key);
             }
         }
 
@@ -576,40 +576,40 @@ namespace SharpTox
 
         public bool DeleteFriend(int friendnumber)
         {
-            lock (obj) 
+            lock (obj)
             {
                 if (tox == IntPtr.Zero)
                     throw null;
 
-                return ToxFunctions.DeleteFriend(tox, friendnumber); 
+                return ToxFunctions.DeleteFriend(tox, friendnumber);
             }
         }
 
         public int JoinGroup(int friendnumber, string group_public_key)
         {
-            lock (obj) 
+            lock (obj)
             {
                 if (tox == IntPtr.Zero)
                     throw null;
 
-                return ToxFunctions.JoinGroupchat(tox, friendnumber, group_public_key); 
+                return ToxFunctions.JoinGroupchat(tox, friendnumber, group_public_key);
             }
         }
 
         public string GetGroupMemberName(int groupnumber, int peernumber)
         {
-            lock (obj) 
+            lock (obj)
             {
                 if (tox == IntPtr.Zero)
                     throw null;
 
-                return ToxFunctions.GroupPeername(tox, groupnumber, peernumber); 
+                return ToxFunctions.GroupPeername(tox, groupnumber, peernumber);
             }
         }
 
         public int GetGroupMemberCount(int groupnumber)
         {
-            lock (obj) 
+            lock (obj)
             {
                 if (tox == IntPtr.Zero)
                     throw null;
@@ -620,7 +620,7 @@ namespace SharpTox
 
         public int DeleteGroupChat(int groupnumber)
         {
-            lock (obj) 
+            lock (obj)
             {
                 if (tox == IntPtr.Zero)
                     throw null;
@@ -631,7 +631,7 @@ namespace SharpTox
 
         public bool InviteFriend(int friendnumber, int groupnumber)
         {
-            lock (obj) 
+            lock (obj)
             {
                 if (tox == IntPtr.Zero)
                     throw null;
@@ -642,7 +642,7 @@ namespace SharpTox
 
         public bool SendGroupMessage(int groupnumber, string message)
         {
-            lock (obj) 
+            lock (obj)
             {
                 if (tox == IntPtr.Zero)
                     throw null;
@@ -653,7 +653,7 @@ namespace SharpTox
 
         public bool SendGroupAction(int groupnumber, string action)
         {
-            lock (obj) 
+            lock (obj)
             {
                 if (tox == IntPtr.Zero)
                     throw null;
@@ -664,7 +664,7 @@ namespace SharpTox
 
         public int NewGroup()
         {
-            lock (obj) 
+            lock (obj)
             {
                 if (tox == IntPtr.Zero)
                     throw null;

@@ -149,18 +149,18 @@ namespace SharpTox
 
         [DllImport("libtoxcore.dll", CallingConvention = CallingConvention.Cdecl)]
         private static extern uint tox_send_message(IntPtr tox, int friendnumber, byte[] message, int length);
-        public static uint SendMessage(IntPtr tox, int friendnumber, string message)
+        public static int SendMessage(IntPtr tox, int friendnumber, string message)
         {
             byte[] bytes = Encoding.UTF8.GetBytes(message);
-            return tox_send_message(tox, friendnumber, bytes, bytes.Length);
+            return (int)tox_send_message(tox, friendnumber, bytes, bytes.Length);
         }
 
         [DllImport("libtoxcore.dll", CallingConvention = CallingConvention.Cdecl)]
         private static extern uint tox_send_action(IntPtr tox, int friendnumber, byte[] action, int length);
-        public static uint SendAction(IntPtr tox, int friendnumber, string action)
+        public static int SendAction(IntPtr tox, int friendnumber, string action)
         {
             byte[] bytes = Encoding.UTF8.GetBytes(action);
-            return tox_send_action(tox, friendnumber, bytes, bytes.Length);
+            return (int)tox_send_action(tox, friendnumber, bytes, bytes.Length);
         }
 
         [DllImport("libtoxcore.dll", CallingConvention = CallingConvention.Cdecl)]
@@ -202,10 +202,10 @@ namespace SharpTox
 
         [DllImport("libtoxcore.dll", CallingConvention = CallingConvention.Cdecl)]
         private static extern int tox_set_name(IntPtr tox, byte[] name, ushort length);
-        public static int SetName(IntPtr tox, string name)
+        public static bool SetName(IntPtr tox, string name)
         {
             byte[] bytes = Encoding.UTF8.GetBytes(name);
-            return tox_set_name(tox, bytes, (ushort)bytes.Length);
+            return tox_set_name(tox, bytes, (ushort)bytes.Length) == 0;
         }
 
         [DllImport("libtoxcore.dll", CallingConvention = CallingConvention.Cdecl)]
@@ -490,9 +490,9 @@ namespace SharpTox
 
         [DllImport("libtoxcore.dll", CallingConvention = CallingConvention.Cdecl)]
         private static extern int tox_file_send_control(IntPtr tox, int friendnumber, byte send_receive, byte filenumber, byte message_id, byte[] data, ushort length);
-        public static int FileSendControl(IntPtr tox, int friendnumber, byte send_receive, byte filenumber, byte message_id, byte[] data, ushort length)
+        public static bool FileSendControl(IntPtr tox, int friendnumber, byte send_receive, byte filenumber, byte message_id, byte[] data, ushort length)
         {
-            return tox_file_send_control(tox, friendnumber, send_receive, filenumber, message_id, data, length);
+            return tox_file_send_control(tox, friendnumber, send_receive, filenumber, message_id, data, length) == 0;
         }
 
         [DllImport("libtoxcore.dll", CallingConvention = CallingConvention.Cdecl)]
@@ -585,7 +585,7 @@ namespace SharpTox
         {
             tox_callback_friend_message(tox, callback, IntPtr.Zero);
         }
-        
+
         [DllImport("libtoxcore.dll", CallingConvention = CallingConvention.Cdecl)]
         private static extern void tox_callback_friend_action(IntPtr tox, ToxDelegates.CallbackFriendActionDelegate callback, IntPtr userdata);
         public static void CallbackFriendAction(IntPtr tox, ToxDelegates.CallbackFriendActionDelegate callback)

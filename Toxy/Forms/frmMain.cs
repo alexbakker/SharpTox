@@ -41,7 +41,7 @@ namespace Toxy
             bool bootstrap_success = false;
             foreach(ToxNode node in Nodes)
             {
-                if (tox.TryBootstrap(node))
+                if (tox.BootstrapFromNode(node))
                 {
                     bootstrap_success = true;
                     break;
