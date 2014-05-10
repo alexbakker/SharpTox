@@ -6,7 +6,7 @@ using System.Text;
 
 namespace SharpTox
 {
-    static class ToxFunctions
+    public static class ToxFunctions
     {
         #region Functions
         [DllImport("libtoxcore.dll", CallingConvention = CallingConvention.Cdecl)]

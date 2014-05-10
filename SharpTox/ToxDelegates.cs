@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 
 namespace SharpTox
 {
-    internal class ToxDelegates
+    public class ToxDelegates
     {
         /*someone should REALLY check my math on some of this stuff*/
 
