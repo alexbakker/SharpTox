@@ -915,7 +915,7 @@ namespace SharpTox
         /// </summary>
         /// <param name="groupnumber"></param>
         /// <returns></returns>
-        public int DeleteGroupChat(int groupnumber)
+        public bool DeleteGroupChat(int groupnumber)
         {
             lock (obj)
             {

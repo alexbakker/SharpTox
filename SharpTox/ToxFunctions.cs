@@ -386,9 +386,9 @@ namespace SharpTox
 
         [DllImport("libtoxcore.dll", CallingConvention = CallingConvention.Cdecl)]
         private static extern int tox_del_groupchat(IntPtr tox, int groupnumber);
-        public static int DeleteGroupchat(IntPtr tox, int groupnumber)
+        public static bool DeleteGroupchat(IntPtr tox, int groupnumber)
         {
-            return tox_del_groupchat(tox, groupnumber);
+            return tox_del_groupchat(tox, groupnumber) == 0;
         }
 
         [DllImport("libtoxcore.dll", CallingConvention = CallingConvention.Cdecl)]
