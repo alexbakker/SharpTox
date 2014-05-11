@@ -27,25 +27,86 @@ namespace SharpTox
 
     public class Tox
     {
+        /// <summary>
+        /// Occurs when a friend request is received.
+        /// </summary>
         public event OnFriendRequestDelegate OnFriendRequest;
+
+        /// <summary>
+        /// Occurs when the connection status of a friend has changed.
+        /// </summary>
         public event OnConnectionStatusDelegate OnConnectionStatusChanged;
+
+        /// <summary>
+        /// Occurs when a message is received from a friend.
+        /// </summary>
         public event OnFriendMessageDelegate OnFriendMessage;
+
+        /// <summary>
+        /// Occurs when an action is received from a friend.
+        /// </summary>
         public event OnFriendActionDelegate OnFriendAction;
+
+        /// <summary>
+        /// Occurs when a friend has changed his/her name.
+        /// </summary>
         public event OnNameChangeDelegate OnNameChange;
+
+        /// <summary>
+        /// Occurs when a friend has changed their status message.
+        /// </summary>
         public event OnStatusMessageDelegate OnStatusMessage;
+
+        /// <summary>
+        /// Occurs when a friend has changed their user status.
+        /// </summary>
         public event OnUserStatusDelegate OnUserStatus;
+
+        /// <summary>
+        /// Occurs when a friend's typing status has changed.
+        /// </summary>
         public event OnTypingChangeDelegate OnTypingChange;
 
+        /// <summary>
+        /// Occurs when an action is received from a group.
+        /// </summary>
         public event OnGroupActionDelegate OnGroupAction;
+
+        /// <summary>
+        /// Occurs when a message is received from a group.
+        /// </summary>
         public event OnGroupMessageDelegate OnGroupMessage;
+
+        /// <summary>
+        /// Occurs when a friend has sent an invite to a group.
+        /// </summary>
         public event OnGroupInviteDelegate OnGroupInvite;
+
+        /// <summary>
+        /// Occurs when the name list of a group has changed.
+        /// </summary>
         public event OnGroupNamelistChangeDelegate OnGroupNamelistChange;
 
+        /// <summary>
+        /// Occurs when a file control request is received.
+        /// </summary>
         public event OnFileControlDelegate OnFileControl;
+
+        /// <summary>
+        /// Occurs when file data is received.
+        /// </summary>
         public event OnFileDataDelegate OnFileData;
+
+        /// <summary>
+        /// Occurs when a file send request is received.
+        /// </summary>
         public event OnFileSendRequestDelegate OnFileSendRequest;
 
         public delegate object InvokeDelegate(Delegate method, params object[] p);
+
+        /// <summary>
+        /// The invoke delegate to use when raising events.
+        /// </summary>
         public InvokeDelegate Invoker;
 
         #region Callback Delegates
@@ -73,8 +134,15 @@ namespace SharpTox
 
         private object obj;
 
+        /// <summary>
+        /// Setting this to false will make sure that resolving sticks strictly to IPv4 addresses.
+        /// </summary>
         public bool Ipv6Enabled { get; private set; }
 
+        /// <summary>
+        /// Initializes a new instance of tox.
+        /// </summary>
+        /// <param name="ipv6enabled"></param>
         public Tox(bool ipv6enabled)
         {
             tox = ToxFunctions.New(ipv6enabled);
@@ -91,6 +159,10 @@ namespace SharpTox
             return method.DynamicInvoke(p);
         }
 
+        /// <summary>
+        /// Check whether we are connected to the DHT.
+        /// </summary>
+        /// <returns>true if we are and false if we aren't.</returns>
         public bool IsConnected()
         {
             lock (obj)
@@ -102,6 +174,13 @@ namespace SharpTox
             }
         }
 
+        /// <summary>
+        /// Sends a file send request to the given friendnumber.
+        /// </summary>
+        /// <param name="friendnumber"></param>
+        /// <param name="filesize"></param>
+        /// <param name="filename">Maximum filename length is 255 bytes.</param>
+        /// <returns>the filenumber on success and -1 on failure.</returns>
         public int NewFileSender(int friendnumber, ulong filesize, string filename)
         {
             lock (obj)
@@ -113,7 +192,16 @@ namespace SharpTox
             }
         }
 
-        public bool FileSendControl(int friendnumber, int send_receive, int filenumber, int message_id, byte[] data)
+        /// <summary>
+        /// Sends a file control request.
+        /// </summary>
+        /// <param name="friendnumber"></param>
+        /// <param name="send_receive">0 if we're sending and 1 if we're receiving.</param>
+        /// <param name="filenumber"></param>
+        /// <param name="message_id"></param>
+        /// <param name="data"></param>
+        /// <returns>true on success and false on failure.</returns>
+        public bool FileSendControl(int friendnumber, int send_receive, int filenumber, ToxFileControl message_id, byte[] data)
         {
             lock (obj)
             {
@@ -124,6 +212,13 @@ namespace SharpTox
             }
         }
 
+        /// <summary>
+        /// Sends file data.
+        /// </summary>
+        /// <param name="friendnumber"></param>
+        /// <param name="filenumber"></param>
+        /// <param name="data"></param>
+        /// <returns>true on success and false on failure.</returns>
         public bool FileSendData(int friendnumber, int filenumber, byte[] data)
         {
             lock (obj)
@@ -135,6 +230,11 @@ namespace SharpTox
             }
         }
 
+        /// <summary>
+        /// Retrieves the recommended/maximum size of the filedata to send with FileSendData.
+        /// </summary>
+        /// <param name="friendnumber"></param>
+        /// <returns></returns>
         public int FileDataSize(int friendnumber)
         {
             lock (obj)
@@ -146,7 +246,14 @@ namespace SharpTox
             }
         }
 
-        public int FileDataRemaining(int friendnumber, int filenumber, int send_receive)
+        /// <summary>
+        /// Retrieves the number of bytes left to be sent/received.
+        /// </summary>
+        /// <param name="friendnumber"></param>
+        /// <param name="filenumber"></param>
+        /// <param name="send_receive">0 if we're sending and 1 if we're receiving.</param>
+        /// <returns></returns>
+        public ulong FileDataRemaining(int friendnumber, int filenumber, int send_receive)
         {
             lock (obj)
             {
@@ -157,6 +264,12 @@ namespace SharpTox
             }
         }
 
+
+        /// <summary>
+        /// Loads the tox data file from a location specified by filename.
+        /// </summary>
+        /// <param name="filename"></param>
+        /// <returns></returns>
         public bool Load(string filename)
         {
             lock (obj)
@@ -182,6 +295,12 @@ namespace SharpTox
             }
         }
 
+
+        /// <summary>
+        /// Retrieves an array of group member names. Not implemented yet.
+        /// </summary>
+        /// <param name="groupnumber"></param>
+        /// <returns></returns>
         public string[] GetGroupNames(int groupnumber)
         {
             throw new NotImplementedException();
@@ -195,6 +314,12 @@ namespace SharpTox
             }
         }
 
+        /// <summary>
+        /// Loads an encrypted tox data file.
+        /// </summary>
+        /// <param name="filename"></param>
+        /// <param name="key">The key that was used to encrypt the file.</param>
+        /// <returns></returns>
         public bool LoadEncrypted(string filename, string key)
         {
             lock (obj)
@@ -222,6 +347,9 @@ namespace SharpTox
             }
         }
 
+        /// <summary>
+        /// Starts the main tox_do loop.
+        /// </summary>
         public void Start()
         {
             thread = new Thread(loop);
@@ -238,6 +366,12 @@ namespace SharpTox
             }
         }
 
+        /// <summary>
+        /// Adds a friend.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="message"></param>
+        /// <returns>friendnumber</returns>
         public int AddFriend(string id, string message)
         {
             lock (obj)
@@ -253,6 +387,12 @@ namespace SharpTox
                     return result;
             }
         }
+
+        /// <summary>
+        /// Adds a friend with a default message.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns>friendnumber</returns>
         public int AddFriend(string id)
         {
             lock (obj)
@@ -269,6 +409,11 @@ namespace SharpTox
             }
         }
 
+        /// <summary>
+        /// Adds a friend without sending a request.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns>friendnumber</returns>
         public int AddFriendNoRequest(string id)
         {
             lock (obj)
@@ -285,6 +430,11 @@ namespace SharpTox
             }
         }
 
+        /// <summary>
+        /// Bootstraps the tox client with a ToxNode.
+        /// </summary>
+        /// <param name="node"></param>
+        /// <returns></returns>
         public bool BootstrapFromNode(ToxNode node)
         {
             lock (obj)
@@ -296,6 +446,11 @@ namespace SharpTox
             }
         }
 
+        /// <summary>
+        /// Checks if there exists a friend with given friendnumber.
+        /// </summary>
+        /// <param name="friendnumber"></param>
+        /// <returns></returns>
         public bool FriendExists(int friendnumber)
         {
             lock (obj)
@@ -307,6 +462,10 @@ namespace SharpTox
             }
         }
 
+        /// <summary>
+        /// Retrieves the number of friends in this tox instance.
+        /// </summary>
+        /// <returns></returns>
         public int GetFriendlistCount()
         {
             lock (obj)
@@ -318,6 +477,10 @@ namespace SharpTox
             }
         }
 
+        /// <summary>
+        /// Retrieves an array of friendnumbers of this tox instance.
+        /// </summary>
+        /// <returns></returns>
         public int[] GetFriendlist()
         {
             lock (obj)
@@ -329,6 +492,11 @@ namespace SharpTox
             }
         }
 
+        /// <summary>
+        /// Retrieves the name of a friendnumber.
+        /// </summary>
+        /// <param name="friendnumber"></param>
+        /// <returns></returns>
         public string GetName(int friendnumber)
         {
             lock (obj)
@@ -340,6 +508,10 @@ namespace SharpTox
             }
         }
 
+        /// <summary>
+        /// Retrieves the nickname of this tox instance.
+        /// </summary>
+        /// <returns></returns>
         public string GetSelfName()
         {
             lock (obj)
@@ -351,6 +523,11 @@ namespace SharpTox
             }
         }
 
+        /// <summary>
+        /// Retrieves a DateTime object of the last time friendnumber was seen online.
+        /// </summary>
+        /// <param name="friendnumber"></param>
+        /// <returns></returns>
         public DateTime GetLastOnline(int friendnumber)
         {
             lock (obj)
@@ -362,6 +539,10 @@ namespace SharpTox
             }
         }
 
+        /// <summary>
+        /// Retrieves the string of a 32 byte long address to share with others.
+        /// </summary>
+        /// <returns></returns>
         public string GetAddress()
         {
             lock (obj)
@@ -373,6 +554,11 @@ namespace SharpTox
             }
         }
 
+        /// <summary>
+        /// Retrieves the typing status of a friend.
+        /// </summary>
+        /// <param name="friendnumber"></param>
+        /// <returns></returns>
         public bool GetIsTyping(int friendnumber)
         {
             lock (obj)
@@ -384,6 +570,11 @@ namespace SharpTox
             }
         }
 
+        /// <summary>
+        /// Retrieves the friendnumber associated to the specified public address/id.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         public int GetFriendNumber(string id)
         {
             lock (obj)
@@ -395,6 +586,11 @@ namespace SharpTox
             }
         }
 
+        /// <summary>
+        /// Retrieves the status message of a friend.
+        /// </summary>
+        /// <param name="friendnumber"></param>
+        /// <returns></returns>
         public string GetStatusMessage(int friendnumber)
         {
             lock (obj)
@@ -406,6 +602,10 @@ namespace SharpTox
             }
         }
 
+        /// <summary>
+        /// Retrieves the status message of this tox instance.
+        /// </summary>
+        /// <returns></returns>
         public string GetSelfStatusMessage()
         {
             lock (obj)
@@ -417,6 +617,10 @@ namespace SharpTox
             }
         }
 
+        /// <summary>
+        /// Retrieves the amount of friends who are currently online.
+        /// </summary>
+        /// <returns></returns>
         public int GetOnlineFriendsCount()
         {
             lock (obj)
@@ -428,6 +632,11 @@ namespace SharpTox
             }
         }
 
+        /// <summary>
+        /// Retrieves a friend's connection status.
+        /// </summary>
+        /// <param name="friendnumber"></param>
+        /// <returns></returns>
         public int GetFriendConnectionStatus(int friendnumber)
         {
             lock (obj)
@@ -439,6 +648,11 @@ namespace SharpTox
             }
         }
 
+        /// <summary>
+        /// Retrieves a friend's public id/address.
+        /// </summary>
+        /// <param name="friendnumber"></param>
+        /// <returns></returns>
         public string GetClientID(int friendnumber)
         {
             lock (obj)
@@ -450,6 +664,11 @@ namespace SharpTox
             }
         }
 
+        /// <summary>
+        /// Retrieves a friend's current user status.
+        /// </summary>
+        /// <param name="friendnumber"></param>
+        /// <returns></returns>
         public ToxUserStatus GetUserStatus(int friendnumber)
         {
             lock (obj)
@@ -461,6 +680,10 @@ namespace SharpTox
             }
         }
 
+        /// <summary>
+        /// Retrieves the current user status of this tox instance.
+        /// </summary>
+        /// <returns></returns>
         public ToxUserStatus GetSelfUserStatus()
         {
             lock (obj)
@@ -472,6 +695,11 @@ namespace SharpTox
             }
         }
 
+        /// <summary>
+        /// Sets the name of this tox instance.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
         public bool SetName(string name)
         {
             lock (obj)
@@ -483,6 +711,11 @@ namespace SharpTox
             }
         }
 
+        /// <summary>
+        /// Sets the user status of this tox instance.
+        /// </summary>
+        /// <param name="status"></param>
+        /// <returns></returns>
         public bool SetUserStatus(ToxUserStatus status)
         {
             lock (obj)
@@ -494,6 +727,11 @@ namespace SharpTox
             }
         }
 
+        /// <summary>
+        /// Sets the status message of this tox instance.
+        /// </summary>
+        /// <param name="message"></param>
+        /// <returns></returns>
         public bool SetStatusMessage(string message)
         {
             lock (obj)
@@ -505,6 +743,12 @@ namespace SharpTox
             }
         }
 
+        /// <summary>
+        /// Sets the typing status of this tox instance.
+        /// </summary>
+        /// <param name="friendnumber"></param>
+        /// <param name="is_typing"></param>
+        /// <returns></returns>
         public bool SetUserIsTyping(int friendnumber, bool is_typing)
         {
             lock (obj)
@@ -516,6 +760,12 @@ namespace SharpTox
             }
         }
 
+        /// <summary>
+        /// Send a message to a friend.
+        /// </summary>
+        /// <param name="friendnumber"></param>
+        /// <param name="message"></param>
+        /// <returns></returns>
         public int SendMessage(int friendnumber, string message)
         {
             lock (obj)
@@ -527,6 +777,12 @@ namespace SharpTox
             }
         }
 
+        /// <summary>
+        /// Sends an action to a friend.
+        /// </summary>
+        /// <param name="friendnumber"></param>
+        /// <param name="action"></param>
+        /// <returns></returns>
         public int SendAction(int friendnumber, string action)
         {
             lock (obj)
@@ -538,6 +794,11 @@ namespace SharpTox
             }
         }
 
+        /// <summary>
+        /// Saves the data of this tox instance at the given file location.
+        /// </summary>
+        /// <param name="filename"></param>
+        /// <returns></returns>
         public bool Save(string filename)
         {
             lock (obj)
@@ -549,6 +810,12 @@ namespace SharpTox
             }
         }
 
+        /// <summary>
+        /// Saves and encrypts the data of this tox instance at the given file location.
+        /// </summary>
+        /// <param name="filename"></param>
+        /// <param name="key"></param>
+        /// <returns></returns>
         public bool SaveEncrypted(string filename, string key)
         {
             lock (obj)
@@ -560,6 +827,9 @@ namespace SharpTox
             }
         }
 
+        /// <summary>
+        /// Ends the tox_do loop and kills this tox instance.
+        /// </summary>
         public void Kill()
         {
             lock (obj)
@@ -574,6 +844,11 @@ namespace SharpTox
             }
         }
 
+        /// <summary>
+        /// Deletes a friend.
+        /// </summary>
+        /// <param name="friendnumber"></param>
+        /// <returns></returns>
         public bool DeleteFriend(int friendnumber)
         {
             lock (obj)
@@ -585,6 +860,12 @@ namespace SharpTox
             }
         }
 
+        /// <summary>
+        /// Joins a group with the given public key of the group.
+        /// </summary>
+        /// <param name="friendnumber"></param>
+        /// <param name="group_public_key"></param>
+        /// <returns></returns>
         public int JoinGroup(int friendnumber, string group_public_key)
         {
             lock (obj)
@@ -596,6 +877,12 @@ namespace SharpTox
             }
         }
 
+        /// <summary>
+        /// Retrieves the name of a group member.
+        /// </summary>
+        /// <param name="groupnumber"></param>
+        /// <param name="peernumber"></param>
+        /// <returns></returns>
         public string GetGroupMemberName(int groupnumber, int peernumber)
         {
             lock (obj)
@@ -607,6 +894,11 @@ namespace SharpTox
             }
         }
 
+        /// <summary>
+        /// Retrieves the number of group members in a group chat.
+        /// </summary>
+        /// <param name="groupnumber"></param>
+        /// <returns></returns>
         public int GetGroupMemberCount(int groupnumber)
         {
             lock (obj)
@@ -618,6 +910,11 @@ namespace SharpTox
             }
         }
 
+        /// <summary>
+        /// Deletes a group chat.
+        /// </summary>
+        /// <param name="groupnumber"></param>
+        /// <returns></returns>
         public int DeleteGroupChat(int groupnumber)
         {
             lock (obj)
@@ -629,6 +926,12 @@ namespace SharpTox
             }
         }
 
+        /// <summary>
+        /// Invites a friend to a group chat.
+        /// </summary>
+        /// <param name="friendnumber"></param>
+        /// <param name="groupnumber"></param>
+        /// <returns></returns>
         public bool InviteFriend(int friendnumber, int groupnumber)
         {
             lock (obj)
@@ -640,6 +943,12 @@ namespace SharpTox
             }
         }
 
+        /// <summary>
+        /// Sends a message to a group.
+        /// </summary>
+        /// <param name="groupnumber"></param>
+        /// <param name="message"></param>
+        /// <returns></returns>
         public bool SendGroupMessage(int groupnumber, string message)
         {
             lock (obj)
@@ -651,6 +960,12 @@ namespace SharpTox
             }
         }
 
+        /// <summary>
+        /// Sends an action to a group.
+        /// </summary>
+        /// <param name="groupnumber"></param>
+        /// <param name="action"></param>
+        /// <returns></returns>
         public bool SendGroupAction(int groupnumber, string action)
         {
             lock (obj)
@@ -662,6 +977,10 @@ namespace SharpTox
             }
         }
 
+        /// <summary>
+        /// Creates a new group and retrieves the group number.
+        /// </summary>
+        /// <returns></returns>
         public int NewGroup()
         {
             lock (obj)
@@ -673,6 +992,10 @@ namespace SharpTox
             }
         }
 
+        /// <summary>
+        /// Retrieves the nospam value.
+        /// </summary>
+        /// <returns></returns>
         public uint GetNospam()
         {
             lock (obj)
@@ -684,6 +1007,10 @@ namespace SharpTox
             }
         }
 
+        /// <summary>
+        /// Sets the nospam value.
+        /// </summary>
+        /// <param name="nospam"></param>
         public void SetNospam(uint nospam)
         {
             lock (obj)

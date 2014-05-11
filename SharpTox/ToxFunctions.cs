@@ -514,8 +514,8 @@ namespace SharpTox
         }
 
         [DllImport("libtoxcore.dll", CallingConvention = CallingConvention.Cdecl)]
-        private static extern int tox_file_data_remaining(IntPtr tox, int friendnumber, byte filenumber, byte send_receive);
-        public static int FileDataRemaining(IntPtr tox, int friendnumber, int filenumber, int send_receive)
+        private static extern ulong tox_file_data_remaining(IntPtr tox, int friendnumber, byte filenumber, byte send_receive);
+        public static ulong FileDataRemaining(IntPtr tox, int friendnumber, int filenumber, int send_receive)
         {
             return tox_file_data_remaining(tox, friendnumber, (byte)filenumber, (byte)send_receive);
         }
