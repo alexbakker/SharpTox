@@ -440,32 +440,28 @@ namespace SharpTox
         }
 
         [DllImport("libtoxcore.dll", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
-        private static extern int tox_group_get_names(IntPtr tox, int groupnumber, IntPtr[] names, ushort[] lengths, ushort length);
+        private static extern int tox_group_get_names(IntPtr tox, int groupnumber, byte[,] names, ushort[] lengths, ushort length);
         public static string[] GroupGetNames(IntPtr tox, int groupnumber)
         {
             int count = tox_group_number_peers(tox, groupnumber);
+
             ushort[] lengths = new ushort[count];
+            byte[,] matrix = new byte[count, ToxConstants.MAX_NAME_LENGTH];
 
-            byte[][] names = new byte[count][];
-            for (int i = 0; i < names.Length; i++)
-                names[i] = new byte[ToxConstants.MAX_NAME_LENGTH];
+            int result = tox_group_get_names(tox, groupnumber, matrix, lengths, (ushort)count);
 
-            unsafe
+            string[] names = new string[count];
+            for (int i = 0; i < count; i++)
             {
-                IntPtr[] pointers = new IntPtr[names.Length];
+                byte[] name = new byte[lengths[i]];
 
-                for (int i = 0; i < pointers.Length; i++)
-                    fixed (void* ptr = names[i])
-                        pointers[i] = new IntPtr(ptr);
+                for (int j = 0; j < name.Length; j++)
+                    name[j] = matrix[i, j];
 
-                tox_group_get_names(tox, groupnumber, pointers, lengths, (ushort)pointers.Length);
+                names[i] = ToxTools.RemoveNull(Encoding.UTF8.GetString(name));
             }
 
-            string[] n = new string[count];
-            for (int i = 0; i < n.Length; i++)
-                n[i] = ToxTools.RemoveNull(Encoding.UTF8.GetString(names[i], 0, lengths[i]));
-
-            return n;
+            return names;
         }
 
         [DllImport("libtoxcore.dll", CallingConvention = CallingConvention.Cdecl)]
