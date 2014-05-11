@@ -1,4 +1,6 @@
-﻿namespace SharpTox
+﻿#pragma warning disable 1591
+
+namespace SharpTox
 {
     public class ToxNode
     {
@@ -16,3 +18,5 @@
         }
     }
 }
+
+#pragma warning restore 1591

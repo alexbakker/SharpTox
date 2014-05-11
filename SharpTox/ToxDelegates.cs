@@ -1,4 +1,6 @@
-﻿using System;
+﻿#pragma warning disable 1591
+
+using System;
 using System.Runtime.InteropServices;
 
 namespace SharpTox
@@ -53,3 +55,5 @@ namespace SharpTox
         public delegate void CallbackFileSendRequestDelegate(IntPtr tox, int friendnumber, byte filenumber, ulong filesize, [MarshalAs(UnmanagedType.LPArray, SizeConst = 255)] byte[] filename, ushort filename_length, IntPtr userdata);
     }
 }
+
+#pragma warning restore 1591

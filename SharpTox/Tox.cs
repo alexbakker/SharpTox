@@ -1,4 +1,6 @@
-﻿using System;
+﻿#pragma warning disable 1591
+
+using System;
 using System.IO;
 using System.Text;
 using System.Threading;
@@ -1118,3 +1120,5 @@ namespace SharpTox
         }
     }
 }
+
+#pragma warning restore 1591

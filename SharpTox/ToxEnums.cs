@@ -1,4 +1,6 @@
-﻿namespace SharpTox
+﻿#pragma warning disable 1591
+
+namespace SharpTox
 {
     public enum ToxAFError
     {
@@ -42,3 +44,5 @@
         PEER_NAME
     }
 }
+
+#pragma warning restore 1591

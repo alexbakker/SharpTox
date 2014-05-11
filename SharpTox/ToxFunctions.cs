@@ -1,4 +1,6 @@
-﻿using System;
+﻿#pragma warning disable 1591
+
+using System;
 using System.IO;
 using System.Net;
 using System.Runtime.InteropServices;
@@ -673,3 +675,5 @@ namespace SharpTox
         #endregion
     }
 }
+
+#pragma warning restore 1591
