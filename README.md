@@ -15,7 +15,7 @@ Note: SharpTox is far from finished/perfect. Feel free to contribute!
 Please note that at this time, this project hasn't been tested on any operating system other than Windows. You are of course, free to give it a try on the operating system of your choice. (some changes to the ToxFunctions class are needed for that though)
 
 ### Toxy
-Toxy is basically just a WinForms client used as an example to show how SharpTox can be used.
+Toxy is basically just a WinForms client that can be used as an example to show how SharpTox works.
 If you're considering using SharpTox for your project, you should definitely have a look at that. It should have most of the functionality of Tox implemented.
 
-Toxy will be available [here](https://github.com/Impyy/Toxy) soon.
+Toxy is available [here](https://github.com/Impyy/Toxy).
