@@ -1,6 +1,7 @@
 ﻿#pragma warning disable 1591
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Runtime.InteropServices;
@@ -439,19 +440,32 @@ namespace SharpTox
         }
 
         [DllImport("libtoxcore.dll", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
-        private static extern int tox_group_get_names(IntPtr tox, int groupnumber, byte[][] names, ushort[] lengths, ushort length);
+        private static extern int tox_group_get_names(IntPtr tox, int groupnumber, IntPtr[] names, ushort[] lengths, ushort length);
         public static string[] GroupGetNames(IntPtr tox, int groupnumber)
         {
             int count = tox_group_number_peers(tox, groupnumber);
-            byte[][] names = new byte[count][];
             ushort[] lengths = new ushort[count];
-            int result = tox_group_get_names(tox, groupnumber, names, lengths, (ushort)count);
 
-            System.Collections.Generic.List<string> n = new System.Collections.Generic.List<string>();
-            foreach (byte[] name in names)
-                n.Add(Encoding.UTF8.GetString(name));
+            byte[][] names = new byte[count][];
+            for (int i = 0; i < names.Length; i++)
+                names[i] = new byte[ToxConstants.MAX_NAME_LENGTH];
 
-            return n.ToArray();
+            unsafe
+            {
+                IntPtr[] pointers = new IntPtr[names.Length];
+
+                for (int i = 0; i < pointers.Length; i++)
+                    fixed (void* ptr = names[i])
+                        pointers[i] = new IntPtr(ptr);
+
+                tox_group_get_names(tox, groupnumber, pointers, lengths, (ushort)pointers.Length);
+            }
+
+            string[] n = new string[count];
+            for (int i = 0; i < n.Length; i++)
+                n[i] = ToxTools.RemoveNull(Encoding.UTF8.GetString(names[i], 0, lengths[i]));
+
+            return n;
         }
 
         [DllImport("libtoxcore.dll", CallingConvention = CallingConvention.Cdecl)]

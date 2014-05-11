@@ -305,8 +305,6 @@ namespace SharpTox
         /// <returns></returns>
         public string[] GetGroupNames(int groupnumber)
         {
-            throw new NotImplementedException();
-
             lock (obj)
             {
                 if (tox == IntPtr.Zero)
