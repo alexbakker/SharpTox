@@ -33,10 +33,7 @@ namespace SharpTox
         private static extern int tox_isconnected(IntPtr tox);
         public static bool IsConnected(IntPtr tox)
         {
-            if (tox_isconnected(tox) == 0)
-                return false;
-            else
-                return true;
+            return tox_isconnected(tox) != 0;
         }
 
         [DllImport("libtoxcore.dll", CallingConvention = CallingConvention.Cdecl)]
@@ -70,14 +67,7 @@ namespace SharpTox
         private static extern int tox_load(IntPtr tox, byte[] bytes, uint length);
         public static bool Load(IntPtr tox, byte[] bytes, uint length)
         {
-            int result = tox_load(tox, bytes, length);
-
-            if (result == -1)
-                return false;
-            else if (result == 0)
-                return true;
-            else
-                throw new Exception("Unexpected result from tox_load");
+            return tox_load(tox, bytes, length) == 0;
         }
 
         [DllImport("libtoxcore.dll", CallingConvention = CallingConvention.Cdecl)]
@@ -240,10 +230,7 @@ namespace SharpTox
         private static extern int tox_set_user_status(IntPtr tox, byte userstatus);
         public static bool SetUserStatus(IntPtr tox, ToxUserStatus status)
         {
-            if (tox_set_user_status(tox, (byte)status) == 0)
-                return true;
-            else
-                return false;
+            return tox_set_user_status(tox, (byte)status) == 0;
         }
 
         [DllImport("libtoxcore.dll", CallingConvention = CallingConvention.Cdecl)]
