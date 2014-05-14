@@ -11,6 +11,25 @@ namespace SharpTox
 {
     public static class ToxFunctions
     {
+		static string core_dll_name = "";
+		static string av_dll_name = "";
+
+		static ToxFunctions ()
+		{
+			int platform = (int)Environment.OSVersion.Platform;
+
+			if (platform == 4 || platform == 6 || platform == 128) 
+			{
+				core_dll_name = "libtoxcore.so";
+				av_dll_name = "libtoxav.so";
+			} 
+			else 
+			{
+				core_dll_name = "libtoxcore.dll";
+				av_dll_name = "libtoxav.dll";
+			}
+		}
+
         #region Functions
         [DllImport("libtoxcore.dll", CallingConvention = CallingConvention.Cdecl)]
         private static extern IntPtr tox_new(byte ipv6enabled);
