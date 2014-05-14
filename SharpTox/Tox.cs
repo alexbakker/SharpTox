@@ -1022,6 +1022,15 @@ namespace SharpTox
             }
         }
 
+        /// <summary>
+        /// Retrieves the pointer of this tox instance.
+        /// </summary>
+        /// <returns></returns>
+        public IntPtr GetPointer()
+        {
+            return tox;
+        }
+
         private void callbacks()
         {
             ToxFunctions.CallbackFriendRequest(tox, friendrequestdelegate = new ToxDelegates.CallbackFriendRequestDelegate((IntPtr t, byte[] id, byte[] message, ushort length, IntPtr userdata) =>
