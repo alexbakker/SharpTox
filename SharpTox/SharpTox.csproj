@@ -33,23 +33,20 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
-  </ItemGroup>
-  <ItemGroup>
     <Compile Include="Tox.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ToxAvEnums.cs" />
+    <Compile Include="ToxAvFunctions.cs" />
+    <Compile Include="ToxAvStructs.cs" />
     <Compile Include="ToxConstants.cs" />
     <Compile Include="ToxDelegates.cs" />
     <Compile Include="ToxEnums.cs" />
     <Compile Include="ToxFunctions.cs" />
     <Compile Include="ToxNode.cs" />
     <Compile Include="ToxTools.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
