@@ -35,6 +35,7 @@
   <ItemGroup>
     <Compile Include="Tox.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ToxAv.cs" />
     <Compile Include="ToxAvEnums.cs" />
     <Compile Include="ToxAvFunctions.cs" />
     <Compile Include="ToxAvStructs.cs" />
