@@ -6,7 +6,10 @@ namespace SharpTox
 {
     public class ToxAv
     {
-        public static ToxAvCodecSettings DefaultSettings = new ToxAvCodecSettings() {
+		private ToxAvDelegates.CallstateCallback callstatecallback;
+
+        public static ToxAvCodecSettings DefaultSettings = new ToxAvCodecSettings() 
+		{
             video_bitrate = 1000000,
             video_width = 800,
             video_height = 600,
@@ -24,9 +27,19 @@ namespace SharpTox
         public ToxAv(IntPtr tox, ToxAvCodecSettings settings)
         {
             toxav = ToxAvFunctions.New(tox, settings);
+
+			callbacks ();
         }
 
-    }
+		private void callbacks()
+		{
+			ToxAvFunctions.RegisterCallstateCallback(callstatecallback = new ToxAvDelegates.CallstateCallback((IntPtr args) =>
+			{
+				//if (OnStatusMessage != null)
+				//	Invoker(OnStatusMessage, friendnumber, ToxTools.RemoveNull(Encoding.UTF8.GetString(newstatus)));
+			}), ToxAvCallbackID.OnCancel);
+		}
+	}
 }
 
 #pragma warning restore 1591

@@ -7,6 +7,7 @@ namespace SharpTox
 {
     public static class ToxAvFunctions
     {
+		#region Functions
         [DllImport("libtoxav", CallingConvention = CallingConvention.Cdecl)]
         private static extern void toxav_kill(IntPtr toxav);
         public static void Kill(IntPtr toxav)
@@ -132,6 +133,16 @@ namespace SharpTox
         {
             return toxav_get_tox(toxav);
         }
+		#endregion
+
+		#region Callbacks
+		[DllImport("libtoxav", CallingConvention = CallingConvention.Cdecl)]
+		private static extern IntPtr toxav_register_callstate_callback(ToxAvDelegates.CallstateCallback callback, ToxAvCallbackID id, IntPtr userdata);
+		public static IntPtr RegisterCallstateCallback(ToxAvDelegates.CallstateCallback callback, ToxAvCallbackID id)
+		{
+			return toxav_register_callstate_callback(callback, id, IntPtr.Zero);
+		}
+		#endregion
     }
 }
 
