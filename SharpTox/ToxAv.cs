@@ -205,6 +205,11 @@ namespace SharpTox
             }
         }
 
+        public IntPtr GetPointer()
+        {
+            return toxav;
+        }
+
         private object dummyinvoker(Delegate method, params object[] p)
         {
             return method.DynamicInvoke(p);
