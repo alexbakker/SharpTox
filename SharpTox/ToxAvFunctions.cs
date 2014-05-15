@@ -7,7 +7,7 @@ namespace SharpTox
 {
     public static class ToxAvFunctions
     {
-		#region Functions
+        #region Functions
         [DllImport("libtoxav", CallingConvention = CallingConvention.Cdecl)]
         private static extern void toxav_kill(IntPtr toxav);
         public static void Kill(IntPtr toxav)
@@ -15,7 +15,7 @@ namespace SharpTox
             toxav_kill(toxav);
         }
 
-		[DllImport("libtoxav", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("libtoxav", CallingConvention = CallingConvention.Cdecl)]
         private static extern IntPtr toxav_new(IntPtr tox, ToxAvCodecSettings codec_settings);
         public static IntPtr New(IntPtr tox, ToxAvCodecSettings codec_settings)
         {
@@ -133,16 +133,16 @@ namespace SharpTox
         {
             return toxav_get_tox(toxav);
         }
-		#endregion
+        #endregion
 
-		#region Callbacks
-		[DllImport("libtoxav", CallingConvention = CallingConvention.Cdecl)]
-		private static extern IntPtr toxav_register_callstate_callback(ToxAvDelegates.CallstateCallback callback, ToxAvCallbackID id, IntPtr userdata);
-		public static IntPtr RegisterCallstateCallback(ToxAvDelegates.CallstateCallback callback, ToxAvCallbackID id)
-		{
-			return toxav_register_callstate_callback(callback, id, IntPtr.Zero);
-		}
-		#endregion
+        #region Callbacks
+        [DllImport("libtoxav", CallingConvention = CallingConvention.Cdecl)]
+        private static extern IntPtr toxav_register_callstate_callback(ToxAvDelegates.CallstateCallback callback, ToxAvCallbackID id, IntPtr userdata);
+        public static IntPtr RegisterCallstateCallback(ToxAvDelegates.CallstateCallback callback, ToxAvCallbackID id)
+        {
+            return toxav_register_callstate_callback(callback, id, IntPtr.Zero);
+        }
+        #endregion
     }
 }
 
