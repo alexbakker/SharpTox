@@ -86,8 +86,8 @@ namespace SharpTox
         }
 
         [DllImport("libtoxav-0", CallingConvention = CallingConvention.Cdecl)]
-        private static extern ToxAvError toxav_recv_audio(IntPtr toxav, int frame_size, ushort dest);
-        public static ToxAvError ReceiveAudio(IntPtr toxav, int frame_size, ushort dest)
+        private static extern int toxav_recv_audio(IntPtr toxav, int frame_size, ushort dest);
+        public static int ReceiveAudio(IntPtr toxav, int frame_size, ushort dest)
         {
             return toxav_recv_audio(toxav, frame_size, dest);
         }
