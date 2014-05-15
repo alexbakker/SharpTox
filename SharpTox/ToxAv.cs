@@ -113,6 +113,94 @@ namespace SharpTox
 			}
 		}
 
+        public ToxAvError Hangup()
+        {
+            lock (obj)
+            {
+                if (toxav == IntPtr.Zero)
+                    throw null;
+
+                return ToxAvFunctions.Hangup(toxav);
+            }
+        }
+
+        public ToxAvError Reject(string reason)
+        {
+            lock (obj)
+            {
+                if (toxav == IntPtr.Zero)
+                    throw null;
+
+                return ToxAvFunctions.Reject(toxav, reason);
+            }
+        }
+
+        public ToxAvError StopCall()
+        {
+            lock (obj)
+            {
+                if (toxav == IntPtr.Zero)
+                    throw null;
+
+                return ToxAvFunctions.StopCall(toxav);
+            }
+        }
+
+        public ToxAvError PrepareTransmission(bool support_video)
+        {
+            lock (obj)
+            {
+                if (toxav == IntPtr.Zero)
+                    throw null;
+
+                return ToxAvFunctions.PrepareTransmission(toxav, support_video);
+            }
+        }
+
+        public ToxAvError KillTransmission()
+        {
+            lock (obj)
+            {
+                if (toxav == IntPtr.Zero)
+                    throw null;
+
+                return ToxAvFunctions.KillTransmission(toxav);
+            }
+        }
+
+        public int GetPeerID(int peer)
+        {
+            lock (obj)
+            {
+                if (toxav == IntPtr.Zero)
+                    throw null;
+
+                return ToxAvFunctions.GetPeerID(toxav, peer);
+            }
+        }
+
+        public bool CapabilitySupported(ToxAvCapabilities capability)
+        {
+            lock (obj)
+            {
+                if (toxav == IntPtr.Zero)
+                    throw null;
+
+                return ToxAvFunctions.CapabilitySupported(toxav, capability);
+            }
+        }
+
+        public IntPtr GetTox()
+        {
+            lock (obj)
+            {
+                if (toxav == IntPtr.Zero)
+                    throw null;
+
+                return ToxAvFunctions.GetTox(toxav);
+            }
+        }
+
 		private object dummyinvoker(Delegate method, params object[] p)
 		{
 			return method.DynamicInvoke(p);
