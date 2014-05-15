@@ -24,8 +24,8 @@ namespace SharpTox
 
     public enum ToxAvCallType
     {
-        TypeAudio = 70,
-        TypeVideo
+        Audio = 70,
+        Video
     }
 
     public enum ToxAvError

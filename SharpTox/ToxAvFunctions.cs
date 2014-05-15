@@ -15,7 +15,7 @@ namespace SharpTox
             toxav_kill(toxav);
         }
 
-        [DllImport("libtoxav", CallingConvention = CallingConvention.Cdecl)]
+		[DllImport("libtoxav", CallingConvention = CallingConvention.Cdecl)]
         private static extern IntPtr toxav_new(IntPtr tox, ToxAvCodecSettings codec_settings);
         public static IntPtr New(IntPtr tox, ToxAvCodecSettings codec_settings)
         {
