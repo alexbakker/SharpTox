@@ -40,7 +40,9 @@ namespace SharpTox
         public InvokeDelegate Invoker;
         private object obj;
 
-        public static ToxAvCodecSettings DefaultSettings = new ToxAvCodecSettings()
+        public ToxAvCodecSettings CodecSettings;
+
+        public static ToxAvCodecSettings DefaultCodecSettings = new ToxAvCodecSettings()
         {
             video_bitrate = 1000000,
             video_width = 800,
@@ -59,6 +61,8 @@ namespace SharpTox
         public ToxAv(IntPtr tox, ToxAvCodecSettings settings)
         {
             toxav = ToxAvFunctions.New(tox, settings);
+
+            CodecSettings = settings;
 
             obj = new object();
             Invoker = new InvokeDelegate(dummyinvoker);
