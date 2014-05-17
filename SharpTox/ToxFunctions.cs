@@ -59,7 +59,7 @@ namespace SharpTox
         private static extern int tox_get_client_id(IntPtr tox, int friendnumber, byte[] address);
         public static string GetClientID(IntPtr tox, int friendnumber)
         {
-            byte[] address = new byte[38];
+            byte[] address = new byte[32];
             tox_get_client_id(tox, friendnumber, address);
 
             return ToxTools.HexBinToString(address);
