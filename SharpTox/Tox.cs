@@ -479,7 +479,7 @@ namespace SharpTox
                 if (tox == IntPtr.Zero)
                     throw null;
 
-                return ToxFunctions.GetName(tox, friendnumber);
+                return ToxTools.RemoveNull(ToxFunctions.GetName(tox, friendnumber));
             }
         }
 

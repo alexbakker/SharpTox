@@ -332,13 +332,6 @@ namespace SharpTox
         }
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl)]
-        private static extern uint tox_size_encrypted(IntPtr tox);
-        public static uint SizeEncrypted(IntPtr tox)
-        {
-            return tox_size_encrypted(tox);
-        }
-
-        [DllImport(dll, CallingConvention = CallingConvention.Cdecl)]
         private static extern int tox_add_groupchat(IntPtr tox);
         public static int AddGroupchat(IntPtr tox)
         {
