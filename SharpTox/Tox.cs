@@ -25,6 +25,7 @@ namespace SharpTox
     public delegate void OnFileControlDelegate(int friendnumber, int receive_send, int filenumber, int control_type, byte[] data);
     public delegate void OnFileDataDelegate(int friendnumber, int filenumber, byte[] data);
     public delegate void OnFileSendRequestDelegate(int friendnumber, int filenumber, ulong filesiz, string filename);
+    public delegate void OnReadReceiptDelegate(int friendnumber, uint receipt);
     #endregion
 
     public class Tox
@@ -104,6 +105,11 @@ namespace SharpTox
         /// </summary>
         public event OnFileSendRequestDelegate OnFileSendRequest;
 
+        /// <summary>
+        /// Occurs when a read receipt is received.
+        /// </summary>
+        public event OnReadReceiptDelegate OnReadReceipt;
+
         public delegate object InvokeDelegate(Delegate method, params object[] p);
 
         /// <summary>
@@ -129,6 +135,8 @@ namespace SharpTox
         private ToxDelegates.CallbackFileControlDelegate filecontroldelegate;
         private ToxDelegates.CallbackFileDataDelegate filedatadelegate;
         private ToxDelegates.CallbackFileSendRequestDelegate filesendrequestdelegate;
+
+        private ToxDelegates.CallbackReadReceiptDelegate readreceiptdelegate;
         #endregion
 
         private IntPtr tox;
@@ -311,39 +319,6 @@ namespace SharpTox
                     throw null;
 
                 return ToxFunctions.GroupGetNames(tox, groupnumber);
-            }
-        }
-
-        /// <summary>
-        /// Loads an encrypted tox data file.
-        /// </summary>
-        /// <param name="filename"></param>
-        /// <param name="key">The key that was used to encrypt the file.</param>
-        /// <returns></returns>
-        public bool LoadEncrypted(string filename, string key)
-        {
-            lock (obj)
-            {
-                if (tox == IntPtr.Zero)
-                    throw null;
-
-                try
-                {
-                    FileInfo info = new FileInfo(filename);
-                    FileStream stream = new FileStream(filename, FileMode.Open);
-                    byte[] bytes = new byte[info.Length];
-
-                    stream.Read(bytes, 0, (int)info.Length);
-                    stream.Close();
-
-                    byte[] k = Encoding.UTF8.GetBytes(key);
-
-                    if (!ToxFunctions.LoadEncrypted(tox, bytes, k))
-                        return false;
-                    else
-                        return true;
-                }
-                catch { return false; }
             }
         }
 
@@ -811,23 +786,6 @@ namespace SharpTox
         }
 
         /// <summary>
-        /// Saves and encrypts the data of this tox instance at the given file location.
-        /// </summary>
-        /// <param name="filename"></param>
-        /// <param name="key"></param>
-        /// <returns></returns>
-        public bool SaveEncrypted(string filename, string key)
-        {
-            lock (obj)
-            {
-                if (tox == IntPtr.Zero)
-                    throw null;
-
-                return ToxFunctions.SaveEncrypted(tox, filename, key);
-            }
-        }
-
-        /// <summary>
         /// Ends the tox_do loop and kills this tox instance.
         /// </summary>
         public void Kill()
@@ -1031,6 +989,16 @@ namespace SharpTox
             return tox;
         }
 
+        /// <summary>
+        /// Whether to send read receipts for the specified friendnumber or not.
+        /// </summary>
+        /// <param name="friendnumber"></param>
+        /// <param name="send_receipts"></param>
+        public void SetSendsReceipts(int friendnumber, bool send_receipts)
+        {
+            ToxFunctions.SetSendsReceipts(tox, friendnumber, send_receipts);
+        }
+
         private void callbacks()
         {
             ToxFunctions.CallbackFriendRequest(tox, friendrequestdelegate = new ToxDelegates.CallbackFriendRequestDelegate((IntPtr t, byte[] id, byte[] message, ushort length, IntPtr userdata) =>
@@ -1123,6 +1091,12 @@ namespace SharpTox
             {
                 if (OnFileSendRequest != null)
                     Invoker(OnFileSendRequest, friendnumber, filenumber, filesize, ToxTools.RemoveNull(Encoding.UTF8.GetString(filename)));
+            }));
+
+            ToxFunctions.CallbackReadReceipt(tox, readreceiptdelegate = new ToxDelegates.CallbackReadReceiptDelegate((IntPtr t, int friendnumber, uint receipt, IntPtr userdata) =>
+            {
+                if (OnReadReceipt != null)
+                    Invoker(OnReadReceipt, friendnumber, receipt);
             }));
         }
     }

@@ -53,6 +53,9 @@ namespace SharpTox
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         public delegate void CallbackFileSendRequestDelegate(IntPtr tox, int friendnumber, byte filenumber, ulong filesize, [MarshalAs(UnmanagedType.LPArray, SizeConst = 255)] byte[] filename, ushort filename_length, IntPtr userdata);
+
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        public delegate void CallbackReadReceiptDelegate(IntPtr tox, int friendnmber, uint receipt, IntPtr userdata);
     }
 }
 
