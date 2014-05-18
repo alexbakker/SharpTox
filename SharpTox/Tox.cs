@@ -315,39 +315,6 @@ namespace SharpTox
         }
 
         /// <summary>
-        /// Loads an encrypted tox data file.
-        /// </summary>
-        /// <param name="filename"></param>
-        /// <param name="key">The key that was used to encrypt the file.</param>
-        /// <returns></returns>
-        public bool LoadEncrypted(string filename, string key)
-        {
-            lock (obj)
-            {
-                if (tox == IntPtr.Zero)
-                    throw null;
-
-                try
-                {
-                    FileInfo info = new FileInfo(filename);
-                    FileStream stream = new FileStream(filename, FileMode.Open);
-                    byte[] bytes = new byte[info.Length];
-
-                    stream.Read(bytes, 0, (int)info.Length);
-                    stream.Close();
-
-                    byte[] k = Encoding.UTF8.GetBytes(key);
-
-                    if (!ToxFunctions.LoadEncrypted(tox, bytes, k))
-                        return false;
-                    else
-                        return true;
-                }
-                catch { return false; }
-            }
-        }
-
-        /// <summary>
         /// Starts the main tox_do loop.
         /// </summary>
         public void Start()
@@ -807,23 +774,6 @@ namespace SharpTox
                     throw null;
 
                 return ToxFunctions.Save(tox, filename);
-            }
-        }
-
-        /// <summary>
-        /// Saves and encrypts the data of this tox instance at the given file location.
-        /// </summary>
-        /// <param name="filename"></param>
-        /// <param name="key"></param>
-        /// <returns></returns>
-        public bool SaveEncrypted(string filename, string key)
-        {
-            lock (obj)
-            {
-                if (tox == IntPtr.Zero)
-                    throw null;
-
-                return ToxFunctions.SaveEncrypted(tox, filename, key);
             }
         }
 
