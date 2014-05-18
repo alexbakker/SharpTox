@@ -643,6 +643,13 @@ namespace SharpTox
             tox_callback_file_data(tox, callback, IntPtr.Zero);
         }
 
+        [DllImport(dll, CallingConvention = CallingConvention.Cdecl)]
+        private static extern void tox_callback_read_receipt(IntPtr tox, ToxDelegates.CallbackReadReceiptDelegate callback, IntPtr userdata);
+        public static void CallbackReadReceipt(IntPtr tox, ToxDelegates.CallbackReadReceiptDelegate callback)
+        {
+            tox_callback_read_receipt(tox, callback, IntPtr.Zero);
+        }
+
         #endregion
     }
 }

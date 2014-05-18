@@ -25,6 +25,7 @@ namespace SharpTox
     public delegate void OnFileControlDelegate(int friendnumber, int receive_send, int filenumber, int control_type, byte[] data);
     public delegate void OnFileDataDelegate(int friendnumber, int filenumber, byte[] data);
     public delegate void OnFileSendRequestDelegate(int friendnumber, int filenumber, ulong filesiz, string filename);
+    public delegate void OnReadReceiptDelegate(int friendnumber, uint receipt);
     #endregion
 
     public class Tox
@@ -104,6 +105,11 @@ namespace SharpTox
         /// </summary>
         public event OnFileSendRequestDelegate OnFileSendRequest;
 
+        /// <summary>
+        /// Occurs when a read receipt is received.
+        /// </summary>
+        public event OnReadReceiptDelegate OnReadReceipt;
+
         public delegate object InvokeDelegate(Delegate method, params object[] p);
 
         /// <summary>
@@ -129,6 +135,8 @@ namespace SharpTox
         private ToxDelegates.CallbackFileControlDelegate filecontroldelegate;
         private ToxDelegates.CallbackFileDataDelegate filedatadelegate;
         private ToxDelegates.CallbackFileSendRequestDelegate filesendrequestdelegate;
+
+        private ToxDelegates.CallbackReadReceiptDelegate readreceiptdelegate;
         #endregion
 
         private IntPtr tox;
@@ -1064,6 +1072,12 @@ namespace SharpTox
             {
                 if (OnFileSendRequest != null)
                     Invoker(OnFileSendRequest, friendnumber, filenumber, filesize, ToxTools.RemoveNull(Encoding.UTF8.GetString(filename)));
+            }));
+
+            ToxFunctions.CallbackReadReceipt(tox, readreceiptdelegate = new ToxDelegates.CallbackReadReceiptDelegate((IntPtr t, int friendnumber, uint receipt, IntPtr userdata) =>
+            {
+                if (OnReadReceipt != null)
+                    Invoker(OnReadReceipt, friendnumber, receipt);
             }));
         }
     }
