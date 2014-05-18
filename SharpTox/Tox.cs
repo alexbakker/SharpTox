@@ -980,6 +980,16 @@ namespace SharpTox
             }
         }
 
+        /// <summary>
+        /// Whether to send read receipts for the specified friendnumber or not.
+        /// </summary>
+        /// <param name="friendnumber"></param>
+        /// <param name="send_receipts"></param>
+        public void SetSendsReceipts(int friendnumber, bool send_receipts)
+        {
+            ToxFunctions.SetSendsReceipts(tox, friendnumber, send_receipts);
+        }
+
         private void callbacks()
         {
             ToxFunctions.CallbackFriendRequest(tox, friendrequestdelegate = new ToxDelegates.CallbackFriendRequestDelegate((IntPtr t, byte[] id, byte[] message, ushort length, IntPtr userdata) =>
