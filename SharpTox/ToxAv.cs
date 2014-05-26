@@ -117,7 +117,7 @@ namespace SharpTox
                 if (toxav == IntPtr.Zero)
                     throw null;
 
-                return ToxAvFunctions.Call(toxav, CallIndex, friend_number, call_type, ringing_seconds);
+                return ToxAvFunctions.Call(toxav, ref CallIndex, friend_number, call_type, ringing_seconds);
             }
         }
 

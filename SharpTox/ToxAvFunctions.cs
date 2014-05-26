@@ -32,10 +32,10 @@ namespace SharpTox
         }
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl)]
-        private static extern ToxAvError toxav_call(IntPtr toxav, int call_index, int friend_number, ToxAvCallType call_type, int ringing_seconds);
-        public static ToxAvError Call(IntPtr toxav, int call_index, int friend_number, ToxAvCallType call_type, int ringing_seconds)
+        private static extern ToxAvError toxav_call(IntPtr toxav, ref int call_index, int friend_number, ToxAvCallType call_type, int ringing_seconds);
+        public static ToxAvError Call(IntPtr toxav, ref int call_index, int friend_number, ToxAvCallType call_type, int ringing_seconds)
         {
-            return toxav_call(toxav, call_index, friend_number, call_type, ringing_seconds);
+            return toxav_call(toxav, ref call_index, friend_number, call_type, ringing_seconds);
         }
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl)]
