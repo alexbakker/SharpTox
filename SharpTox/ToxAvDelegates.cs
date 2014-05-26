@@ -8,7 +8,7 @@ namespace SharpTox
     public class ToxAvDelegates
     {
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        public delegate void CallstateCallback(IntPtr args);
+        public delegate void CallstateCallback(int call_index, IntPtr args);
     }
 }
 
