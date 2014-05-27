@@ -58,7 +58,6 @@ namespace SharpTox
 
         private IntPtr toxav;
 
-        public int CallIndex;
         public int MaxCalls;
 
         public ToxAv(IntPtr tox, ToxAvCodecSettings settings, int max_calls)
@@ -88,113 +87,113 @@ namespace SharpTox
             }
         }
 
-        public ToxAvError Cancel(int friend_number, string reason)
+        public ToxAvError Cancel(int call_index, int friend_number, string reason)
         {
             lock (obj)
             {
                 if (toxav == IntPtr.Zero)
                     throw null;
 
-                return ToxAvFunctions.Cancel(toxav, CallIndex, friend_number, reason);
+                return ToxAvFunctions.Cancel(toxav, call_index, friend_number, reason);
             }
         }
 
-        public ToxAvError Answer(ToxAvCallType call_type)
+        public ToxAvError Answer(int call_index, ToxAvCallType call_type)
         {
             lock (obj)
             {
                 if (toxav == IntPtr.Zero)
                     throw null;
 
-                return ToxAvFunctions.Answer(toxav, CallIndex, call_type);
+                return ToxAvFunctions.Answer(toxav, call_index, call_type);
             }
         }
 
-        public ToxAvError Call(int friend_number, ToxAvCallType call_type, int ringing_seconds)
+        public ToxAvError Call(ref int call_index, int friend_number, ToxAvCallType call_type, int ringing_seconds)
         {
             lock (obj)
             {
                 if (toxav == IntPtr.Zero)
                     throw null;
 
-                return ToxAvFunctions.Call(toxav, ref CallIndex, friend_number, call_type, ringing_seconds);
+                return ToxAvFunctions.Call(toxav, ref call_index, friend_number, call_type, ringing_seconds);
             }
         }
 
-        public ToxAvError Hangup()
+        public ToxAvError Hangup(int call_index)
         {
             lock (obj)
             {
                 if (toxav == IntPtr.Zero)
                     throw null;
 
-                return ToxAvFunctions.Hangup(toxav, CallIndex);
+                return ToxAvFunctions.Hangup(toxav, call_index);
             }
         }
 
-        public ToxAvError Reject(string reason)
+        public ToxAvError Reject(int call_index, string reason)
         {
             lock (obj)
             {
                 if (toxav == IntPtr.Zero)
                     throw null;
 
-                return ToxAvFunctions.Reject(toxav, CallIndex, reason);
+                return ToxAvFunctions.Reject(toxav, call_index, reason);
             }
         }
 
-        public ToxAvError StopCall()
+        public ToxAvError StopCall(int call_index)
         {
             lock (obj)
             {
                 if (toxav == IntPtr.Zero)
                     throw null;
 
-                return ToxAvFunctions.StopCall(toxav, CallIndex);
+                return ToxAvFunctions.StopCall(toxav, call_index);
             }
         }
 
-        public ToxAvError PrepareTransmission(bool support_video)
+        public ToxAvError PrepareTransmission(int call_index, bool support_video)
         {
             lock (obj)
             {
                 if (toxav == IntPtr.Zero)
                     throw null;
 
-                return ToxAvFunctions.PrepareTransmission(toxav, CallIndex, DefaultCodecSettings, support_video);
+                return ToxAvFunctions.PrepareTransmission(toxav, call_index, DefaultCodecSettings, support_video);
             }
         }
 
-        public ToxAvError KillTransmission()
+        public ToxAvError KillTransmission(int call_index)
         {
             lock (obj)
             {
                 if (toxav == IntPtr.Zero)
                     throw null;
 
-                return ToxAvFunctions.KillTransmission(toxav, CallIndex);
+                return ToxAvFunctions.KillTransmission(toxav, call_index);
             }
         }
 
-        public int GetPeerID(int peer)
+        public int GetPeerID(int call_index, int peer)
         {
             lock (obj)
             {
                 if (toxav == IntPtr.Zero)
                     throw null;
 
-                return ToxAvFunctions.GetPeerID(toxav, CallIndex, peer);
+                return ToxAvFunctions.GetPeerID(toxav, call_index, peer);
             }
         }
 
-        public bool CapabilitySupported(ToxAvCapabilities capability)
+        public bool CapabilitySupported(int call_index, ToxAvCapabilities capability)
         {
             lock (obj)
             {
                 if (toxav == IntPtr.Zero)
                     throw null;
 
-                return ToxAvFunctions.CapabilitySupported(toxav, CallIndex, capability);
+                return ToxAvFunctions.CapabilitySupported(toxav, call_index, capability);
             }
         }
 
@@ -209,36 +208,36 @@ namespace SharpTox
             }
         }
 
-        public int ReceiveAudio(int frame_size, short[] dest)
+        public int ReceiveAudio(int call_index, int frame_size, short[] dest)
         {
             lock (obj)
             {
                 if (toxav == IntPtr.Zero)
                     throw null;
 
-                return ToxAvFunctions.ReceiveAudio(toxav, CallIndex, frame_size, dest);
+                return ToxAvFunctions.ReceiveAudio(toxav, call_index, frame_size, dest);
             }
         }
 
-        public ToxAvError SendAudio(ref byte[] frame, int frame_size)
+        public ToxAvError SendAudio(int call_index, ref byte[] frame, int frame_size)
         {
             lock (obj)
             {
                 if (toxav == IntPtr.Zero)
                     throw null;
 
-                return ToxAvFunctions.SendAudio(toxav, CallIndex, ref frame, frame_size);
+                return ToxAvFunctions.SendAudio(toxav, call_index, ref frame, frame_size);
             }
         }
 
-        public int PrepareAudioFrame(byte[] dest, int dest_max, ushort[] frame, int frame_size)
+        public int PrepareAudioFrame(int call_index, byte[] dest, int dest_max, ushort[] frame, int frame_size)
         {
             lock (obj)
             {
                 if (toxav == IntPtr.Zero)
                     throw null;
 
-                return ToxAvFunctions.PrepareAudioFrame(toxav, CallIndex, dest, dest_max, frame, frame_size);
+                return ToxAvFunctions.PrepareAudioFrame(toxav, call_index, dest, dest_max, frame, frame_size);
             }
         }
 
