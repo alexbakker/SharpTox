@@ -80,6 +80,13 @@ namespace SharpTox
         }
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl)]
+        private static extern uint tox_do_interval(IntPtr tox);
+        public static uint DoInterval(IntPtr tox)
+        {
+            return tox_do_interval(tox);
+        }
+
+        [DllImport(dll, CallingConvention = CallingConvention.Cdecl)]
         private static extern void tox_kill(IntPtr tox);
         public static void Kill(IntPtr tox)
         {
