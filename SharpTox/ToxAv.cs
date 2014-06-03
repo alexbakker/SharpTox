@@ -20,6 +20,7 @@ namespace SharpTox
         public event CallstateChangedDelegate OnStart;
         public event CallstateChangedDelegate OnStarting;
 
+        #region Event delegates
         private ToxAvDelegates.CallstateCallback oncancelcallback;
         private ToxAvDelegates.CallstateCallback onendcallback;
         private ToxAvDelegates.CallstateCallback onendingcallback;
@@ -31,6 +32,7 @@ namespace SharpTox
         private ToxAvDelegates.CallstateCallback onringingcallback;
         private ToxAvDelegates.CallstateCallback onstartcallback;
         private ToxAvDelegates.CallstateCallback onstartingcallback;
+        #endregion
 
         public delegate object InvokeDelegate(Delegate method, params object[] p);
 
@@ -40,9 +42,12 @@ namespace SharpTox
         public InvokeDelegate Invoker;
         private object obj;
 
-        public ToxAvCodecSettings CodecSettings;
+        public readonly ToxAvCodecSettings CodecSettings;
 
-        public static ToxAvCodecSettings DefaultCodecSettings = new ToxAvCodecSettings()
+        /// <summary>
+        /// The default codec settings.
+        /// </summary>
+        public static readonly ToxAvCodecSettings DefaultCodecSettings = new ToxAvCodecSettings()
         {
             video_bitrate = 1000000,
             video_width = 800,
@@ -58,6 +63,9 @@ namespace SharpTox
 
         private IntPtr toxav;
 
+        /// <summary>
+        /// The maximum amount of calls this instance of toxav is allowed to have.
+        /// </summary>
         public int MaxCalls;
 
         public ToxAv(IntPtr tox, ToxAvCodecSettings settings, int max_calls)
@@ -87,6 +95,13 @@ namespace SharpTox
             }
         }
 
+        /// <summary>
+        /// Cancels a call.
+        /// </summary>
+        /// <param name="call_index"></param>
+        /// <param name="friend_number"></param>
+        /// <param name="reason"></param>
+        /// <returns></returns>
         public ToxAvError Cancel(int call_index, int friend_number, string reason)
         {
             lock (obj)
@@ -98,6 +113,12 @@ namespace SharpTox
             }
         }
 
+        /// <summary>
+        /// Answers a call.
+        /// </summary>
+        /// <param name="call_index"></param>
+        /// <param name="call_type"></param>
+        /// <returns></returns>
         public ToxAvError Answer(int call_index, ToxAvCallType call_type)
         {
             lock (obj)
@@ -109,6 +130,14 @@ namespace SharpTox
             }
         }
 
+        /// <summary>
+        /// Creates a new call.
+        /// </summary>
+        /// <param name="call_index"></param>
+        /// <param name="friend_number"></param>
+        /// <param name="call_type"></param>
+        /// <param name="ringing_seconds"></param>
+        /// <returns></returns>
         public ToxAvError Call(ref int call_index, int friend_number, ToxAvCallType call_type, int ringing_seconds)
         {
             lock (obj)
@@ -120,6 +149,11 @@ namespace SharpTox
             }
         }
 
+        /// <summary>
+        /// Hangs up an in-progress call.
+        /// </summary>
+        /// <param name="call_index"></param>
+        /// <returns></returns>
         public ToxAvError Hangup(int call_index)
         {
             lock (obj)
@@ -131,6 +165,12 @@ namespace SharpTox
             }
         }
 
+        /// <summary>
+        /// Rejects an incoming call.
+        /// </summary>
+        /// <param name="call_index"></param>
+        /// <param name="reason"></param>
+        /// <returns></returns>
         public ToxAvError Reject(int call_index, string reason)
         {
             lock (obj)
@@ -142,6 +182,11 @@ namespace SharpTox
             }
         }
 
+        /// <summary>
+        /// Stops a call and terminates the transmission without notifying the remote peer.
+        /// </summary>
+        /// <param name="call_index"></param>
+        /// <returns></returns>
         public ToxAvError StopCall(int call_index)
         {
             lock (obj)
@@ -153,6 +198,12 @@ namespace SharpTox
             }
         }
 
+        /// <summary>
+        /// Prepares transmission. Must be called before any transmission occurs.
+        /// </summary>
+        /// <param name="call_index"></param>
+        /// <param name="support_video"></param>
+        /// <returns></returns>
         public ToxAvError PrepareTransmission(int call_index, bool support_video)
         {
             lock (obj)
@@ -164,6 +215,11 @@ namespace SharpTox
             }
         }
 
+        /// <summary>
+        /// Kills the transmission of a call. Should be called at the end of the transmission.
+        /// </summary>
+        /// <param name="call_index"></param>
+        /// <returns></returns>
         public ToxAvError KillTransmission(int call_index)
         {
             lock (obj)
@@ -175,6 +231,12 @@ namespace SharpTox
             }
         }
 
+        /// <summary>
+        /// Get the friend_number of peer participating in conversation
+        /// </summary>
+        /// <param name="call_index"></param>
+        /// <param name="peer"></param>
+        /// <returns></returns>
         public int GetPeerID(int call_index, int peer)
         {
             lock (obj)
@@ -186,6 +248,12 @@ namespace SharpTox
             }
         }
 
+        /// <summary>
+        /// Checks whether a certain capability is supported.
+        /// </summary>
+        /// <param name="call_index"></param>
+        /// <param name="capability"></param>
+        /// <returns></returns>
         public bool CapabilitySupported(int call_index, ToxAvCapabilities capability)
         {
             lock (obj)
@@ -197,6 +265,10 @@ namespace SharpTox
             }
         }
 
+        /// <summary>
+        /// Retrieves the tox instance that this toxav instance belongs to.
+        /// </summary>
+        /// <returns></returns>
         public IntPtr GetTox()
         {
             lock (obj)
@@ -208,6 +280,13 @@ namespace SharpTox
             }
         }
 
+        /// <summary>
+        /// Receives a decoded audio frame.
+        /// </summary>
+        /// <param name="call_index"></param>
+        /// <param name="frame_size"></param>
+        /// <param name="dest"></param>
+        /// <returns></returns>
         public int ReceiveAudio(int call_index, int frame_size, short[] dest)
         {
             lock (obj)
@@ -219,6 +298,13 @@ namespace SharpTox
             }
         }
 
+        /// <summary>
+        /// Sends an encoded audio frame.
+        /// </summary>
+        /// <param name="call_index"></param>
+        /// <param name="frame"></param>
+        /// <param name="frame_size"></param>
+        /// <returns></returns>
         public ToxAvError SendAudio(int call_index, ref byte[] frame, int frame_size)
         {
             lock (obj)
@@ -230,6 +316,15 @@ namespace SharpTox
             }
         }
 
+        /// <summary>
+        /// Encodes an audio frame.
+        /// </summary>
+        /// <param name="call_index"></param>
+        /// <param name="dest"></param>
+        /// <param name="dest_max"></param>
+        /// <param name="frame"></param>
+        /// <param name="frame_size"></param>
+        /// <returns></returns>
         public int PrepareAudioFrame(int call_index, byte[] dest, int dest_max, ushort[] frame, int frame_size)
         {
             lock (obj)
@@ -241,6 +336,10 @@ namespace SharpTox
             }
         }
 
+        /// <summary>
+        /// Gets the pointer of this toxav instance.
+        /// </summary>
+        /// <returns></returns>
         public IntPtr GetPointer()
         {
             return toxav;
