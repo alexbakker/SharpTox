@@ -151,11 +151,27 @@ namespace SharpTox
         }
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl)]
+        private static extern uint tox_send_message_withid(IntPtr tox, int friendnumber, int id, byte[] message, int length);
+        public static int SendMessageWithID(IntPtr tox, int friendnumber, int id, string message)
+        {
+            byte[] bytes = Encoding.UTF8.GetBytes(message);
+            return (int)tox_send_message_withid(tox, friendnumber, id, bytes, bytes.Length);
+        }
+
+        [DllImport(dll, CallingConvention = CallingConvention.Cdecl)]
         private static extern uint tox_send_action(IntPtr tox, int friendnumber, byte[] action, int length);
         public static int SendAction(IntPtr tox, int friendnumber, string action)
         {
             byte[] bytes = Encoding.UTF8.GetBytes(action);
             return (int)tox_send_action(tox, friendnumber, bytes, bytes.Length);
+        }
+
+        [DllImport(dll, CallingConvention = CallingConvention.Cdecl)]
+        private static extern uint tox_send_action_withid(IntPtr tox, int friendnumber, int id, byte[] message, int length);
+        public static int SendActionWithID(IntPtr tox, int friendnumber, int id, string message)
+        {
+            byte[] bytes = Encoding.UTF8.GetBytes(message);
+            return (int)tox_send_action_withid(tox, friendnumber, id, bytes, bytes.Length);
         }
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl)]

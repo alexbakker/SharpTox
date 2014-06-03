@@ -753,6 +753,24 @@ namespace SharpTox
         }
 
         /// <summary>
+        /// Send a message to a friend. The given id will be used as the message id.
+        /// </summary>
+        /// <param name="friendnumber"></param>
+        /// <param name="id"></param>
+        /// <param name="message"></param>
+        /// <returns></returns>
+        public int SendMessageWithID(int friendnumber, int id, string message)
+        {
+            lock (obj)
+            {
+                if (tox == IntPtr.Zero)
+                    throw null;
+
+                return ToxFunctions.SendMessageWithID(tox, friendnumber, id, message);
+            }
+        }
+
+        /// <summary>
         /// Sends an action to a friend.
         /// </summary>
         /// <param name="friendnumber"></param>
@@ -766,6 +784,24 @@ namespace SharpTox
                     throw null;
 
                 return ToxFunctions.SendAction(tox, friendnumber, action);
+            }
+        }
+
+        /// <summary>
+        /// Send an action to a friend. The given id will be used as the message id.
+        /// </summary>
+        /// <param name="friendnumber"></param>
+        /// <param name="id"></param>
+        /// <param name="message"></param>
+        /// <returns></returns>
+        public int SendActionWithID(int friendnumber, int id, string message)
+        {
+            lock (obj)
+            {
+                if (tox == IntPtr.Zero)
+                    throw null;
+
+                return ToxFunctions.SendActionWithID(tox, friendnumber, id, message);
             }
         }
 
