@@ -150,6 +150,13 @@ namespace SharpTox
             return toxav_set_audio_queue_limit(toxav, call_index, limit);
         }
 
+        [DllImport(dll, CallingConvention = CallingConvention.Cdecl)]
+        private static extern ToxAvError toxav_send_rtp_payload(IntPtr toxav, int call_index, ToxAvCallType type, byte[] payload, ushort length);
+        public static ToxAvError SendRtpPayload(IntPtr toxav, int call_index, ToxAvCallType type, byte[] payload, ushort length)
+        {
+            return toxav_send_rtp_payload(toxav, call_index, type, payload, length);
+        }
+
         #endregion
 
         #region Callbacks
