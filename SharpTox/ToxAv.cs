@@ -345,6 +345,22 @@ namespace SharpTox
             return toxav;
         }
 
+        /// <summary>
+        /// Sets the audio queue limit.
+        /// </summary>
+        /// <param name="call_index"></param>
+        /// <param name="limit"></param>
+        public int SetAudioQueueLimit(int call_index, ulong limit)
+        {
+            lock (obj)
+            {
+                if (toxav == IntPtr.Zero)
+                    throw null;
+
+                return ToxAvFunctions.SetAudioQueueLimit(toxav, call_index, limit);
+            }
+        }
+
         private object dummyinvoker(Delegate method, params object[] p)
         {
             return method.DynamicInvoke(p);

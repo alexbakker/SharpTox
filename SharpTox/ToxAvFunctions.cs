@@ -142,6 +142,14 @@ namespace SharpTox
         {
             return toxav_get_tox(toxav);
         }
+
+        [DllImport(dll, CallingConvention = CallingConvention.Cdecl)]
+        private static extern int toxav_set_audio_queue_limit(IntPtr toxav, int call_index, ulong limit);
+        public static int SetAudioQueueLimit(IntPtr toxav, int call_index, ulong limit)
+        {
+            return toxav_set_audio_queue_limit(toxav, call_index, limit);
+        }
+
         #endregion
 
         #region Callbacks
