@@ -11,7 +11,7 @@ namespace SharpTox
 {
     public static class ToxFunctions
     {
-        const string dll = "libtoxcore-0";
+        const string dll = "libtoxav";
 
         #region Functions
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl)]
