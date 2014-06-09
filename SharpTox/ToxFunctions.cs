@@ -538,10 +538,10 @@ namespace SharpTox
         }
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl)]
-        private static extern void tox_get_nospam(IntPtr tox, uint nospam);
+        private static extern void tox_set_nospam(IntPtr tox, uint nospam);
         public static void SetNospam(IntPtr tox, uint nospam)
         {
-            tox_get_nospam(tox, nospam);
+            tox_set_nospam(tox, nospam);
         }
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl)]
