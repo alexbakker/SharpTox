@@ -573,7 +573,7 @@ namespace SharpTox
                 if (tox == IntPtr.Zero)
                     throw null;
 
-                return ToxFunctions.GetStatusMessage(tox, friendnumber);
+                return ToxTools.RemoveNull(ToxFunctions.GetStatusMessage(tox, friendnumber));
             }
         }
 
@@ -588,7 +588,7 @@ namespace SharpTox
                 if (tox == IntPtr.Zero)
                     throw null;
 
-                return ToxFunctions.GetSelfStatusMessage(tox);
+                return ToxTools.RemoveNull(ToxFunctions.GetSelfStatusMessage(tox));
             }
         }
 
@@ -884,7 +884,7 @@ namespace SharpTox
                 if (tox == IntPtr.Zero)
                     throw null;
 
-                return ToxFunctions.GroupPeername(tox, groupnumber, peernumber);
+                return ToxTools.RemoveNull(ToxFunctions.GroupPeername(tox, groupnumber, peernumber));
             }
         }
 
