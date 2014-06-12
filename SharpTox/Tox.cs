@@ -24,7 +24,7 @@ namespace SharpTox
 
     public delegate void OnFileControlDelegate(int friendnumber, int receive_send, int filenumber, int control_type, byte[] data);
     public delegate void OnFileDataDelegate(int friendnumber, int filenumber, byte[] data);
-    public delegate void OnFileSendRequestDelegate(int friendnumber, int filenumber, ulong filesiz, string filename);
+    public delegate void OnFileSendRequestDelegate(int friendnumber, int filenumber, ulong filesize, string filename);
     public delegate void OnReadReceiptDelegate(int friendnumber, uint receipt);
     #endregion
 

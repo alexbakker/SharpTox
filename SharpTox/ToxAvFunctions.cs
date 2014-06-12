@@ -151,6 +151,13 @@ namespace SharpTox
         }
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl)]
+        private static extern int toxav_set_video_queue_limit(IntPtr toxav, int call_index, ulong limit);
+        public static int SetVideoQueueLimit(IntPtr toxav, int call_index, ulong limit)
+        {
+            return toxav_set_video_queue_limit(toxav, call_index, limit);
+        }
+
+        [DllImport(dll, CallingConvention = CallingConvention.Cdecl)]
         private static extern ToxAvError toxav_send_rtp_payload(IntPtr toxav, int call_index, ToxAvCallType type, byte[] payload, ushort length);
         public static ToxAvError SendRtpPayload(IntPtr toxav, int call_index, ToxAvCallType type, byte[] payload, ushort length)
         {
