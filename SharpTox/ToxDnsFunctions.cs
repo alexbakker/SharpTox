@@ -35,7 +35,7 @@ namespace SharpTox
             int length = tox_generate_dns3_string(dns3_object, result, (ushort)result.Length, ref request_id, bytes, (byte)bytes.Length);
 
             if (length != -1)
-                return Encoding.UTF8.GetString(result);
+                return Encoding.UTF8.GetString(result).Trim(char.MinValue);
             else
                 throw new Exception("Failed to generate a dns3 string");
         }
