@@ -26,13 +26,13 @@ namespace SharpTox
         }
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl)]
-        private static extern int tox_generate_dns3_string(IntPtr dns3_object, byte[] str, ushort str_max_len, byte[] name, byte name_len);
-        public static string GenerateDns3String(IntPtr dns3_object, string name)
+        private static extern int tox_generate_dns3_string(IntPtr dns3_object, byte[] str, ushort str_max_len, uint request_id, byte[] name, byte name_len);
+        public static string GenerateDns3String(IntPtr dns3_object, string name, int request_id)
         {
             byte[] bytes = Encoding.UTF8.GetBytes(name);
             byte[] result = new byte[bytes.Length];
 
-            int length = tox_generate_dns3_string(dns3_object, result, (ushort)result.Length, bytes, (byte)bytes.Length);
+            int length = tox_generate_dns3_string(dns3_object, result, (ushort)result.Length, (uint)request_id, bytes, (byte)bytes.Length);
 
             if (length != -1)
                 return Encoding.UTF8.GetString(result);
@@ -41,13 +41,13 @@ namespace SharpTox
         }
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl)]
-        private static extern int tox_decrypt_dns3_TXT(IntPtr dns3_object, byte[] tox_id, byte[] id_record, uint id_record_len);
-        public static string DecryptDns3TXT(IntPtr dns3_object, string id_record)
+        private static extern int tox_decrypt_dns3_TXT(IntPtr dns3_object, byte[] tox_id, byte[] id_record, uint id_record_len, uint request_id);
+        public static string DecryptDns3TXT(IntPtr dns3_object, string id_record, int request_id)
         {
             byte[] id = new byte[32 + sizeof(uint) + sizeof(ushort)];
             byte[] id_record_bytes = Encoding.UTF8.GetBytes(id_record);
 
-            int result = tox_decrypt_dns3_TXT(dns3_object, id, id_record_bytes, (uint)id_record_bytes.Length);
+            int result = tox_decrypt_dns3_TXT(dns3_object, id, id_record_bytes, (uint)id_record_bytes.Length, (uint)request_id);
 
             if (result == 0)
                 return ToxTools.HexBinToString(id);
