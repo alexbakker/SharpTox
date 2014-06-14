@@ -42,7 +42,7 @@ namespace SharpTox
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl)]
         private static extern int tox_decrypt_dns3_TXT(IntPtr dns3_object, byte[] tox_id, byte[] id_record, uint id_record_len, uint request_id);
-        public static string DecryptDns3TXT(IntPtr dns3_object, string id_record, int request_id)
+        public static string DecryptDns3TXT(IntPtr dns3_object, string id_record, uint request_id)
         {
             byte[] id = new byte[32 + sizeof(uint) + sizeof(ushort)];
             byte[] id_record_bytes = Encoding.UTF8.GetBytes(id_record);

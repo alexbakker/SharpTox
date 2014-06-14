@@ -65,7 +65,7 @@ namespace SharpTox
         /// <param name="dns3_string"></param>
         /// <param name="request_id"></param>
         /// <returns></returns>
-        public string DecryptDns3TXT(string dns3_string, int request_id)
+        public string DecryptDns3TXT(string dns3_string, uint request_id)
         {
             lock (obj)
             {
