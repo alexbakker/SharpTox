@@ -10,6 +10,10 @@ namespace SharpTox
 
         private Object obj;
 
+        /// <summary>
+        /// Initializes a new instance of tox dns3.
+        /// </summary>
+        /// <param name="public_key"></param>
         public ToxDns(string public_key)
         {
             obj = new Object();
@@ -20,6 +24,9 @@ namespace SharpTox
                 throw new Exception("Could not create a new tox_dns3 instance with the provided public_key");
         }
 
+        /// <summary>
+        /// Destroys the tox dns3 object.
+        /// </summary>
         public void Kill()
         {
             lock (obj)
@@ -31,6 +38,12 @@ namespace SharpTox
             }
         }
 
+        /// <summary>
+        /// Generates a dns3 string used to query the dns server.
+        /// </summary>
+        /// <param name="name">Name of the registered user.</param>
+        /// <param name="request_id"></param>
+        /// <returns></returns>
         public string GenerateDns3String(string name)
         {
             lock (obj)
@@ -42,6 +55,12 @@ namespace SharpTox
             }
         }
 
+        /// <summary>
+        /// Decodes and decrypts the dns3 string returned by GenerateDns3String.
+        /// </summary>
+        /// <param name="dns3_string"></param>
+        /// <param name="request_id"></param>
+        /// <returns></returns>
         public string DecryptDns3TXT(string dns3_string)
         {
             lock (obj)
@@ -53,6 +72,10 @@ namespace SharpTox
             }
         }
 
+        /// <summary>
+        /// Retrieves the pointer of this tox dns3 object.
+        /// </summary>
+        /// <returns></returns>
         public IntPtr GetPointer()
         {
             return tox_dns3;
