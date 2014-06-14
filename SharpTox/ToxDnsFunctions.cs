@@ -26,13 +26,13 @@ namespace SharpTox
         }
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl)]
-        private static extern int tox_generate_dns3_string(IntPtr dns3_object, byte[] str, ushort str_max_len, uint request_id, byte[] name, byte name_len);
-        public static string GenerateDns3String(IntPtr dns3_object, string name, int request_id)
+        private static extern int tox_generate_dns3_string(IntPtr dns3_object, byte[] str, ushort str_max_len, ref uint request_id, byte[] name, byte name_len);
+        public static string GenerateDns3String(IntPtr dns3_object, string name, ref uint request_id)
         {
             byte[] bytes = Encoding.UTF8.GetBytes(name);
-            byte[] result = new byte[bytes.Length];
+            byte[] result = new byte[1024];
 
-            int length = tox_generate_dns3_string(dns3_object, result, (ushort)result.Length, (uint)request_id, bytes, (byte)bytes.Length);
+            int length = tox_generate_dns3_string(dns3_object, result, (ushort)result.Length, ref request_id, bytes, (byte)bytes.Length);
 
             if (length != -1)
                 return Encoding.UTF8.GetString(result);

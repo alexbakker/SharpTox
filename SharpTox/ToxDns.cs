@@ -44,14 +44,18 @@ namespace SharpTox
         /// <param name="name">Name of the registered user.</param>
         /// <param name="request_id"></param>
         /// <returns></returns>
-        public string GenerateDns3String(string name, int request_id)
+        public string GenerateDns3String(string name, out uint request_id)
         {
             lock (obj)
             {
                 if (tox_dns3 == IntPtr.Zero)
                     throw null;
 
-                return ToxDnsFunctions.GenerateDns3String(tox_dns3, name, request_id);
+                uint id = new uint();
+                string result = ToxDnsFunctions.GenerateDns3String(tox_dns3, name, ref id);
+
+                request_id = id;
+                return result;
             }
         }
 
