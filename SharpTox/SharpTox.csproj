@@ -43,6 +43,8 @@
     <Compile Include="ToxAvStructs.cs" />
     <Compile Include="ToxConstants.cs" />
     <Compile Include="ToxDelegates.cs" />
+    <Compile Include="ToxDns.cs" />
+    <Compile Include="ToxDnsFunctions.cs" />
     <Compile Include="ToxEnums.cs" />
     <Compile Include="ToxFunctions.cs" />
     <Compile Include="ToxNode.cs" />
