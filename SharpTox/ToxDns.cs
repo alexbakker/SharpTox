@@ -44,14 +44,14 @@ namespace SharpTox
         /// <param name="name">Name of the registered user.</param>
         /// <param name="request_id"></param>
         /// <returns></returns>
-        public string GenerateDns3String(string name)
+        public string GenerateDns3String(string name, int request_id)
         {
             lock (obj)
             {
                 if (tox_dns3 == IntPtr.Zero)
                     throw null;
 
-                return ToxDnsFunctions.GenerateDns3String(tox_dns3, name);
+                return ToxDnsFunctions.GenerateDns3String(tox_dns3, name, request_id);
             }
         }
 
@@ -61,14 +61,14 @@ namespace SharpTox
         /// <param name="dns3_string"></param>
         /// <param name="request_id"></param>
         /// <returns></returns>
-        public string DecryptDns3TXT(string dns3_string)
+        public string DecryptDns3TXT(string dns3_string, int request_id)
         {
             lock (obj)
             {
                 if (tox_dns3 == IntPtr.Zero)
                     throw null;
 
-                return ToxDnsFunctions.DecryptDns3TXT(tox_dns3, dns3_string);
+                return ToxDnsFunctions.DecryptDns3TXT(tox_dns3, dns3_string, request_id);
             }
         }
 
