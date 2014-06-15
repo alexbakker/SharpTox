@@ -4,7 +4,58 @@ SharpTox [![Build Status](http://jenkins.impy.me/job/SharpTox/badge/icon)](http:
 This project aims to provide a simple library that wraps all of the functions found in the [Tox library](https://github.com/irungentoo/ProjectTox-Core "ProjectTox GitHub repo").
 Tox is a free (as in freedom) Skype replacement.
 
-Note: SharpTox is far from finished/perfect. Feel free to contribute!
+Note: SharpTox is far from perfect. Feel free to contribute!
+
+### Basic Usage
+```csharp
+using System;
+using SharpTox;
+
+class Program
+{
+    static Tox tox;
+
+    static void Main(string[] args)
+    {
+        tox = new Tox(false);
+        tox.OnFriendRequest += tox_OnFriendRequest;
+        tox.OnFriendMessage += tox_OnFriendMessage;
+
+        foreach (ToxNode node in Nodes)
+            tox.BootstrapFromNode(node);
+
+        tox.SetName("SharpTox");
+        tox.SetStatusMessage("Testing SharpTox");
+
+        string id = tox.GetAddress();
+        Console.WriteLine("ID: {0}", id);
+
+        tox.Start();
+    }
+
+    //check https://wiki.tox.im/Nodes for an up-to-date list of nodes
+    static ToxNode[] Nodes = new ToxNode[]
+    {
+        new ToxNode("192.254.75.98", 33445, "951C88B7E75C867418ACDB5D273821372BB5BD652740BCDF623A4FA293E75D2F", false),
+        new ToxNode("144.76.60.215", 33445, "04119E835DF3E78BACF0F84235B300546AF8B936F035185E2A8E9E0A67C8924F", false)
+    };
+
+    static void tox_OnFriendMessage(int friendnumber, string message)
+    {
+        //get the name associated with the friendnumber
+        string name = tox.GetName(friendnumber);
+
+        //print the message to the console
+        Console.WriteLine("<{0}> {1}", name, message);
+    }
+
+    static void tox_OnFriendRequest(string id, string message)
+    {
+        //automatically accept every friend request we receive
+        tox.AddFriendNoRequest(id);
+    }
+}
+```
 
 ### Things you'll need
 
