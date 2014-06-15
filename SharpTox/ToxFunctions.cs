@@ -183,20 +183,9 @@ namespace SharpTox
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl)]
         private static extern void tox_save(IntPtr tox, byte[] bytes);
-        public static bool Save(IntPtr tox, string filename)
+        public static void Save(IntPtr tox, byte[] bytes)
         {
-            try
-            {
-                byte[] bytes = new byte[tox_size(tox)];
-                tox_save(tox, bytes);
-
-                FileStream stream = new FileStream(filename, FileMode.Create);
-                stream.Write(bytes, 0, bytes.Length);
-                stream.Close();
-
-                return true;
-            }
-            catch { return false; }
+            tox_save(tox, bytes);
         }
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl)]

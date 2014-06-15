@@ -817,7 +817,18 @@ namespace SharpTox
                 if (tox == IntPtr.Zero)
                     throw null;
 
-                return ToxFunctions.Save(tox, filename);
+                try
+                {
+                    byte[] bytes = new byte[ToxFunctions.Size(tox)];
+                    ToxFunctions.Save(tox, bytes);
+
+                    FileStream stream = new FileStream(filename, FileMode.Create);
+                    stream.Write(bytes, 0, bytes.Length);
+                    stream.Close();
+
+                    return true;
+                }
+                catch { return false; }
             }
         }
 
