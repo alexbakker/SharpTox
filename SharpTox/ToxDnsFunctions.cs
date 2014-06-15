@@ -1,6 +1,5 @@
 ﻿#pragma warning disable 1591
 
-
 using System;
 using System.Text;
 using System.Runtime.InteropServices;
@@ -35,7 +34,7 @@ namespace SharpTox
             int length = tox_generate_dns3_string(dns3_object, result, (ushort)result.Length, ref request_id, bytes, (byte)bytes.Length);
 
             if (length != -1)
-                return Encoding.UTF8.GetString(result).Trim(char.MinValue);
+                return Encoding.UTF8.GetString(result, 0, length);
             else
                 throw new Exception("Failed to generate a dns3 string");
         }
