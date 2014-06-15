@@ -27,10 +27,13 @@ class Program
         tox.SetName("SharpTox");
         tox.SetStatusMessage("Testing SharpTox");
 
+        tox.Start();
+
         string id = tox.GetAddress();
         Console.WriteLine("ID: {0}", id);
 
-        tox.Start();
+        Console.ReadKey();
+        tox.Kill();
     }
 
     //check https://wiki.tox.im/Nodes for an up-to-date list of nodes
