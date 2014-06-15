@@ -9,7 +9,7 @@ namespace SharpTox
 {
     #region Event Delegates
     public delegate void OnFriendRequestDelegate(string id, string message);
-    public delegate void OnConnectionStatusDelegate(int friendnumber, byte status);
+    public delegate void OnConnectionStatusDelegate(int friendnumber, int status);
     public delegate void OnFriendMessageDelegate(int friendnumber, string message);
     public delegate void OnFriendActionDelegate(int friendnumber, string action);
     public delegate void OnNameChangeDelegate(int friendnumber, string newname);
@@ -274,7 +274,6 @@ namespace SharpTox
             }
         }
 
-
         /// <summary>
         /// Loads the tox data file from a location specified by filename.
         /// </summary>
@@ -304,7 +303,6 @@ namespace SharpTox
                 catch { return false; }
             }
         }
-
 
         /// <summary>
         /// Retrieves an array of group member names. Not implemented yet.
@@ -1057,7 +1055,7 @@ namespace SharpTox
             ToxFunctions.CallbackConnectionStatus(tox, connectionstatusdelegate = new ToxDelegates.CallbackConnectionStatusDelegate((IntPtr t, int friendnumber, byte status, IntPtr userdata) =>
             {
                 if (OnConnectionStatusChanged != null)
-                    Invoker(OnConnectionStatusChanged, friendnumber, status);
+                    Invoker(OnConnectionStatusChanged, friendnumber, (int)status);
             }));
 
             ToxFunctions.CallbackFriendMessage(tox, friendmessagedelegate = new ToxDelegates.CallbackFriendMessageDelegate((IntPtr t, int friendnumber, byte[] message, ushort length, IntPtr userdata) =>
