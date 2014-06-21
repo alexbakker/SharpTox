@@ -70,10 +70,9 @@ Please note that at this time, this project hasn't been tested on any operating 
 
 Toxy
 -------
-Toxy is basically just a WinForms client that can be used as an example to show how SharpTox works.
-If you're considering using SharpTox for your project, you should definitely have a look at that. It should have most of the functionality of Tox implemented.
+If you're considering using SharpTox for your project, you should definitely have a look at Toxy. Toxy is a metro-style Tox client for windows. It should have most of the functionality of Tox implemented.
 
-Toxy is available [here](https://github.com/Impyy/Toxy).
+Toxy is available [here](https://github.com/Reverp/Toxy-WPF).
 
 Contact
 -------
