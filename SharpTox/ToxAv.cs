@@ -138,14 +138,14 @@ namespace SharpTox
         /// <param name="call_type"></param>
         /// <param name="ringing_seconds"></param>
         /// <returns></returns>
-        public ToxAvError Call(ref int call_index, int friend_number, ToxAvCallType call_type, int ringing_seconds)
+        public ToxAvError Call(int friend_number, ToxAvCallType call_type, int ringing_seconds, out int call_index)
         {
             lock (obj)
             {
                 if (toxav == IntPtr.Zero)
                     throw null;
 
-                return ToxAvFunctions.Call(toxav, ref call_index, friend_number, call_type, ringing_seconds);
+                return ToxAvFunctions.Call(toxav, friend_number, call_type, ringing_seconds, out call_index);
             }
         }
 
