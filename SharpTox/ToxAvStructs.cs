@@ -12,6 +12,7 @@ namespace SharpTox
         public ushort audio_frame_duration; /* In ms */
         public uint audio_sample_rate; /* In Hz */
         public uint audio_channels;
+        public int audio_VAD_tolerance; /* In ms */
 
         public uint jbuf_capacity; /* Size of jitter buffer */
     }

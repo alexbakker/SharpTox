@@ -57,6 +57,7 @@ namespace SharpTox
             audio_frame_duration = 20,
             audio_sample_rate = 48000,
             audio_channels = 1,
+            audio_VAD_tolerance = 600,
 
             jbuf_capacity = 20
         };
