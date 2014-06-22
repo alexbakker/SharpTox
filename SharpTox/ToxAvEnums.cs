@@ -41,6 +41,8 @@ namespace SharpTox
         StartingVideoRtp = -8,
         TerminatingAudioRtp = -9,
         TerminatingVideoRtp = -10,
+        PacketTooLarge = -11,
+        InvalidCodecState = -12,
     }
 
     public enum ToxAvCapabilities
