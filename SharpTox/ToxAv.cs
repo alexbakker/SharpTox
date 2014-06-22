@@ -361,6 +361,17 @@ namespace SharpTox
             }
         }
 
+        public int HasActivity(int call_index, short[] pcm, ushort frame_size, float ref_energy)
+        {
+            lock (obj)
+            {
+                if (toxav == IntPtr.Zero)
+                    throw null;
+
+                return ToxAvFunctions.HasActivity(toxav, call_index, pcm, frame_size, ref_energy);
+            }
+        }
+
         private object dummyinvoker(Delegate method, params object[] p)
         {
             return method.DynamicInvoke(p);

@@ -168,6 +168,13 @@ namespace SharpTox
             return toxav_send_rtp_payload(toxav, call_index, type, payload, length);
         }
 
+        [DllImport(dll, CallingConvention = CallingConvention.Cdecl)]
+        private static extern int toxav_has_activity(IntPtr toxav, int call_index, short[] pcm, ushort frame_size, float ref_energy);
+        public static int HasActivity(IntPtr toxav, int call_index, short[] pcm, ushort frame_size, float ref_energy)
+        {
+            return toxav_has_activity(toxav, call_index, pcm, frame_size, ref_energy);
+        }
+
         #endregion
 
         #region Callbacks
