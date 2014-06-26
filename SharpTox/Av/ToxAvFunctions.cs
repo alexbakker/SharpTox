@@ -32,6 +32,13 @@ namespace SharpTox.Av
         }
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl)]
+        private unsafe static extern int toxav_prepare_video_frame(IntPtr tox, int call_index, byte[] dest, int dest_max, vpx_image* image);
+        public unsafe static int PrepareVideoFrame(IntPtr tox, int call_index, byte[] dest, int dest_max, vpx_image* image)
+        {
+            return toxav_prepare_video_frame(tox, call_index, dest, dest_max, image);
+        }
+
+        [DllImport(dll, CallingConvention = CallingConvention.Cdecl)]
         private static extern ToxAvError toxav_call(IntPtr toxav, ref int call_index, int friend_number, ToxAvCallType call_type, int ringing_seconds);
         public static ToxAvError Call(IntPtr toxav, int friend_number, ToxAvCallType call_type, int ringing_seconds, out int call_index)
         {
@@ -92,8 +99,8 @@ namespace SharpTox.Av
         }
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl)]
-        private static extern ToxAvError toxav_recv_video(IntPtr toxav, int call_index, IntPtr output);
-        public static ToxAvError ReceiveVideo(IntPtr toxav, int call_index, IntPtr output)
+        private unsafe static extern ToxAvError toxav_recv_video(IntPtr toxav, int call_index, IntPtr[] output);
+        public unsafe static ToxAvError ReceiveVideo(IntPtr toxav, int call_index, IntPtr[] output)
         {
             return toxav_recv_video(toxav, call_index, output);
         }
