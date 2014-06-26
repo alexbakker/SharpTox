@@ -499,27 +499,6 @@ namespace SharpTox.Core
         }
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl)]
-        private static extern int tox_wait_prepare(IntPtr tox, byte[] data);
-        public static int WaitPrepare(IntPtr tox, byte[] data)
-        {
-            return tox_wait_prepare(tox, data);
-        }
-
-        [DllImport(dll, CallingConvention = CallingConvention.Cdecl)]
-        private static extern int tox_wait_execute(byte[] data, long seconds, long microseconds);
-        public static int WaitExecute(byte[] data, long seconds, long microseconds)
-        {
-            return tox_wait_execute(data, seconds, microseconds);
-        }
-
-        [DllImport(dll, CallingConvention = CallingConvention.Cdecl)]
-        private static extern int tox_wait_cleanup(IntPtr tox, byte[] data);
-        public static int WaitCleanup(IntPtr tox, byte[] data)
-        {
-            return tox_wait_cleanup(tox, data);
-        }
-
-        [DllImport(dll, CallingConvention = CallingConvention.Cdecl)]
         private static extern uint tox_get_nospam(IntPtr tox);
         public static uint GetNospam(IntPtr tox)
         {
