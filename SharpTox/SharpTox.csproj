@@ -55,6 +55,11 @@
     <Compile Include="VpxEnums.cs" />
     <Compile Include="VpxFunctions.cs" />
     <Compile Include="VpxStructs.cs" />
+    <Compile Include="Vpx\VpxConstants.cs" />
+    <Compile Include="Vpx\VpxEnums.cs" />
+    <Compile Include="Vpx\VpxFunctions.cs" />
+    <Compile Include="Vpx\VpxStructs.cs" />
+    <Compile Include="Av\ToxAvDelegates.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />

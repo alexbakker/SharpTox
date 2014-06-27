@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
-namespace SharpTox
+namespace SharpTox.Vpx
 {
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)]
     public unsafe struct vpx_image

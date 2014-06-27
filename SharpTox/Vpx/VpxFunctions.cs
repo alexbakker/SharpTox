@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
-namespace SharpTox
+namespace SharpTox.Vpx
 {
     public static class VpxFunctions
     {

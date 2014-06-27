@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SharpTox
+namespace SharpTox.Vpx
 {
     public enum VpxImageFormat
     {

@@ -3,6 +3,8 @@
 using System;
 using System.Runtime.InteropServices;
 
+using SharpTox.Vpx;
+
 namespace SharpTox.Av
 {
     public static class ToxAvFunctions
