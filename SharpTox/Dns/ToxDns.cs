@@ -2,7 +2,7 @@
 
 using System;
 
-namespace SharpTox
+namespace SharpTox.Dns
 {
     public class ToxDns
     {

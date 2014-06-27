@@ -4,7 +4,7 @@ using System;
 using System.Text;
 using System.Runtime.InteropServices;
 
-namespace SharpTox
+namespace SharpTox.Dns
 {
     public static class ToxDnsFunctions
     {

@@ -3,7 +3,7 @@
 using System;
 using System.Runtime.InteropServices;
 
-namespace SharpTox
+namespace SharpTox.Av
 {
     public static class ToxAvFunctions
     {

@@ -2,7 +2,7 @@
 
 using System;
 
-namespace SharpTox
+namespace SharpTox.Av
 {
     public delegate void CallstateChangedDelegate(int call_index, IntPtr args);
 

@@ -1,6 +1,6 @@
 ﻿#pragma warning disable 1591
 
-namespace SharpTox
+namespace SharpTox.Core
 {
     public enum ToxAFError
     {

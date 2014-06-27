@@ -7,7 +7,7 @@ using System.Net;
 using System.Runtime.InteropServices;
 using System.Text;
 
-namespace SharpTox
+namespace SharpTox.Core
 {
     public static class ToxFunctions
     {

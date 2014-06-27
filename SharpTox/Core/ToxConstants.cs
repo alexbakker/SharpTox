@@ -1,4 +1,4 @@
-﻿namespace SharpTox
+﻿namespace SharpTox.Core
 {
     internal class ToxConstants
     {

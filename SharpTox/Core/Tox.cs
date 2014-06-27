@@ -5,7 +5,7 @@ using System.IO;
 using System.Text;
 using System.Threading;
 
-namespace SharpTox
+namespace SharpTox.Core
 {
     #region Event Delegates
     public delegate void OnFriendRequestDelegate(string id, string message);
