@@ -38,6 +38,7 @@
     <Compile Include="Core\Tox.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Av\ToxAv.cs" />
+    <Compile Include="Av\ToxAvDelegates.cs" />
     <Compile Include="Av\ToxAvEnums.cs" />
     <Compile Include="Av\ToxAvFunctions.cs" />
     <Compile Include="Av\ToxAvStructs.cs" />
@@ -49,17 +50,10 @@
     <Compile Include="Core\ToxFunctions.cs" />
     <Compile Include="Core\ToxNode.cs" />
     <Compile Include="ToxTools.cs" />
-    <Compile Include="Av\ToxAvDelegates.cs" />
-    <Compile Include="ToxAvDelegates.cs" />
-    <Compile Include="VpxConstants.cs" />
-    <Compile Include="VpxEnums.cs" />
-    <Compile Include="VpxFunctions.cs" />
-    <Compile Include="VpxStructs.cs" />
     <Compile Include="Vpx\VpxConstants.cs" />
     <Compile Include="Vpx\VpxEnums.cs" />
     <Compile Include="Vpx\VpxFunctions.cs" />
     <Compile Include="Vpx\VpxStructs.cs" />
-    <Compile Include="Av\ToxAvDelegates.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
