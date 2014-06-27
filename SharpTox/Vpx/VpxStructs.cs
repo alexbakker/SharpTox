@@ -1,4 +1,6 @@
-﻿using System;
+﻿#pragma warning disable 1591
+
+using System;
 using System.Runtime.InteropServices;
 
 namespace SharpTox.Vpx
@@ -28,3 +30,5 @@ namespace SharpTox.Vpx
         public int self_allocd;
     }
 }
+
+#pragma warning restore 1591

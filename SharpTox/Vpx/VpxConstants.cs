@@ -1,4 +1,6 @@
-﻿using System;
+﻿#pragma warning disable 1591
+
+using System;
 
 namespace SharpTox.Vpx
 {
@@ -9,3 +11,5 @@ namespace SharpTox.Vpx
         public const int VPX_IMG_FMT_HAS_ALPHA = 0x400;
     }
 }
+
+#pragma warning restore 1591

@@ -1,4 +1,6 @@
-﻿using System;
+﻿#pragma warning disable 1591
+
+using System;
 
 namespace SharpTox.Vpx
 {
@@ -24,3 +26,5 @@ namespace SharpTox.Vpx
         VPXI420 = VpxConstants.VPX_IMG_FMT_PLANAR | 4
     }
 }
+
+#pragma warning restore 1591
