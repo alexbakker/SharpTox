@@ -101,8 +101,8 @@ namespace SharpTox.Av
         }
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl)]
-        private unsafe static extern ToxAvError toxav_recv_video(IntPtr toxav, int call_index, IntPtr[] output);
-        public unsafe static ToxAvError ReceiveVideo(IntPtr toxav, int call_index, IntPtr[] output)
+        private static extern ToxAvError toxav_recv_video(IntPtr toxav, int call_index, IntPtr[] output);
+        public static ToxAvError ReceiveVideo(IntPtr toxav, int call_index, IntPtr[] output)
         {
             return toxav_recv_video(toxav, call_index, output);
         }
