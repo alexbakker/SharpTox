@@ -49,7 +49,7 @@ namespace SharpTox.Av
         /// </summary>
         public static readonly ToxAvCodecSettings DefaultCodecSettings = new ToxAvCodecSettings()
         {
-            video_bitrate = 2000,
+            video_bitrate = 500,
             video_width = 800,
             video_height = 600,
 
@@ -59,7 +59,7 @@ namespace SharpTox.Av
             audio_channels = 1,
             audio_VAD_tolerance = 600,
 
-            jbuf_capacity = 10
+            jbuf_capacity = 6
         };
 
         private IntPtr toxav;
