@@ -34,10 +34,10 @@ namespace SharpTox.Av
         }
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl)]
-        private unsafe static extern int toxav_prepare_video_frame(IntPtr tox, int call_index, byte[] dest, int dest_max, vpx_image* image);
-        public unsafe static int PrepareVideoFrame(IntPtr tox, int call_index, byte[] dest, int dest_max, vpx_image* image)
+        private static extern int toxav_prepare_video_frame(IntPtr tox, int call_index, byte[] dest, int dest_max, ref vpx_image image);
+        public static int PrepareVideoFrame(IntPtr tox, int call_index, byte[] dest, int dest_max, ref vpx_image image)
         {
-            return toxav_prepare_video_frame(tox, call_index, dest, dest_max, image);
+            return toxav_prepare_video_frame(tox, call_index, dest, dest_max, ref image);
         }
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl)]
