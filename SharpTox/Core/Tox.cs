@@ -355,7 +355,7 @@ namespace SharpTox.Core
                 int result = ToxFunctions.AddFriend(tox, id, message);
 
                 if (result < 0)
-                    throw new Exception("Could not add friend: " + (ToxAFError)result);
+                    throw new ToxAFException((ToxAFError)result);
                 else
                     return result;
             }
@@ -376,7 +376,7 @@ namespace SharpTox.Core
                 int result = ToxFunctions.AddFriend(tox, id, "No message.");
 
                 if (result < 0)
-                    throw new Exception("Could not add friend: " + (ToxAFError)result);
+                    throw new ToxAFException((ToxAFError)result);
                 else
                     return result;
             }
@@ -397,7 +397,7 @@ namespace SharpTox.Core
                 int result = ToxFunctions.AddFriendNoRequest(tox, id);
 
                 if (result < 0)
-                    throw new Exception("Could not add friend: " + (ToxAFError)result);
+                    throw new ToxAFException((ToxAFError)result);
                 else
                     return result;
             }
