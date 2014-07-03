@@ -837,8 +837,11 @@ namespace SharpTox.Core
         {
             lock (obj)
             {
-                thread.Abort();
-                thread.Join();
+                if (thread != null)
+                {
+                    thread.Abort();
+                    thread.Join();
+                }
 
                 if (tox == IntPtr.Zero)
                     throw null;
