@@ -9,7 +9,7 @@ Feel free to contribute!
 ### Basic Usage
 ```csharp
 using System;
-using SharpTox;
+using SharpTox.Core;
 
 class Program
 {
