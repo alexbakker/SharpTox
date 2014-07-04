@@ -184,6 +184,13 @@ namespace SharpTox.Av
             return toxav_has_activity(toxav, call_index, pcm, frame_size, ref_energy);
         }
 
+        [DllImport(dll, CallingConvention = CallingConvention.Cdecl)]
+        private static extern ToxAvCallState toxav_get_call_state(IntPtr toxav, int call_index);
+        public static ToxAvCallState GetCallState(IntPtr toxav, int call_index)
+        {
+            return toxav_get_call_state(toxav, call_index);
+        }
+
         #endregion
 
         #region Callbacks

@@ -53,6 +53,16 @@ namespace SharpTox.Av
         VideoEncoding = 1 << 2,
         VideoDecoding = 1 << 3
     }
+
+    public enum ToxAvCallState
+    {
+        CallNonExistent = -1,
+        CallInviting,
+        CallStarting,
+        CallActive,
+        CallHold,
+        CallHungUp
+    }
 }
 
 #pragma warning restore 1591

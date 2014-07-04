@@ -373,6 +373,17 @@ namespace SharpTox.Av
             }
         }
 
+        public ToxAvCallState GetCallState(int call_index)
+        {
+            lock (obj)
+            {
+                if (toxav == IntPtr.Zero)
+                    throw null;
+
+                return ToxAvFunctions.GetCallState(toxav, call_index);
+            }
+        }
+
         private object dummyinvoker(Delegate method, params object[] p)
         {
             return method.DynamicInvoke(p);
