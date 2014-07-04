@@ -1,9 +1,10 @@
-﻿#pragma warning disable 1591
-
-using System;
+﻿using System;
 
 namespace SharpTox.Dns
 {
+    /// <summary>
+    /// Represents an instance of toxdns.
+    /// </summary>
     public class ToxDns
     {
         private IntPtr tox_dns3;
@@ -86,5 +87,3 @@ namespace SharpTox.Dns
         }
     }
 }
-
-#pragma warning restore 1591

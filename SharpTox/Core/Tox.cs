@@ -28,6 +28,9 @@ namespace SharpTox.Core
     public delegate void OnReadReceiptDelegate(int friendnumber, uint receipt);
     #endregion
 
+    /// <summary>
+    /// Represents an instance of tox.
+    /// </summary>
     public class Tox
     {
         /// <summary>

@@ -6,18 +6,64 @@ namespace SharpTox.Av
 {
     public delegate void CallstateChangedDelegate(int call_index, IntPtr args);
 
+    /// <summary>
+    /// Represents an instance of toxav.
+    /// </summary>
     public class ToxAv
     {
+        /// <summary>
+        /// Occurs when a call gets canceled.
+        /// </summary>
         public event CallstateChangedDelegate OnCancel;
+
+        /// <summary>
+        /// Occurs when a call ends.
+        /// </summary>
         public event CallstateChangedDelegate OnEnd;
+
+        /// <summary>
+        /// Occurs when a call is ending.
+        /// </summary>
         public event CallstateChangedDelegate OnEnding;
+
+        /// <summary>
+        /// Occurs when an error occurred within a call.
+        /// </summary>
         public event CallstateChangedDelegate OnError;
+
+        /// <summary>
+        /// Occurs when an invite for a call is received.
+        /// </summary>
         public event CallstateChangedDelegate OnInvite;
+        
+        /// <summary>
+        /// Occurs when the person on the other end timed out.
+        /// </summary>
         public event CallstateChangedDelegate OnPeerTimeout;
+
+        /// <summary>
+        /// Occurs when a call gets rejected.
+        /// </summary>
         public event CallstateChangedDelegate OnReject;
+
+        /// <summary>
+        /// Occurs when a call request times out.
+        /// </summary>
         public event CallstateChangedDelegate OnRequestTimeout;
+
+        /// <summary>
+        /// Occurs when the person on the other end received the invite.
+        /// </summary>
         public event CallstateChangedDelegate OnRinging;
+
+        /// <summary>
+        /// Occurs when the call is supposed to start.
+        /// </summary>
         public event CallstateChangedDelegate OnStart;
+
+        /// <summary>
+        /// Occurs when the person on the other end has started the call.
+        /// </summary>
         public event CallstateChangedDelegate OnStarting;
 
         #region Event delegates
@@ -42,6 +88,9 @@ namespace SharpTox.Av
         public InvokeDelegate Invoker;
         private object obj;
 
+        /// <summary>
+        /// The codec settings used for this instance of toxav.
+        /// </summary>
         public readonly ToxAvCodecSettings CodecSettings;
 
         /// <summary>
@@ -67,8 +116,15 @@ namespace SharpTox.Av
         /// <summary>
         /// The maximum amount of calls this instance of toxav is allowed to have.
         /// </summary>
-        public int MaxCalls;
+        public readonly int MaxCalls;
 
+
+        /// <summary>
+        /// Initialises a new instance of toxav.
+        /// </summary>
+        /// <param name="tox"></param>
+        /// <param name="settings"></param>
+        /// <param name="max_calls"></param>
         public ToxAv(IntPtr tox, ToxAvCodecSettings settings, int max_calls)
         {
             toxav = ToxAvFunctions.New(tox, max_calls);
@@ -362,6 +418,14 @@ namespace SharpTox.Av
             }
         }
 
+        /// <summary>
+        /// Detects whether some activity is present in the call.
+        /// </summary>
+        /// <param name="call_index"></param>
+        /// <param name="pcm"></param>
+        /// <param name="frame_size"></param>
+        /// <param name="ref_energy"></param>
+        /// <returns></returns>
         public int HasActivity(int call_index, short[] pcm, ushort frame_size, float ref_energy)
         {
             lock (obj)
@@ -373,6 +437,11 @@ namespace SharpTox.Av
             }
         }
 
+        /// <summary>
+        /// Retrieves the state of a call.
+        /// </summary>
+        /// <param name="call_index"></param>
+        /// <returns></returns>
         public ToxAvCallState GetCallState(int call_index)
         {
             lock (obj)
