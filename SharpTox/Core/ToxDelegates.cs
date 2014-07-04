@@ -7,8 +7,6 @@ namespace SharpTox.Core
 {
     public class ToxDelegates
     {
-        /*someone should REALLY check my math on some of this stuff*/
-
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         public delegate void CallbackTypingChangeDelegate(IntPtr tox, int friendnumber, byte istyping, IntPtr userdata);
 
@@ -34,7 +32,7 @@ namespace SharpTox.Core
         public delegate void CallbackFriendRequestDelegate(IntPtr tox, [MarshalAs(UnmanagedType.LPArray, SizeConst = 38)] byte[] address, [In, MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 3)] byte[] message, ushort length, IntPtr userdata);
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        public delegate void CallbackGroupInviteDelegate(IntPtr tox, int friendnumber, [MarshalAs(UnmanagedType.LPArray, SizeConst = 38)] byte[] group_public_key, IntPtr userdata);
+        public delegate void CallbackGroupInviteDelegate(IntPtr tox, int friendnumber, [MarshalAs(UnmanagedType.LPArray, SizeConst = 32)] byte[] group_public_key, IntPtr userdata);
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         public delegate void CallbackGroupMessageDelegate(IntPtr tox, int groupnumber, int friendgroupnumber, [In, MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 4)] byte[] message, ushort length, IntPtr userdata);
