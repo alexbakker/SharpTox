@@ -411,6 +411,10 @@ namespace SharpTox.Core
         {
             int count = tox_group_number_peers(tox, groupnumber);
 
+            //just return an empty string array before we get an overflow exception
+            if (count <= 0)
+                return new string[0];
+
             ushort[] lengths = new ushort[count];
             byte[,] matrix = new byte[count, ToxConstants.MAX_NAME_LENGTH];
 
