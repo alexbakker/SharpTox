@@ -453,6 +453,23 @@ namespace SharpTox.Av
             }
         }
 
+        /// <summary>
+        /// Retrieves the call type of a specified call_index and peernumber.
+        /// </summary>
+        /// <param name="call_index"></param>
+        /// <param name="peernumber"></param>
+        /// <returns></returns>
+        public ToxAvCallType GetPeerTransmissionType(int call_index, int peernumber)
+        {
+            lock (obj)
+            {
+                if (toxav == IntPtr.Zero)
+                    throw null;
+
+                return ToxAvFunctions.GetPeerTransmissionType(toxav, call_index, peernumber);
+            }
+        }
+
         private object dummyinvoker(Delegate method, params object[] p)
         {
             return method.DynamicInvoke(p);

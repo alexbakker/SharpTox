@@ -129,10 +129,10 @@ namespace SharpTox.Av
         }
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl)]
-        private static extern ToxAvCallType toxav_get_peer_transmission_type(IntPtr toxav, int call_index, int friend_number);
-        public static ToxAvCallType GetPeerTransmissionType(IntPtr toxav, int call_index, int friend_number)
+        private static extern ToxAvCallType toxav_get_peer_transmission_type(IntPtr toxav, int call_index, int peernumber);
+        public static ToxAvCallType GetPeerTransmissionType(IntPtr toxav, int call_index, int peernumber)
         {
-            return toxav_get_peer_transmission_type(toxav, call_index, friend_number);
+            return toxav_get_peer_transmission_type(toxav, call_index, peernumber);
         }
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl)]
