@@ -167,15 +167,15 @@ namespace SharpTox.Av
         }
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl)]
-        private static extern IntPtr toxav_register_audio_recv_callback(ToxAv toxav, ToxAvDelegates.AudioReceiveCallback callback);
-        public static IntPtr RegisterAudioReceiveCallback(ToxAv toxav, ToxAvDelegates.AudioReceiveCallback callback)
+        private static extern IntPtr toxav_register_audio_recv_callback(IntPtr toxav, ToxAvDelegates.AudioReceiveCallback callback);
+        public static IntPtr RegisterAudioReceiveCallback(IntPtr toxav, ToxAvDelegates.AudioReceiveCallback callback)
         {
             return toxav_register_audio_recv_callback(toxav, callback);
         }
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl)]
-        private static extern IntPtr toxav_register_video_recv_callback(ToxAv toxav, ToxAvDelegates.VideoReceiveCallback callback);
-        public static IntPtr RegisterVideoReceiveCallback(ToxAv toxav, ToxAvDelegates.VideoReceiveCallback callback)
+        private static extern IntPtr toxav_register_video_recv_callback(IntPtr toxav, ToxAvDelegates.VideoReceiveCallback callback);
+        public static IntPtr RegisterVideoReceiveCallback(IntPtr toxav, ToxAvDelegates.VideoReceiveCallback callback)
         {
             return toxav_register_video_recv_callback(toxav, callback);
         }

@@ -5,6 +5,8 @@ using System;
 namespace SharpTox.Av
 {
     public delegate void CallstateChangedDelegate(int call_index, IntPtr args);
+    public delegate void ReceivedAudioDelegate(ToxAv toxav, int call_index, short[] frame, int frame_size);
+    public delegate void ReceivedVideoDelegate(ToxAv toxav, int call_index, IntPtr frame);
 
     /// <summary>
     /// Represents an instance of toxav.
@@ -66,6 +68,9 @@ namespace SharpTox.Av
         /// </summary>
         public event CallstateChangedDelegate OnStarting;
 
+        public event ReceivedAudioDelegate OnReceivedAudio;
+        public event ReceivedVideoDelegate OnReceivedVideo;
+
         #region Event delegates
         private ToxAvDelegates.CallstateCallback oncancelcallback;
         private ToxAvDelegates.CallstateCallback onendcallback;
@@ -78,6 +83,8 @@ namespace SharpTox.Av
         private ToxAvDelegates.CallstateCallback onringingcallback;
         private ToxAvDelegates.CallstateCallback onstartcallback;
         private ToxAvDelegates.CallstateCallback onstartingcallback;
+        private ToxAvDelegates.AudioReceiveCallback onreceivedaudiocallback;
+        private ToxAvDelegates.VideoReceiveCallback onreceivedvideocallback;
         #endregion
 
         public delegate object InvokeDelegate(Delegate method, params object[] p);
@@ -508,6 +515,18 @@ namespace SharpTox.Av
                 if (OnStarting != null)
                     Invoker(OnStarting, call_index, args);
             }), ToxAvCallbackID.OnStarting);
+
+            ToxAvFunctions.RegisterAudioReceiveCallback(toxav, onreceivedaudiocallback = new ToxAvDelegates.AudioReceiveCallback((IntPtr ptr, int call_index, short[] frame, int frame_size) =>
+            {
+                if (OnReceivedAudio != null)
+                    Invoker(OnReceivedAudio, ptr, call_index, frame, frame_size);
+            }));
+
+            ToxAvFunctions.RegisterVideoReceiveCallback(toxav, onreceivedvideocallback = new ToxAvDelegates.VideoReceiveCallback((IntPtr ptr, int call_index, IntPtr frame) =>
+            {
+                if (OnReceivedVideo != null)
+                    Invoker(OnReceivedVideo, ptr, call_index, frame);
+            }));
         }
     }
 }
