@@ -5,8 +5,8 @@ using System;
 namespace SharpTox.Av
 {
     public delegate void CallstateChangedDelegate(int call_index, IntPtr args);
-    public delegate void ReceivedAudioDelegate(ToxAv toxav, int call_index, short[] frame, int frame_size);
-    public delegate void ReceivedVideoDelegate(ToxAv toxav, int call_index, IntPtr frame);
+    public delegate void ReceivedAudioDelegate(IntPtr toxav, int call_index, short[] frame, int frame_size);
+    public delegate void ReceivedVideoDelegate(IntPtr toxav, int call_index, IntPtr frame);
 
     /// <summary>
     /// Represents an instance of toxav.
