@@ -338,24 +338,6 @@ namespace SharpTox.Av
         }
 
         /// <summary>
-        /// Receives a decoded audio frame.
-        /// </summary>
-        /// <param name="call_index"></param>
-        /// <param name="frame_size"></param>
-        /// <param name="dest"></param>
-        /// <returns></returns>
-        public int ReceiveAudio(int call_index, int frame_size, short[] dest)
-        {
-            lock (obj)
-            {
-                if (toxav == IntPtr.Zero)
-                    throw null;
-
-                return ToxAvFunctions.ReceiveAudio(toxav, call_index, frame_size, dest);
-            }
-        }
-
-        /// <summary>
         /// Sends an encoded audio frame.
         /// </summary>
         /// <param name="call_index"></param>
@@ -400,22 +382,6 @@ namespace SharpTox.Av
         public IntPtr GetPointer()
         {
             return toxav;
-        }
-
-        /// <summary>
-        /// Sets the audio queue limit.
-        /// </summary>
-        /// <param name="call_index"></param>
-        /// <param name="limit"></param>
-        public int SetAudioQueueLimit(int call_index, ulong limit)
-        {
-            lock (obj)
-            {
-                if (toxav == IntPtr.Zero)
-                    throw null;
-
-                return ToxAvFunctions.SetAudioQueueLimit(toxav, call_index, limit);
-            }
         }
 
         /// <summary>

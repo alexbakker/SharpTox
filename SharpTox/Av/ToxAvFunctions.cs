@@ -101,20 +101,6 @@ namespace SharpTox.Av
         }
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl)]
-        private static extern ToxAvError toxav_recv_video(IntPtr toxav, int call_index, IntPtr[] output);
-        public static ToxAvError ReceiveVideo(IntPtr toxav, int call_index, IntPtr[] output)
-        {
-            return toxav_recv_video(toxav, call_index, output);
-        }
-
-        [DllImport(dll, CallingConvention = CallingConvention.Cdecl)]
-        private static extern int toxav_recv_audio(IntPtr toxav, int call_index, int frame_size, [Out] short[] dest);
-        public static int ReceiveAudio(IntPtr toxav, int call_index, int frame_size, short[] dest)
-        {
-            return toxav_recv_audio(toxav, call_index, frame_size, dest);
-        }
-
-        [DllImport(dll, CallingConvention = CallingConvention.Cdecl)]
         private static extern ToxAvError toxav_send_video(IntPtr toxav, int call_index, byte[] frame, int frame_size);
         public static ToxAvError SendVideo(IntPtr toxav, int call_index, byte[] frame, int frame_size)
         {
@@ -157,27 +143,6 @@ namespace SharpTox.Av
         }
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl)]
-        private static extern int toxav_set_audio_queue_limit(IntPtr toxav, int call_index, ulong limit);
-        public static int SetAudioQueueLimit(IntPtr toxav, int call_index, ulong limit)
-        {
-            return toxav_set_audio_queue_limit(toxav, call_index, limit);
-        }
-
-        [DllImport(dll, CallingConvention = CallingConvention.Cdecl)]
-        private static extern int toxav_set_video_queue_limit(IntPtr toxav, int call_index, ulong limit);
-        public static int SetVideoQueueLimit(IntPtr toxav, int call_index, ulong limit)
-        {
-            return toxav_set_video_queue_limit(toxav, call_index, limit);
-        }
-
-        [DllImport(dll, CallingConvention = CallingConvention.Cdecl)]
-        private static extern ToxAvError toxav_send_rtp_payload(IntPtr toxav, int call_index, ToxAvCallType type, byte[] payload, ushort length);
-        public static ToxAvError SendRtpPayload(IntPtr toxav, int call_index, ToxAvCallType type, byte[] payload, ushort length)
-        {
-            return toxav_send_rtp_payload(toxav, call_index, type, payload, length);
-        }
-
-        [DllImport(dll, CallingConvention = CallingConvention.Cdecl)]
         private static extern int toxav_has_activity(IntPtr toxav, int call_index, short[] pcm, ushort frame_size, float ref_energy);
         public static int HasActivity(IntPtr toxav, int call_index, short[] pcm, ushort frame_size, float ref_energy)
         {
@@ -200,6 +165,7 @@ namespace SharpTox.Av
         {
             return toxav_register_callstate_callback(callback, id, IntPtr.Zero);
         }
+
         #endregion
     }
 }
