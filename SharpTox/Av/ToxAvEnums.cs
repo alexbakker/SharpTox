@@ -19,7 +19,8 @@ namespace SharpTox.Av
         /* Protocol */
         OnError,
         OnRequestTimeout,
-        OnPeerTimeout
+        OnPeerTimeout,
+        OnMediaChange
     }
 
     public enum ToxAvCallType

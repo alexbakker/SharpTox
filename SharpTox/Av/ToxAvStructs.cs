@@ -5,8 +5,8 @@ namespace SharpTox.Av
     public struct ToxAvCodecSettings
     {
         public uint video_bitrate; /* In bits/s */
-        public ushort video_width; /* In px */
-        public ushort video_height; /* In px */
+        public ushort max_video_width; /* In px */
+        public ushort max_video_height; /* In px */
 
         public uint audio_bitrate; /* In bits/s */
         public ushort audio_frame_duration; /* In ms */

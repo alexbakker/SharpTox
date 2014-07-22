@@ -156,14 +156,21 @@ namespace SharpTox.Av
             return toxav_get_call_state(toxav, call_index);
         }
 
+        [DllImport(dll, CallingConvention = CallingConvention.Cdecl)]
+        private static extern ToxAvError toxav_change_type(IntPtr toxav, int call_index, ToxAvCallType type);
+        public static ToxAvError ChangeType(IntPtr toxav, int call_index, ToxAvCallType type)
+        {
+            return toxav_change_type(toxav, call_index, type);
+        }
+
         #endregion
 
         #region Callbacks
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl)]
-        private static extern IntPtr toxav_register_callstate_callback(ToxAvDelegates.CallstateCallback callback, ToxAvCallbackID id, IntPtr userdata);
-        public static IntPtr RegisterCallstateCallback(ToxAvDelegates.CallstateCallback callback, ToxAvCallbackID id)
+        private static extern IntPtr toxav_register_callstate_callback(IntPtr toxav, ToxAvDelegates.CallstateCallback callback, ToxAvCallbackID id, IntPtr userdata);
+        public static IntPtr RegisterCallstateCallback(IntPtr toxav, ToxAvDelegates.CallstateCallback callback, ToxAvCallbackID id)
         {
-            return toxav_register_callstate_callback(callback, id, IntPtr.Zero);
+            return toxav_register_callstate_callback(toxav, callback, id, IntPtr.Zero);
         }
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl)]
