@@ -443,6 +443,12 @@ namespace SharpTox.Av
             }
         }
 
+        /// <summary>
+        /// Changes the type of an in-progress call
+        /// </summary>
+        /// <param name="call_index"></param>
+        /// <param name="type"></param>
+        /// <returns></returns>
         public ToxAvError ChangeCallType(int call_index, ToxAvCallType type)
         {
             lock (obj)
