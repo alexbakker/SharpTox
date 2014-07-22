@@ -68,6 +68,11 @@ namespace SharpTox.Av
         /// </summary>
         public event CallstateChangedDelegate OnStarting;
 
+        /// <summary>
+        /// Occurs when a peer wants to change the call type.
+        /// </summary>
+        public event CallstateChangedDelegate OnMediaChange;
+
         public event ReceivedAudioDelegate OnReceivedAudio;
         public event ReceivedVideoDelegate OnReceivedVideo;
 
@@ -83,6 +88,7 @@ namespace SharpTox.Av
         private ToxAvDelegates.CallstateCallback onringingcallback;
         private ToxAvDelegates.CallstateCallback onstartcallback;
         private ToxAvDelegates.CallstateCallback onstartingcallback;
+        private ToxAvDelegates.CallstateCallback onmediachangecallback;
         private ToxAvDelegates.AudioReceiveCallback onreceivedaudiocallback;
         private ToxAvDelegates.VideoReceiveCallback onreceivedvideocallback;
         #endregion
@@ -532,6 +538,12 @@ namespace SharpTox.Av
                 if (OnStarting != null)
                     Invoker(OnStarting, call_index, args);
             }), ToxAvCallbackID.OnStarting);
+
+            ToxAvFunctions.RegisterCallstateCallback(toxav, onmediachangecallback = new ToxAvDelegates.CallstateCallback((IntPtr agent, int call_index, IntPtr args) =>
+            {
+                if (OnMediaChange != null)
+                    Invoker(OnMediaChange, call_index, args);
+            }), ToxAvCallbackID.OnMediaChange);
 
             ToxAvFunctions.RegisterAudioReceiveCallback(toxav, onreceivedaudiocallback = new ToxAvDelegates.AudioReceiveCallback((IntPtr ptr, int call_index, short[] frame, int frame_size) =>
             {
