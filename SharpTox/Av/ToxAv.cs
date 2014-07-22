@@ -443,6 +443,17 @@ namespace SharpTox.Av
             }
         }
 
+        public ToxAvError ChangeCallType(int call_index, ToxAvCallType type)
+        {
+            lock (obj)
+            {
+                if (toxav == IntPtr.Zero)
+                    throw null;
+
+                return ToxAvFunctions.ChangeType(toxav, call_index, type);
+            }
+        }
+
         private object dummyinvoker(Delegate method, params object[] p)
         {
             return method.DynamicInvoke(p);
