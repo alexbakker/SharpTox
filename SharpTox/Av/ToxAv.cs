@@ -106,8 +106,8 @@ namespace SharpTox.Av
         public static readonly ToxAvCodecSettings DefaultCodecSettings = new ToxAvCodecSettings()
         {
             video_bitrate = 500,
-            max_video_width = 800,
-            max_video_height = 600,
+            max_video_width = 1200,
+            max_video_height = 720,
 
             audio_bitrate = 64000,
             audio_frame_duration = 20,
