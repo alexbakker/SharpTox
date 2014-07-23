@@ -17,7 +17,6 @@ namespace SharpTox.Av
         OnEnding,
 
         /* Protocol */
-        OnError,
         OnRequestTimeout,
         OnPeerTimeout,
         OnMediaChange

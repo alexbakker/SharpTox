@@ -29,11 +29,6 @@ namespace SharpTox.Av
         public event CallstateChangedDelegate OnEnding;
 
         /// <summary>
-        /// Occurs when an error occurred within a call.
-        /// </summary>
-        public event CallstateChangedDelegate OnError;
-
-        /// <summary>
         /// Occurs when an invite for a call is received.
         /// </summary>
         public event CallstateChangedDelegate OnInvite;
@@ -80,7 +75,6 @@ namespace SharpTox.Av
         private ToxAvDelegates.CallstateCallback oncancelcallback;
         private ToxAvDelegates.CallstateCallback onendcallback;
         private ToxAvDelegates.CallstateCallback onendingcallback;
-        private ToxAvDelegates.CallstateCallback onerrorcallback;
         private ToxAvDelegates.CallstateCallback oninvitecallback;
         private ToxAvDelegates.CallstateCallback onpeertimeoutcallback;
         private ToxAvDelegates.CallstateCallback onrejectcallback;
@@ -490,12 +484,6 @@ namespace SharpTox.Av
                 if (OnEnding != null)
                     Invoker(OnEnding, call_index, args);
             }), ToxAvCallbackID.OnEnding);
-
-            ToxAvFunctions.RegisterCallstateCallback(toxav, onerrorcallback = new ToxAvDelegates.CallstateCallback((IntPtr agent, int call_index, IntPtr args) =>
-            {
-                if (OnError != null)
-                    Invoker(OnError, call_index, args);
-            }), ToxAvCallbackID.OnError);
 
             ToxAvFunctions.RegisterCallstateCallback(toxav, oninvitecallback = new ToxAvDelegates.CallstateCallback((IntPtr agent, int call_index, IntPtr args) =>
             {
