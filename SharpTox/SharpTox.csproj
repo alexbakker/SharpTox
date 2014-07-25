@@ -94,10 +94,6 @@
     <Compile Include="Core\ToxFunctions.cs" />
     <Compile Include="Core\ToxNode.cs" />
     <Compile Include="ToxTools.cs" />
-    <Compile Include="Vpx\VpxConstants.cs" />
-    <Compile Include="Vpx\VpxEnums.cs" />
-    <Compile Include="Vpx\VpxFunctions.cs" />
-    <Compile Include="Vpx\VpxStructs.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />

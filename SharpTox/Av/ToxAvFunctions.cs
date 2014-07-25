@@ -3,8 +3,6 @@
 using System;
 using System.Runtime.InteropServices;
 
-using SharpTox.Vpx;
-
 namespace SharpTox.Av
 {
     public static class ToxAvFunctions
@@ -34,10 +32,10 @@ namespace SharpTox.Av
         }
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl)]
-        private static extern int toxav_prepare_video_frame(IntPtr tox, int call_index, byte[] dest, int dest_max, ref vpx_image image);
-        public static int PrepareVideoFrame(IntPtr tox, int call_index, byte[] dest, int dest_max, ref vpx_image image)
+        private unsafe static extern int toxav_prepare_video_frame(IntPtr tox, int call_index, byte[] dest, int dest_max, IntPtr image);
+        public unsafe static int PrepareVideoFrame(IntPtr tox, int call_index, byte[] dest, int dest_max, IntPtr image)
         {
-            return toxav_prepare_video_frame(tox, call_index, dest, dest_max, ref image);
+            return toxav_prepare_video_frame(tox, call_index, dest, dest_max, image);
         }
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl)]
