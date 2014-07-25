@@ -1,21 +1,53 @@
-﻿#pragma warning disable 1591
-
-namespace SharpTox.Av
+﻿namespace SharpTox.Av
 {
+    /// <summary>
+    /// Represents toxav encoding settings.
+    /// </summary>
     public struct ToxAvCodecSettings
     {
-        public uint video_bitrate; /* In bits/s */
-        public ushort max_video_width; /* In px */
-        public ushort max_video_height; /* In px */
+        /// <summary>
+        /// Video bitrate in bits/s.
+        /// </summary>
+        public uint video_bitrate;
 
-        public uint audio_bitrate; /* In bits/s */
-        public ushort audio_frame_duration; /* In ms */
-        public uint audio_sample_rate; /* In Hz */
+        /// <summary>
+        /// Maximum video width in pixels.
+        /// </summary>
+        public ushort max_video_width;
+
+        /// <summary>
+        /// Maximum video height in pixels.
+        /// </summary>
+        public ushort max_video_height;
+
+        /// <summary>
+        /// Audio bitrate in bits/s.
+        /// </summary>
+        public uint audio_bitrate;
+
+        /// <summary>
+        /// Audio frame duration in ms.
+        /// </summary>
+        public ushort audio_frame_duration;
+
+        /// <summary>
+        /// Audio sample rate in Hz.
+        /// </summary>
+        public uint audio_sample_rate;
+
+        /// <summary>
+        /// Audio channels.
+        /// </summary>
         public uint audio_channels;
-        public int audio_VAD_tolerance; /* In ms */
 
-        public uint jbuf_capacity; /* Size of jitter buffer */
+        /// <summary>
+        /// Audio VAD tolerance in ms.
+        /// </summary>
+        public int audio_VAD_tolerance;
+
+        /// <summary>
+        /// Size of jitter buffer.
+        /// </summary>
+        public uint jbuf_capacity;
     }
 }
-
-#pragma warning restore 1591
