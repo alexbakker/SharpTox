@@ -90,7 +90,7 @@ namespace SharpTox.Av
         public delegate object InvokeDelegate(Delegate method, params object[] p);
 
         /// <summary>
-        /// The invoke delegate to use when raising events.
+        /// The invoke delegate to use when raising events. Note that OnReceivedAudio and OnReceivedVideo will not use this.
         /// </summary>
         public InvokeDelegate Invoker;
         private object obj;
@@ -536,13 +536,13 @@ namespace SharpTox.Av
             ToxAvFunctions.RegisterAudioReceiveCallback(toxav, onreceivedaudiocallback = new ToxAvDelegates.AudioReceiveCallback((IntPtr ptr, int call_index, short[] frame, int frame_size) =>
             {
                 if (OnReceivedAudio != null)
-                    Invoker(OnReceivedAudio, ptr, call_index, frame, frame_size);
+                    OnReceivedAudio(ptr, call_index, frame, frame_size);
             }));
 
             ToxAvFunctions.RegisterVideoReceiveCallback(toxav, onreceivedvideocallback = new ToxAvDelegates.VideoReceiveCallback((IntPtr ptr, int call_index, IntPtr frame) =>
             {
                 if (OnReceivedVideo != null)
-                    Invoker(OnReceivedVideo, ptr, call_index, frame);
+                    OnReceivedVideo(ptr, call_index, frame);
             }));
         }
     }
