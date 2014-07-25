@@ -115,7 +115,7 @@ namespace SharpTox.Av
             audio_channels = 1,
             audio_VAD_tolerance = 600,
 
-            jbuf_capacity = 6
+            jbuf_capacity = 2
         };
 
         private IntPtr toxav;
