@@ -1047,7 +1047,13 @@ namespace SharpTox.Core
         /// <param name="send_receipts"></param>
         public void SetSendsReceipts(int friendnumber, bool send_receipts)
         {
-            ToxFunctions.SetSendsReceipts(tox, friendnumber, send_receipts);
+            lock (obj)
+            {
+                if (tox == IntPtr.Zero)
+                    throw null;
+
+                ToxFunctions.SetSendsReceipts(tox, friendnumber, send_receipts);
+            }
         }
 
         public ToxKeyPair GetKeys()
