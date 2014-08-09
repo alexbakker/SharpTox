@@ -517,13 +517,6 @@ namespace SharpTox.Core
         }
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl)]
-        private static extern IntPtr tox_wait_data_size();
-        public static IntPtr WaitDataSize()
-        {
-            return tox_wait_data_size();
-        }
-
-        [DllImport(dll, CallingConvention = CallingConvention.Cdecl)]
         private static extern void tox_set_sends_receipts(IntPtr tox, int friendnumber, int yesno);
         public static void SetSendsReceipts(IntPtr tox, int friendnumber, bool send_receipts)
         {
