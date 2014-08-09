@@ -265,6 +265,8 @@ namespace SharpTox.Av
         /// </summary>
         /// <param name="call_index"></param>
         /// <param name="support_video"></param>
+        /// <param name="jbuf_size"></param>
+        /// <param name="VAD_treshold"></param>
         /// <returns></returns>
         public ToxAvError PrepareTransmission(int call_index, int jbuf_size, int VAD_treshold, bool support_video)
         {
@@ -347,7 +349,6 @@ namespace SharpTox.Av
         /// </summary>
         /// <param name="call_index"></param>
         /// <param name="frame"></param>
-        /// <param name="frame_size"></param>
         /// <returns></returns>
         public ToxAvError SendAudio(int call_index, ref byte[] frame)
         {
@@ -367,7 +368,6 @@ namespace SharpTox.Av
         /// <param name="dest"></param>
         /// <param name="dest_max"></param>
         /// <param name="frame"></param>
-        /// <param name="frame_size"></param>
         /// <returns></returns>
         public int PrepareAudioFrame(int call_index, byte[] dest, int dest_max, ushort[] frame)
         {
@@ -428,7 +428,8 @@ namespace SharpTox.Av
         /// Changes the type of an in-progress call
         /// </summary>
         /// <param name="call_index"></param>
-        /// <param name="type"></param>
+        /// <param name="peer_id"></param>
+        /// <param name="settings"></param>
         /// <returns></returns>
         public ToxAvError ChangeSettings(int call_index, int peer_id, ToxAvCodecSettings settings)
         {

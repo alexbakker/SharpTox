@@ -3,9 +3,9 @@ using System.Text;
 
 namespace SharpTox
 {
-    static class ToxTools
+    internal static class ToxTools
     {
-        public static string HexBinToString(byte[] b)
+        internal static string HexBinToString(byte[] b)
         {
             StringBuilder sb = new StringBuilder(2 * b.Length);
 
@@ -15,7 +15,7 @@ namespace SharpTox
             return sb.ToString();
         }
 
-        public static byte[] StringToHexBin(string s)
+        internal static byte[] StringToHexBin(string s)
         {
             byte[] bin = new byte[s.Length / 2];
 
@@ -26,7 +26,7 @@ namespace SharpTox
         }
 
         //getting rid of string null terminations
-        public static string RemoveNull(string s)
+        internal static string RemoveNull(string s)
         {
             if (s.Length != 0)
             {
@@ -40,7 +40,7 @@ namespace SharpTox
             return s;
         }
 
-        public static DateTime EpochToDateTime(long epoch)
+        internal static DateTime EpochToDateTime(long epoch)
         {
             return new DateTime(1970, 1, 1, 0, 0, 0).AddSeconds(Convert.ToDouble(epoch));
         }
