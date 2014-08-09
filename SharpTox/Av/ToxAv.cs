@@ -442,6 +442,23 @@ namespace SharpTox.Av
             }
         }
 
+        /// <summary>
+        /// Retrieves a peer's codec settings.
+        /// </summary>
+        /// <param name="call_index"></param>
+        /// <param name="peer"></param>
+        /// <returns></returns>
+        public ToxAvCodecSettings GetPeerCodecSettings(int call_index, int peer)
+        {
+            lock (obj)
+            {
+                if (toxav == IntPtr.Zero)
+                    throw null;
+
+                return ToxAvFunctions.GetPeerCodecSettings(toxav, call_index, peer);
+            }
+        }
+
         private object dummyinvoker(Delegate method, params object[] p)
         {
             return method.DynamicInvoke(p);

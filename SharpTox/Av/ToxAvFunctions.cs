@@ -154,6 +154,16 @@ namespace SharpTox.Av
             return toxav_get_call_state(toxav, call_index);
         }
 
+        [DllImport(dll, CallingConvention = CallingConvention.Cdecl)]
+        private static extern ToxAvCallState toxav_get_peer_csettings(IntPtr toxav, int call_index, int peer, ref ToxAvCodecSettings settings);
+        public static ToxAvCodecSettings GetPeerCodecSettings(IntPtr toxav, int call_index, int peer)
+        {
+            ToxAvCodecSettings settings = new ToxAvCodecSettings();
+            toxav_get_peer_csettings(toxav, call_index, peer, ref settings);
+
+            return settings;
+        }
+
         #endregion
 
         #region Callbacks
