@@ -530,6 +530,21 @@ namespace SharpTox.Core
             tox_set_sends_receipts(tox, friendnumber, send_receipts ? 1 : 0);
         }
 
+        [DllImport(dll, CallingConvention = CallingConvention.Cdecl)]
+        private static extern void tox_get_keys(IntPtr tox, byte[] public_key, byte[] secret_key);
+        public static ToxKeyPair GetKeys(IntPtr tox)
+        {
+            byte[] public_key = new byte[32];
+            byte[] secret_key = new byte[32];
+
+            tox_get_keys(tox, public_key, secret_key);
+
+            return new ToxKeyPair(
+                new ToxKey(ToxKeyType.Public, public_key),
+                new ToxKey(ToxKeyType.Secret, secret_key)
+                );
+        }
+
         #endregion
 
         #region Callbacks

@@ -43,6 +43,12 @@ namespace SharpTox.Core
         PEER_DEL,
         PEER_NAME
     }
+
+    public enum ToxKeyType
+    {
+        Public,
+        Secret
+    }
 }
 
 #pragma warning restore 1591
