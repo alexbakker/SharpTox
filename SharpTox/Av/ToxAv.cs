@@ -5,8 +5,8 @@ using System;
 namespace SharpTox.Av
 {
     public delegate void CallstateChangedDelegate(int call_index, IntPtr args);
-    public delegate void ReceivedAudioDelegate(IntPtr toxav, int call_index, short[] frame, int frame_size);
-    public delegate void ReceivedVideoDelegate(IntPtr toxav, int call_index, IntPtr frame);
+    public delegate void ReceivedAudioDelegate(IntPtr toxav, int call_index, short[] frame, int frame_size, IntPtr userdata);
+    public delegate void ReceivedVideoDelegate(IntPtr toxav, int call_index, IntPtr frame, IntPtr userdata);
 
     /// <summary>
     /// Represents an instance of toxav.
@@ -105,6 +105,7 @@ namespace SharpTox.Av
         /// </summary>
         public static readonly ToxAvCodecSettings DefaultCodecSettings = new ToxAvCodecSettings()
         {
+            call_type = ToxAvCallType.Audio,
             video_bitrate = 500,
             max_video_width = 1200,
             max_video_height = 720,
@@ -112,10 +113,7 @@ namespace SharpTox.Av
             audio_bitrate = 64000,
             audio_frame_duration = 20,
             audio_sample_rate = 48000,
-            audio_channels = 1,
-            audio_VAD_tolerance = 600,
-
-            jbuf_capacity = 2
+            audio_channels = 1
         };
 
         private IntPtr toxav;
@@ -181,16 +179,16 @@ namespace SharpTox.Av
         /// Answers a call.
         /// </summary>
         /// <param name="call_index"></param>
-        /// <param name="call_type"></param>
+        /// <param name="settings"></param>
         /// <returns></returns>
-        public ToxAvError Answer(int call_index, ToxAvCallType call_type)
+        public ToxAvError Answer(int call_index, ToxAvCodecSettings settings)
         {
             lock (obj)
             {
                 if (toxav == IntPtr.Zero)
                     throw null;
 
-                return ToxAvFunctions.Answer(toxav, call_index, call_type);
+                return ToxAvFunctions.Answer(toxav, call_index, settings);
             }
         }
 
@@ -199,17 +197,17 @@ namespace SharpTox.Av
         /// </summary>
         /// <param name="call_index"></param>
         /// <param name="friend_number"></param>
-        /// <param name="call_type"></param>
+        /// <param name="settings"></param>
         /// <param name="ringing_seconds"></param>
         /// <returns></returns>
-        public ToxAvError Call(int friend_number, ToxAvCallType call_type, int ringing_seconds, out int call_index)
+        public ToxAvError Call(int friend_number, ToxAvCodecSettings settings, int ringing_seconds, out int call_index)
         {
             lock (obj)
             {
                 if (toxav == IntPtr.Zero)
                     throw null;
 
-                return ToxAvFunctions.Call(toxav, friend_number, call_type, ringing_seconds, out call_index);
+                return ToxAvFunctions.Call(toxav, friend_number, settings, ringing_seconds, out call_index);
             }
         }
 
@@ -268,14 +266,14 @@ namespace SharpTox.Av
         /// <param name="call_index"></param>
         /// <param name="support_video"></param>
         /// <returns></returns>
-        public ToxAvError PrepareTransmission(int call_index, bool support_video)
+        public ToxAvError PrepareTransmission(int call_index, int jbuf_size, int VAD_treshold, bool support_video)
         {
             lock (obj)
             {
                 if (toxav == IntPtr.Zero)
                     throw null;
 
-                return ToxAvFunctions.PrepareTransmission(toxav, call_index, DefaultCodecSettings, support_video);
+                return ToxAvFunctions.PrepareTransmission(toxav, call_index, (uint)jbuf_size, (uint)VAD_treshold, support_video);
             }
         }
 
@@ -351,14 +349,14 @@ namespace SharpTox.Av
         /// <param name="frame"></param>
         /// <param name="frame_size"></param>
         /// <returns></returns>
-        public ToxAvError SendAudio(int call_index, ref byte[] frame, int frame_size)
+        public ToxAvError SendAudio(int call_index, ref byte[] frame)
         {
             lock (obj)
             {
                 if (toxav == IntPtr.Zero)
                     throw null;
 
-                return ToxAvFunctions.SendAudio(toxav, call_index, ref frame, frame_size);
+                return ToxAvFunctions.SendAudio(toxav, call_index, ref frame, (uint)frame.Length);
             }
         }
 
@@ -371,14 +369,14 @@ namespace SharpTox.Av
         /// <param name="frame"></param>
         /// <param name="frame_size"></param>
         /// <returns></returns>
-        public int PrepareAudioFrame(int call_index, byte[] dest, int dest_max, ushort[] frame, int frame_size)
+        public int PrepareAudioFrame(int call_index, byte[] dest, int dest_max, ushort[] frame)
         {
             lock (obj)
             {
                 if (toxav == IntPtr.Zero)
                     throw null;
 
-                return ToxAvFunctions.PrepareAudioFrame(toxav, call_index, dest, dest_max, frame, frame_size);
+                return ToxAvFunctions.PrepareAudioFrame(toxav, call_index, dest, dest_max, frame, frame.Length);
             }
         }
 
@@ -427,36 +425,19 @@ namespace SharpTox.Av
         }
 
         /// <summary>
-        /// Retrieves the call type of a specified call_index and peernumber.
-        /// </summary>
-        /// <param name="call_index"></param>
-        /// <param name="peernumber"></param>
-        /// <returns></returns>
-        public ToxAvCallType GetPeerTransmissionType(int call_index, int peernumber)
-        {
-            lock (obj)
-            {
-                if (toxav == IntPtr.Zero)
-                    throw null;
-
-                return ToxAvFunctions.GetPeerTransmissionType(toxav, call_index, peernumber);
-            }
-        }
-
-        /// <summary>
         /// Changes the type of an in-progress call
         /// </summary>
         /// <param name="call_index"></param>
         /// <param name="type"></param>
         /// <returns></returns>
-        public ToxAvError ChangeCallType(int call_index, ToxAvCallType type)
+        public ToxAvError ChangeSettings(int call_index, int peer_id, ToxAvCodecSettings settings)
         {
             lock (obj)
             {
                 if (toxav == IntPtr.Zero)
                     throw null;
 
-                return ToxAvFunctions.ChangeType(toxav, call_index, type);
+                return ToxAvFunctions.ChangeSettings(toxav, call_index, peer_id, settings);
             }
         }
 
@@ -533,17 +514,17 @@ namespace SharpTox.Av
                     Invoker(OnMediaChange, call_index, args);
             }), ToxAvCallbackID.OnMediaChange);
 
-            ToxAvFunctions.RegisterAudioReceiveCallback(toxav, onreceivedaudiocallback = new ToxAvDelegates.AudioReceiveCallback((IntPtr ptr, int call_index, short[] frame, int frame_size) =>
+            ToxAvFunctions.RegisterAudioReceiveCallback(toxav, onreceivedaudiocallback = new ToxAvDelegates.AudioReceiveCallback((IntPtr ptr, int call_index, short[] frame, int frame_size, IntPtr userdata) =>
             {
                 if (OnReceivedAudio != null)
-                    OnReceivedAudio(ptr, call_index, frame, frame_size);
-            }));
+                    OnReceivedAudio(ptr, call_index, frame, frame_size, userdata);
+            }), IntPtr.Zero);
 
-            ToxAvFunctions.RegisterVideoReceiveCallback(toxav, onreceivedvideocallback = new ToxAvDelegates.VideoReceiveCallback((IntPtr ptr, int call_index, IntPtr frame) =>
+            ToxAvFunctions.RegisterVideoReceiveCallback(toxav, onreceivedvideocallback = new ToxAvDelegates.VideoReceiveCallback((IntPtr ptr, int call_index, IntPtr frame, IntPtr userdata) =>
             {
                 if (OnReceivedVideo != null)
-                    OnReceivedVideo(ptr, call_index, frame);
-            }));
+                    OnReceivedVideo(ptr, call_index, frame, userdata);
+            }), IntPtr.Zero);
         }
     }
 }

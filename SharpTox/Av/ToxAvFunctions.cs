@@ -25,25 +25,25 @@ namespace SharpTox.Av
         }
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl)]
-        private static extern int toxav_prepare_audio_frame(IntPtr tox, int call_index, byte[] dest, int dest_max, ushort[] frame, int frame_size);
+        private static extern int toxav_prepare_audio_frame(IntPtr toxav, int call_index, byte[] dest, int dest_max, ushort[] frame, int frame_size);
         public static int PrepareAudioFrame(IntPtr tox, int call_index, byte[] dest, int dest_max, ushort[] frame, int frame_size)
         {
             return toxav_prepare_audio_frame(tox, call_index, dest, dest_max, frame, frame_size);
         }
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl)]
-        private unsafe static extern int toxav_prepare_video_frame(IntPtr tox, int call_index, byte[] dest, int dest_max, IntPtr image);
+        private unsafe static extern int toxav_prepare_video_frame(IntPtr toxav, int call_index, byte[] dest, int dest_max, IntPtr image);
         public unsafe static int PrepareVideoFrame(IntPtr tox, int call_index, byte[] dest, int dest_max, IntPtr image)
         {
             return toxav_prepare_video_frame(tox, call_index, dest, dest_max, image);
         }
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl)]
-        private static extern ToxAvError toxav_call(IntPtr toxav, ref int call_index, int friend_number, ToxAvCallType call_type, int ringing_seconds);
-        public static ToxAvError Call(IntPtr toxav, int friend_number, ToxAvCallType call_type, int ringing_seconds, out int call_index)
+        private static extern ToxAvError toxav_call(IntPtr toxav, ref int call_index, int friend_number, ref ToxAvCodecSettings settings, int ringing_seconds);
+        public static ToxAvError Call(IntPtr toxav, int friend_number, ToxAvCodecSettings settings, int ringing_seconds, out int call_index)
         {
             int index = new int();
-            ToxAvError result = toxav_call(toxav, ref index, friend_number, call_type, ringing_seconds);
+            ToxAvError result = toxav_call(toxav, ref index, friend_number, ref settings, ringing_seconds);
 
             call_index = index;
             return result;
@@ -57,10 +57,10 @@ namespace SharpTox.Av
         }
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl)]
-        private static extern ToxAvError toxav_answer(IntPtr toxav, int call_index, ToxAvCallType call_type);
-        public static ToxAvError Answer(IntPtr toxav, int call_index, ToxAvCallType call_type)
+        private static extern ToxAvError toxav_answer(IntPtr toxav, int call_index, ref ToxAvCodecSettings settings);
+        public static ToxAvError Answer(IntPtr toxav, int call_index, ToxAvCodecSettings settings)
         {
-            return toxav_answer(toxav, call_index, call_type);
+            return toxav_answer(toxav, call_index, ref settings);
         }
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl)]
@@ -71,10 +71,17 @@ namespace SharpTox.Av
         }
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl)]
-        private static extern ToxAvError toxav_cancel(IntPtr toxav, int call_index, int friend_number, string reason);
-        public static ToxAvError Cancel(IntPtr toxav, int call_index, int friend_number, string reason)
+        private static extern ToxAvError toxav_cancel(IntPtr toxav, int call_index, int peer_id, string reason);
+        public static ToxAvError Cancel(IntPtr toxav, int call_index, int peer_id, string reason)
         {
-            return toxav_cancel(toxav, call_index, friend_number, reason);
+            return toxav_cancel(toxav, call_index, peer_id, reason);
+        }
+
+        [DllImport(dll, CallingConvention = CallingConvention.Cdecl)]
+        private static extern ToxAvError toxav_change_settings(IntPtr toxav, int call_index, ref ToxAvCodecSettings settings);
+        public static ToxAvError ChangeSettings(IntPtr toxav, int call_index, int peer_id, ToxAvCodecSettings settings)
+        {
+            return toxav_change_settings(toxav, call_index, ref settings);
         }
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl)]
@@ -85,10 +92,10 @@ namespace SharpTox.Av
         }
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl)]
-        private static extern ToxAvError toxav_prepare_transmission(IntPtr toxav, int call_index, ref ToxAvCodecSettings settings, int video_supported);
-        public static ToxAvError PrepareTransmission(IntPtr toxav, int call_index, ToxAvCodecSettings settings,  bool video_supported)
+        private static extern ToxAvError toxav_prepare_transmission(IntPtr toxav, int call_index, uint jbuf_size, uint VAD_treshold, int video_supported);
+        public static ToxAvError PrepareTransmission(IntPtr toxav, int call_index, uint jbuf_size, uint VAD_treshold, bool video_supported)
         {
-            return toxav_prepare_transmission(toxav, call_index, ref settings, video_supported ? 1 : 0);
+            return toxav_prepare_transmission(toxav, call_index, jbuf_size, VAD_treshold, video_supported ? 1 : 0);
         }
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl)]
@@ -99,28 +106,21 @@ namespace SharpTox.Av
         }
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl)]
-        private static extern ToxAvError toxav_send_video(IntPtr toxav, int call_index, byte[] frame, int frame_size);
-        public static ToxAvError SendVideo(IntPtr toxav, int call_index, byte[] frame, int frame_size)
+        private static extern ToxAvError toxav_send_video(IntPtr toxav, int call_index, byte[] frame, uint frame_size);
+        public static ToxAvError SendVideo(IntPtr toxav, int call_index, byte[] frame, uint frame_size)
         {
             return toxav_send_video(toxav, call_index, frame, frame_size);
         }
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl)]
-        private static extern ToxAvError toxav_send_audio(IntPtr toxav, int call_index, byte[] frame, int frame_size);
-        public static ToxAvError SendAudio(IntPtr toxav, int call_index, ref byte[] frame, int frame_size)
+        private static extern ToxAvError toxav_send_audio(IntPtr toxav, int call_index, byte[] frame, uint frame_size);
+        public static ToxAvError SendAudio(IntPtr toxav, int call_index, ref byte[] frame, uint frame_size)
         {
             return toxav_send_audio(toxav, call_index, frame, frame_size);
         }
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl)]
-        private static extern ToxAvCallType toxav_get_peer_transmission_type(IntPtr toxav, int call_index, int peernumber);
-        public static ToxAvCallType GetPeerTransmissionType(IntPtr toxav, int call_index, int peernumber)
-        {
-            return toxav_get_peer_transmission_type(toxav, call_index, peernumber);
-        }
-
-        [DllImport(dll, CallingConvention = CallingConvention.Cdecl)]
-        private static extern int toxav_get_peer_id(IntPtr toxav, int call_index, int friend_number);
+        private static extern int toxav_get_peer_id(IntPtr toxav, int call_index, int peer);
         public static int GetPeerID(IntPtr toxav, int call_index, int peer)
         {
             return toxav_get_peer_id(toxav, call_index, peer);
@@ -154,13 +154,6 @@ namespace SharpTox.Av
             return toxav_get_call_state(toxav, call_index);
         }
 
-        [DllImport(dll, CallingConvention = CallingConvention.Cdecl)]
-        private static extern ToxAvError toxav_change_type(IntPtr toxav, int call_index, ToxAvCallType type);
-        public static ToxAvError ChangeType(IntPtr toxav, int call_index, ToxAvCallType type)
-        {
-            return toxav_change_type(toxav, call_index, type);
-        }
-
         #endregion
 
         #region Callbacks
@@ -172,17 +165,17 @@ namespace SharpTox.Av
         }
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl)]
-        private static extern IntPtr toxav_register_audio_recv_callback(IntPtr toxav, ToxAvDelegates.AudioReceiveCallback callback);
-        public static IntPtr RegisterAudioReceiveCallback(IntPtr toxav, ToxAvDelegates.AudioReceiveCallback callback)
+        private static extern IntPtr toxav_register_audio_recv_callback(IntPtr toxav, ToxAvDelegates.AudioReceiveCallback callback, IntPtr userdata);
+        public static IntPtr RegisterAudioReceiveCallback(IntPtr toxav, ToxAvDelegates.AudioReceiveCallback callback, IntPtr userdata)
         {
-            return toxav_register_audio_recv_callback(toxav, callback);
+            return toxav_register_audio_recv_callback(toxav, callback, userdata);
         }
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl)]
-        private static extern IntPtr toxav_register_video_recv_callback(IntPtr toxav, ToxAvDelegates.VideoReceiveCallback callback);
-        public static IntPtr RegisterVideoReceiveCallback(IntPtr toxav, ToxAvDelegates.VideoReceiveCallback callback)
+        private static extern IntPtr toxav_register_video_recv_callback(IntPtr toxav, ToxAvDelegates.VideoReceiveCallback callback, IntPtr userdata);
+        public static IntPtr RegisterVideoReceiveCallback(IntPtr toxav, ToxAvDelegates.VideoReceiveCallback callback, IntPtr userdata)
         {
-            return toxav_register_video_recv_callback(toxav, callback);
+            return toxav_register_video_recv_callback(toxav, callback, userdata);
         }
 
         #endregion

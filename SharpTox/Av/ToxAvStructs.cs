@@ -6,6 +6,11 @@
     public struct ToxAvCodecSettings
     {
         /// <summary>
+        /// Call type (audio or video).
+        /// </summary>
+        public ToxAvCallType call_type;
+
+        /// <summary>
         /// Video bitrate in bits/s.
         /// </summary>
         public uint video_bitrate;
@@ -39,15 +44,5 @@
         /// Audio channels.
         /// </summary>
         public uint audio_channels;
-
-        /// <summary>
-        /// Audio VAD tolerance in ms.
-        /// </summary>
-        public int audio_VAD_tolerance;
-
-        /// <summary>
-        /// Size of jitter buffer.
-        /// </summary>
-        public uint jbuf_capacity;
     }
 }
