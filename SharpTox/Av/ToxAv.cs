@@ -349,15 +349,16 @@ namespace SharpTox.Av
         /// </summary>
         /// <param name="call_index"></param>
         /// <param name="frame"></param>
+        /// <param name="frame_size"></param>
         /// <returns></returns>
-        public ToxAvError SendAudio(int call_index, ref byte[] frame)
+        public ToxAvError SendAudio(int call_index, ref byte[] frame, int frame_size)
         {
             lock (obj)
             {
                 if (toxav == IntPtr.Zero)
                     throw null;
 
-                return ToxAvFunctions.SendAudio(toxav, call_index, ref frame, (uint)frame.Length);
+                return ToxAvFunctions.SendAudio(toxav, call_index, ref frame, (uint)frame_size);
             }
         }
 
