@@ -417,7 +417,7 @@ namespace SharpTox.Core
                 if (tox == IntPtr.Zero)
                     throw null;
 
-                return ToxFunctions.BootstrapFromAddress(tox, node.Address, node.Ipv6Enabled, Convert.ToUInt16(node.Port), node.PublicKey);
+                return ToxFunctions.BootstrapFromAddress(tox, node.Address, node.Ipv6Enabled, Convert.ToUInt16(node.Port), node.PublicKey.GetString());
             }
         }
 

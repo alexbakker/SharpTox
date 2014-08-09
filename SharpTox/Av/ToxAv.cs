@@ -123,7 +123,6 @@ namespace SharpTox.Av
         /// </summary>
         public readonly int MaxCalls;
 
-
         /// <summary>
         /// Initialises a new instance of toxav.
         /// </summary>

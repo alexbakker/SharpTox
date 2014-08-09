@@ -1,15 +1,38 @@
-﻿#pragma warning disable 1591
-
-namespace SharpTox.Core
+﻿namespace SharpTox.Core
 {
+    /// <summary>
+    /// Represents a tox node.
+    /// </summary>
     public class ToxNode
     {
+        /// <summary>
+        /// The address of this node.
+        /// </summary>
         public string Address { get; private set; }
-        public int Port { get; private set; }
-        public bool Ipv6Enabled { get; private set; }
-        public string PublicKey { get; private set; }
 
-        public ToxNode(string address, int port, string public_key, bool ipv6enabled)
+        /// <summary>
+        /// The port on which this node listens.
+        /// </summary>
+        public int Port { get; private set; }
+
+        /// <summary>
+        /// Whether IPv6 should be enabled or not.
+        /// </summary>
+        public bool Ipv6Enabled { get; private set; }
+
+        /// <summary>
+        /// The public key of this node.
+        /// </summary>
+        public ToxKey PublicKey { get; private set; }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ToxNode"/> class.
+        /// </summary>
+        /// <param name="address"></param>
+        /// <param name="port"></param>
+        /// <param name="public_key"></param>
+        /// <param name="ipv6enabled"></param>
+        public ToxNode(string address, int port, ToxKey public_key, bool ipv6enabled)
         {
             Address = address;
             Port = port;
@@ -18,5 +41,3 @@ namespace SharpTox.Core
         }
     }
 }
-
-#pragma warning restore 1591
