@@ -1050,6 +1050,17 @@ namespace SharpTox.Core
             ToxFunctions.SetSendsReceipts(tox, friendnumber, send_receipts);
         }
 
+        public ToxKeyPair GetKeys()
+        {
+            lock (obj)
+            {
+                if (tox == IntPtr.Zero)
+                    throw null;
+
+                return ToxFunctions.GetKeys(tox);
+            }
+        }
+
         private void callbacks()
         {
             ToxFunctions.CallbackFriendRequest(tox, friendrequestdelegate = new ToxDelegates.CallbackFriendRequestDelegate((IntPtr t, byte[] id, byte[] message, ushort length, IntPtr userdata) =>
