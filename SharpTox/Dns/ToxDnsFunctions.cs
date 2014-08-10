@@ -11,8 +11,8 @@ namespace SharpTox.Dns
         const string dll = "libtox";
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl)]
-        private static extern IntPtr tox_dns3_new(byte[] public_key);
-        public static IntPtr New(string public_key)
+        private static extern ToxDnsHandle tox_dns3_new(byte[] public_key);
+        public static ToxDnsHandle New(string public_key)
         {
             return tox_dns3_new(ToxTools.StringToHexBin(public_key));
         }
@@ -25,8 +25,8 @@ namespace SharpTox.Dns
         }
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl)]
-        private static extern int tox_generate_dns3_string(IntPtr dns3_object, byte[] str, ushort str_max_len, ref uint request_id, byte[] name, byte name_len);
-        public static string GenerateDns3String(IntPtr dns3_object, string name, ref uint request_id)
+        private static extern int tox_generate_dns3_string(ToxDnsHandle dns3_object, byte[] str, ushort str_max_len, ref uint request_id, byte[] name, byte name_len);
+        public static string GenerateDns3String(ToxDnsHandle dns3_object, string name, ref uint request_id)
         {
             byte[] bytes = Encoding.UTF8.GetBytes(name);
             byte[] result = new byte[1024];
@@ -40,8 +40,8 @@ namespace SharpTox.Dns
         }
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl)]
-        private static extern int tox_decrypt_dns3_TXT(IntPtr dns3_object, byte[] tox_id, byte[] id_record, uint id_record_len, uint request_id);
-        public static string DecryptDns3TXT(IntPtr dns3_object, string id_record, uint request_id)
+        private static extern int tox_decrypt_dns3_TXT(ToxDnsHandle dns3_object, byte[] tox_id, byte[] id_record, uint id_record_len, uint request_id);
+        public static string DecryptDns3TXT(ToxDnsHandle dns3_object, string id_record, uint request_id)
         {
             byte[] id = new byte[32 + sizeof(uint) + sizeof(ushort)];
             byte[] id_record_bytes = Encoding.UTF8.GetBytes(id_record);
