@@ -80,6 +80,7 @@
   <ItemGroup>
     <Compile Include="Core\Tox.cs" />
     <Compile Include="Core\ToxExceptions.cs" />
+    <Compile Include="Core\ToxHandle.cs" />
     <Compile Include="Core\ToxKey.cs" />
     <Compile Include="Core\ToxKeyPair.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
