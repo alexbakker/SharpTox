@@ -197,9 +197,6 @@ namespace SharpTox.Core
         /// <returns>true if we are and false if we aren't.</returns>
         public bool IsConnected()
         {
-            if (tox.IsClosed || tox.IsInvalid)
-                throw null;
-
             return ToxFunctions.IsConnected(tox);
         }
 
@@ -212,9 +209,6 @@ namespace SharpTox.Core
         /// <returns>the filenumber on success and -1 on failure.</returns>
         public int NewFileSender(int friendnumber, ulong filesize, string filename)
         {
-            if (tox.IsClosed || tox.IsInvalid)
-                throw null;
-
             return ToxFunctions.NewFileSender(tox, friendnumber, filesize, filename);
         }
 
@@ -229,9 +223,6 @@ namespace SharpTox.Core
         /// <returns>true on success and false on failure.</returns>
         public bool FileSendControl(int friendnumber, int send_receive, int filenumber, ToxFileControl message_id, byte[] data)
         {
-            if (tox.IsClosed || tox.IsInvalid)
-                throw null;
-
             return ToxFunctions.FileSendControl(tox, friendnumber, (byte)send_receive, (byte)filenumber, (byte)message_id, data, (ushort)data.Length);
         }
 
@@ -244,9 +235,6 @@ namespace SharpTox.Core
         /// <returns>true on success and false on failure.</returns>
         public bool FileSendData(int friendnumber, int filenumber, byte[] data)
         {
-            if (tox.IsClosed || tox.IsInvalid)
-                throw null;
-
             return ToxFunctions.FileSendData(tox, friendnumber, filenumber, data);
         }
 
@@ -257,9 +245,6 @@ namespace SharpTox.Core
         /// <returns></returns>
         public int FileDataSize(int friendnumber)
         {
-            if (tox.IsClosed || tox.IsInvalid)
-                throw null;
-
             return ToxFunctions.FileDataSize(tox, friendnumber);
         }
 
@@ -272,9 +257,6 @@ namespace SharpTox.Core
         /// <returns></returns>
         public ulong FileDataRemaining(int friendnumber, int filenumber, int send_receive)
         {
-            if (tox.IsClosed || tox.IsInvalid)
-                throw null;
-
             return ToxFunctions.FileDataRemaining(tox, friendnumber, filenumber, send_receive);
         }
 
@@ -285,9 +267,6 @@ namespace SharpTox.Core
         /// <returns></returns>
         public bool Load(string filename)
         {
-            if (tox.IsClosed || tox.IsInvalid)
-                throw null;
-
             try
             {
                 FileInfo info = new FileInfo(filename);
@@ -312,9 +291,6 @@ namespace SharpTox.Core
         /// <returns></returns>
         public string[] GetGroupNames(int groupnumber)
         {
-            if (tox.IsClosed || tox.IsInvalid)
-                throw null;
-
             return ToxFunctions.GroupGetNames(tox, groupnumber);
         }
 
@@ -344,9 +320,6 @@ namespace SharpTox.Core
         /// <returns>friendnumber</returns>
         public int AddFriend(string id, string message)
         {
-            if (tox.IsClosed || tox.IsInvalid)
-                throw null;
-
             int result = ToxFunctions.AddFriend(tox, id, message);
 
             if (result < 0)
@@ -362,9 +335,6 @@ namespace SharpTox.Core
         /// <returns>friendnumber</returns>
         public int AddFriend(string id)
         {
-            if (tox.IsClosed || tox.IsInvalid)
-                throw null;
-
             int result = ToxFunctions.AddFriend(tox, id, "No message.");
 
             if (result < 0)
@@ -380,9 +350,6 @@ namespace SharpTox.Core
         /// <returns>friendnumber</returns>
         public int AddFriendNoRequest(string id)
         {
-            if (tox.IsClosed || tox.IsInvalid)
-                throw null;
-
             int result = ToxFunctions.AddFriendNoRequest(tox, id);
 
             if (result < 0)
@@ -398,9 +365,6 @@ namespace SharpTox.Core
         /// <returns></returns>
         public bool BootstrapFromNode(ToxNode node)
         {
-            if (tox.IsClosed || tox.IsInvalid)
-                throw null;
-
             return ToxFunctions.BootstrapFromAddress(tox, node.Address, node.Ipv6Enabled, Convert.ToUInt16(node.Port), node.PublicKey.GetString());
         }
 
@@ -411,9 +375,6 @@ namespace SharpTox.Core
         /// <returns></returns>
         public bool FriendExists(int friendnumber)
         {
-            if (tox.IsClosed || tox.IsInvalid)
-                throw null;
-
             return ToxFunctions.FriendExists(tox, friendnumber);
         }
 
@@ -423,9 +384,6 @@ namespace SharpTox.Core
         /// <returns></returns>
         public int GetFriendlistCount()
         {
-            if (tox.IsClosed || tox.IsInvalid)
-                throw null;
-
             return (int)ToxFunctions.CountFriendlist(tox);
         }
 
@@ -435,9 +393,6 @@ namespace SharpTox.Core
         /// <returns></returns>
         public int[] GetFriendlist()
         {
-            if (tox.IsClosed || tox.IsInvalid)
-                throw null;
-
             return ToxFunctions.GetFriendlist(tox);
         }
 
@@ -448,9 +403,6 @@ namespace SharpTox.Core
         /// <returns></returns>
         public string GetName(int friendnumber)
         {
-            if (tox.IsClosed || tox.IsInvalid)
-                throw null;
-
             return ToxTools.RemoveNull(ToxFunctions.GetName(tox, friendnumber));
         }
 
@@ -460,9 +412,6 @@ namespace SharpTox.Core
         /// <returns></returns>
         public string GetSelfName()
         {
-            if (tox.IsClosed || tox.IsInvalid)
-                throw null;
-
             return ToxTools.RemoveNull(ToxFunctions.GetSelfName(tox));
         }
 
@@ -473,9 +422,6 @@ namespace SharpTox.Core
         /// <returns></returns>
         public DateTime GetLastOnline(int friendnumber)
         {
-            if (tox.IsClosed || tox.IsInvalid)
-                throw null;
-
             return ToxTools.EpochToDateTime((long)ToxFunctions.GetLastOnline(tox, friendnumber));
         }
 
@@ -485,9 +431,6 @@ namespace SharpTox.Core
         /// <returns></returns>
         public string GetAddress()
         {
-            if (tox.IsClosed || tox.IsInvalid)
-                throw null;
-
             return ToxTools.HexBinToString(ToxFunctions.GetAddress(tox));
         }
 
@@ -498,9 +441,6 @@ namespace SharpTox.Core
         /// <returns></returns>
         public bool GetIsTyping(int friendnumber)
         {
-            if (tox.IsClosed || tox.IsInvalid)
-                throw null;
-
             return ToxFunctions.GetIsTyping(tox, friendnumber);
         }
 
@@ -511,9 +451,6 @@ namespace SharpTox.Core
         /// <returns></returns>
         public int GetFriendNumber(string id)
         {
-            if (tox.IsClosed || tox.IsInvalid)
-                throw null;
-
             return ToxFunctions.GetFriendNumber(tox, id);
         }
 
@@ -524,9 +461,6 @@ namespace SharpTox.Core
         /// <returns></returns>
         public string GetStatusMessage(int friendnumber)
         {
-            if (tox.IsClosed || tox.IsInvalid)
-                throw null;
-
             return ToxTools.RemoveNull(ToxFunctions.GetStatusMessage(tox, friendnumber));
         }
 
@@ -536,9 +470,6 @@ namespace SharpTox.Core
         /// <returns></returns>
         public string GetSelfStatusMessage()
         {
-            if (tox.IsClosed || tox.IsInvalid)
-                throw null;
-
             return ToxTools.RemoveNull(ToxFunctions.GetSelfStatusMessage(tox));
         }
 
@@ -548,9 +479,6 @@ namespace SharpTox.Core
         /// <returns></returns>
         public int GetOnlineFriendsCount()
         {
-            if (tox.IsClosed || tox.IsInvalid)
-                throw null;
-
             return (int)ToxFunctions.GetNumOnlineFriends(tox);
         }
 
@@ -561,9 +489,6 @@ namespace SharpTox.Core
         /// <returns></returns>
         public int GetFriendConnectionStatus(int friendnumber)
         {
-            if (tox.IsClosed || tox.IsInvalid)
-                throw null;
-
             return ToxFunctions.GetFriendConnectionStatus(tox, friendnumber);
         }
 
@@ -574,9 +499,6 @@ namespace SharpTox.Core
         /// <returns></returns>
         public string GetClientID(int friendnumber)
         {
-            if (tox.IsClosed || tox.IsInvalid)
-                throw null;
-
             return ToxFunctions.GetClientID(tox, friendnumber);
         }
 
@@ -587,9 +509,6 @@ namespace SharpTox.Core
         /// <returns></returns>
         public ToxUserStatus GetUserStatus(int friendnumber)
         {
-            if (tox.IsClosed || tox.IsInvalid)
-                throw null;
-
             return ToxFunctions.GetUserStatus(tox, friendnumber);
         }
 
@@ -599,9 +518,6 @@ namespace SharpTox.Core
         /// <returns></returns>
         public ToxUserStatus GetSelfUserStatus()
         {
-            if (tox.IsClosed || tox.IsInvalid)
-                throw null;
-
             return ToxFunctions.GetSelfUserStatus(tox);
         }
 
@@ -612,9 +528,6 @@ namespace SharpTox.Core
         /// <returns></returns>
         public bool SetName(string name)
         {
-            if (tox.IsClosed || tox.IsInvalid)
-                throw null;
-
             return ToxFunctions.SetName(tox, name);
         }
 
@@ -625,9 +538,6 @@ namespace SharpTox.Core
         /// <returns></returns>
         public bool SetUserStatus(ToxUserStatus status)
         {
-            if (tox.IsClosed || tox.IsInvalid)
-                throw null;
-
             return ToxFunctions.SetUserStatus(tox, status);
         }
 
@@ -638,9 +548,6 @@ namespace SharpTox.Core
         /// <returns></returns>
         public bool SetStatusMessage(string message)
         {
-            if (tox.IsClosed || tox.IsInvalid)
-                throw null;
-
             return ToxFunctions.SetStatusMessage(tox, message);
         }
 
@@ -652,9 +559,6 @@ namespace SharpTox.Core
         /// <returns></returns>
         public bool SetUserIsTyping(int friendnumber, bool is_typing)
         {
-            if (tox.IsClosed || tox.IsInvalid)
-                throw null;
-
             return ToxFunctions.SetUserIsTyping(tox, friendnumber, is_typing);
         }
 
@@ -666,9 +570,6 @@ namespace SharpTox.Core
         /// <returns></returns>
         public int SendMessage(int friendnumber, string message)
         {
-            if (tox.IsClosed || tox.IsInvalid)
-                throw null;
-
             return ToxFunctions.SendMessage(tox, friendnumber, message);
         }
 
@@ -681,9 +582,6 @@ namespace SharpTox.Core
         /// <returns></returns>
         public int SendMessageWithID(int friendnumber, int id, string message)
         {
-            if (tox.IsClosed || tox.IsInvalid)
-                throw null;
-
             return ToxFunctions.SendMessageWithID(tox, friendnumber, id, message);
         }
 
@@ -695,9 +593,6 @@ namespace SharpTox.Core
         /// <returns></returns>
         public int SendAction(int friendnumber, string action)
         {
-            if (tox.IsClosed || tox.IsInvalid)
-                throw null;
-
             return ToxFunctions.SendAction(tox, friendnumber, action);
         }
 
@@ -710,12 +605,7 @@ namespace SharpTox.Core
         /// <returns></returns>
         public int SendActionWithID(int friendnumber, int id, string message)
         {
-
-            if (tox.IsClosed || tox.IsInvalid)
-                throw null;
-
             return ToxFunctions.SendActionWithID(tox, friendnumber, id, message);
-
         }
 
         /// <summary>
@@ -725,9 +615,6 @@ namespace SharpTox.Core
         /// <returns></returns>
         public bool Save(string filename)
         {
-            if (tox.IsClosed || tox.IsInvalid)
-                throw null;
-
             try
             {
                 byte[] bytes = new byte[ToxFunctions.Size(tox)];
@@ -767,9 +654,6 @@ namespace SharpTox.Core
         /// <returns></returns>
         public bool DeleteFriend(int friendnumber)
         {
-            if (tox.IsClosed || tox.IsInvalid)
-                throw null;
-
             return ToxFunctions.DeleteFriend(tox, friendnumber);
         }
 
@@ -781,9 +665,6 @@ namespace SharpTox.Core
         /// <returns></returns>
         public int JoinGroup(int friendnumber, string group_public_key)
         {
-            if (tox.IsClosed || tox.IsInvalid)
-                throw null;
-
             return ToxFunctions.JoinGroupchat(tox, friendnumber, group_public_key);
         }
 
@@ -795,9 +676,6 @@ namespace SharpTox.Core
         /// <returns></returns>
         public string GetGroupMemberName(int groupnumber, int peernumber)
         {
-            if (tox.IsClosed || tox.IsInvalid)
-                throw null;
-
             return ToxTools.RemoveNull(ToxFunctions.GroupPeername(tox, groupnumber, peernumber));
         }
 
@@ -808,9 +686,6 @@ namespace SharpTox.Core
         /// <returns></returns>
         public int GetGroupMemberCount(int groupnumber)
         {
-            if (tox.IsClosed || tox.IsInvalid)
-                throw null;
-
             return ToxFunctions.GroupNumberPeers(tox, groupnumber);
         }
 
@@ -821,9 +696,6 @@ namespace SharpTox.Core
         /// <returns></returns>
         public bool DeleteGroupChat(int groupnumber)
         {
-            if (tox.IsClosed || tox.IsInvalid)
-                throw null;
-
             return ToxFunctions.DeleteGroupchat(tox, groupnumber);
         }
 
@@ -835,9 +707,6 @@ namespace SharpTox.Core
         /// <returns></returns>
         public bool InviteFriend(int friendnumber, int groupnumber)
         {
-            if (tox.IsClosed || tox.IsInvalid)
-                throw null;
-
             return ToxFunctions.InviteFriend(tox, friendnumber, groupnumber);
         }
 
@@ -849,9 +718,6 @@ namespace SharpTox.Core
         /// <returns></returns>
         public bool SendGroupMessage(int groupnumber, string message)
         {
-            if (tox.IsClosed || tox.IsInvalid)
-                throw null;
-
             return ToxFunctions.GroupMessageSend(tox, groupnumber, message);
         }
 
@@ -863,9 +729,6 @@ namespace SharpTox.Core
         /// <returns></returns>
         public bool SendGroupAction(int groupnumber, string action)
         {
-            if (tox.IsClosed || tox.IsInvalid)
-                throw null;
-
             return ToxFunctions.GroupActionSend(tox, groupnumber, action);
         }
 
@@ -875,9 +738,6 @@ namespace SharpTox.Core
         /// <returns></returns>
         public int NewGroup()
         {
-            if (tox.IsClosed || tox.IsInvalid)
-                throw null;
-
             return ToxFunctions.AddGroupchat(tox);
         }
 
@@ -887,9 +747,6 @@ namespace SharpTox.Core
         /// <returns></returns>
         public uint GetNospam()
         {
-            if (tox.IsClosed || tox.IsInvalid)
-                throw null;
-
             return ToxFunctions.GetNospam(tox);
         }
 
@@ -899,9 +756,6 @@ namespace SharpTox.Core
         /// <param name="nospam"></param>
         public void SetNospam(uint nospam)
         {
-            if (tox.IsClosed || tox.IsInvalid)
-                throw null;
-
             ToxFunctions.SetNospam(tox, nospam);
         }
 
@@ -921,9 +775,6 @@ namespace SharpTox.Core
         /// <param name="send_receipts"></param>
         public void SetSendsReceipts(int friendnumber, bool send_receipts)
         {
-            if (tox.IsClosed || tox.IsInvalid)
-                throw null;
-
             ToxFunctions.SetSendsReceipts(tox, friendnumber, send_receipts);
         }
 
@@ -933,10 +784,6 @@ namespace SharpTox.Core
         /// <returns></returns>
         public ToxKeyPair GetKeys()
         {
-
-            if (tox.IsClosed || tox.IsInvalid)
-                throw null;
-
             return ToxFunctions.GetKeys(tox);
         }
 

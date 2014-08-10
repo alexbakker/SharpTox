@@ -42,9 +42,6 @@ namespace SharpTox.Dns
         [Obsolete("This function is obsolete, use Dispose() instead", true)]
         public void Kill()
         {
-            if (tox_dns3.IsClosed || tox_dns3.IsInvalid)
-                throw null;
-
             tox_dns3.Dispose();
         }
 
@@ -56,9 +53,6 @@ namespace SharpTox.Dns
         /// <returns></returns>
         public string GenerateDns3String(string name, out uint request_id)
         {
-            if (tox_dns3.IsClosed || tox_dns3.IsInvalid)
-                throw null;
-
             uint id = new uint();
             string result = ToxDnsFunctions.GenerateDns3String(tox_dns3, name, ref id);
 
@@ -74,9 +68,6 @@ namespace SharpTox.Dns
         /// <returns></returns>
         public string DecryptDns3TXT(string dns3_string, uint request_id)
         {
-            if (tox_dns3.IsClosed || tox_dns3.IsInvalid)
-                throw null;
-
             return ToxDnsFunctions.DecryptDns3TXT(tox_dns3, dns3_string, request_id);
         }
 
