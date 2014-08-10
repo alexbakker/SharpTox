@@ -94,7 +94,6 @@ namespace SharpTox.Av
         /// The invoke delegate to use when raising events. Note that OnReceivedAudio and OnReceivedVideo will not use this.
         /// </summary>
         public InvokeDelegate Invoker;
-        private object obj;
 
         /// <summary>
         /// The codec settings used for this instance of toxav.
@@ -137,7 +136,6 @@ namespace SharpTox.Av
             MaxCalls = max_calls;
             CodecSettings = settings;
 
-            obj = new object();
             Invoker = new InvokeDelegate(dummyinvoker);
 
             callbacks();
@@ -356,7 +354,7 @@ namespace SharpTox.Av
         }
 
         /// <summary>
-        /// Gets the pointer of this toxav instance.
+        /// Gets the handle of this toxav instance.
         /// </summary>
         /// <returns></returns>
         public ToxAvHandle GetHandle()

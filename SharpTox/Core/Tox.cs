@@ -145,8 +145,6 @@ namespace SharpTox.Core
         private ToxHandle tox;
         private Thread thread;
 
-        private object obj;
-
         /// <summary>
         /// Setting this to false will make sure that resolving sticks strictly to IPv4 addresses.
         /// </summary>
@@ -161,7 +159,6 @@ namespace SharpTox.Core
             tox = ToxFunctions.New(ipv6enabled);
             Ipv6Enabled = ipv6enabled;
 
-            obj = new object();
             Invoker = new InvokeDelegate(dummyinvoker);
 
             callbacks();
@@ -909,7 +906,7 @@ namespace SharpTox.Core
         }
 
         /// <summary>
-        /// Retrieves the pointer of this tox instance.
+        /// Retrieves the handle of this tox instance.
         /// </summary>
         /// <returns></returns>
         public ToxHandle GetHandle()

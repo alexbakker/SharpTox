@@ -3,13 +3,11 @@
 namespace SharpTox.Dns
 {
     /// <summary>
-    /// Represents an instance of toxdns.
+    /// Represents an instance of tox dns3.
     /// </summary>
-    public class ToxDns
+    public class ToxDns : IDisposable
     {
-        private IntPtr tox_dns3;
-
-        private Object obj;
+        private ToxDnsHandle tox_dns3;
 
         /// <summary>
         /// Initializes a new instance of tox dns3.
@@ -17,26 +15,37 @@ namespace SharpTox.Dns
         /// <param name="public_key"></param>
         public ToxDns(string public_key)
         {
-            obj = new Object();
-
             tox_dns3 = ToxDnsFunctions.New(public_key);
 
-            if (tox_dns3 == IntPtr.Zero)
+            if (tox_dns3.IsClosed || tox_dns3.IsInvalid)
                 throw new Exception("Could not create a new tox_dns3 instance with the provided public_key");
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        //dispose pattern as described on msdn for a class that uses a safe handle
+        private void Dispose(bool disposing)
+        {
+            if (disposing) { }
+
+            if (!tox_dns3.IsInvalid && !tox_dns3.IsClosed && tox_dns3 != null)
+                tox_dns3.Dispose();
         }
 
         /// <summary>
         /// Destroys the tox dns3 object.
         /// </summary>
+        [Obsolete("This function is obsolete, use Dispose() instead", true)]
         public void Kill()
         {
-            lock (obj)
-            {
-                if (tox_dns3 == IntPtr.Zero)
-                    throw null;
+            if (tox_dns3.IsClosed || tox_dns3.IsInvalid)
+                throw null;
 
-                ToxDnsFunctions.Kill(tox_dns3);
-            }
+            tox_dns3.Dispose();
         }
 
         /// <summary>
@@ -47,17 +56,14 @@ namespace SharpTox.Dns
         /// <returns></returns>
         public string GenerateDns3String(string name, out uint request_id)
         {
-            lock (obj)
-            {
-                if (tox_dns3 == IntPtr.Zero)
-                    throw null;
+            if (tox_dns3.IsClosed || tox_dns3.IsInvalid)
+                throw null;
 
-                uint id = new uint();
-                string result = ToxDnsFunctions.GenerateDns3String(tox_dns3, name, ref id);
+            uint id = new uint();
+            string result = ToxDnsFunctions.GenerateDns3String(tox_dns3, name, ref id);
 
-                request_id = id;
-                return result;
-            }
+            request_id = id;
+            return result;
         }
 
         /// <summary>
@@ -68,20 +74,17 @@ namespace SharpTox.Dns
         /// <returns></returns>
         public string DecryptDns3TXT(string dns3_string, uint request_id)
         {
-            lock (obj)
-            {
-                if (tox_dns3 == IntPtr.Zero)
-                    throw null;
+            if (tox_dns3.IsClosed || tox_dns3.IsInvalid)
+                throw null;
 
-                return ToxDnsFunctions.DecryptDns3TXT(tox_dns3, dns3_string, request_id);
-            }
+            return ToxDnsFunctions.DecryptDns3TXT(tox_dns3, dns3_string, request_id);
         }
 
         /// <summary>
-        /// Retrieves the pointer of this tox dns3 object.
+        /// Retrieves the handle of this tox dns3 object.
         /// </summary>
         /// <returns></returns>
-        public IntPtr GetPointer()
+        public ToxDnsHandle GetHandle()
         {
             return tox_dns3;
         }
