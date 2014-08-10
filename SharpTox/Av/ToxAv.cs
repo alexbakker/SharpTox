@@ -1,6 +1,7 @@
 ﻿#pragma warning disable 1591
 
 using System;
+using SharpTox.Core;
 
 namespace SharpTox.Av
 {
@@ -11,7 +12,7 @@ namespace SharpTox.Av
     /// <summary>
     /// Represents an instance of toxav.
     /// </summary>
-    public class ToxAv
+    public class ToxAv : IDisposable
     {
         /// <summary>
         /// Occurs when a call gets canceled.
@@ -32,7 +33,7 @@ namespace SharpTox.Av
         /// Occurs when an invite for a call is received.
         /// </summary>
         public event CallstateChangedDelegate OnInvite;
-        
+
         /// <summary>
         /// Occurs when the person on the other end timed out.
         /// </summary>
@@ -116,7 +117,7 @@ namespace SharpTox.Av
             audio_channels = 1
         };
 
-        private IntPtr toxav;
+        private ToxAvHandle toxav;
 
         /// <summary>
         /// The maximum amount of calls this instance of toxav is allowed to have.
@@ -129,7 +130,7 @@ namespace SharpTox.Av
         /// <param name="tox"></param>
         /// <param name="settings"></param>
         /// <param name="max_calls"></param>
-        public ToxAv(IntPtr tox, ToxAvCodecSettings settings, int max_calls)
+        public ToxAv(ToxHandle tox, ToxAvCodecSettings settings, int max_calls)
         {
             toxav = ToxAvFunctions.New(tox, max_calls);
 
@@ -142,18 +143,31 @@ namespace SharpTox.Av
             callbacks();
         }
 
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        //dispose pattern as described on msdn for a class that uses a safe handle
+        private void Dispose(bool disposing)
+        {
+            if (disposing) { }
+
+            if (!toxav.IsInvalid && !toxav.IsClosed && toxav != null)
+                toxav.Dispose();
+        }
+
         /// <summary>
         /// Kills this toxav instance.
         /// </summary>
+        [Obsolete("This function is obsolete, use Dispose() instead", true)]
         public void Kill()
         {
-            lock (obj)
-            {
-                if (toxav == IntPtr.Zero)
-                    throw null;
+            if (toxav.IsClosed || toxav.IsInvalid)
+                throw null;
 
-                ToxAvFunctions.Kill(toxav);
-            }
+            toxav.Dispose();
         }
 
         /// <summary>
@@ -165,13 +179,10 @@ namespace SharpTox.Av
         /// <returns></returns>
         public ToxAvError Cancel(int call_index, int friend_number, string reason)
         {
-            lock (obj)
-            {
-                if (toxav == IntPtr.Zero)
-                    throw null;
+            if (toxav.IsClosed || toxav.IsInvalid)
+                throw null;
 
-                return ToxAvFunctions.Cancel(toxav, call_index, friend_number, reason);
-            }
+            return ToxAvFunctions.Cancel(toxav, call_index, friend_number, reason);
         }
 
         /// <summary>
@@ -182,13 +193,10 @@ namespace SharpTox.Av
         /// <returns></returns>
         public ToxAvError Answer(int call_index, ToxAvCodecSettings settings)
         {
-            lock (obj)
-            {
-                if (toxav == IntPtr.Zero)
-                    throw null;
+            if (toxav.IsClosed || toxav.IsInvalid)
+                throw null;
 
-                return ToxAvFunctions.Answer(toxav, call_index, settings);
-            }
+            return ToxAvFunctions.Answer(toxav, call_index, settings);
         }
 
         /// <summary>
@@ -201,13 +209,10 @@ namespace SharpTox.Av
         /// <returns></returns>
         public ToxAvError Call(int friend_number, ToxAvCodecSettings settings, int ringing_seconds, out int call_index)
         {
-            lock (obj)
-            {
-                if (toxav == IntPtr.Zero)
-                    throw null;
+            if (toxav.IsClosed || toxav.IsInvalid)
+                throw null;
 
-                return ToxAvFunctions.Call(toxav, friend_number, settings, ringing_seconds, out call_index);
-            }
+            return ToxAvFunctions.Call(toxav, friend_number, settings, ringing_seconds, out call_index);
         }
 
         /// <summary>
@@ -217,13 +222,10 @@ namespace SharpTox.Av
         /// <returns></returns>
         public ToxAvError Hangup(int call_index)
         {
-            lock (obj)
-            {
-                if (toxav == IntPtr.Zero)
-                    throw null;
+            if (toxav.IsClosed || toxav.IsInvalid)
+                throw null;
 
-                return ToxAvFunctions.Hangup(toxav, call_index);
-            }
+            return ToxAvFunctions.Hangup(toxav, call_index);
         }
 
         /// <summary>
@@ -234,13 +236,10 @@ namespace SharpTox.Av
         /// <returns></returns>
         public ToxAvError Reject(int call_index, string reason)
         {
-            lock (obj)
-            {
-                if (toxav == IntPtr.Zero)
-                    throw null;
+            if (toxav.IsClosed || toxav.IsInvalid)
+                throw null;
 
-                return ToxAvFunctions.Reject(toxav, call_index, reason);
-            }
+            return ToxAvFunctions.Reject(toxav, call_index, reason);
         }
 
         /// <summary>
@@ -250,13 +249,10 @@ namespace SharpTox.Av
         /// <returns></returns>
         public ToxAvError StopCall(int call_index)
         {
-            lock (obj)
-            {
-                if (toxav == IntPtr.Zero)
-                    throw null;
+            if (toxav.IsClosed || toxav.IsInvalid)
+                throw null;
 
-                return ToxAvFunctions.StopCall(toxav, call_index);
-            }
+            return ToxAvFunctions.StopCall(toxav, call_index);
         }
 
         /// <summary>
@@ -269,13 +265,10 @@ namespace SharpTox.Av
         /// <returns></returns>
         public ToxAvError PrepareTransmission(int call_index, int jbuf_size, int VAD_treshold, bool support_video)
         {
-            lock (obj)
-            {
-                if (toxav == IntPtr.Zero)
-                    throw null;
+            if (toxav.IsClosed || toxav.IsInvalid)
+                throw null;
 
-                return ToxAvFunctions.PrepareTransmission(toxav, call_index, (uint)jbuf_size, (uint)VAD_treshold, support_video);
-            }
+            return ToxAvFunctions.PrepareTransmission(toxav, call_index, (uint)jbuf_size, (uint)VAD_treshold, support_video);
         }
 
         /// <summary>
@@ -285,13 +278,10 @@ namespace SharpTox.Av
         /// <returns></returns>
         public ToxAvError KillTransmission(int call_index)
         {
-            lock (obj)
-            {
-                if (toxav == IntPtr.Zero)
-                    throw null;
+            if (toxav.IsClosed || toxav.IsInvalid)
+                throw null;
 
-                return ToxAvFunctions.KillTransmission(toxav, call_index);
-            }
+            return ToxAvFunctions.KillTransmission(toxav, call_index);
         }
 
         /// <summary>
@@ -302,13 +292,10 @@ namespace SharpTox.Av
         /// <returns></returns>
         public int GetPeerID(int call_index, int peer)
         {
-            lock (obj)
-            {
-                if (toxav == IntPtr.Zero)
-                    throw null;
+            if (toxav.IsClosed || toxav.IsInvalid)
+                throw null;
 
-                return ToxAvFunctions.GetPeerID(toxav, call_index, peer);
-            }
+            return ToxAvFunctions.GetPeerID(toxav, call_index, peer);
         }
 
         /// <summary>
@@ -319,13 +306,10 @@ namespace SharpTox.Av
         /// <returns></returns>
         public bool CapabilitySupported(int call_index, ToxAvCapabilities capability)
         {
-            lock (obj)
-            {
-                if (toxav == IntPtr.Zero)
-                    throw null;
+            if (toxav.IsClosed || toxav.IsInvalid)
+                throw null;
 
-                return ToxAvFunctions.CapabilitySupported(toxav, call_index, capability);
-            }
+            return ToxAvFunctions.CapabilitySupported(toxav, call_index, capability);
         }
 
         /// <summary>
@@ -334,13 +318,10 @@ namespace SharpTox.Av
         /// <returns></returns>
         public IntPtr GetTox()
         {
-            lock (obj)
-            {
-                if (toxav == IntPtr.Zero)
-                    throw null;
+            if (toxav.IsClosed || toxav.IsInvalid)
+                throw null;
 
-                return ToxAvFunctions.GetTox(toxav);
-            }
+            return ToxAvFunctions.GetTox(toxav);
         }
 
         /// <summary>
@@ -352,13 +333,10 @@ namespace SharpTox.Av
         /// <returns></returns>
         public ToxAvError SendAudio(int call_index, ref byte[] frame, int frame_size)
         {
-            lock (obj)
-            {
-                if (toxav == IntPtr.Zero)
-                    throw null;
+            if (toxav.IsClosed || toxav.IsInvalid)
+                throw null;
 
-                return ToxAvFunctions.SendAudio(toxav, call_index, ref frame, (uint)frame_size);
-            }
+            return ToxAvFunctions.SendAudio(toxav, call_index, ref frame, (uint)frame_size);
         }
 
         /// <summary>
@@ -371,20 +349,17 @@ namespace SharpTox.Av
         /// <returns></returns>
         public int PrepareAudioFrame(int call_index, byte[] dest, int dest_max, ushort[] frame)
         {
-            lock (obj)
-            {
-                if (toxav == IntPtr.Zero)
-                    throw null;
+            if (toxav.IsClosed || toxav.IsInvalid)
+                throw null;
 
-                return ToxAvFunctions.PrepareAudioFrame(toxav, call_index, dest, dest_max, frame, frame.Length);
-            }
+            return ToxAvFunctions.PrepareAudioFrame(toxav, call_index, dest, dest_max, frame, frame.Length);
         }
 
         /// <summary>
         /// Gets the pointer of this toxav instance.
         /// </summary>
         /// <returns></returns>
-        public IntPtr GetPointer()
+        public ToxAvHandle GetHandle()
         {
             return toxav;
         }
@@ -399,13 +374,10 @@ namespace SharpTox.Av
         /// <returns></returns>
         public int HasActivity(int call_index, short[] pcm, ushort frame_size, float ref_energy)
         {
-            lock (obj)
-            {
-                if (toxav == IntPtr.Zero)
-                    throw null;
+            if (toxav.IsClosed || toxav.IsInvalid)
+                throw null;
 
-                return ToxAvFunctions.HasActivity(toxav, call_index, pcm, frame_size, ref_energy);
-            }
+            return ToxAvFunctions.HasActivity(toxav, call_index, pcm, frame_size, ref_energy);
         }
 
         /// <summary>
@@ -415,13 +387,10 @@ namespace SharpTox.Av
         /// <returns></returns>
         public ToxAvCallState GetCallState(int call_index)
         {
-            lock (obj)
-            {
-                if (toxav == IntPtr.Zero)
-                    throw null;
+            if (toxav.IsClosed || toxav.IsInvalid)
+                throw null;
 
-                return ToxAvFunctions.GetCallState(toxav, call_index);
-            }
+            return ToxAvFunctions.GetCallState(toxav, call_index);
         }
 
         /// <summary>
@@ -433,13 +402,10 @@ namespace SharpTox.Av
         /// <returns></returns>
         public ToxAvError ChangeSettings(int call_index, int peer_id, ToxAvCodecSettings settings)
         {
-            lock (obj)
-            {
-                if (toxav == IntPtr.Zero)
-                    throw null;
+            if (toxav.IsClosed || toxav.IsInvalid)
+                throw null;
 
-                return ToxAvFunctions.ChangeSettings(toxav, call_index, peer_id, settings);
-            }
+            return ToxAvFunctions.ChangeSettings(toxav, call_index, peer_id, settings);
         }
 
         /// <summary>
@@ -450,13 +416,10 @@ namespace SharpTox.Av
         /// <returns></returns>
         public ToxAvCodecSettings GetPeerCodecSettings(int call_index, int peer)
         {
-            lock (obj)
-            {
-                if (toxav == IntPtr.Zero)
-                    throw null;
+            if (toxav.IsClosed || toxav.IsInvalid)
+                throw null;
 
-                return ToxAvFunctions.GetPeerCodecSettings(toxav, call_index, peer);
-            }
+            return ToxAvFunctions.GetPeerCodecSettings(toxav, call_index, peer);
         }
 
         private object dummyinvoker(Delegate method, params object[] p)
