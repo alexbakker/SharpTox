@@ -907,7 +907,7 @@ namespace SharpTox.Core
             if (disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
-            return ToxFunctions.DeleteGroupchat(tox, groupnumber) == 0;
+            return ToxFunctions.DelGroupchat(tox, groupnumber) == 0;
         }
 
         /// <summary>

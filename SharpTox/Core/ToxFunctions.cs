@@ -141,7 +141,7 @@ namespace SharpTox.Core
         public static extern int AddGroupchat(ToxHandle tox);
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_del_groupchat")]
-        public static extern int DeleteGroupchat(ToxHandle tox, int groupnumber);
+        public static extern int DelGroupchat(ToxHandle tox, int groupnumber);
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_group_peername")]
         public static extern int GroupPeername(ToxHandle tox, int groupnumber, int peernumber, byte[] name);
