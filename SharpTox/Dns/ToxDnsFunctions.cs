@@ -10,49 +10,17 @@ namespace SharpTox.Dns
     {
         const string dll = "libtox";
 
-        [DllImport(dll, CallingConvention = CallingConvention.Cdecl)]
-        private static extern ToxDnsHandle tox_dns3_new(byte[] public_key);
-        public static ToxDnsHandle New(string public_key)
-        {
-            return tox_dns3_new(ToxTools.StringToHexBin(public_key));
-        }
+        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_dns3_new")]
+        public static extern ToxDnsHandle New(byte[] public_key);
 
-        [DllImport(dll, CallingConvention = CallingConvention.Cdecl)]
-        private static extern void tox_dns3_kill(IntPtr dns3_object);
-        public static void Kill(IntPtr dns3_object)
-        {
-            tox_dns3_kill(dns3_object);
-        }
+        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_dns3_kill")]
+        public static extern void Kill(IntPtr dns3_object);
 
-        [DllImport(dll, CallingConvention = CallingConvention.Cdecl)]
-        private static extern int tox_generate_dns3_string(ToxDnsHandle dns3_object, byte[] str, ushort str_max_len, ref uint request_id, byte[] name, byte name_len);
-        public static string GenerateDns3String(ToxDnsHandle dns3_object, string name, ref uint request_id)
-        {
-            byte[] bytes = Encoding.UTF8.GetBytes(name);
-            byte[] result = new byte[1024];
+        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_generate_dns3_string")]
+        public static extern int GenerateDns3String(ToxDnsHandle dns3_object, byte[] str, ushort str_max_len, ref uint request_id, byte[] name, byte name_len);
 
-            int length = tox_generate_dns3_string(dns3_object, result, (ushort)result.Length, ref request_id, bytes, (byte)bytes.Length);
-
-            if (length != -1)
-                return Encoding.UTF8.GetString(result, 0, length);
-            else
-                throw new Exception("Failed to generate a dns3 string");
-        }
-
-        [DllImport(dll, CallingConvention = CallingConvention.Cdecl)]
-        private static extern int tox_decrypt_dns3_TXT(ToxDnsHandle dns3_object, byte[] tox_id, byte[] id_record, uint id_record_len, uint request_id);
-        public static string DecryptDns3TXT(ToxDnsHandle dns3_object, string id_record, uint request_id)
-        {
-            byte[] id = new byte[32 + sizeof(uint) + sizeof(ushort)];
-            byte[] id_record_bytes = Encoding.UTF8.GetBytes(id_record);
-
-            int result = tox_decrypt_dns3_TXT(dns3_object, id, id_record_bytes, (uint)id_record_bytes.Length, (uint)request_id);
-
-            if (result == 0)
-                return ToxTools.HexBinToString(id);
-            else
-                throw new Exception("Could not decrypt and decode id_record");
-        }
+        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_decrypt_dns3_TXT")]
+        public static extern int DecryptDns3TXT(ToxDnsHandle dns3_object, byte[] tox_id, byte[] id_record, uint id_record_len, uint request_id);
     }
 }
 

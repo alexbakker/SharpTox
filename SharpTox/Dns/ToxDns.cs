@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 
 namespace SharpTox.Dns
 {
@@ -16,7 +17,7 @@ namespace SharpTox.Dns
         /// <param name="public_key"></param>
         public ToxDns(string public_key)
         {
-            tox_dns3 = ToxDnsFunctions.New(public_key);
+            tox_dns3 = ToxDnsFunctions.New(ToxTools.StringToHexBin(public_key));
 
             if (tox_dns3 == null || tox_dns3.IsInvalid)
                 throw new Exception("Could not create a new tox_dns3 instance with the provided public_key");
@@ -62,11 +63,17 @@ namespace SharpTox.Dns
             if (disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
-            uint id = new uint();
-            string result = ToxDnsFunctions.GenerateDns3String(tox_dns3, name, ref id);
+            byte[] bytes = Encoding.UTF8.GetBytes(name);
+            byte[] result = new byte[1024];
 
+            uint id = new uint();
+            int length = ToxDnsFunctions.GenerateDns3String(tox_dns3, result, (ushort)result.Length, ref id, bytes, (byte)bytes.Length);
             request_id = id;
-            return result;
+
+            if (length != -1)
+                return Encoding.UTF8.GetString(result, 0, length);
+            else
+                throw new Exception("Failed to generate a dns3 string");
         }
 
         /// <summary>
@@ -80,7 +87,15 @@ namespace SharpTox.Dns
             if (disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
-            return ToxDnsFunctions.DecryptDns3TXT(tox_dns3, dns3_string, request_id);
+            byte[] id = new byte[32 + sizeof(uint) + sizeof(ushort)];
+            byte[] id_record_bytes = Encoding.UTF8.GetBytes(dns3_string);
+
+            int result = ToxDnsFunctions.DecryptDns3TXT(tox_dns3, id, id_record_bytes, (uint)id_record_bytes.Length, (uint)request_id);
+
+            if (result == 0)
+                return ToxTools.HexBinToString(id);
+            else
+                throw new Exception("Could not decrypt and decode id_record");
         }
 
         /// <summary>
