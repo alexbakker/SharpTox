@@ -169,10 +169,20 @@ namespace SharpTox.Core
 
         public void Dispose()
         {
-            if (thread != null)
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        //dispose pattern as described on msdn for a class that uses a safe handle
+        private void Dispose(bool disposing)
+        {
+            if (disposing)
             {
-                thread.Abort();
-                thread.Join();
+                if (thread != null)
+                {
+                    thread.Abort();
+                    thread.Join();
+                }
             }
 
             if (!tox.IsInvalid && !tox.IsClosed && tox != null)
