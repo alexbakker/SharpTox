@@ -8,6 +8,7 @@ namespace SharpTox.Dns
     public class ToxDns : IDisposable
     {
         private ToxDnsHandle tox_dns3;
+        private bool disposed = false;
 
         /// <summary>
         /// Initializes a new instance of tox dns3.
@@ -17,7 +18,7 @@ namespace SharpTox.Dns
         {
             tox_dns3 = ToxDnsFunctions.New(public_key);
 
-            if (tox_dns3.IsClosed || tox_dns3.IsInvalid)
+            if (tox_dns3 == null || tox_dns3.IsInvalid)
                 throw new Exception("Could not create a new tox_dns3 instance with the provided public_key");
         }
 
@@ -30,10 +31,15 @@ namespace SharpTox.Dns
         //dispose pattern as described on msdn for a class that uses a safe handle
         private void Dispose(bool disposing)
         {
+            if (disposed)
+                return;
+
             if (disposing) { }
 
             if (!tox_dns3.IsInvalid && !tox_dns3.IsClosed && tox_dns3 != null)
                 tox_dns3.Dispose();
+
+            disposed = true;
         }
 
         /// <summary>
@@ -53,6 +59,9 @@ namespace SharpTox.Dns
         /// <returns></returns>
         public string GenerateDns3String(string name, out uint request_id)
         {
+            if (disposed)
+                throw new ObjectDisposedException(GetType().FullName);
+
             uint id = new uint();
             string result = ToxDnsFunctions.GenerateDns3String(tox_dns3, name, ref id);
 
@@ -68,6 +77,9 @@ namespace SharpTox.Dns
         /// <returns></returns>
         public string DecryptDns3TXT(string dns3_string, uint request_id)
         {
+            if (disposed)
+                throw new ObjectDisposedException(GetType().FullName);
+
             return ToxDnsFunctions.DecryptDns3TXT(tox_dns3, dns3_string, request_id);
         }
 
@@ -77,6 +89,9 @@ namespace SharpTox.Dns
         /// <returns></returns>
         public ToxDnsHandle GetHandle()
         {
+            if (disposed)
+                throw new ObjectDisposedException(GetType().FullName);
+
             return tox_dns3;
         }
     }
