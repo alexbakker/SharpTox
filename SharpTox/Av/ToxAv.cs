@@ -204,7 +204,7 @@ namespace SharpTox.Av
             if (disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
-            return ToxAvFunctions.Answer(toxav, call_index, settings);
+            return ToxAvFunctions.Answer(toxav, call_index, ref settings);
         }
 
         /// <summary>
@@ -220,7 +220,11 @@ namespace SharpTox.Av
             if (disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
-            return ToxAvFunctions.Call(toxav, friend_number, settings, ringing_seconds, out call_index);
+            int index = new int();
+            ToxAvError result = ToxAvFunctions.Call(toxav, ref index, friend_number, ref settings, ringing_seconds);
+
+            call_index = index;
+            return result;
         }
 
         /// <summary>
@@ -276,7 +280,7 @@ namespace SharpTox.Av
             if (disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
-            return ToxAvFunctions.PrepareTransmission(toxav, call_index, (uint)jbuf_size, (uint)VAD_treshold, support_video);
+            return ToxAvFunctions.PrepareTransmission(toxav, call_index, (uint)jbuf_size, (uint)VAD_treshold, support_video ? 1 : 0);
         }
 
         /// <summary>
@@ -317,7 +321,7 @@ namespace SharpTox.Av
             if (disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
-            return ToxAvFunctions.CapabilitySupported(toxav, call_index, capability);
+            return ToxAvFunctions.CapabilitySupported(toxav, call_index, capability) == 1;
         }
 
         /// <summary>
@@ -339,12 +343,12 @@ namespace SharpTox.Av
         /// <param name="frame"></param>
         /// <param name="frame_size"></param>
         /// <returns></returns>
-        public ToxAvError SendAudio(int call_index, ref byte[] frame, int frame_size)
+        public ToxAvError SendAudio(int call_index, byte[] frame, int frame_size)
         {
             if (disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
-            return ToxAvFunctions.SendAudio(toxav, call_index, ref frame, (uint)frame_size);
+            return ToxAvFunctions.SendAudio(toxav, call_index, frame, (uint)frame_size);
         }
 
         /// <summary>
@@ -408,15 +412,14 @@ namespace SharpTox.Av
         /// Changes the type of an in-progress call
         /// </summary>
         /// <param name="call_index"></param>
-        /// <param name="peer_id"></param>
         /// <param name="settings"></param>
         /// <returns></returns>
-        public ToxAvError ChangeSettings(int call_index, int peer_id, ToxAvCodecSettings settings)
+        public ToxAvError ChangeSettings(int call_index, ToxAvCodecSettings settings)
         {
             if (disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
-            return ToxAvFunctions.ChangeSettings(toxav, call_index, peer_id, settings);
+            return ToxAvFunctions.ChangeSettings(toxav, call_index, ref settings);
         }
 
         /// <summary>
@@ -430,7 +433,10 @@ namespace SharpTox.Av
             if (disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
-            return ToxAvFunctions.GetPeerCodecSettings(toxav, call_index, peer);
+            ToxAvCodecSettings settings = new ToxAvCodecSettings();
+            ToxAvFunctions.GetPeerCodecSettings(toxav, call_index, peer, ref settings);
+
+            return settings;
         }
 
         private object dummyinvoker(Delegate method, params object[] p)
@@ -444,67 +450,67 @@ namespace SharpTox.Av
             {
                 if (OnCancel != null)
                     Invoker(OnCancel, call_index, args);
-            }), ToxAvCallbackID.OnCancel);
+            }), ToxAvCallbackID.OnCancel, IntPtr.Zero);
 
             ToxAvFunctions.RegisterCallstateCallback(toxav, onendcallback = new ToxAvDelegates.CallstateCallback((IntPtr agent, int call_index, IntPtr args) =>
             {
                 if (OnEnd != null)
                     Invoker(OnEnd, call_index, args);
-            }), ToxAvCallbackID.OnEnd);
+            }), ToxAvCallbackID.OnEnd, IntPtr.Zero);
 
             ToxAvFunctions.RegisterCallstateCallback(toxav, onendingcallback = new ToxAvDelegates.CallstateCallback((IntPtr agent, int call_index, IntPtr args) =>
             {
                 if (OnEnding != null)
                     Invoker(OnEnding, call_index, args);
-            }), ToxAvCallbackID.OnEnding);
+            }), ToxAvCallbackID.OnEnding, IntPtr.Zero);
 
             ToxAvFunctions.RegisterCallstateCallback(toxav, oninvitecallback = new ToxAvDelegates.CallstateCallback((IntPtr agent, int call_index, IntPtr args) =>
             {
                 if (OnInvite != null)
                     Invoker(OnInvite, call_index, args);
-            }), ToxAvCallbackID.OnInvite);
+            }), ToxAvCallbackID.OnInvite, IntPtr.Zero);
 
             ToxAvFunctions.RegisterCallstateCallback(toxav, onpeertimeoutcallback = new ToxAvDelegates.CallstateCallback((IntPtr agent, int call_index, IntPtr args) =>
             {
                 if (OnPeerTimeout != null)
                     Invoker(OnPeerTimeout, call_index, args);
-            }), ToxAvCallbackID.OnPeerTimeout);
+            }), ToxAvCallbackID.OnPeerTimeout, IntPtr.Zero);
 
             ToxAvFunctions.RegisterCallstateCallback(toxav, onrejectcallback = new ToxAvDelegates.CallstateCallback((IntPtr agent, int call_index, IntPtr args) =>
             {
                 if (OnReject != null)
                     Invoker(OnReject, call_index, args);
-            }), ToxAvCallbackID.OnReject);
+            }), ToxAvCallbackID.OnReject, IntPtr.Zero);
 
             ToxAvFunctions.RegisterCallstateCallback(toxav, onrequesttimeoutcallback = new ToxAvDelegates.CallstateCallback((IntPtr agent, int call_index, IntPtr args) =>
             {
                 if (OnRequestTimeout != null)
                     Invoker(OnRequestTimeout, call_index, args);
-            }), ToxAvCallbackID.OnRequestTimeout);
+            }), ToxAvCallbackID.OnRequestTimeout, IntPtr.Zero);
 
             ToxAvFunctions.RegisterCallstateCallback(toxav, onringingcallback = new ToxAvDelegates.CallstateCallback((IntPtr agent, int call_index, IntPtr args) =>
             {
                 if (OnRinging != null)
                     Invoker(OnRinging, call_index, args);
-            }), ToxAvCallbackID.OnRinging);
+            }), ToxAvCallbackID.OnRinging, IntPtr.Zero);
 
             ToxAvFunctions.RegisterCallstateCallback(toxav, onstartcallback = new ToxAvDelegates.CallstateCallback((IntPtr agent, int call_index, IntPtr args) =>
             {
                 if (OnStart != null)
                     Invoker(OnStart, call_index, args);
-            }), ToxAvCallbackID.OnStart);
+            }), ToxAvCallbackID.OnStart, IntPtr.Zero);
 
             ToxAvFunctions.RegisterCallstateCallback(toxav, onstartingcallback = new ToxAvDelegates.CallstateCallback((IntPtr agent, int call_index, IntPtr args) =>
             {
                 if (OnStarting != null)
                     Invoker(OnStarting, call_index, args);
-            }), ToxAvCallbackID.OnStarting);
+            }), ToxAvCallbackID.OnStarting, IntPtr.Zero);
 
             ToxAvFunctions.RegisterCallstateCallback(toxav, onmediachangecallback = new ToxAvDelegates.CallstateCallback((IntPtr agent, int call_index, IntPtr args) =>
             {
                 if (OnMediaChange != null)
                     Invoker(OnMediaChange, call_index, args);
-            }), ToxAvCallbackID.OnMediaChange);
+            }), ToxAvCallbackID.OnMediaChange, IntPtr.Zero);
 
             ToxAvFunctions.RegisterAudioReceiveCallback(toxav, onreceivedaudiocallback = new ToxAvDelegates.AudioReceiveCallback((IntPtr ptr, int call_index, short[] frame, int frame_size, IntPtr userdata) =>
             {
