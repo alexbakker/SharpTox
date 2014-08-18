@@ -17,7 +17,9 @@ class Program
 
     static void Main(string[] args)
     {
-        tox = new Tox(false);
+        ToxOptions options = new ToxOptions(true, false);
+
+        tox = new Tox(options);
         tox.OnFriendRequest += tox_OnFriendRequest;
         tox.OnFriendMessage += tox_OnFriendMessage;
 
