@@ -18,10 +18,10 @@ namespace SharpTox.Core
 
         #region Functions
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_new")]
-        public static extern ToxHandle New(byte ipv6enabled);
+        public static extern ToxHandle New(ref ToxOptions options);
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_bootstrap_from_address")]
-        public static extern int BootstrapFromAddress(ToxHandle tox, string address, byte ipv6enabled, ushort port, byte[] public_key);
+        public static extern int BootstrapFromAddress(ToxHandle tox, string address, ushort port, byte[] public_key);
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_isconnected")]
         public static extern int IsConnected(ToxHandle tox);

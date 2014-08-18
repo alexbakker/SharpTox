@@ -150,20 +150,20 @@ namespace SharpTox.Core
         /// <summary>
         /// Setting this to false will make sure that resolving sticks strictly to IPv4 addresses.
         /// </summary>
-        public bool Ipv6Enabled { get; private set; }
+        public ToxOptions Options { get; private set; }
 
         /// <summary>
         /// Initializes a new instance of tox.
         /// </summary>
-        /// <param name="ipv6enabled"></param>
-        public Tox(bool ipv6enabled)
+        /// <param name="options"></param>
+        public Tox(ToxOptions options)
         {
-            tox = ToxFunctions.New(ipv6enabled ? (byte)1 : (byte)0);
+            tox = ToxFunctions.New(ref options);
 
             if (tox == null || tox.IsInvalid)
                 throw new Exception("Could not create a new instance of toxav.");
 
-            Ipv6Enabled = ipv6enabled;
+            Options = options;
             Invoker = new InvokeDelegate(dummyinvoker);
 
             callbacks();
@@ -321,7 +321,7 @@ namespace SharpTox.Core
         }
 
         /// <summary>
-        /// Retrieves an array of group member names. Not implemented yet.
+        /// Retrieves an array of group member names.
         /// </summary>
         /// <param name="groupnumber"></param>
         /// <returns></returns>
@@ -426,7 +426,7 @@ namespace SharpTox.Core
             if (disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
-            return ToxFunctions.BootstrapFromAddress(tox, node.Address, node.Ipv6Enabled ? (byte)1 : (byte)0, (ushort)System.Net.IPAddress.HostToNetworkOrder((short)node.Port), node.PublicKey.GetBytes()) == 1;
+            return ToxFunctions.BootstrapFromAddress(tox, node.Address, (ushort)node.Port, node.PublicKey.GetBytes()) == 1;
         }
 
         /// <summary>

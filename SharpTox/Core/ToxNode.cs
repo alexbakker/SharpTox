@@ -16,11 +16,6 @@
         public int Port { get; private set; }
 
         /// <summary>
-        /// Whether IPv6 should be enabled or not.
-        /// </summary>
-        public bool Ipv6Enabled { get; private set; }
-
-        /// <summary>
         /// The public key of this node.
         /// </summary>
         public ToxKey PublicKey { get; private set; }
@@ -32,12 +27,11 @@
         /// <param name="port"></param>
         /// <param name="public_key"></param>
         /// <param name="ipv6enabled"></param>
-        public ToxNode(string address, int port, ToxKey public_key, bool ipv6enabled)
+        public ToxNode(string address, int port, ToxKey public_key)
         {
             Address = address;
             Port = port;
             PublicKey = public_key;
-            Ipv6Enabled = ipv6enabled;
         }
     }
 }
