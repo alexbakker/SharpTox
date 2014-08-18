@@ -107,15 +107,15 @@ namespace SharpTox.Av
         /// </summary>
         public static readonly ToxAvCodecSettings DefaultCodecSettings = new ToxAvCodecSettings()
         {
-            call_type = ToxAvCallType.Audio,
-            video_bitrate = 500,
-            max_video_width = 1200,
-            max_video_height = 720,
+            CallType = ToxAvCallType.Audio,
+            VideoBitrate = 500,
+            MaxVideoWidth = 1200,
+            MaxVideoHeight = 720,
 
-            audio_bitrate = 64000,
-            audio_frame_duration = 20,
-            audio_sample_rate = 48000,
-            audio_channels = 1
+            AudioBitrate = 64000,
+            AudioFrameDuration = 20,
+            AudioSampleRate = 48000,
+            AudioChannels = 1
         };
 
         private ToxAvHandle toxav;

@@ -4,44 +4,44 @@ namespace SharpTox.Core
 {
     public enum ToxAFError
     {
-        TOOLONG = -1,
-        NOMESSAGE = -2,
-        OWNKEY = -3,
-        ALREADYSENT = -4,
-        UNKNOWN = -5,
-        BADCHECKSUM = -6,
-        SETNEWNOSPAM = -7,
-        NOMEM = -8
+        TooLong = -1,
+        NoMessage = -2,
+        OwnKey = -3,
+        AlreadySent = -4,
+        Unknown = -5,
+        BadChecksum = -6,
+        SetNewNospam = -7,
+        NoMem = -8
     }
 
     public enum ToxUserStatus
     {
-        NONE,
-        AWAY,
-        BUSY,
-        INVALID
+        None,
+        Away,
+        Busy,
+        Invalid
     }
 
     public enum ToxUserConStatus
     {
-        OFFLINE,
-        ONLINE
+        Offline,
+        Online
     }
 
     public enum ToxFileControl
     {
-        ACCEPT,
-        PAUSE,
-        KILL,
-        FINISHED,
-        RESUME_BROKEN
+        Accept,
+        Pause,
+        Kill,
+        Finished,
+        ResumeBroken
     }
 
     public enum ToxChatChange
     {
-        PEER_ADD,
-        PEER_DEL,
-        PEER_NAME
+        PeerAdd,
+        PeerDel,
+        PeerName
     }
 
     public enum ToxKeyType
