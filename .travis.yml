@@ -5,4 +5,4 @@ language: c
 install:
   - sudo apt-get install mono-devel mono-gmcs nunit-console
 script:
-  - xbuild SharpTox.sln
+  - xbuild /toolsversion:12.0 SharpTox.sln
