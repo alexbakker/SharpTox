@@ -191,9 +191,6 @@ namespace SharpTox.Core
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_set_nospam")]
         public static extern void SetNospam(ToxHandle tox, uint nospam);
 
-        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_set_sends_receipts")]
-        public static extern void SetSendsReceipts(ToxHandle tox, int friendnumber, int yesno);
-
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_get_keys")]
         public static extern void GetKeys(ToxHandle tox, byte[] public_key, byte[] secret_key);
 

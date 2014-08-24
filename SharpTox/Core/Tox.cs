@@ -1003,19 +1003,6 @@ namespace SharpTox.Core
         }
 
         /// <summary>
-        /// Whether to send read receipts for the specified friendnumber or not.
-        /// </summary>
-        /// <param name="friendnumber"></param>
-        /// <param name="send_receipts"></param>
-        public void SetSendsReceipts(int friendnumber, bool send_receipts)
-        {
-            if (disposed)
-                throw new ObjectDisposedException(GetType().FullName);
-
-            ToxFunctions.SetSendsReceipts(tox, friendnumber, send_receipts ? 1 : 0);
-        }
-
-        /// <summary>
         /// Returns a pair of tox keys that belong to this instance.
         /// </summary>
         /// <returns></returns>
