@@ -1,9 +1,23 @@
 ﻿namespace SharpTox.Core
 {
-    internal class ToxConstants
+    /// <summary>
+    /// Represents a collection of tox constants.
+    /// </summary>
+    public class ToxConstants
     {
-        internal const int MAX_MESSAGE_LENGTH = 1003;
-        internal const int MAX_STATUSMESSAGE_LENGTH = 1007;
-        internal const int MAX_NAME_LENGTH = 128;
+        /// <summary>
+        /// The maximum message length in bytes.
+        /// </summary>
+        public const int MaxMessageLength = 1368;
+
+        /// <summary>
+        /// The maximum status message length in bytes.
+        /// </summary>
+        public const int MaxStatusMessageLength = 1007;
+
+        /// <summary>
+        /// The maximum name length in bytes.
+        /// </summary>
+        public const int MaxNameLength = 128;
     }
 }

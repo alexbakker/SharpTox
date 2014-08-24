@@ -337,7 +337,7 @@ namespace SharpTox.Core
                 return new string[0];
 
             ushort[] lengths = new ushort[count];
-            byte[,] matrix = new byte[count, ToxConstants.MAX_NAME_LENGTH];
+            byte[,] matrix = new byte[count, ToxConstants.MaxNameLength];
 
             int result = ToxFunctions.GroupGetNames(tox, groupnumber, matrix, lengths, (ushort)count);
 
@@ -877,7 +877,7 @@ namespace SharpTox.Core
             if (disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
-            byte[] name = new byte[ToxConstants.MAX_NAME_LENGTH];
+            byte[] name = new byte[ToxConstants.MaxNameLength];
             if (ToxFunctions.GroupPeername(tox, groupnumber, peernumber, name) == -1)
                 throw new Exception("Could not get peer name");
             else
