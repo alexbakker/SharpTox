@@ -74,14 +74,8 @@ namespace SharpTox.Core
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_send_message")]
         public static extern uint SendMessage(ToxHandle tox, int friendnumber, byte[] message, int length);
 
-        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_send_message_withid")]
-        public static extern uint SendMessageWithID(ToxHandle tox, int friendnumber, int id, byte[] message, int length);
-
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_send_action")]
         public static extern uint SendAction(ToxHandle tox, int friendnumber, byte[] action, int length);
-
-        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_send_action_withid")]
-        public static extern uint SendActionWithID(ToxHandle tox, int friendnumber, int id, byte[] message, int length);
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_save")]
         public static extern void Save(ToxHandle tox, byte[] bytes);

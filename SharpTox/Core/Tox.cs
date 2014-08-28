@@ -752,21 +752,6 @@ namespace SharpTox.Core
         }
 
         /// <summary>
-        /// Send a message to a friend. The given id will be used as the message id.
-        /// </summary>
-        /// <param name="friendnumber"></param>
-        /// <param name="id"></param>
-        /// <param name="message"></param>
-        /// <returns></returns>
-        public int SendMessageWithID(int friendnumber, int id, string message)
-        {
-            if (disposed)
-                throw new ObjectDisposedException(GetType().FullName);
-            byte[] bytes = Encoding.UTF8.GetBytes(message);
-            return (int)ToxFunctions.SendMessageWithID(tox, friendnumber, id, bytes, bytes.Length);
-        }
-
-        /// <summary>
         /// Sends an action to a friend.
         /// </summary>
         /// <param name="friendnumber"></param>
@@ -779,22 +764,6 @@ namespace SharpTox.Core
 
             byte[] bytes = Encoding.UTF8.GetBytes(action);
             return (int)ToxFunctions.SendAction(tox, friendnumber, bytes, bytes.Length);
-        }
-
-        /// <summary>
-        /// Send an action to a friend. The given id will be used as the message id.
-        /// </summary>
-        /// <param name="friendnumber"></param>
-        /// <param name="id"></param>
-        /// <param name="message"></param>
-        /// <returns></returns>
-        public int SendActionWithID(int friendnumber, int id, string message)
-        {
-            if (disposed)
-                throw new ObjectDisposedException(GetType().FullName);
-
-            byte[] bytes = Encoding.UTF8.GetBytes(message);
-            return (int)ToxFunctions.SendActionWithID(tox, friendnumber, id, bytes, bytes.Length);
         }
 
         /// <summary>
