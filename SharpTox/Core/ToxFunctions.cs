@@ -188,6 +188,9 @@ namespace SharpTox.Core
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_get_keys")]
         public static extern void GetKeys(ToxHandle tox, byte[] public_key, byte[] secret_key);
 
+        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_add_tcp_relay")]
+        public static extern int AddTcpRelay(ToxHandle tox, string address, ushort port, byte[] public_key);
+
         #endregion
 
         #region Callbacks

@@ -991,6 +991,19 @@ namespace SharpTox.Core
                 );
         }
 
+        /// <summary>
+        /// Similar to BootstrapFromNode, except this is for tcp relays only.
+        /// </summary>
+        /// <param name="node"></param>
+        /// <returns></returns>
+        public bool AddTcpRelay(ToxNode node)
+        {
+            if (disposed)
+                throw new ObjectDisposedException(GetType().FullName);
+
+            return ToxFunctions.AddTcpRelay(tox, node.Address, (ushort)node.Port, node.PublicKey.GetBytes()) == 1;
+        }
+
         private void callbacks()
         {
             ToxFunctions.CallbackFriendRequest(tox, friendrequestdelegate = new ToxDelegates.CallbackFriendRequestDelegate((IntPtr t, byte[] id, byte[] message, ushort length, IntPtr userdata) =>
