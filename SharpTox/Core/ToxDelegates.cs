@@ -54,6 +54,9 @@ namespace SharpTox.Core
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         public delegate void CallbackReadReceiptDelegate(IntPtr tox, int friendnmber, uint receipt, IntPtr userdata);
+
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        public delegate int CallbackPacketDelegate(IntPtr obj, [In, MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 2)] byte[] data, uint length);
     }
 }
 

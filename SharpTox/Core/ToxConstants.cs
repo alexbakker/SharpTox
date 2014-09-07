@@ -3,7 +3,7 @@
     /// <summary>
     /// Represents a collection of tox constants.
     /// </summary>
-    public class ToxConstants
+    public static class ToxConstants
     {
         /// <summary>
         /// The maximum message length in bytes.
@@ -19,5 +19,10 @@
         /// The maximum name length in bytes.
         /// </summary>
         public const int MaxNameLength = 128;
+
+        /// <summary>
+        /// The maximum length of a custom packet.
+        /// </summary>
+        public const int MaxCustomPacketSize = 1373;
     }
 }

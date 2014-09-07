@@ -188,6 +188,12 @@ namespace SharpTox.Core
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_get_keys")]
         public static extern void GetKeys(ToxHandle tox, byte[] public_key, byte[] secret_key);
 
+        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_send_lossy_packet")]
+        public static extern int SendLossyPacket(ToxHandle tox, int friendnumber, byte[] data, uint length);
+
+        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, EntryPoint = "tox_send_lossless_packet")]
+        public static extern int SendLosslessPacket(ToxHandle tox, int friendnumber, byte[] data, uint length);
+
         #endregion
 
         #region Callbacks
@@ -238,6 +244,12 @@ namespace SharpTox.Core
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_callback_read_receipt")]
         public static extern void CallbackReadReceipt(ToxHandle tox, ToxDelegates.CallbackReadReceiptDelegate callback, IntPtr userdata);
+
+        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_lossy_packet_registerhandler")]
+        public static extern int CallbackLossyPacket(ToxHandle tox, int friendnumber, byte start_byte, ToxDelegates.CallbackPacketDelegate callback, IntPtr obj);
+
+        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_lossless_packet_registerhandler")]
+        public static extern int CallbackLosslessPacket(ToxHandle tox, int friendnumber, byte start_byte, ToxDelegates.CallbackPacketDelegate callback, IntPtr obj);
 
         #endregion
     }

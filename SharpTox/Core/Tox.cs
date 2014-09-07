@@ -991,6 +991,68 @@ namespace SharpTox.Core
                 );
         }
 
+        /// <summary>
+        /// Sends a lossy packet to the specified friendnumber.
+        /// </summary>
+        /// <param name="friendnumber"></param>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        public bool SendLossyPacket(int friendnumber, byte[] data)
+        {
+            if (disposed)
+                throw new ObjectDisposedException(GetType().FullName);
+
+            if (data.Length > ToxConstants.MaxCustomPacketSize)
+                throw new ArgumentException("Packet size is bigger than ToxConstants.MaxCustomPacketSize");
+
+            if (data[0] < 200 || data[0] > 254)
+                throw new ArgumentException("First byte of data is not in the 200-254 range.");
+
+            return ToxFunctions.SendLossyPacket(tox, friendnumber, data, (uint)data.Length) == 0;
+        }
+
+        /// <summary>
+        /// Sends a lossless packet to the specified friendnumber.
+        /// </summary>
+        /// <param name="friendnumber"></param>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        public bool SendLosslessPacket(int friendnumber, byte[] data)
+        {
+            if (disposed)
+                throw new ObjectDisposedException(GetType().FullName);
+
+            if (data.Length > ToxConstants.MaxCustomPacketSize)
+                throw new ArgumentException("Packet size is bigger than ToxConstants.MaxCustomPacketSize");
+
+            if (data[0] < 160 || data[0] > 191)
+                throw new ArgumentException("First byte of data is not in the 160-191 range.");
+
+            return ToxFunctions.SendLosslessPacket(tox, friendnumber, data, (uint)data.Length) == 0;
+        }
+
+        public bool RegisterLossyPacketHandler(int friendnumber, byte start_byte, ToxDelegates.CallbackPacketDelegate callback)
+        {
+            if (disposed)
+                throw new ObjectDisposedException(GetType().FullName);
+
+            if (start_byte < 200 || start_byte > 254)
+                throw new ArgumentException("start_byte is not in the 200-254 range.");
+
+            return ToxFunctions.CallbackLossyPacket(tox, friendnumber, start_byte, callback, IntPtr.Zero) == 0;
+        }
+
+        public bool RegisterLosslessPacketHandler(int friendnumber, byte start_byte, ToxDelegates.CallbackPacketDelegate callback)
+        {
+            if (disposed)
+                throw new ObjectDisposedException(GetType().FullName);
+
+            if (start_byte < 160 || start_byte > 191)
+                throw new ArgumentException("start_byte is not in the 160-191 range.");
+
+            return ToxFunctions.CallbackLosslessPacket(tox, friendnumber, start_byte, callback, IntPtr.Zero) == 0;
+        }
+
         private void callbacks()
         {
             ToxFunctions.CallbackFriendRequest(tox, friendrequestdelegate = new ToxDelegates.CallbackFriendRequestDelegate((IntPtr t, byte[] id, byte[] message, ushort length, IntPtr userdata) =>
