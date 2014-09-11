@@ -1,12 +1,32 @@
-﻿#pragma warning disable 1591
-
-using System;
+﻿using System;
 using SharpTox.Core;
 
 namespace SharpTox.Av
 {
+    /// <summary>
+    /// Delegate for callstate events.
+    /// </summary>
+    /// <param name="call_index"></param>
+    /// <param name="args"></param>
     public delegate void CallstateChangedDelegate(int call_index, IntPtr args);
+
+    /// <summary>
+    /// Delegate for event <see cref="ToxAv.OnReceivedAudio"/>
+    /// </summary>
+    /// <param name="toxav"></param>
+    /// <param name="call_index"></param>
+    /// <param name="frame"></param>
+    /// <param name="frame_size"></param>
+    /// <param name="userdata"></param>
     public delegate void ReceivedAudioDelegate(IntPtr toxav, int call_index, short[] frame, int frame_size, IntPtr userdata);
+
+    /// <summary>
+    /// Delegate for event <see cref="ToxAv.OnReceivedVideo"/>
+    /// </summary>
+    /// <param name="toxav"></param>
+    /// <param name="call_index"></param>
+    /// <param name="frame"></param>
+    /// <param name="userdata"></param>
     public delegate void ReceivedVideoDelegate(IntPtr toxav, int call_index, IntPtr frame, IntPtr userdata);
 
     /// <summary>
@@ -69,7 +89,14 @@ namespace SharpTox.Av
         /// </summary>
         public event CallstateChangedDelegate OnMediaChange;
 
+        /// <summary>
+        /// Occurs when an audio frame was received.
+        /// </summary>
         public event ReceivedAudioDelegate OnReceivedAudio;
+
+        /// <summary>
+        /// Occurs when a video frame was received.
+        /// </summary>
         public event ReceivedVideoDelegate OnReceivedVideo;
 
         #region Event delegates
@@ -88,10 +115,16 @@ namespace SharpTox.Av
         private ToxAvDelegates.VideoReceiveCallback onreceivedvideocallback;
         #endregion
 
+        /// <summary>
+        /// The delegate used for <see cref="Invoker"/>
+        /// </summary>
+        /// <param name="method"></param>
+        /// <param name="p"></param>
+        /// <returns></returns>
         public delegate object InvokeDelegate(Delegate method, params object[] p);
 
         /// <summary>
-        /// The invoke delegate to use when raising events. Note that OnReceivedAudio and OnReceivedVideo will not use this.
+        /// The invoke delegate to use when raising events. Note that <see cref="OnReceivedAudio"/> and <see cref="OnReceivedVideo"/> will not use this.
         /// </summary>
         public InvokeDelegate Invoker;
 
@@ -146,6 +179,9 @@ namespace SharpTox.Av
             callbacks();
         }
 
+        /// <summary>
+        /// Releases all resources used by this instance of tox.
+        /// </summary>
         public void Dispose()
         {
             Dispose(true);
@@ -527,4 +563,3 @@ namespace SharpTox.Av
     }
 }
 
-#pragma warning restore 1591

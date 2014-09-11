@@ -1053,7 +1053,28 @@ namespace SharpTox.Core
 
             return ToxFunctions.CallbackLossyPacket(tox, friendnumber, start_byte, lossyHandlerDelegate, IntPtr.Zero) == 0;
         }
+        /// Retrieves a byte array that contains the data of this tox instance.
+        /// </summary>
+        /// <returns></returns>
+        public byte[] GetDataBytes()
+        {
+            byte[] bytes = new byte[ToxFunctions.Size(tox)];
+            ToxFunctions.Save(tox, bytes);
 
+            return bytes;
+        }
+
+        /// Similar to BootstrapFromNode, except this is for tcp relays only.
+        /// </summary>
+        /// <param name="node"></param>
+        /// <returns></returns>
+        public bool AddTcpRelay(ToxNode node)
+        {
+            if (disposed)
+                throw new ObjectDisposedException(GetType().FullName);
+
+            return ToxFunctions.AddTcpRelay(tox, node.Address, (ushort)node.Port, node.PublicKey.GetBytes()) == 1;
+        }
         public bool RegisterLosslessPacketHandler(int friendnumber, byte start_byte)
         {
             if (disposed)

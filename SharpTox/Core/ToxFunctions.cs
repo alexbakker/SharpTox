@@ -194,6 +194,9 @@ namespace SharpTox.Core
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, EntryPoint = "tox_send_lossless_packet")]
         public static extern int SendLosslessPacket(ToxHandle tox, int friendnumber, byte[] data, uint length);
 
+        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_add_tcp_relay")]
+        public static extern int AddTcpRelay(ToxHandle tox, string address, ushort port, byte[] public_key);
+
         #endregion
 
         #region Callbacks
