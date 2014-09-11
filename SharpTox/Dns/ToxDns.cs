@@ -77,7 +77,7 @@ namespace SharpTox.Dns
         }
 
         /// <summary>
-        /// Decodes and decrypts the dns3 string returned by GenerateDns3String.
+        /// Decodes and decrypts the dns3 string returned by <see cref="GenerateDns3String"/>.
         /// </summary>
         /// <param name="dns3_string"></param>
         /// <param name="request_id"></param>
