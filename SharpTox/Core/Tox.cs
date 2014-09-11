@@ -26,6 +26,8 @@ namespace SharpTox.Core
     public delegate void OnFileDataDelegate(int friendnumber, int filenumber, byte[] data);
     public delegate void OnFileSendRequestDelegate(int friendnumber, int filenumber, ulong filesize, string filename);
     public delegate void OnReadReceiptDelegate(int friendnumber, uint receipt);
+
+    public delegate void OnPacketDelegate(int friendnumber, byte[] data);
     #endregion
 
     /// <summary>
@@ -112,6 +114,16 @@ namespace SharpTox.Core
         /// Occurs when a read receipt is received.
         /// </summary>
         public event OnReadReceiptDelegate OnReadReceipt;
+
+        /// <summary>
+        /// Occurs when a lossy packet is received.
+        /// </summary>
+        public event OnPacketDelegate OnLossyPacket;
+
+        /// <summary>
+        /// Occurs when a lossless packet is received.
+        /// </summary>
+        public event OnPacketDelegate OnLosslessPacket;
 
         public delegate object InvokeDelegate(Delegate method, params object[] p);
 
@@ -1031,7 +1043,7 @@ namespace SharpTox.Core
             return ToxFunctions.SendLosslessPacket(tox, friendnumber, data, (uint)data.Length) == 0;
         }
 
-        public bool RegisterLossyPacketHandler(int friendnumber, byte start_byte, ToxDelegates.CallbackPacketDelegate callback)
+        public bool RegisterLossyPacketHandler(int friendnumber, byte start_byte)
         {
             if (disposed)
                 throw new ObjectDisposedException(GetType().FullName);
@@ -1039,10 +1051,10 @@ namespace SharpTox.Core
             if (start_byte < 200 || start_byte > 254)
                 throw new ArgumentException("start_byte is not in the 200-254 range.");
 
-            return ToxFunctions.CallbackLossyPacket(tox, friendnumber, start_byte, callback, IntPtr.Zero) == 0;
+            return ToxFunctions.CallbackLossyPacket(tox, friendnumber, start_byte, lossyHandlerDelegate, IntPtr.Zero) == 0;
         }
 
-        public bool RegisterLosslessPacketHandler(int friendnumber, byte start_byte, ToxDelegates.CallbackPacketDelegate callback)
+        public bool RegisterLosslessPacketHandler(int friendnumber, byte start_byte)
         {
             if (disposed)
                 throw new ObjectDisposedException(GetType().FullName);
@@ -1050,11 +1062,34 @@ namespace SharpTox.Core
             if (start_byte < 160 || start_byte > 191)
                 throw new ArgumentException("start_byte is not in the 160-191 range.");
 
-            return ToxFunctions.CallbackLosslessPacket(tox, friendnumber, start_byte, callback, IntPtr.Zero) == 0;
+            return ToxFunctions.CallbackLosslessPacket(tox, friendnumber, start_byte, lossyHandlerDelegate, IntPtr.Zero) == 0;
+        }
+
+        private ToxDelegates.CallbackPacketDelegate lossyHandlerDelegate;
+
+        private int lossyHandler(IntPtr obj, byte[] data, uint length)
+        {
+            if (OnLossyPacket != null)
+                Invoker(OnLossyPacket, friendnumber, data);
+
+            return 1;
+        }
+
+        private ToxDelegates.CallbackPacketDelegate losslessHandlerDelegate;
+
+        private int losslessHandler(IntPtr obj, byte[] data, uint length)
+        {
+            if (OnLossyPacket != null)
+                Invoker(OnLosslessPacket, friendnumber, data);
+
+            return 1;
         }
 
         private void callbacks()
         {
+            lossyHandlerDelegate = new ToxDelegates.CallbackPacketDelegate(lossyHandler);
+            losslessHandlerDelegate = new ToxDelegates.CallbackPacketDelegate(losslessHandler);
+
             ToxFunctions.CallbackFriendRequest(tox, friendrequestdelegate = new ToxDelegates.CallbackFriendRequestDelegate((IntPtr t, byte[] id, byte[] message, ushort length, IntPtr userdata) =>
             {
                 if (OnFriendRequest != null)
