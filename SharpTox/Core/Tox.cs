@@ -991,6 +991,18 @@ namespace SharpTox.Core
                 );
         }
 
+        /// <summary>
+        /// Retrieves a byte array that contains the data of this tox instance.
+        /// </summary>
+        /// <returns></returns>
+        public byte[] GetDataBytes()
+        {
+            byte[] bytes = new byte[ToxFunctions.Size(tox)];
+            ToxFunctions.Save(tox, bytes);
+
+            return bytes;
+        }
+
         private void callbacks()
         {
             ToxFunctions.CallbackFriendRequest(tox, friendrequestdelegate = new ToxDelegates.CallbackFriendRequestDelegate((IntPtr t, byte[] id, byte[] message, ushort length, IntPtr userdata) =>
