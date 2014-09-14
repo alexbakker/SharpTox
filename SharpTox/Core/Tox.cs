@@ -1150,6 +1150,22 @@ namespace SharpTox.Core
         }
 
         /// <summary>
+        /// Retrieves a byte array that contains the encrypted data of this tox instance.
+        /// </summary>
+        /// <param name="passphrase"></param>
+        /// <returns></returns>
+        public byte[] GetEncryptedDataBytes(string passphrase)
+        {
+            byte[] bytes = new byte[ToxFunctions.EncryptedSize(tox)];
+            byte[] phrase = Encoding.UTF8.GetBytes(passphrase);
+
+            if (ToxFunctions.EncryptedSave(tox, bytes, phrase, (uint)phrase.Length) != 0)
+                return new byte[0];
+
+            return bytes;
+        }
+
+        /// <summary>
         /// Similar to BootstrapFromNode, except this is for tcp relays only.
         /// </summary>
         /// <param name="node"></param>
@@ -1160,6 +1176,92 @@ namespace SharpTox.Core
                 throw new ObjectDisposedException(GetType().FullName);
 
             return ToxFunctions.AddTcpRelay(tox, node.Address, (ushort)node.Port, node.PublicKey.GetBytes()) == 1;
+        }
+
+        /// <summary>
+        /// Saves the data of this tox instance at the given file location after encrypting it with the given passphrase.
+        /// </summary>
+        /// <param name="filename"></param>
+        /// <param name="passphrase"></param>
+        /// <returns></returns>
+        public bool SaveEncrypted(string filename, string passphrase)
+        {
+            if (disposed)
+                throw new ObjectDisposedException(GetType().FullName);
+
+            try
+            {
+                byte[] bytes = new byte[ToxFunctions.EncryptedSize(tox)];
+                byte[] phrase = Encoding.UTF8.GetBytes(passphrase);
+
+                if (ToxFunctions.EncryptedSave(tox, bytes, phrase, (uint)phrase.Length) != 0)
+                    return false;
+
+                FileStream stream = new FileStream(filename, FileMode.Create);
+                stream.Write(bytes, 0, bytes.Length);
+                stream.Close();
+
+                return true;
+            }
+            catch { return false; }
+        }
+
+        /// <summary>
+        /// Loads and decrypts the tox data file from a location specified by filename.
+        /// </summary>
+        /// <param name="filename"></param>
+        /// <param name="passphrase"></param>
+        /// <returns></returns>
+        public bool LoadEncrypted(string filename, string passphrase)
+        {
+            if (disposed)
+                throw new ObjectDisposedException(GetType().FullName);
+
+            try
+            {
+                FileInfo info = new FileInfo(filename);
+                FileStream stream = new FileStream(filename, FileMode.Open);
+
+                byte[] bytes = new byte[info.Length];
+                byte[] phrase = Encoding.UTF8.GetBytes(passphrase);
+
+                stream.Read(bytes, 0, (int)info.Length);
+                stream.Close();
+
+                return ToxFunctions.EncryptedLoad(tox, bytes, (uint)bytes.Length, phrase, (uint)phrase.Length) == 0;
+            }
+            catch { return false; }
+        }
+
+        /// <summary>
+        /// Checks whether or not the specified tox data is encrypted.
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        public bool IsDataEncrypted(byte[] data)
+        {
+            if (disposed)
+                throw new ObjectDisposedException(GetType().FullName);
+
+            return ToxFunctions.IsDataEncrypted(tox, data) == 1;
+        }
+
+        /// <summary>
+        /// Checks whether or not the specified tox data is encrypted.
+        /// </summary>
+        /// <param name="filename"></param>
+        /// <returns></returns>
+        public bool IsDataEncrypted(string filename)
+        {
+            FileInfo info = new FileInfo(filename);
+            FileStream stream = new FileStream(filename, FileMode.Open);
+
+            byte[] bytes = new byte[info.Length];
+
+            stream.Read(bytes, 0, (int)info.Length);
+            stream.Close();
+
+            return ToxFunctions.IsDataEncrypted(tox, bytes) == 1;
         }
 
         private void callbacks()

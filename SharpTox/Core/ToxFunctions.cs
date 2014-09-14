@@ -197,6 +197,18 @@ namespace SharpTox.Core
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_add_tcp_relay")]
         public static extern int AddTcpRelay(ToxHandle tox, string address, ushort port, byte[] public_key);
 
+        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_encrypted_size")]
+        public static extern uint EncryptedSize(ToxHandle tox);
+
+        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_encrypted_save")]
+        public static extern uint EncryptedSave(ToxHandle tox, byte[] data, byte[] passphrase, uint pplength);
+
+        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_encrypted_load")]
+        public static extern int EncryptedLoad(ToxHandle tox, byte[] data, uint length, byte[] passphrase, uint pplength);
+
+        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_is_data_encrypted")]
+        public static extern int IsDataEncrypted(ToxHandle tox, byte[] data);
+
         #endregion
 
         #region Callbacks
