@@ -201,13 +201,13 @@ namespace SharpTox.Core
         public static extern uint EncryptedSize(ToxHandle tox);
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_encrypted_save")]
-        public static extern uint EncryptedSave(ToxHandle tox, byte[] data, byte[] passphrase, uint pplength);
+        public static extern int EncryptedSave(ToxHandle tox, byte[] data, byte[] passphrase, uint pplength);
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_encrypted_load")]
         public static extern int EncryptedLoad(ToxHandle tox, byte[] data, uint length, byte[] passphrase, uint pplength);
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_is_data_encrypted")]
-        public static extern int IsDataEncrypted(ToxHandle tox, byte[] data);
+        public static extern int IsDataEncrypted(byte[] data);
 
         #endregion
 

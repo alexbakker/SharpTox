@@ -1143,6 +1143,9 @@ namespace SharpTox.Core
         /// <returns></returns>
         public byte[] GetDataBytes()
         {
+            if (disposed)
+                throw new ObjectDisposedException(GetType().FullName);
+
             byte[] bytes = new byte[ToxFunctions.Size(tox)];
             ToxFunctions.Save(tox, bytes);
 
@@ -1156,6 +1159,9 @@ namespace SharpTox.Core
         /// <returns></returns>
         public byte[] GetEncryptedDataBytes(string passphrase)
         {
+            if (disposed)
+                throw new ObjectDisposedException(GetType().FullName);
+
             byte[] bytes = new byte[ToxFunctions.EncryptedSize(tox)];
             byte[] phrase = Encoding.UTF8.GetBytes(passphrase);
 
@@ -1234,6 +1240,22 @@ namespace SharpTox.Core
         }
 
         /// <summary>
+        /// Loads and decrypts tox data.
+        /// </summary>
+        /// <param name="data"></param>
+        /// <param name="passphrase"></param>
+        /// <returns></returns>
+        public bool LoadEncrypted(byte[] data, string passphrase)
+        {
+            if (disposed)
+                throw new ObjectDisposedException(GetType().FullName);
+
+            byte[] phrase = Encoding.UTF8.GetBytes(passphrase);
+
+            return ToxFunctions.EncryptedLoad(tox, data, (uint)data.Length, phrase, (uint)phrase.Length) == 0;
+        }
+
+        /// <summary>
         /// Checks whether or not the specified tox data is encrypted.
         /// </summary>
         /// <param name="data"></param>
@@ -1243,7 +1265,7 @@ namespace SharpTox.Core
             if (disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
-            return ToxFunctions.IsDataEncrypted(tox, data) == 1;
+            return ToxFunctions.IsDataEncrypted(data) == 1;
         }
 
         /// <summary>
@@ -1253,6 +1275,9 @@ namespace SharpTox.Core
         /// <returns></returns>
         public bool IsDataEncrypted(string filename)
         {
+            if (disposed)
+                throw new ObjectDisposedException(GetType().FullName);
+
             FileInfo info = new FileInfo(filename);
             FileStream stream = new FileStream(filename, FileMode.Open);
 
@@ -1261,7 +1286,7 @@ namespace SharpTox.Core
             stream.Read(bytes, 0, (int)info.Length);
             stream.Close();
 
-            return ToxFunctions.IsDataEncrypted(tox, bytes) == 1;
+            return ToxFunctions.IsDataEncrypted(bytes) == 1;
         }
 
         private void callbacks()
