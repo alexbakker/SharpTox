@@ -35,14 +35,14 @@ class Program
         Console.WriteLine("ID: {0}", id);
 
         Console.ReadKey();
-        tox.Kill();
+        tox.Dispose();
     }
 
     //check https://wiki.tox.im/Nodes for an up-to-date list of nodes
     static ToxNode[] Nodes = new ToxNode[]
     {
-        new ToxNode("192.254.75.98", 33445, "951C88B7E75C867418ACDB5D273821372BB5BD652740BCDF623A4FA293E75D2F", false),
-        new ToxNode("144.76.60.215", 33445, "04119E835DF3E78BACF0F84235B300546AF8B936F035185E2A8E9E0A67C8924F", false)
+        new ToxNode("192.254.75.98", 33445, new ToxKey(ToxKeyType.Public, "951C88B7E75C867418ACDB5D273821372BB5BD652740BCDF623A4FA293E75D2F")),
+        new ToxNode("144.76.60.215", 33445, new ToxKey(ToxKeyType.Public, "04119E835DF3E78BACF0F84235B300546AF8B936F035185E2A8E9E0A67C8924F"))
     };
 
     static void tox_OnFriendMessage(int friendnumber, string message)
