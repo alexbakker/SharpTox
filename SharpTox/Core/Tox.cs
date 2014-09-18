@@ -29,6 +29,8 @@ namespace SharpTox.Core
     public delegate void OnReadReceiptDelegate(int friendnumber, uint receipt);
 
     public delegate void OnPacketDelegate(int friendnumber, byte[] data);
+
+    public delegate void OnConnectionDelegate();
     #endregion
 
     /// <summary>
@@ -126,6 +128,16 @@ namespace SharpTox.Core
         /// </summary>
         public event OnPacketDelegate OnLosslessPacket;
 
+        /// <summary>
+        /// Occurs when a connection to the DHT has been established.
+        /// </summary>
+        public event OnConnectionDelegate OnConnected;
+        
+        /// <summary>
+        /// Occurs when the connection to the DHT was lost.
+        /// </summary>
+        public event OnConnectionDelegate OnDisconnected;
+
         public delegate object InvokeDelegate(Delegate method, params object[] p);
 
         /// <summary>
@@ -159,6 +171,7 @@ namespace SharpTox.Core
         private Thread thread;
 
         private bool disposed = false;
+        private bool connected = false;
 
         /// <summary>
         /// Setting this to false will make sure that resolving sticks strictly to IPv4 addresses.
@@ -384,6 +397,21 @@ namespace SharpTox.Core
         {
             while (true)
             {
+                if (IsConnected() && !connected)
+                {
+                    if (OnConnected != null)
+                        Invoker(OnConnected);
+
+                    connected = true;
+                }
+                else if (!IsConnected() && connected)
+                {
+                    if (OnDisconnected != null)
+                        Invoker(OnDisconnected);
+
+                    connected = false;
+                }
+
                 ToxFunctions.Do(tox);
                 Thread.Sleep((int)ToxFunctions.DoInterval(tox));
             }
