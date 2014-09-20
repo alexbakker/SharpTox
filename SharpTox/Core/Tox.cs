@@ -819,8 +819,7 @@ namespace SharpTox.Core
 
             try
             {
-                byte[] bytes = new byte[ToxFunctions.Size(tox)];
-                ToxFunctions.Save(tox, bytes);
+                byte[] bytes = GetDataBytes();
 
                 FileStream stream = new FileStream(filename, FileMode.Create);
                 stream.Write(bytes, 0, bytes.Length);
@@ -1225,10 +1224,8 @@ namespace SharpTox.Core
 
             try
             {
-                byte[] bytes = new byte[ToxFunctions.EncryptedSize(tox)];
-                byte[] phrase = Encoding.UTF8.GetBytes(passphrase);
-
-                if (ToxFunctions.EncryptedSave(tox, bytes, phrase, (uint)phrase.Length) != 0)
+                byte[] bytes = GetEncryptedDataBytes(passphrase);
+                if (bytes.Length == 0)
                     return false;
 
                 FileStream stream = new FileStream(filename, FileMode.Create);
@@ -1255,14 +1252,12 @@ namespace SharpTox.Core
             {
                 FileInfo info = new FileInfo(filename);
                 FileStream stream = new FileStream(filename, FileMode.Open);
-
                 byte[] bytes = new byte[info.Length];
-                byte[] phrase = Encoding.UTF8.GetBytes(passphrase);
 
                 stream.Read(bytes, 0, (int)info.Length);
                 stream.Close();
 
-                return ToxFunctions.EncryptedLoad(tox, bytes, (uint)bytes.Length, phrase, (uint)phrase.Length) == 0;
+                return LoadEncrypted(bytes, passphrase);
             }
             catch { return false; }
         }
