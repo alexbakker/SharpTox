@@ -155,4 +155,30 @@
         /// </summary>
         Secret
     }
+
+    /// <summary>
+    /// Avatar formats.
+    /// </summary>
+    public enum ToxAvatarFormat
+    {
+        /// <summary>
+        /// No avatar.
+        /// </summary>
+        None,
+
+        /// <summary>
+        /// JPEG format.
+        /// </summary>
+        Jpeg,
+
+        /// <summary>
+        /// PNG format.
+        /// </summary>
+        Png,
+
+        /// <summary>
+        /// GIF format.
+        /// </summary>
+        Gif
+    }
 }

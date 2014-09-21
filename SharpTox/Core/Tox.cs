@@ -29,8 +29,10 @@ namespace SharpTox.Core
     public delegate void OnReadReceiptDelegate(int friendnumber, uint receipt);
 
     public delegate void OnPacketDelegate(int friendnumber, byte[] data);
-
     public delegate void OnConnectionDelegate();
+
+    public delegate void OnAvatarInfoDelegate(int friendnumber, ToxAvatarFormat format, byte[] hash);
+    public delegate void OnAvatarDataDelegate(int friendnumber, ToxAvatar avatar);
     #endregion
 
     /// <summary>
@@ -138,6 +140,16 @@ namespace SharpTox.Core
         /// </summary>
         public event OnConnectionDelegate OnDisconnected;
 
+        /// <summary>
+        /// Occurs when avatar info is received.
+        /// </summary>
+        public event OnAvatarInfoDelegate OnAvatarInfo;
+
+        /// <summary>
+        /// Occurs when avatar data is received.
+        /// </summary>
+        public event OnAvatarDataDelegate OnAvatarData;
+
         public delegate object InvokeDelegate(Delegate method, params object[] p);
 
         /// <summary>
@@ -165,6 +177,9 @@ namespace SharpTox.Core
         private ToxDelegates.CallbackFileSendRequestDelegate filesendrequestdelegate;
 
         private ToxDelegates.CallbackReadReceiptDelegate readreceiptdelegate;
+
+        private ToxDelegates.CallbackAvatarDataDelegate avatardatadelegate;
+        private ToxDelegates.CallbackAvatarInfoDelegate avatarinfodelegate;
         #endregion
 
         private ToxHandle tox;
@@ -1321,6 +1336,113 @@ namespace SharpTox.Core
             return ToxFunctions.IsDataEncrypted(bytes) == 1;
         }
 
+        /// <summary>
+        /// Sets the avatar of this Tox instance.
+        /// </summary>
+        /// <param name="format"></param>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        public bool SetAvatar(ToxAvatarFormat format, byte[] data)
+        {
+            if (disposed)
+                throw new ObjectDisposedException(GetType().FullName);
+
+            return ToxFunctions.SetAvatar(tox, (byte)format, data, (uint)data.Length) == 0;
+        }
+
+        /// <summary>
+        /// Retrieves the avatar of this Tox instance.
+        /// </summary>
+        /// <returns></returns>
+        public ToxAvatar GetSelfAvatar()
+        {
+            if (disposed)
+                throw new ObjectDisposedException(GetType().FullName);
+
+            byte format = 0;
+            uint length = 0;
+
+            byte[] buf = new byte[ToxConstants.MaxAvatarDataLength];
+            byte[] hash = new byte[ToxConstants.AvatarHashLength];
+
+            if (ToxFunctions.GetSelfAvatar(tox, ref format, buf, ref length, ToxConstants.MaxAvatarDataLength, hash) != 0)
+                return null;
+
+            byte[] data = new byte[length];
+            Array.Copy(buf, 0, data, 0, length);
+
+            return new ToxAvatar((ToxAvatarFormat)format, data, hash);
+        }
+
+        /// <summary>
+        /// Retrieves a cryptographic hash of the given avatar data.
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        public byte[] GetAvatarHash(byte[] data)
+        {
+            if (disposed)
+                throw new ObjectDisposedException(GetType().FullName);
+
+            byte[] hash = new byte[ToxConstants.AvatarHashLength];
+
+            if (ToxFunctions.AvatarHash(tox, hash, data, (uint)data.Length) != 0)
+                return new byte[0];
+
+            return hash;
+        }
+
+        /// <summary>
+        /// Requests avatar info from a friend.
+        /// </summary>
+        /// <param name="friendnumber"></param>
+        /// <returns></returns>
+        public bool RequestAvatarInfo(int friendnumber)
+        {
+            if (disposed)
+                throw new ObjectDisposedException(GetType().FullName);
+
+            return ToxFunctions.RequestAvatarInfo(tox, friendnumber) == 0;
+        }
+
+        /// <summary>
+        /// Requests avatar data from a friend.
+        /// </summary>
+        /// <param name="friendnumber"></param>
+        /// <returns></returns>
+        public bool RequestAvatarData(int friendnumber)
+        {
+            if (disposed)
+                throw new ObjectDisposedException(GetType().FullName);
+
+            return ToxFunctions.RequestAvatarData(tox, friendnumber) == 0;
+        }
+
+        /// <summary>
+        /// Sends avatar info to a friend.
+        /// </summary>
+        /// <param name="friendnumber"></param>
+        /// <returns></returns>
+        public bool SendAvatarInfo(int friendnumber)
+        {
+            if (disposed)
+                throw new ObjectDisposedException(GetType().FullName);
+
+            return ToxFunctions.SendAvatarInfo(tox, friendnumber) == 0;
+        }
+
+        /// <summary>
+        /// Removes the avatar of this Tox instance.
+        /// </summary>
+        /// <returns></returns>
+        public bool RemoveAvatar()
+        {
+            if (disposed)
+                throw new ObjectDisposedException(GetType().FullName);
+
+            return ToxFunctions.SetAvatar(tox, (byte)ToxAvatarFormat.None, null, 0) == 0;
+        }
+
         private void callbacks()
         {
             ToxFunctions.CallbackFriendRequest(tox, friendrequestdelegate = new ToxDelegates.CallbackFriendRequestDelegate((IntPtr t, byte[] id, byte[] message, ushort length, IntPtr userdata) =>
@@ -1419,6 +1541,18 @@ namespace SharpTox.Core
             {
                 if (OnReadReceipt != null)
                     Invoker(OnReadReceipt, friendnumber, receipt);
+            }), IntPtr.Zero);
+
+            ToxFunctions.CallbackAvatarInfo(tox, avatarinfodelegate = new ToxDelegates.CallbackAvatarInfoDelegate((IntPtr t, int friendnumber, byte format, byte[] hash, IntPtr userdata) =>
+            {
+                if (OnAvatarInfo != null)
+                    Invoker(OnAvatarInfo, friendnumber, (ToxAvatarFormat)format, hash);
+            }), IntPtr.Zero);
+
+            ToxFunctions.CallbackAvatarData(tox, avatardatadelegate = new ToxDelegates.CallbackAvatarDataDelegate((IntPtr t, int friendnumber, byte format, byte[] hash, byte[] data, uint datalen, IntPtr userdata) =>
+            {
+                if (OnAvatarData != null)
+                    Invoker(OnAvatarData, friendnumber, new ToxAvatar((ToxAvatarFormat)format, data, hash));
             }), IntPtr.Zero);
         }
     }

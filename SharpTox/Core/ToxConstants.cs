@@ -24,5 +24,15 @@
         /// The maximum length of a custom packet.
         /// </summary>
         public const int MaxCustomPacketSize = 1373;
+
+        /// <summary>
+        /// The exact length of the hash of an avatar in bytes.
+        /// </summary>
+        public const int AvatarHashLength = 32;
+
+        /// <summary>
+        /// The maximum size of an avatar in bytes.
+        /// </summary>
+        public const int MaxAvatarDataLength = 16384;
     }
 }

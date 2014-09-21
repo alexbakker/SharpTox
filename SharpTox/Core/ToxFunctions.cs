@@ -209,6 +209,24 @@ namespace SharpTox.Core
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_is_data_encrypted")]
         public static extern int IsDataEncrypted(byte[] data);
 
+        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_set_avatar")]
+        public static extern int SetAvatar(ToxHandle tox, byte format, byte[] data, uint length);
+
+        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_get_self_avatar")]
+        public static extern int GetSelfAvatar(ToxHandle tox, ref byte format, byte[] buf, ref uint length, uint maxlen, byte[] hash);
+
+        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_avatar_hash")]
+        public static extern int AvatarHash(ToxHandle tox, byte[] hash, byte[] data, uint datalen);
+
+        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_request_avatar_info")]
+        public static extern int RequestAvatarInfo(ToxHandle tox, int friendnumber);
+
+        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_send_avatar_info")]
+        public static extern int SendAvatarInfo(ToxHandle tox, int friendnumber);
+
+        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_request_avatar_data")]
+        public static extern int RequestAvatarData(ToxHandle tox, int friendnumber);
+
         #endregion
 
         #region Callbacks
@@ -265,6 +283,12 @@ namespace SharpTox.Core
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_lossless_packet_registerhandler")]
         public static extern int CallbackLosslessPacket(ToxHandle tox, int friendnumber, byte start_byte, ToxDelegates.CallbackPacketDelegate callback, IntPtr obj);
+
+        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_callback_avatar_info")]
+        public static extern void CallbackAvatarInfo(ToxHandle tox, ToxDelegates.CallbackAvatarInfoDelegate callback, IntPtr userdata);
+
+        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_callback_avatar_data")]
+        public static extern void CallbackAvatarData(ToxHandle tox, ToxDelegates.CallbackAvatarDataDelegate callback, IntPtr userdata);
 
         #endregion
     }

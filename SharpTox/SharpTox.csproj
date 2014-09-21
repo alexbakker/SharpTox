@@ -87,6 +87,7 @@
   <ItemGroup>
     <Compile Include="Av\ToxAvHandle.cs" />
     <Compile Include="Core\Tox.cs" />
+    <Compile Include="Core\ToxAvatar.cs" />
     <Compile Include="Core\ToxExceptions.cs" />
     <Compile Include="Core\ToxHandle.cs" />
     <Compile Include="Core\ToxKey.cs" />
