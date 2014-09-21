@@ -332,18 +332,27 @@ namespace SharpTox.Core
             if (disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
+            byte[] bytes;
             try
             {
                 FileInfo info = new FileInfo(filename);
                 FileStream stream = new FileStream(filename, FileMode.Open);
-                byte[] bytes = new byte[info.Length];
+                bytes = new byte[info.Length];
 
                 stream.Read(bytes, 0, (int)info.Length);
                 stream.Close();
-
-                return ToxFunctions.Load(tox, bytes, (uint)bytes.Length) == 0;
             }
             catch { return false; }
+
+            if (bytes == null || bytes.Length == 0)
+                return false;
+
+            int result = ToxFunctions.Load(tox, bytes, (uint)bytes.Length);
+
+            if (result != 1)
+                return result == 0;
+            else
+                throw new Exception("Could not load encrypted data file. Use LoadEncrypted instead.");
         }
 
         /// <summary>
