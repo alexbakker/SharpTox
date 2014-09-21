@@ -167,18 +167,8 @@
         None,
 
         /// <summary>
-        /// JPEG format.
-        /// </summary>
-        Jpeg,
-
-        /// <summary>
         /// PNG format.
         /// </summary>
         Png,
-
-        /// <summary>
-        /// GIF format.
-        /// </summary>
-        Gif
     }
 }
