@@ -75,7 +75,7 @@
     /// <summary>
     /// Connection status of a friend.
     /// </summary>
-    public enum ToxUserConStatus
+    public enum ToxFriendConnectionStatus
     {
         /// <summary>
         /// Not connected.

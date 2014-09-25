@@ -10,7 +10,7 @@ namespace SharpTox.Core
 {
     #region Event Delegates
     public delegate void OnFriendRequestDelegate(string id, string message);
-    public delegate void OnConnectionStatusDelegate(int friendnumber, int status);
+    public delegate void OnConnectionStatusDelegate(int friendnumber, ToxFriendConnectionStatus status);
     public delegate void OnFriendMessageDelegate(int friendnumber, string message);
     public delegate void OnFriendActionDelegate(int friendnumber, string action);
     public delegate void OnNameChangeDelegate(int friendnumber, string newname);
@@ -678,12 +678,20 @@ namespace SharpTox.Core
         /// </summary>
         /// <param name="friendnumber"></param>
         /// <returns></returns>
-        public int GetFriendConnectionStatus(int friendnumber)
+        public ToxFriendConnectionStatus GetFriendConnectionStatus(int friendnumber)
         {
             if (disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
-            return ToxFunctions.GetFriendConnectionStatus(tox, friendnumber);
+            return (ToxFriendConnectionStatus)ToxFunctions.GetFriendConnectionStatus(tox, friendnumber);
+        }
+
+        public bool IsOnline(int friendnumber)
+        {
+            if (disposed)
+                throw new ObjectDisposedException(GetType().FullName);
+
+            return GetFriendConnectionStatus(friendnumber) == ToxFriendConnectionStatus.Online;
         }
 
         /// <summary>
@@ -1454,7 +1462,7 @@ namespace SharpTox.Core
             ToxFunctions.CallbackConnectionStatus(tox, connectionstatusdelegate = new ToxDelegates.CallbackConnectionStatusDelegate((IntPtr t, int friendnumber, byte status, IntPtr userdata) =>
             {
                 if (OnConnectionStatusChanged != null)
-                    Invoker(OnConnectionStatusChanged, friendnumber, (int)status);
+                    Invoker(OnConnectionStatusChanged, friendnumber, (ToxFriendConnectionStatus)status);
             }), IntPtr.Zero);
 
             ToxFunctions.CallbackFriendMessage(tox, friendmessagedelegate = new ToxDelegates.CallbackFriendMessageDelegate((IntPtr t, int friendnumber, byte[] message, ushort length, IntPtr userdata) =>
