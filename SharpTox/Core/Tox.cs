@@ -1363,7 +1363,7 @@ namespace SharpTox.Core
             uint length = 0;
 
             byte[] buf = new byte[ToxConstants.MaxAvatarDataLength];
-            byte[] hash = new byte[ToxConstants.AvatarHashLength];
+            byte[] hash = new byte[ToxConstants.ToxHashLength];
 
             if (ToxFunctions.GetSelfAvatar(tox, ref format, buf, ref length, ToxConstants.MaxAvatarDataLength, hash) != 0)
                 return null;
@@ -1375,18 +1375,18 @@ namespace SharpTox.Core
         }
 
         /// <summary>
-        /// Retrieves a cryptographic hash of the given avatar data.
+        /// Retrieves a cryptographic hash of the given data.
         /// </summary>
         /// <param name="data"></param>
         /// <returns></returns>
-        public byte[] GetAvatarHash(byte[] data)
+        public byte[] GetHash(byte[] data)
         {
             if (disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
-            byte[] hash = new byte[ToxConstants.AvatarHashLength];
+            byte[] hash = new byte[ToxConstants.ToxHashLength];
 
-            if (ToxFunctions.AvatarHash(tox, hash, data, (uint)data.Length) != 0)
+            if (ToxFunctions.Hash(hash, data, (uint)data.Length) != 0)
                 return new byte[0];
 
             return hash;

@@ -215,8 +215,8 @@ namespace SharpTox.Core
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_get_self_avatar")]
         public static extern int GetSelfAvatar(ToxHandle tox, ref byte format, byte[] buf, ref uint length, uint maxlen, byte[] hash);
 
-        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_avatar_hash")]
-        public static extern int AvatarHash(ToxHandle tox, byte[] hash, byte[] data, uint datalen);
+        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_hash")]
+        public static extern int Hash(byte[] hash, byte[] data, uint datalen);
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_request_avatar_info")]
         public static extern int RequestAvatarInfo(ToxHandle tox, int friendnumber);

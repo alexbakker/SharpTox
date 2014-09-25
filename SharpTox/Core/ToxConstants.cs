@@ -28,7 +28,7 @@
         /// <summary>
         /// The exact length of the hash of an avatar in bytes.
         /// </summary>
-        public const int AvatarHashLength = 32;
+        public const int ToxHashLength = 32;
 
         /// <summary>
         /// The maximum size of an avatar in bytes.
