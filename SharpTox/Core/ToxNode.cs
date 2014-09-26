@@ -30,7 +30,6 @@ namespace SharpTox.Core
         /// <param name="address"></param>
         /// <param name="port"></param>
         /// <param name="public_key"></param>
-        /// <param name="ipv6enabled"></param>
         public ToxNode(string address, int port, ToxKey public_key)
         {
             Address = address;
