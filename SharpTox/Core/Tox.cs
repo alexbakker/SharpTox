@@ -866,7 +866,7 @@ namespace SharpTox.Core
         /// <summary>
         /// Ends the tox_do loop and kills this tox instance.
         /// </summary>
-        [Obsolete("This function is obsolete, use Dispose() instead", true)]
+        [Obsolete("Use Dispose() instead", true)]
         public void Kill()
         {
             if (thread != null)
@@ -1444,12 +1444,26 @@ namespace SharpTox.Core
         /// Removes the avatar of this Tox instance.
         /// </summary>
         /// <returns></returns>
+        [Obsolete("Use UnsetAvatar() instead")]
         public bool RemoveAvatar()
+        {
+            /*if (disposed)
+                throw new ObjectDisposedException(GetType().FullName);
+
+            return ToxFunctions.SetAvatar(tox, (byte)ToxAvatarFormat.None, null, 0) == 0;*/
+            return UnsetAvatar();
+        }
+
+        /// <summary>
+        /// Unsets the avatar of this Tox instance.
+        /// </summary>
+        /// <returns></returns>
+        public bool UnsetAvatar()
         {
             if (disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
-            return ToxFunctions.SetAvatar(tox, (byte)ToxAvatarFormat.None, null, 0) == 0;
+            return ToxFunctions.UnsetAvatar(tox) == 0;
         }
 
         private void callbacks()

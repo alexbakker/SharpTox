@@ -205,7 +205,7 @@ namespace SharpTox.Av
         /// <summary>
         /// Kills this toxav instance.
         /// </summary>
-        [Obsolete("This function is obsolete, use Dispose() instead", true)]
+        [Obsolete("Use Dispose() instead", true)]
         public void Kill()
         {
             if (toxav.IsClosed || toxav.IsInvalid)

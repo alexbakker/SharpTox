@@ -46,7 +46,7 @@ namespace SharpTox.Dns
         /// <summary>
         /// Destroys the tox dns3 object.
         /// </summary>
-        [Obsolete("This function is obsolete, use Dispose() instead", true)]
+        [Obsolete("Use Dispose() instead", true)]
         public void Kill()
         {
             tox_dns3.Dispose();
