@@ -174,7 +174,7 @@ namespace SharpTox.Av
             MaxCalls = max_calls;
             CodecSettings = settings;
 
-            Invoker = new InvokeDelegate(dummyinvoker);
+            Invoker = dummyinvoker;
 
             callbacks();
         }
@@ -482,84 +482,83 @@ namespace SharpTox.Av
 
         private void callbacks()
         {
-            ToxAvFunctions.RegisterCallstateCallback(toxav, oncancelcallback = new ToxAvDelegates.CallstateCallback((IntPtr agent, int call_index, IntPtr args) =>
+            ToxAvFunctions.RegisterCallstateCallback(toxav, oncancelcallback = (IntPtr agent, int call_index, IntPtr args) =>
             {
                 if (OnCancel != null)
                     Invoker(OnCancel, call_index, args);
-            }), ToxAvCallbackID.OnCancel, IntPtr.Zero);
+            }, ToxAvCallbackID.OnCancel, IntPtr.Zero);
 
-            ToxAvFunctions.RegisterCallstateCallback(toxav, onendcallback = new ToxAvDelegates.CallstateCallback((IntPtr agent, int call_index, IntPtr args) =>
+            ToxAvFunctions.RegisterCallstateCallback(toxav, onendcallback = (IntPtr agent, int call_index, IntPtr args) =>
             {
                 if (OnEnd != null)
                     Invoker(OnEnd, call_index, args);
-            }), ToxAvCallbackID.OnEnd, IntPtr.Zero);
+            }, ToxAvCallbackID.OnEnd, IntPtr.Zero);
 
-            ToxAvFunctions.RegisterCallstateCallback(toxav, onendingcallback = new ToxAvDelegates.CallstateCallback((IntPtr agent, int call_index, IntPtr args) =>
+            ToxAvFunctions.RegisterCallstateCallback(toxav, onendingcallback = (IntPtr agent, int call_index, IntPtr args) =>
             {
                 if (OnEnding != null)
                     Invoker(OnEnding, call_index, args);
-            }), ToxAvCallbackID.OnEnding, IntPtr.Zero);
+            }, ToxAvCallbackID.OnEnding, IntPtr.Zero);
 
-            ToxAvFunctions.RegisterCallstateCallback(toxav, oninvitecallback = new ToxAvDelegates.CallstateCallback((IntPtr agent, int call_index, IntPtr args) =>
+            ToxAvFunctions.RegisterCallstateCallback(toxav, oninvitecallback = (IntPtr agent, int call_index, IntPtr args) =>
             {
                 if (OnInvite != null)
                     Invoker(OnInvite, call_index, args);
-            }), ToxAvCallbackID.OnInvite, IntPtr.Zero);
+            }, ToxAvCallbackID.OnInvite, IntPtr.Zero);
 
-            ToxAvFunctions.RegisterCallstateCallback(toxav, onpeertimeoutcallback = new ToxAvDelegates.CallstateCallback((IntPtr agent, int call_index, IntPtr args) =>
+            ToxAvFunctions.RegisterCallstateCallback(toxav, onpeertimeoutcallback = (IntPtr agent, int call_index, IntPtr args) =>
             {
                 if (OnPeerTimeout != null)
                     Invoker(OnPeerTimeout, call_index, args);
-            }), ToxAvCallbackID.OnPeerTimeout, IntPtr.Zero);
+            }, ToxAvCallbackID.OnPeerTimeout, IntPtr.Zero);
 
-            ToxAvFunctions.RegisterCallstateCallback(toxav, onrejectcallback = new ToxAvDelegates.CallstateCallback((IntPtr agent, int call_index, IntPtr args) =>
+            ToxAvFunctions.RegisterCallstateCallback(toxav, onrejectcallback = (IntPtr agent, int call_index, IntPtr args) =>
             {
                 if (OnReject != null)
                     Invoker(OnReject, call_index, args);
-            }), ToxAvCallbackID.OnReject, IntPtr.Zero);
+            }, ToxAvCallbackID.OnReject, IntPtr.Zero);
 
-            ToxAvFunctions.RegisterCallstateCallback(toxav, onrequesttimeoutcallback = new ToxAvDelegates.CallstateCallback((IntPtr agent, int call_index, IntPtr args) =>
+            ToxAvFunctions.RegisterCallstateCallback(toxav, onrequesttimeoutcallback = (IntPtr agent, int call_index, IntPtr args) =>
             {
                 if (OnRequestTimeout != null)
                     Invoker(OnRequestTimeout, call_index, args);
-            }), ToxAvCallbackID.OnRequestTimeout, IntPtr.Zero);
+            }, ToxAvCallbackID.OnRequestTimeout, IntPtr.Zero);
 
-            ToxAvFunctions.RegisterCallstateCallback(toxav, onringingcallback = new ToxAvDelegates.CallstateCallback((IntPtr agent, int call_index, IntPtr args) =>
+            ToxAvFunctions.RegisterCallstateCallback(toxav, onringingcallback = (IntPtr agent, int call_index, IntPtr args) =>
             {
                 if (OnRinging != null)
                     Invoker(OnRinging, call_index, args);
-            }), ToxAvCallbackID.OnRinging, IntPtr.Zero);
+            }, ToxAvCallbackID.OnRinging, IntPtr.Zero);
 
-            ToxAvFunctions.RegisterCallstateCallback(toxav, onstartcallback = new ToxAvDelegates.CallstateCallback((IntPtr agent, int call_index, IntPtr args) =>
+            ToxAvFunctions.RegisterCallstateCallback(toxav, onstartcallback = (IntPtr agent, int call_index, IntPtr args) =>
             {
                 if (OnStart != null)
                     Invoker(OnStart, call_index, args);
-            }), ToxAvCallbackID.OnStart, IntPtr.Zero);
+            }, ToxAvCallbackID.OnStart, IntPtr.Zero);
 
-            ToxAvFunctions.RegisterCallstateCallback(toxav, onstartingcallback = new ToxAvDelegates.CallstateCallback((IntPtr agent, int call_index, IntPtr args) =>
+            ToxAvFunctions.RegisterCallstateCallback(toxav, onstartingcallback = (IntPtr agent, int call_index, IntPtr args) =>
             {
                 if (OnStarting != null)
                     Invoker(OnStarting, call_index, args);
-            }), ToxAvCallbackID.OnStarting, IntPtr.Zero);
+            }, ToxAvCallbackID.OnStarting, IntPtr.Zero);
 
-            ToxAvFunctions.RegisterCallstateCallback(toxav, onmediachangecallback = new ToxAvDelegates.CallstateCallback((IntPtr agent, int call_index, IntPtr args) =>
+            ToxAvFunctions.RegisterCallstateCallback(toxav, onmediachangecallback = (IntPtr agent, int call_index, IntPtr args) =>
             {
                 if (OnMediaChange != null)
                     Invoker(OnMediaChange, call_index, args);
-            }), ToxAvCallbackID.OnMediaChange, IntPtr.Zero);
+            }, ToxAvCallbackID.OnMediaChange, IntPtr.Zero);
 
-            ToxAvFunctions.RegisterAudioReceiveCallback(toxav, onreceivedaudiocallback = new ToxAvDelegates.AudioReceiveCallback((IntPtr ptr, int call_index, short[] frame, int frame_size, IntPtr userdata) =>
+            ToxAvFunctions.RegisterAudioReceiveCallback(toxav, onreceivedaudiocallback = (IntPtr ptr, int call_index, short[] frame, int frame_size, IntPtr userdata) =>
             {
                 if (OnReceivedAudio != null)
                     OnReceivedAudio(ptr, call_index, frame, frame_size, userdata);
-            }), IntPtr.Zero);
+            }, IntPtr.Zero);
 
-            ToxAvFunctions.RegisterVideoReceiveCallback(toxav, onreceivedvideocallback = new ToxAvDelegates.VideoReceiveCallback((IntPtr ptr, int call_index, IntPtr frame, IntPtr userdata) =>
+            ToxAvFunctions.RegisterVideoReceiveCallback(toxav, onreceivedvideocallback = (IntPtr ptr, int call_index, IntPtr frame, IntPtr userdata) =>
             {
                 if (OnReceivedVideo != null)
                     OnReceivedVideo(ptr, call_index, frame, userdata);
-            }), IntPtr.Zero);
+            }, IntPtr.Zero);
         }
     }
 }
-
