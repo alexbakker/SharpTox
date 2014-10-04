@@ -144,13 +144,13 @@ namespace SharpTox.Core
         public static extern int InviteFriend(ToxHandle tox, int friendnumber, int groupnumber);
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_join_groupchat")]
-        public static extern int JoinGroupchat(ToxHandle tox, int friendnumber, byte[] friend_group_public_key);
+        public static extern int JoinGroupchat(ToxHandle tox, int friendnumber, byte[] data, ushort length);
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_group_message_send")]
-        public static extern int GroupMessageSend(ToxHandle tox, int groupnumber, byte[] message, uint length);
+        public static extern int GroupMessageSend(ToxHandle tox, int groupnumber, byte[] message, ushort length);
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_group_action_send")]
-        public static extern int GroupActionSend(ToxHandle tox, int groupnumber, byte[] action, uint length);
+        public static extern int GroupActionSend(ToxHandle tox, int groupnumber, byte[] action, ushort length);
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_group_number_peers")]
         public static extern int GroupNumberPeers(ToxHandle tox, int groupnumber);

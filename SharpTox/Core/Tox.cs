@@ -18,7 +18,7 @@ namespace SharpTox.Core
     public delegate void OnUserStatusDelegate(int friendnumber, ToxUserStatus status);
     public delegate void OnTypingChangeDelegate(int friendnumber, bool is_typing);
 
-    public delegate void OnGroupInviteDelegate(int friendnumber, string group_public_key);
+    public delegate void OnGroupInviteDelegate(int friendnumber, byte[] data);
     public delegate void OnGroupMessageDelegate(int groupnumber, int friendgroupnumber, string message);
     public delegate void OnGroupActionDelegate(int groupnumber, int friendgroupnumber, string action);
     public delegate void OnGroupNamelistChangeDelegate(int groupnumber, int peernumber, ToxChatChange change);
@@ -898,14 +898,14 @@ namespace SharpTox.Core
         /// Joins a group with the given public key of the group.
         /// </summary>
         /// <param name="friendnumber"></param>
-        /// <param name="group_public_key"></param>
+        /// <param name="data">Data obtained from the OnGroupInvite event.</param>
         /// <returns></returns>
-        public int JoinGroup(int friendnumber, string group_public_key)
+        public int JoinGroup(int friendnumber, byte[] data)
         {
             if (disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
-            return ToxFunctions.JoinGroupchat(tox, friendnumber, ToxTools.StringToHexBin(group_public_key));
+            return ToxFunctions.JoinGroupchat(tox, friendnumber, data, (ushort)data.Length);
         }
 
         /// <summary>
@@ -978,7 +978,7 @@ namespace SharpTox.Core
                 throw new ObjectDisposedException(GetType().FullName);
 
             byte[] msg = Encoding.UTF8.GetBytes(message);
-            return ToxFunctions.GroupMessageSend(tox, groupnumber, msg, (uint)msg.Length) == 0;
+            return ToxFunctions.GroupMessageSend(tox, groupnumber, msg, (ushort)msg.Length) == 0;
         }
 
         /// <summary>
@@ -993,7 +993,7 @@ namespace SharpTox.Core
                 throw new ObjectDisposedException(GetType().FullName);
 
             byte[] act = Encoding.UTF8.GetBytes(action);
-            return ToxFunctions.GroupActionSend(tox, groupnumber, act, (uint)act.Length) == 0;
+            return ToxFunctions.GroupActionSend(tox, groupnumber, act, (ushort)act.Length) == 0;
         }
 
         /// <summary>
@@ -1516,10 +1516,10 @@ namespace SharpTox.Core
                     Invoker(OnGroupMessage, groupnumber, friendgroupnumber, ToxTools.RemoveNull(Encoding.UTF8.GetString(message, 0, length)));
             }, IntPtr.Zero);
 
-            ToxFunctions.CallbackGroupInvite(tox, groupinvitedelegate = (IntPtr t, int friendnumber, byte[] group_public_key, IntPtr userdata) =>
+            ToxFunctions.CallbackGroupInvite(tox, groupinvitedelegate = (IntPtr t, int friendnumber, byte[] data, ushort length, IntPtr userdata) =>
             {
                 if (OnGroupInvite != null)
-                    Invoker(OnGroupInvite, friendnumber, ToxTools.HexBinToString(group_public_key));
+                    Invoker(OnGroupInvite, friendnumber, data);
             }, IntPtr.Zero);
 
             ToxFunctions.CallbackGroupNamelistChange(tox, groupnamelistchangedelegate = (IntPtr t, int groupnumber, int peernumber, ToxChatChange change, IntPtr userdata) =>
