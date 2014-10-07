@@ -1,4 +1,4 @@
-SharpTox [![Build Status](http://jenkins.impy.me/job/SharpTox%20x86/badge/icon)](http://jenkins.impy.me/job/SharpTox%20x86/)
+SharpTox [![Build Status](https://jenkins.impy.me/job/SharpTox%20x86/badge/icon)](https://jenkins.impy.me/job/SharpTox%20x86/)
 ========
 
 This project aims to provide a simple library that wraps all of the functions found in the [Tox library](https://github.com/irungentoo/ProjectTox-Core "ProjectTox GitHub repo").
