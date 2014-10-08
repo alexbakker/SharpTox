@@ -189,7 +189,7 @@ namespace SharpTox.Core
         private bool connected = false;
 
         /// <summary>
-        /// Setting this to false will make sure that resolving sticks strictly to IPv4 addresses.
+        /// Options used for this instance of Tox.
         /// </summary>
         public ToxOptions Options { get; private set; }
 
@@ -364,8 +364,8 @@ namespace SharpTox.Core
 
             int result = ToxFunctions.Load(tox, bytes, (uint)bytes.Length);
 
-            if (result != 1)
-                return result == 0;
+            if (result == 0 || result == -1) //apparently -1 doesn't necessarily mean that the data didn't load
+                return true;
             else
                 throw new Exception("Could not load encrypted data file. Use LoadEncrypted instead.");
         }
