@@ -338,39 +338,6 @@ namespace SharpTox.Core
         }
 
         /// <summary>
-        /// Loads the tox data file from a location specified by filename.
-        /// </summary>
-        /// <param name="filename"></param>
-        /// <returns></returns>
-        public bool Load(string filename)
-        {
-            if (disposed)
-                throw new ObjectDisposedException(GetType().FullName);
-
-            byte[] bytes;
-            try
-            {
-                FileInfo info = new FileInfo(filename);
-                FileStream stream = new FileStream(filename, FileMode.Open);
-                bytes = new byte[info.Length];
-
-                stream.Read(bytes, 0, (int)info.Length);
-                stream.Close();
-            }
-            catch { return false; }
-
-            if (bytes == null || bytes.Length == 0)
-                return false;
-
-            int result = ToxFunctions.Load(tox, bytes, (uint)bytes.Length);
-
-            if (result == 0 || result == -1) //apparently -1 doesn't necessarily mean that the data didn't load
-                return true;
-            else
-                throw new Exception("Could not load encrypted data file. Use LoadEncrypted instead.");
-        }
-
-        /// <summary>
         /// Retrieves an array of group member names.
         /// </summary>
         /// <param name="groupnumber"></param>
@@ -841,29 +808,6 @@ namespace SharpTox.Core
         }
 
         /// <summary>
-        /// Saves the data of this tox instance at the given file location.
-        /// </summary>
-        /// <param name="filename"></param>
-        /// <returns></returns>
-        public bool Save(string filename)
-        {
-            if (disposed)
-                throw new ObjectDisposedException(GetType().FullName);
-
-            try
-            {
-                byte[] bytes = GetDataBytes();
-
-                FileStream stream = new FileStream(filename, FileMode.Create);
-                stream.Write(bytes, 0, bytes.Length);
-                stream.Close();
-
-                return true;
-            }
-            catch { return false; }
-        }
-
-        /// <summary>
         /// Ends the tox_do loop and kills this tox instance.
         /// </summary>
         [Obsolete("Use Dispose() instead", true)]
@@ -1198,10 +1142,10 @@ namespace SharpTox.Core
         }
 
         /// <summary>
-        /// Retrieves a byte array that contains the data of this tox instance.
+        /// Retrieves a ToxData object that contains the data of this tox instance.
         /// </summary>
         /// <returns></returns>
-        public byte[] GetDataBytes()
+        public ToxData GetData()
         {
             if (disposed)
                 throw new ObjectDisposedException(GetType().FullName);
@@ -1209,15 +1153,15 @@ namespace SharpTox.Core
             byte[] bytes = new byte[ToxFunctions.Size(tox)];
             ToxFunctions.Save(tox, bytes);
 
-            return bytes;
+            return new ToxData(bytes);
         }
 
         /// <summary>
-        /// Retrieves a byte array that contains the encrypted data of this tox instance.
+        /// Retrieves a ToxData object that contains the data of this tox instance, encrypted with the given passphrase.
         /// </summary>
         /// <param name="passphrase"></param>
         /// <returns></returns>
-        public byte[] GetEncryptedDataBytes(string passphrase)
+        public ToxData GetData(string passphrase)
         {
             if (disposed)
                 throw new ObjectDisposedException(GetType().FullName);
@@ -1226,9 +1170,9 @@ namespace SharpTox.Core
             byte[] phrase = Encoding.UTF8.GetBytes(passphrase);
 
             if (ToxFunctions.EncryptedSave(tox, bytes, phrase, (uint)phrase.Length) != 0)
-                return new byte[0];
+                return null;
 
-            return bytes;
+            return new ToxData(bytes);
         }
 
         /// <summary>
@@ -1245,54 +1189,21 @@ namespace SharpTox.Core
         }
 
         /// <summary>
-        /// Saves the data of this tox instance at the given file location after encrypting it with the given passphrase.
+        /// Loads tox data.
         /// </summary>
-        /// <param name="filename"></param>
-        /// <param name="passphrase"></param>
+        /// <param name="data"></param>
         /// <returns></returns>
-        public bool SaveEncrypted(string filename, string passphrase)
+        public bool Load(ToxData data)
         {
             if (disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
-            try
-            {
-                byte[] bytes = GetEncryptedDataBytes(passphrase);
-                if (bytes.Length == 0)
-                    return false;
+            if (data == null || data.IsEncrypted)
+                return false;
 
-                FileStream stream = new FileStream(filename, FileMode.Create);
-                stream.Write(bytes, 0, bytes.Length);
-                stream.Close();
+            int result = ToxFunctions.Load(tox, data.Bytes, (uint)data.Bytes.Length);
 
-                return true;
-            }
-            catch { return false; }
-        }
-
-        /// <summary>
-        /// Loads and decrypts the tox data file from a location specified by filename.
-        /// </summary>
-        /// <param name="filename"></param>
-        /// <param name="passphrase"></param>
-        /// <returns></returns>
-        public bool LoadEncrypted(string filename, string passphrase)
-        {
-            if (disposed)
-                throw new ObjectDisposedException(GetType().FullName);
-
-            try
-            {
-                FileInfo info = new FileInfo(filename);
-                FileStream stream = new FileStream(filename, FileMode.Open);
-                byte[] bytes = new byte[info.Length];
-
-                stream.Read(bytes, 0, (int)info.Length);
-                stream.Close();
-
-                return LoadEncrypted(bytes, passphrase);
-            }
-            catch { return false; }
+            return (result == 0 || result == -1);
         }
 
         /// <summary>
@@ -1301,48 +1212,17 @@ namespace SharpTox.Core
         /// <param name="data"></param>
         /// <param name="passphrase"></param>
         /// <returns></returns>
-        public bool LoadEncrypted(byte[] data, string passphrase)
+        public bool Load(ToxData data, string passphrase)
         {
             if (disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
             byte[] phrase = Encoding.UTF8.GetBytes(passphrase);
 
-            return ToxFunctions.EncryptedLoad(tox, data, (uint)data.Length, phrase, (uint)phrase.Length) == 0;
-        }
-
-        /// <summary>
-        /// Checks whether or not the specified tox data is encrypted.
-        /// </summary>
-        /// <param name="data"></param>
-        /// <returns></returns>
-        public bool IsDataEncrypted(byte[] data)
-        {
-            if (disposed)
-                throw new ObjectDisposedException(GetType().FullName);
-
-            return ToxFunctions.IsDataEncrypted(data) == 1;
-        }
-
-        /// <summary>
-        /// Checks whether or not the specified tox data is encrypted.
-        /// </summary>
-        /// <param name="filename"></param>
-        /// <returns></returns>
-        public bool IsDataEncrypted(string filename)
-        {
-            if (disposed)
-                throw new ObjectDisposedException(GetType().FullName);
-
-            FileInfo info = new FileInfo(filename);
-            FileStream stream = new FileStream(filename, FileMode.Open);
-
-            byte[] bytes = new byte[info.Length];
-
-            stream.Read(bytes, 0, (int)info.Length);
-            stream.Close();
-
-            return ToxFunctions.IsDataEncrypted(bytes) == 1;
+            if (data.IsEncrypted)
+                return ToxFunctions.EncryptedLoad(tox, data.Bytes, (uint)data.Bytes.Length, phrase, (uint)phrase.Length) == 0;
+            else 
+                return Load(data);
         }
 
         /// <summary>
