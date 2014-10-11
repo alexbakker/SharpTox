@@ -6,6 +6,16 @@ Tox is a free (as in freedom) Skype replacement.
 
 Feel free to contribute!
 
+### Things you'll need
+
+* The libtox(core, av and dns) library, you should compile that yourself from the [ProjectTox GitHub repo](https://github.com/irungentoo/ProjectTox-Core "Tox Github repo"). Guidelines on how to do this can be found [here](https://github.com/irungentoo/toxcore/blob/master/INSTALL.md "Crosscompile guidelines"). If you don't feel like compiling this yourself, you can find automatic builds for windows here: [x86](https://jenkins.libtoxcore.so/job/toxcore_win32_dll/ "x86 dll") or [x64](https://jenkins.libtoxcore.so/job/toxcore_win64_dll/ "x64 dll")
+
+* Depending on how you compiled the core libraries, the names of those may differ from the defaults in SharpTox. Be sure to change the value of the const string **dll** in ToxFunctions.cs, ToxAvFunctions.cs and ToxDnsFunctions.cs accordingly.
+
+Looking for precompiled binaries? [Check this](https://github.com/irungentoo/ProjectTox-Core "SharpTox Binaries").
+
+Please note that at this time, this project hasn't been tested on any operating system other than Windows. You are of course, free to give it a try on the operating system of your choice.
+
 ### Basic Usage
 ```csharp
 using System;
@@ -62,17 +72,9 @@ class Program
 }
 ```
 
-### Things you'll need
-
-* The libtox(core, av and dns) library, you should compile that yourself from the [ProjectTox GitHub repo](https://github.com/irungentoo/ProjectTox-Core "Tox Github repo"). Guidelines on how to do this can be found [here](https://github.com/irungentoo/toxcore/blob/master/INSTALL.md "Crosscompile guidelines"). If you don't feel like compiling this yourself, you can find automatic builds for windows here: [x86](https://jenkins.libtoxcore.so/job/toxcore_win32_dll/ "x86 dll") or [x64](https://jenkins.libtoxcore.so/job/toxcore_win64_dll/ "x64 dll")
-
-* Depending on how you compiled the core libraries, the names of those may differ from the defaults in SharpTox. Be sure to change the value of the const string **dll** in ToxFunctions.cs, ToxAvFunctions.cs and ToxDnsFunctions.cs accordingly.
-
-Please note that at this time, this project hasn't been tested on any operating system other than Windows. You are of course, free to give it a try on the operating system of your choice.
-
 Toxy
 -------
-If you're considering using SharpTox for your project, you should definitely have a look at Toxy. Toxy is a metro-style Tox client for windows. It should have most of the functionality of Tox implemented.
+If you're considering using SharpTox for your project, you should definitely have a look at Toxy. Toxy is a metro-style Tox client for windows. It has most of the functionality of Tox implemented.
 
 Toxy is available [here](https://github.com/Reverp/Toxy-WPF).
 
