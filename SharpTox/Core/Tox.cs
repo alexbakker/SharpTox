@@ -404,6 +404,14 @@ namespace SharpTox.Core
             }
         }
 
+        public ToxHandle Handle
+        {
+            get
+            {
+                return tox;
+            }
+        }
+
         /// <summary>
         /// Initializes a new instance of tox.
         /// </summary>
@@ -1022,18 +1030,6 @@ namespace SharpTox.Core
                 throw new ObjectDisposedException(GetType().FullName);
 
             ToxFunctions.SetNospam(tox, nospam);
-        }
-
-        /// <summary>
-        /// Retrieves the handle of this tox instance.
-        /// </summary>
-        /// <returns></returns>
-        public ToxHandle GetHandle()
-        {
-            if (disposed)
-                throw new ObjectDisposedException(GetType().FullName);
-
-            return tox;
         }
 
         /// <summary>
