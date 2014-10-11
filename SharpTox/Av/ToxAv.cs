@@ -154,6 +154,30 @@ namespace SharpTox.Av
         private ToxAvHandle toxav;
 
         /// <summary>
+        /// The handle of this toxav instance.
+        /// </summary>
+        public ToxAvHandle Handle
+        {
+            get
+            {
+                return toxav;
+            }
+        }
+
+        private ToxHandle toxHandle;
+
+        /// <summary>
+        /// The Tox instance that this toxav instance belongs to.
+        /// </summary>
+        public ToxHandle ToxHandle
+        {
+            get
+            {
+                return toxHandle;
+            }
+        }
+
+        /// <summary>
         /// The maximum amount of calls this instance of toxav is allowed to have.
         /// </summary>
         public readonly int MaxCalls;
@@ -166,6 +190,7 @@ namespace SharpTox.Av
         /// <param name="max_calls"></param>
         public ToxAv(ToxHandle tox, ToxAvCodecSettings settings, int max_calls)
         {
+            toxHandle = tox;
             toxav = ToxAvFunctions.New(tox, max_calls);
 
             if (toxav == null || toxav.IsInvalid)
@@ -361,18 +386,6 @@ namespace SharpTox.Av
         }
 
         /// <summary>
-        /// Retrieves the tox instance that this toxav instance belongs to.
-        /// </summary>
-        /// <returns></returns>
-        public IntPtr GetTox()
-        {
-            if (disposed)
-                throw new ObjectDisposedException(GetType().FullName);
-
-            return ToxAvFunctions.GetTox(toxav);
-        }
-
-        /// <summary>
         /// Sends an encoded audio frame.
         /// </summary>
         /// <param name="call_index"></param>
@@ -401,18 +414,6 @@ namespace SharpTox.Av
                 throw new ObjectDisposedException(GetType().FullName);
 
             return ToxAvFunctions.PrepareAudioFrame(toxav, call_index, dest, dest_max, frame, frame.Length);
-        }
-
-        /// <summary>
-        /// Gets the handle of this toxav instance.
-        /// </summary>
-        /// <returns></returns>
-        public ToxAvHandle GetHandle()
-        {
-            if (disposed)
-                throw new ObjectDisposedException(GetType().FullName);
-
-            return toxav;
         }
 
         /// <summary>

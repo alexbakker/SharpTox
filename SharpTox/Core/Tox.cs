@@ -6,6 +6,8 @@ using System.Text;
 using System.Threading;
 using System.Collections.Generic;
 
+using SharpTox.Encryption;
+
 namespace SharpTox.Core
 {
     #region Event Delegates
@@ -194,6 +196,215 @@ namespace SharpTox.Core
         public ToxOptions Options { get; private set; }
 
         /// <summary>
+        /// The avatar of this Tox instance.
+        /// </summary>
+        public ToxAvatar Avatar
+        {
+            get
+            {
+                if (disposed)
+                    throw new ObjectDisposedException(GetType().FullName);
+
+                byte format = 0;
+                uint length = 0;
+
+                byte[] buf = new byte[ToxConstants.MaxAvatarDataLength];
+                byte[] hash = new byte[ToxConstants.ToxHashLength];
+
+                if (ToxFunctions.GetSelfAvatar(tox, ref format, buf, ref length, ToxConstants.MaxAvatarDataLength, hash) != 0)
+                    return null;
+
+                byte[] data = new byte[length];
+                Array.Copy(buf, 0, data, 0, length);
+
+                return new ToxAvatar((ToxAvatarFormat)format, data, hash);
+            }
+        }
+
+        /// <summary>
+        /// Whether or not we're connected to the DHT.
+        /// </summary>
+        public bool IsConnected
+        {
+            get
+            {
+                if (disposed)
+                    throw new ObjectDisposedException(GetType().FullName);
+
+                return ToxFunctions.IsConnected(tox) != 0;
+            }
+        }
+
+        /// <summary>
+        /// The number of friends in this Tox instance.
+        /// </summary>
+        public int FriendCount
+        {
+            get
+            {
+                if (disposed)
+                    throw new ObjectDisposedException(GetType().FullName);
+
+                return (int)ToxFunctions.CountFriendlist(tox);
+            }
+        }
+
+        /// <summary>
+        /// An array of friendnumbers of this Tox instance.
+        /// </summary>
+        public int[] FriendList
+        {
+            get
+            {
+                if (disposed)
+                    throw new ObjectDisposedException(GetType().FullName);
+
+                uint count = ToxFunctions.CountFriendlist(tox);
+                int[] friends = new int[count];
+                uint[] trunc = new uint[0];
+                uint result = ToxFunctions.GetFriendlist(tox, friends, trunc);
+
+                if (result == 0)
+                    return new int[0];
+
+                return friends;
+            }
+        }
+
+        /// <summary>
+        /// The nickname of this Tox instance.
+        /// </summary>
+        public string Name
+        {
+            get
+            {
+                if (disposed)
+                    throw new ObjectDisposedException(GetType().FullName);
+
+                byte[] bytes = new byte[129];
+                ToxFunctions.GetSelfName(tox, bytes);
+
+                return ToxTools.RemoveNull(Encoding.UTF8.GetString(bytes));
+            }
+            set
+            {
+                if (disposed)
+                    throw new ObjectDisposedException(GetType().FullName);
+
+                byte[] bytes = Encoding.UTF8.GetBytes(value);
+                ToxFunctions.SetName(tox, bytes, (ushort)bytes.Length);
+            }
+        }
+
+        /// <summary>
+        /// The pair of Tox keys that belong to this instance.
+        /// </summary>
+        public ToxKeyPair Keys
+        {
+            get
+            {
+                if (disposed)
+                    throw new ObjectDisposedException(GetType().FullName);
+
+                byte[] public_key = new byte[32];
+                byte[] secret_key = new byte[32];
+
+                ToxFunctions.GetKeys(tox, public_key, secret_key);
+
+                return new ToxKeyPair(
+                    new ToxKey(ToxKeyType.Public, public_key),
+                    new ToxKey(ToxKeyType.Secret, secret_key)
+                    );
+            }
+        }
+
+        /// <summary>
+        /// The string of a 32 byte long Tox Id to share with others.
+        /// </summary>
+        public string Id
+        {
+            get
+            {
+                if (disposed)
+                    throw new ObjectDisposedException(GetType().FullName);
+
+                byte[] address = new byte[38];
+                ToxFunctions.GetAddress(tox, address);
+
+                return ToxTools.HexBinToString(address);
+            }
+        }
+
+        /// <summary>
+        /// The status message of this Tox instance.
+        /// </summary>
+        public string StatusMessage
+        {
+            get
+            {
+                if (disposed)
+                    throw new ObjectDisposedException(GetType().FullName);
+
+                int size = ToxFunctions.GetSelfStatusMessageSize(tox);
+                byte[] status = new byte[size];
+
+                ToxFunctions.GetSelfStatusMessage(tox, status, status.Length);
+
+                return ToxTools.RemoveNull(Encoding.UTF8.GetString(status));
+            }
+            set
+            {
+                if (disposed)
+                    throw new ObjectDisposedException(GetType().FullName);
+
+                byte[] msg = Encoding.UTF8.GetBytes(value);
+                ToxFunctions.SetStatusMessage(tox, msg, (ushort)msg.Length);
+            }
+        }
+
+        /// <summary>
+        /// Current user status of this Tox instance.
+        /// </summary>
+        public ToxUserStatus Status
+        {
+            get
+            {
+                if (disposed)
+                    throw new ObjectDisposedException(GetType().FullName);
+
+                return (ToxUserStatus)ToxFunctions.GetSelfUserStatus(tox);
+            }
+            set
+            {
+                if (disposed)
+                    throw new ObjectDisposedException(GetType().FullName);
+
+                ToxFunctions.SetUserStatus(tox, (byte)value);
+            }
+        }
+
+        /// <summary>
+        /// An array of valid chat IDs.
+        /// </summary>
+        public int[] ChatList
+        {
+            get
+            {
+                if (disposed)
+                    throw new ObjectDisposedException(GetType().FullName);
+
+                int[] chats = new int[ToxFunctions.CountChatlist(tox)];
+                uint[] trunc = new uint[0];
+                uint result = ToxFunctions.GetChatlist(tox, chats, trunc);
+
+                if (result == 0)
+                    return new int[0];
+                else
+                    return chats;
+            }
+        }
+
+        /// <summary>
         /// Initializes a new instance of tox.
         /// </summary>
         /// <param name="options"></param>
@@ -240,18 +451,6 @@ namespace SharpTox.Core
         private object dummyinvoker(Delegate method, params object[] p)
         {
             return method.DynamicInvoke(p);
-        }
-
-        /// <summary>
-        /// Check whether we are connected to the DHT.
-        /// </summary>
-        /// <returns>true if we are and false if we aren't.</returns>
-        public bool IsConnected()
-        {
-            if (disposed)
-                throw new ObjectDisposedException(GetType().FullName);
-
-            return ToxFunctions.IsConnected(tox) != 0;
         }
 
         /// <summary>
@@ -388,14 +587,14 @@ namespace SharpTox.Core
         {
             while (true)
             {
-                if (IsConnected() && !connected)
+                if (IsConnected && !connected)
                 {
                     if (OnConnected != null)
                         Invoker(OnConnected);
 
                     connected = true;
                 }
-                else if (!IsConnected() && connected)
+                else if (!IsConnected && connected)
                 {
                     if (OnDisconnected != null)
                         Invoker(OnDisconnected);
@@ -475,38 +674,6 @@ namespace SharpTox.Core
         }
 
         /// <summary>
-        /// Retrieves the number of friends in this tox instance.
-        /// </summary>
-        /// <returns></returns>
-        public int GetFriendlistCount()
-        {
-            if (disposed)
-                throw new ObjectDisposedException(GetType().FullName);
-
-            return (int)ToxFunctions.CountFriendlist(tox);
-        }
-
-        /// <summary>
-        /// Retrieves an array of friendnumbers of this tox instance.
-        /// </summary>
-        /// <returns></returns>
-        public int[] GetFriendlist()
-        {
-            if (disposed)
-                throw new ObjectDisposedException(GetType().FullName);
-
-            uint count = ToxFunctions.CountFriendlist(tox);
-            int[] friends = new int[count];
-            uint[] trunc = new uint[0];
-            uint result = ToxFunctions.GetFriendlist(tox, friends, trunc);
-
-            if (result == 0)
-                return new int[0];
-
-            return friends;
-        }
-
-        /// <summary>
         /// Retrieves the name of a friendnumber.
         /// </summary>
         /// <param name="friendnumber"></param>
@@ -525,21 +692,6 @@ namespace SharpTox.Core
         }
 
         /// <summary>
-        /// Retrieves the nickname of this tox instance.
-        /// </summary>
-        /// <returns></returns>
-        public string GetSelfName()
-        {
-            if (disposed)
-                throw new ObjectDisposedException(GetType().FullName);
-
-            byte[] bytes = new byte[129];
-            ToxFunctions.GetSelfName(tox, bytes);
-
-            return ToxTools.RemoveNull(Encoding.UTF8.GetString(bytes));
-        }
-
-        /// <summary>
         /// Retrieves a DateTime object of the last time friendnumber was seen online.
         /// </summary>
         /// <param name="friendnumber"></param>
@@ -550,21 +702,6 @@ namespace SharpTox.Core
                 throw new ObjectDisposedException(GetType().FullName);
 
             return ToxTools.EpochToDateTime((long)ToxFunctions.GetLastOnline(tox, friendnumber));
-        }
-
-        /// <summary>
-        /// Retrieves the string of a 32 byte long address to share with others.
-        /// </summary>
-        /// <returns></returns>
-        public string GetAddress()
-        {
-            if (disposed)
-                throw new ObjectDisposedException(GetType().FullName);
-
-            byte[] address = new byte[38];
-            ToxFunctions.GetAddress(tox, address);
-
-            return ToxTools.HexBinToString(address);
         }
 
         /// <summary>
@@ -607,23 +744,6 @@ namespace SharpTox.Core
             byte[] status = new byte[size];
 
             ToxFunctions.GetStatusMessage(tox, friendnumber, status, status.Length);
-
-            return ToxTools.RemoveNull(Encoding.UTF8.GetString(status));
-        }
-
-        /// <summary>
-        /// Retrieves the status message of this tox instance.
-        /// </summary>
-        /// <returns></returns>
-        public string GetSelfStatusMessage()
-        {
-            if (disposed)
-                throw new ObjectDisposedException(GetType().FullName);
-
-            int size = ToxFunctions.GetSelfStatusMessageSize(tox);
-            byte[] status = new byte[size];
-
-            ToxFunctions.GetSelfStatusMessage(tox, status, status.Length);
 
             return ToxTools.RemoveNull(Encoding.UTF8.GetString(status));
         }
@@ -691,59 +811,6 @@ namespace SharpTox.Core
         }
 
         /// <summary>
-        /// Retrieves the current user status of this tox instance.
-        /// </summary>
-        /// <returns></returns>
-        public ToxUserStatus GetSelfUserStatus()
-        {
-            if (disposed)
-                throw new ObjectDisposedException(GetType().FullName);
-
-            return (ToxUserStatus)ToxFunctions.GetSelfUserStatus(tox);
-        }
-
-        /// <summary>
-        /// Sets the name of this tox instance.
-        /// </summary>
-        /// <param name="name"></param>
-        /// <returns></returns>
-        public bool SetName(string name)
-        {
-            if (disposed)
-                throw new ObjectDisposedException(GetType().FullName);
-
-            byte[] bytes = Encoding.UTF8.GetBytes(name);
-            return ToxFunctions.SetName(tox, bytes, (ushort)bytes.Length) == 0;
-        }
-
-        /// <summary>
-        /// Sets the user status of this tox instance.
-        /// </summary>
-        /// <param name="status"></param>
-        /// <returns></returns>
-        public bool SetUserStatus(ToxUserStatus status)
-        {
-            if (disposed)
-                throw new ObjectDisposedException(GetType().FullName);
-
-            return ToxFunctions.SetUserStatus(tox, (byte)status) == 0;
-        }
-
-        /// <summary>
-        /// Sets the status message of this tox instance.
-        /// </summary>
-        /// <param name="message"></param>
-        /// <returns></returns>
-        public bool SetStatusMessage(string message)
-        {
-            if (disposed)
-                throw new ObjectDisposedException(GetType().FullName);
-
-            byte[] msg = Encoding.UTF8.GetBytes(message);
-            return ToxFunctions.SetStatusMessage(tox, msg, (ushort)msg.Length) == 0;
-        }
-
-        /// <summary>
         /// Sets the typing status of this tox instance.
         /// </summary>
         /// <param name="friendnumber"></param>
@@ -756,25 +823,6 @@ namespace SharpTox.Core
 
             byte typing = is_typing ? (byte)1 : (byte)0;
             return ToxFunctions.SetUserIsTyping(tox, friendnumber, typing) == 0;
-        }
-
-        /// <summary>
-        /// Retrieves an array of valid chat IDs.
-        /// </summary>
-        /// <returns></returns>
-        public int[] GetChatList()
-        {
-            if (disposed)
-                throw new ObjectDisposedException(GetType().FullName);
-
-            int[] chats = new int[ToxFunctions.CountChatlist(tox)];
-            uint[] trunc = new uint[0];
-            uint result = ToxFunctions.GetChatlist(tox, chats, trunc);
-
-            if (result == 0)
-                return new int[0];
-            else
-                return chats;
         }
 
         /// <summary>
@@ -989,26 +1037,6 @@ namespace SharpTox.Core
         }
 
         /// <summary>
-        /// Returns a pair of tox keys that belong to this instance.
-        /// </summary>
-        /// <returns></returns>
-        public ToxKeyPair GetKeys()
-        {
-            if (disposed)
-                throw new ObjectDisposedException(GetType().FullName);
-
-            byte[] public_key = new byte[32];
-            byte[] secret_key = new byte[32];
-
-            ToxFunctions.GetKeys(tox, public_key, secret_key);
-
-            return new ToxKeyPair(
-                new ToxKey(ToxKeyType.Public, public_key),
-                new ToxKey(ToxKeyType.Secret, secret_key)
-                );
-        }
-
-        /// <summary>
         /// Sends a lossy packet to the specified friendnumber.
         /// </summary>
         /// <param name="friendnumber"></param>
@@ -1166,10 +1194,10 @@ namespace SharpTox.Core
             if (disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
-            byte[] bytes = new byte[ToxFunctions.EncryptedSize(tox)];
+            byte[] bytes = new byte[ToxEncryptionFunctions.EncryptedSize(tox)];
             byte[] phrase = Encoding.UTF8.GetBytes(passphrase);
 
-            if (ToxFunctions.EncryptedSave(tox, bytes, phrase, (uint)phrase.Length) != 0)
+            if (ToxEncryptionFunctions.EncryptedSave(tox, bytes, phrase, (uint)phrase.Length) != 0)
                 return null;
 
             return new ToxData(bytes);
@@ -1220,7 +1248,7 @@ namespace SharpTox.Core
             byte[] phrase = Encoding.UTF8.GetBytes(passphrase);
 
             if (data.IsEncrypted)
-                return ToxFunctions.EncryptedLoad(tox, data.Bytes, (uint)data.Bytes.Length, phrase, (uint)phrase.Length) == 0;
+                return ToxEncryptionFunctions.EncryptedLoad(tox, data.Bytes, (uint)data.Bytes.Length, phrase, (uint)phrase.Length) == 0;
             else 
                 return Load(data);
         }
@@ -1237,30 +1265,6 @@ namespace SharpTox.Core
                 throw new ObjectDisposedException(GetType().FullName);
 
             return ToxFunctions.SetAvatar(tox, (byte)format, data, (uint)data.Length) == 0;
-        }
-
-        /// <summary>
-        /// Retrieves the avatar of this Tox instance.
-        /// </summary>
-        /// <returns></returns>
-        public ToxAvatar GetSelfAvatar()
-        {
-            if (disposed)
-                throw new ObjectDisposedException(GetType().FullName);
-
-            byte format = 0;
-            uint length = 0;
-
-            byte[] buf = new byte[ToxConstants.MaxAvatarDataLength];
-            byte[] hash = new byte[ToxConstants.ToxHashLength];
-
-            if (ToxFunctions.GetSelfAvatar(tox, ref format, buf, ref length, ToxConstants.MaxAvatarDataLength, hash) != 0)
-                return null;
-
-            byte[] data = new byte[length];
-            Array.Copy(buf, 0, data, 0, length);
-
-            return new ToxAvatar((ToxAvatarFormat)format, data, hash);
         }
 
         /// <summary>

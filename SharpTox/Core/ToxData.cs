@@ -1,6 +1,8 @@
 ﻿using System;
 using System.IO;
 
+using SharpTox.Encryption;
+
 namespace SharpTox.Core
 {
     /// <summary>
@@ -36,7 +38,7 @@ namespace SharpTox.Core
         internal ToxData(byte[] data)
         {
             _data = data;
-            _encrypted = ToxFunctions.IsDataEncrypted(data) == 1;
+            _encrypted = ToxEncryptionFunctions.IsSaveEncrypted(data) == 1;
         }
 
         /// <summary>
