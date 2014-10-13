@@ -9,6 +9,12 @@ namespace SharpTox.Encryption
     {
         const string dll = "libtox";
 
+        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_pass_encryption_extra_length")]
+        public static extern int PassEncryptionExtraLength();
+
+        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_pass_key_length")]
+        public static extern int PassKeyLength();
+
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_encrypted_size")]
         public static extern uint EncryptedSize(ToxHandle tox);
 
@@ -18,8 +24,14 @@ namespace SharpTox.Encryption
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_pass_key_encrypt")]
         public static extern int PassKeyEncrypt(byte[] data, uint data_len, byte[] key, byte[] output);
 
+        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_pass_encrypt")]
+        public static extern int PassEncrypt(byte[] data, uint len, byte[] passphrase, uint pplength, byte[] output);
+
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_encrypted_save")]
         public static extern int EncryptedSave(ToxHandle tox, byte[] data, byte[] passphrase, uint pplength);
+
+        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_pass_key_decrypt")]
+        public static extern int PassKeyDecrypt(byte[] data, uint length, byte[] key, byte[] output);
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_pass_decrypt")]
         public static extern int PassDecrypt(byte[] data, uint length, uint[] passphrase, uint pplength, byte[] output);
