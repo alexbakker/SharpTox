@@ -10,33 +10,6 @@ using SharpTox.Encryption;
 
 namespace SharpTox.Core
 {
-    #region Event Delegates
-    public delegate void OnFriendRequestDelegate(string id, string message);
-    public delegate void OnConnectionStatusDelegate(int friendnumber, ToxFriendConnectionStatus status);
-    public delegate void OnFriendMessageDelegate(int friendnumber, string message);
-    public delegate void OnFriendActionDelegate(int friendnumber, string action);
-    public delegate void OnNameChangeDelegate(int friendnumber, string newname);
-    public delegate void OnStatusMessageDelegate(int friendnumber, string newstatus);
-    public delegate void OnUserStatusDelegate(int friendnumber, ToxUserStatus status);
-    public delegate void OnTypingChangeDelegate(int friendnumber, bool is_typing);
-
-    public delegate void OnGroupInviteDelegate(int friendnumber, byte[] data);
-    public delegate void OnGroupMessageDelegate(int groupnumber, int friendgroupnumber, string message);
-    public delegate void OnGroupActionDelegate(int groupnumber, int friendgroupnumber, string action);
-    public delegate void OnGroupNamelistChangeDelegate(int groupnumber, int peernumber, ToxChatChange change);
-
-    public delegate void OnFileControlDelegate(int friendnumber, int receive_send, int filenumber, int control_type, byte[] data);
-    public delegate void OnFileDataDelegate(int friendnumber, int filenumber, byte[] data);
-    public delegate void OnFileSendRequestDelegate(int friendnumber, int filenumber, ulong filesize, string filename);
-    public delegate void OnReadReceiptDelegate(int friendnumber, uint receipt);
-
-    public delegate void OnPacketDelegate(int friendnumber, byte[] data);
-    public delegate void OnConnectionDelegate();
-
-    public delegate void OnAvatarInfoDelegate(int friendnumber, ToxAvatarFormat format, byte[] hash);
-    public delegate void OnAvatarDataDelegate(int friendnumber, ToxAvatar avatar);
-    #endregion
-
     /// <summary>
     /// Represents an instance of tox.
     /// </summary>
@@ -45,112 +18,112 @@ namespace SharpTox.Core
         /// <summary>
         /// Occurs when a friend request is received.
         /// </summary>
-        public event OnFriendRequestDelegate OnFriendRequest;
+        public event EventHandler<ToxEventArgs.FriendRequestEventArgs> OnFriendRequest;
 
         /// <summary>
         /// Occurs when the connection status of a friend has changed.
         /// </summary>
-        public event OnConnectionStatusDelegate OnConnectionStatusChanged;
+        public event EventHandler<ToxEventArgs.ConnectionStatusEventArgs> OnConnectionStatusChanged;
 
         /// <summary>
         /// Occurs when a message is received from a friend.
         /// </summary>
-        public event OnFriendMessageDelegate OnFriendMessage;
+        public event EventHandler<ToxEventArgs.FriendMessageEventArgs> OnFriendMessage;
 
         /// <summary>
         /// Occurs when an action is received from a friend.
         /// </summary>
-        public event OnFriendActionDelegate OnFriendAction;
+        public event EventHandler<ToxEventArgs.FriendActionEventArgs> OnFriendAction;
 
         /// <summary>
         /// Occurs when a friend has changed his/her name.
         /// </summary>
-        public event OnNameChangeDelegate OnNameChange;
+        public event EventHandler<ToxEventArgs.NameChangeEventArgs> OnNameChange;
 
         /// <summary>
         /// Occurs when a friend has changed their status message.
         /// </summary>
-        public event OnStatusMessageDelegate OnStatusMessage;
+        public event EventHandler<ToxEventArgs.StatusMessageEventArgs> OnStatusMessage;
 
         /// <summary>
         /// Occurs when a friend has changed their user status.
         /// </summary>
-        public event OnUserStatusDelegate OnUserStatus;
+        public event EventHandler<ToxEventArgs.UserStatusEventArgs> OnUserStatus;
 
         /// <summary>
         /// Occurs when a friend's typing status has changed.
         /// </summary>
-        public event OnTypingChangeDelegate OnTypingChange;
+        public event EventHandler<ToxEventArgs.TypingStatusEventArgs> OnTypingChange;
 
         /// <summary>
         /// Occurs when an action is received from a group.
         /// </summary>
-        public event OnGroupActionDelegate OnGroupAction;
+        public event EventHandler<ToxEventArgs.GroupActionEventArgs> OnGroupAction;
 
         /// <summary>
         /// Occurs when a message is received from a group.
         /// </summary>
-        public event OnGroupMessageDelegate OnGroupMessage;
+        public event EventHandler<ToxEventArgs.GroupMessageEventArgs> OnGroupMessage;
 
         /// <summary>
         /// Occurs when a friend has sent an invite to a group.
         /// </summary>
-        public event OnGroupInviteDelegate OnGroupInvite;
+        public event EventHandler<ToxEventArgs.GroupInviteEventArgs> OnGroupInvite;
 
         /// <summary>
         /// Occurs when the name list of a group has changed.
         /// </summary>
-        public event OnGroupNamelistChangeDelegate OnGroupNamelistChange;
+        public event EventHandler<ToxEventArgs.GroupNamelistChangeEventArgs> OnGroupNamelistChange;
 
         /// <summary>
         /// Occurs when a file control request is received.
         /// </summary>
-        public event OnFileControlDelegate OnFileControl;
+        public event EventHandler<ToxEventArgs.FileControlEventArgs> OnFileControl;
 
         /// <summary>
         /// Occurs when file data is received.
         /// </summary>
-        public event OnFileDataDelegate OnFileData;
+        public event EventHandler<ToxEventArgs.FileDataEventArgs> OnFileData;
 
         /// <summary>
         /// Occurs when a file send request is received.
         /// </summary>
-        public event OnFileSendRequestDelegate OnFileSendRequest;
+        public event EventHandler<ToxEventArgs.FileSendRequestEventArgs> OnFileSendRequest;
 
         /// <summary>
         /// Occurs when a read receipt is received.
         /// </summary>
-        public event OnReadReceiptDelegate OnReadReceipt;
+        public event EventHandler<ToxEventArgs.ReadReceiptEventArgs> OnReadReceipt;
 
         /// <summary>
         /// Occurs when a lossy packet is received.
         /// </summary>
-        public event OnPacketDelegate OnLossyPacket;
+        public event EventHandler<ToxEventArgs.CustomPacketEventArgs> OnLossyPacket;
 
         /// <summary>
         /// Occurs when a lossless packet is received.
         /// </summary>
-        public event OnPacketDelegate OnLosslessPacket;
+        public event EventHandler<ToxEventArgs.CustomPacketEventArgs> OnLosslessPacket;
 
         /// <summary>
         /// Occurs when a connection to the DHT has been established.
         /// </summary>
-        public event OnConnectionDelegate OnConnected;
+        public event EventHandler<ToxEventArgs.ConnectionEventArgs> OnConnected;
         
         /// <summary>
         /// Occurs when the connection to the DHT was lost.
         /// </summary>
-        public event OnConnectionDelegate OnDisconnected;
+        public event EventHandler<ToxEventArgs.ConnectionEventArgs> OnDisconnected;
 
         /// <summary>
         /// Occurs when avatar info is received.
         /// </summary>
-        public event OnAvatarInfoDelegate OnAvatarInfo;
+        public event EventHandler<ToxEventArgs.AvatarInfoEventArgs> OnAvatarInfo;
 
         /// <summary>
         /// Occurs when avatar data is received.
         /// </summary>
-        public event OnAvatarDataDelegate OnAvatarData;
+        public event EventHandler<ToxEventArgs.AvatarDataEventArgs> OnAvatarData;
 
         public delegate object InvokeDelegate(Delegate method, params object[] p);
 
@@ -598,14 +571,14 @@ namespace SharpTox.Core
                 if (IsConnected && !connected)
                 {
                     if (OnConnected != null)
-                        Invoker(OnConnected);
+                        Invoker(OnConnected, this, new ToxEventArgs.ConnectionEventArgs(true));
 
                     connected = true;
                 }
                 else if (!IsConnected && connected)
                 {
                     if (OnDisconnected != null)
-                        Invoker(OnDisconnected);
+                        Invoker(OnDisconnected, this, new ToxEventArgs.ConnectionEventArgs(false));
 
                     connected = false;
                 }
@@ -1089,7 +1062,7 @@ namespace SharpTox.Core
             ToxDelegates.CallbackPacketDelegate del = ((IntPtr obj, byte[] data, uint length) => 
             {
                 if (OnLossyPacket != null)
-                    Invoker(OnLossyPacket, friendnumber, data);
+                    Invoker(OnLossyPacket, this, new ToxEventArgs.CustomPacketEventArgs(friendnumber, data));
 
                 return 1;
 
@@ -1137,7 +1110,7 @@ namespace SharpTox.Core
             ToxDelegates.CallbackPacketDelegate del = ((IntPtr obj, byte[] data, uint length) =>
             {
                 if (OnLosslessPacket != null)
-                    Invoker(OnLosslessPacket, friendnumber, data);
+                    Invoker(OnLosslessPacket, this, new ToxEventArgs.CustomPacketEventArgs(friendnumber, data));
 
                 return 1;
 
@@ -1351,43 +1324,43 @@ namespace SharpTox.Core
             ToxFunctions.CallbackFriendRequest(tox, friendrequestdelegate = (IntPtr t, byte[] id, byte[] message, ushort length, IntPtr userdata) =>
             {
                 if (OnFriendRequest != null)
-                    Invoker(OnFriendRequest, ToxTools.RemoveNull(ToxTools.HexBinToString(id)), Encoding.UTF8.GetString(message, 0, length));
+                    Invoker(OnFriendRequest, this, new ToxEventArgs.FriendRequestEventArgs(ToxTools.RemoveNull(ToxTools.HexBinToString(id)), Encoding.UTF8.GetString(message, 0, length)));
             }, IntPtr.Zero);
 
             ToxFunctions.CallbackConnectionStatus(tox, connectionstatusdelegate = (IntPtr t, int friendnumber, byte status, IntPtr userdata) =>
             {
                 if (OnConnectionStatusChanged != null)
-                    Invoker(OnConnectionStatusChanged, friendnumber, (ToxFriendConnectionStatus)status);
+                    Invoker(OnConnectionStatusChanged, this, new ToxEventArgs.ConnectionStatusEventArgs(friendnumber, (ToxFriendConnectionStatus)status));
             }, IntPtr.Zero);
 
             ToxFunctions.CallbackFriendMessage(tox, friendmessagedelegate = (IntPtr t, int friendnumber, byte[] message, ushort length, IntPtr userdata) =>
             {
                 if (OnFriendMessage != null)
-                    Invoker(OnFriendMessage, friendnumber, ToxTools.RemoveNull(Encoding.UTF8.GetString(message, 0, length)));
+                    Invoker(OnFriendMessage, this, new ToxEventArgs.FriendMessageEventArgs(friendnumber, ToxTools.RemoveNull(Encoding.UTF8.GetString(message, 0, length))));
             }, IntPtr.Zero);
 
             ToxFunctions.CallbackFriendAction(tox, friendactiondelegate = (IntPtr t, int friendnumber, byte[] action, ushort length, IntPtr userdata) =>
             {
                 if (OnFriendAction != null)
-                    Invoker(OnFriendAction, friendnumber, ToxTools.RemoveNull(Encoding.UTF8.GetString(action, 0, length)));
+                    Invoker(OnFriendAction, this, new ToxEventArgs.FriendActionEventArgs(friendnumber, ToxTools.RemoveNull(Encoding.UTF8.GetString(action, 0, length))));
             }, IntPtr.Zero);
 
             ToxFunctions.CallbackNameChange(tox, namechangedelegate = (IntPtr t, int friendnumber, byte[] newname, ushort length, IntPtr userdata) =>
             {
                 if (OnNameChange != null)
-                    Invoker(OnNameChange, friendnumber, ToxTools.RemoveNull(Encoding.UTF8.GetString(newname, 0, length)));
+                    Invoker(OnNameChange, this, new ToxEventArgs.NameChangeEventArgs(friendnumber, ToxTools.RemoveNull(Encoding.UTF8.GetString(newname, 0, length))));
             }, IntPtr.Zero);
 
             ToxFunctions.CallbackStatusMessage(tox, statusmessagedelegate = (IntPtr t, int friendnumber, byte[] newstatus, ushort length, IntPtr userdata) =>
             {
                 if (OnStatusMessage != null)
-                    Invoker(OnStatusMessage, friendnumber, ToxTools.RemoveNull(Encoding.UTF8.GetString(newstatus, 0, length)));
+                    Invoker(OnStatusMessage, this, new ToxEventArgs.StatusMessageEventArgs(friendnumber, ToxTools.RemoveNull(Encoding.UTF8.GetString(newstatus, 0, length))));
             }, IntPtr.Zero);
 
             ToxFunctions.CallbackUserStatus(tox, userstatusdelegate = (IntPtr t, int friendnumber, ToxUserStatus status, IntPtr userdata) =>
             {
                 if (OnUserStatus != null)
-                    Invoker(OnUserStatus, friendnumber, status);
+                    Invoker(OnUserStatus, this, new ToxEventArgs.UserStatusEventArgs(friendnumber, status));
             }, IntPtr.Zero);
 
             ToxFunctions.CallbackTypingChange(tox, typingchangedelegate = (IntPtr t, int friendnumber, byte typing, IntPtr userdata) =>
@@ -1395,67 +1368,67 @@ namespace SharpTox.Core
                 bool is_typing = typing != 0;
 
                 if (OnTypingChange != null)
-                    Invoker(OnTypingChange, friendnumber, is_typing);
+                    Invoker(OnTypingChange, this, new ToxEventArgs.TypingStatusEventArgs(friendnumber, is_typing));
             }, IntPtr.Zero);
 
             ToxFunctions.CallbackGroupAction(tox, groupactiondelegate = (IntPtr t, int groupnumber, int friendgroupnumber, byte[] action, ushort length, IntPtr userdata) =>
             {
                 if (OnGroupAction != null)
-                    Invoker(OnGroupAction, groupnumber, friendgroupnumber, ToxTools.RemoveNull(Encoding.UTF8.GetString(action, 0, length)));
+                    Invoker(OnGroupAction, this, new ToxEventArgs.GroupActionEventArgs(groupnumber, friendgroupnumber, ToxTools.RemoveNull(Encoding.UTF8.GetString(action, 0, length))));
             }, IntPtr.Zero);
 
             ToxFunctions.CallbackGroupMessage(tox, groupmessagedelegate = (IntPtr t, int groupnumber, int friendgroupnumber, byte[] message, ushort length, IntPtr userdata) =>
             {
                 if (OnGroupMessage != null)
-                    Invoker(OnGroupMessage, groupnumber, friendgroupnumber, ToxTools.RemoveNull(Encoding.UTF8.GetString(message, 0, length)));
+                    Invoker(OnGroupMessage, this, new ToxEventArgs.GroupMessageEventArgs(groupnumber, friendgroupnumber, ToxTools.RemoveNull(Encoding.UTF8.GetString(message, 0, length))));
             }, IntPtr.Zero);
 
             ToxFunctions.CallbackGroupInvite(tox, groupinvitedelegate = (IntPtr t, int friendnumber, byte[] data, ushort length, IntPtr userdata) =>
             {
                 if (OnGroupInvite != null)
-                    Invoker(OnGroupInvite, friendnumber, data);
+                    Invoker(OnGroupInvite, this, new ToxEventArgs.GroupInviteEventArgs(friendnumber, data));
             }, IntPtr.Zero);
 
             ToxFunctions.CallbackGroupNamelistChange(tox, groupnamelistchangedelegate = (IntPtr t, int groupnumber, int peernumber, ToxChatChange change, IntPtr userdata) =>
             {
                 if (OnGroupNamelistChange != null)
-                    Invoker(OnGroupNamelistChange, groupnumber, peernumber, change);
+                    Invoker(OnGroupNamelistChange, this, new ToxEventArgs.GroupNamelistChangeEventArgs(groupnumber, peernumber, change));
             }, IntPtr.Zero);
 
             ToxFunctions.CallbackFileControl(tox, filecontroldelegate = (IntPtr t, int friendnumber, byte receive_send, byte filenumber, byte control_type, byte[] data, ushort length, IntPtr userdata) =>
             {
                 if (OnFileControl != null)
-                    Invoker(OnFileControl, friendnumber, receive_send, filenumber, control_type, data);
+                    Invoker(OnFileControl, this, new ToxEventArgs.FileControlEventArgs(friendnumber, filenumber, receive_send == 1, (ToxFileControl)control_type, data));
             }, IntPtr.Zero);
 
             ToxFunctions.CallbackFileData(tox, filedatadelegate = (IntPtr t, int friendnumber, byte filenumber, byte[] data, ushort length, IntPtr userdata) =>
             {
                 if (OnFileData != null)
-                    Invoker(OnFileData, friendnumber, filenumber, data);
+                    Invoker(OnFileData, this, new ToxEventArgs.FileDataEventArgs(friendnumber, filenumber, data));
             }, IntPtr.Zero);
 
             ToxFunctions.CallbackFileSendRequest(tox, filesendrequestdelegate = (IntPtr t, int friendnumber, byte filenumber, ulong filesize, byte[] filename, ushort filename_length, IntPtr userdata) =>
             {
                 if (OnFileSendRequest != null)
-                    Invoker(OnFileSendRequest, friendnumber, filenumber, filesize, ToxTools.RemoveNull(Encoding.UTF8.GetString(filename, 0, filename_length)));
+                    Invoker(OnFileSendRequest, this, new ToxEventArgs.FileSendRequestEventArgs(friendnumber, filenumber, filesize, ToxTools.RemoveNull(Encoding.UTF8.GetString(filename, 0, filename_length))));
             }, IntPtr.Zero);
 
             ToxFunctions.CallbackReadReceipt(tox, readreceiptdelegate = (IntPtr t, int friendnumber, uint receipt, IntPtr userdata) =>
             {
                 if (OnReadReceipt != null)
-                    Invoker(OnReadReceipt, friendnumber, receipt);
+                    Invoker(OnReadReceipt, this, new ToxEventArgs.ReadReceiptEventArgs(friendnumber, (int)receipt));
             }, IntPtr.Zero);
 
             ToxFunctions.CallbackAvatarInfo(tox, avatarinfodelegate = (IntPtr t, int friendnumber, byte format, byte[] hash, IntPtr userdata) =>
             {
                 if (OnAvatarInfo != null)
-                    Invoker(OnAvatarInfo, friendnumber, (ToxAvatarFormat)format, hash);
+                    Invoker(OnAvatarInfo, this, new ToxEventArgs.AvatarInfoEventArgs(friendnumber, (ToxAvatarFormat)format, hash));
             }, IntPtr.Zero);
 
             ToxFunctions.CallbackAvatarData(tox, avatardatadelegate = (IntPtr t, int friendnumber, byte format, byte[] hash, byte[] data, uint datalen, IntPtr userdata) =>
             {
                 if (OnAvatarData != null)
-                    Invoker(OnAvatarData, friendnumber, new ToxAvatar((ToxAvatarFormat)format, data, hash));
+                    Invoker(OnAvatarData, this, new ToxEventArgs.AvatarDataEventArgs(friendnumber, new ToxAvatar((ToxAvatarFormat)format, (byte[])data.Clone(), hash)));
             }, IntPtr.Zero);
         }
     }

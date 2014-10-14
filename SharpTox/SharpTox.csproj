@@ -85,10 +85,12 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Av\ToxAvEventArgs.cs" />
     <Compile Include="Av\ToxAvHandle.cs" />
     <Compile Include="Core\Tox.cs" />
     <Compile Include="Core\ToxAvatar.cs" />
     <Compile Include="Core\ToxData.cs" />
+    <Compile Include="Core\ToxEventArgs.cs" />
     <Compile Include="Core\ToxExceptions.cs" />
     <Compile Include="Core\ToxHandle.cs" />
     <Compile Include="Core\ToxKey.cs" />

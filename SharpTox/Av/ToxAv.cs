@@ -4,32 +4,6 @@ using SharpTox.Core;
 namespace SharpTox.Av
 {
     /// <summary>
-    /// Delegate for callstate events.
-    /// </summary>
-    /// <param name="call_index"></param>
-    /// <param name="args"></param>
-    public delegate void CallstateChangedDelegate(int call_index, IntPtr args);
-
-    /// <summary>
-    /// Delegate for event <see cref="ToxAv.OnReceivedAudio"/>
-    /// </summary>
-    /// <param name="toxav"></param>
-    /// <param name="call_index"></param>
-    /// <param name="frame"></param>
-    /// <param name="frame_size"></param>
-    /// <param name="userdata"></param>
-    public delegate void ReceivedAudioDelegate(IntPtr toxav, int call_index, short[] frame, int frame_size, IntPtr userdata);
-
-    /// <summary>
-    /// Delegate for event <see cref="ToxAv.OnReceivedVideo"/>
-    /// </summary>
-    /// <param name="toxav"></param>
-    /// <param name="call_index"></param>
-    /// <param name="frame"></param>
-    /// <param name="userdata"></param>
-    public delegate void ReceivedVideoDelegate(IntPtr toxav, int call_index, IntPtr frame, IntPtr userdata);
-
-    /// <summary>
     /// Represents an instance of toxav.
     /// </summary>
     public class ToxAv : IDisposable
@@ -37,67 +11,67 @@ namespace SharpTox.Av
         /// <summary>
         /// Occurs when a call gets canceled.
         /// </summary>
-        public event CallstateChangedDelegate OnCancel;
+        public event EventHandler<ToxAvEventArgs.CallStateEventArgs> OnCancel;
 
         /// <summary>
         /// Occurs when a call ends.
         /// </summary>
-        public event CallstateChangedDelegate OnEnd;
+        public event EventHandler<ToxAvEventArgs.CallStateEventArgs> OnEnd;
 
         /// <summary>
         /// Occurs when a call is ending.
         /// </summary>
-        public event CallstateChangedDelegate OnEnding;
+        public event EventHandler<ToxAvEventArgs.CallStateEventArgs> OnEnding;
 
         /// <summary>
         /// Occurs when an invite for a call is received.
         /// </summary>
-        public event CallstateChangedDelegate OnInvite;
+        public event EventHandler<ToxAvEventArgs.CallStateEventArgs> OnInvite;
 
         /// <summary>
         /// Occurs when the person on the other end timed out.
         /// </summary>
-        public event CallstateChangedDelegate OnPeerTimeout;
+        public event EventHandler<ToxAvEventArgs.CallStateEventArgs> OnPeerTimeout;
 
         /// <summary>
         /// Occurs when a call gets rejected.
         /// </summary>
-        public event CallstateChangedDelegate OnReject;
+        public event EventHandler<ToxAvEventArgs.CallStateEventArgs> OnReject;
 
         /// <summary>
         /// Occurs when a call request times out.
         /// </summary>
-        public event CallstateChangedDelegate OnRequestTimeout;
+        public event EventHandler<ToxAvEventArgs.CallStateEventArgs> OnRequestTimeout;
 
         /// <summary>
         /// Occurs when the person on the other end received the invite.
         /// </summary>
-        public event CallstateChangedDelegate OnRinging;
+        public event EventHandler<ToxAvEventArgs.CallStateEventArgs> OnRinging;
 
         /// <summary>
         /// Occurs when the call is supposed to start.
         /// </summary>
-        public event CallstateChangedDelegate OnStart;
+        public event EventHandler<ToxAvEventArgs.CallStateEventArgs> OnStart;
 
         /// <summary>
         /// Occurs when the person on the other end has started the call.
         /// </summary>
-        public event CallstateChangedDelegate OnStarting;
+        public event EventHandler<ToxAvEventArgs.CallStateEventArgs> OnStarting;
 
         /// <summary>
         /// Occurs when a peer wants to change the call type.
         /// </summary>
-        public event CallstateChangedDelegate OnMediaChange;
+        public event EventHandler<ToxAvEventArgs.CallStateEventArgs> OnMediaChange;
 
         /// <summary>
         /// Occurs when an audio frame was received.
         /// </summary>
-        public event ReceivedAudioDelegate OnReceivedAudio;
+        public event EventHandler<ToxAvEventArgs.AudioDataEventArgs> OnReceivedAudio;
 
         /// <summary>
         /// Occurs when a video frame was received.
         /// </summary>
-        public event ReceivedVideoDelegate OnReceivedVideo;
+        public event EventHandler<ToxAvEventArgs.VideoDataEventArgs> OnReceivedVideo;
 
         #region Event delegates
         private ToxAvDelegates.CallstateCallback oncancelcallback;
@@ -486,79 +460,79 @@ namespace SharpTox.Av
             ToxAvFunctions.RegisterCallstateCallback(toxav, oncancelcallback = (IntPtr agent, int call_index, IntPtr args) =>
             {
                 if (OnCancel != null)
-                    Invoker(OnCancel, call_index, args);
+                    Invoker(OnCancel, this, new ToxAvEventArgs.CallStateEventArgs(call_index, ToxAvCallbackID.OnCancel));
             }, ToxAvCallbackID.OnCancel, IntPtr.Zero);
 
             ToxAvFunctions.RegisterCallstateCallback(toxav, onendcallback = (IntPtr agent, int call_index, IntPtr args) =>
             {
                 if (OnEnd != null)
-                    Invoker(OnEnd, call_index, args);
+                    Invoker(OnEnd, this, new ToxAvEventArgs.CallStateEventArgs(call_index, ToxAvCallbackID.OnEnd));
             }, ToxAvCallbackID.OnEnd, IntPtr.Zero);
 
             ToxAvFunctions.RegisterCallstateCallback(toxav, onendingcallback = (IntPtr agent, int call_index, IntPtr args) =>
             {
                 if (OnEnding != null)
-                    Invoker(OnEnding, call_index, args);
+                    Invoker(OnEnding, this, new ToxAvEventArgs.CallStateEventArgs(call_index, ToxAvCallbackID.OnEnding));
             }, ToxAvCallbackID.OnEnding, IntPtr.Zero);
 
             ToxAvFunctions.RegisterCallstateCallback(toxav, oninvitecallback = (IntPtr agent, int call_index, IntPtr args) =>
             {
                 if (OnInvite != null)
-                    Invoker(OnInvite, call_index, args);
+                    Invoker(OnInvite, this, new ToxAvEventArgs.CallStateEventArgs(call_index, ToxAvCallbackID.OnInvite));
             }, ToxAvCallbackID.OnInvite, IntPtr.Zero);
 
             ToxAvFunctions.RegisterCallstateCallback(toxav, onpeertimeoutcallback = (IntPtr agent, int call_index, IntPtr args) =>
             {
                 if (OnPeerTimeout != null)
-                    Invoker(OnPeerTimeout, call_index, args);
+                    Invoker(OnPeerTimeout, this, new ToxAvEventArgs.CallStateEventArgs(call_index, ToxAvCallbackID.OnPeerTimeout));
             }, ToxAvCallbackID.OnPeerTimeout, IntPtr.Zero);
 
             ToxAvFunctions.RegisterCallstateCallback(toxav, onrejectcallback = (IntPtr agent, int call_index, IntPtr args) =>
             {
                 if (OnReject != null)
-                    Invoker(OnReject, call_index, args);
+                    Invoker(OnReject, this, new ToxAvEventArgs.CallStateEventArgs(call_index, ToxAvCallbackID.OnReject));
             }, ToxAvCallbackID.OnReject, IntPtr.Zero);
 
             ToxAvFunctions.RegisterCallstateCallback(toxav, onrequesttimeoutcallback = (IntPtr agent, int call_index, IntPtr args) =>
             {
                 if (OnRequestTimeout != null)
-                    Invoker(OnRequestTimeout, call_index, args);
+                    Invoker(OnRequestTimeout, this, new ToxAvEventArgs.CallStateEventArgs(call_index, ToxAvCallbackID.OnRequestTimeout));
             }, ToxAvCallbackID.OnRequestTimeout, IntPtr.Zero);
 
             ToxAvFunctions.RegisterCallstateCallback(toxav, onringingcallback = (IntPtr agent, int call_index, IntPtr args) =>
             {
                 if (OnRinging != null)
-                    Invoker(OnRinging, call_index, args);
+                    Invoker(OnRinging, this, new ToxAvEventArgs.CallStateEventArgs(call_index, ToxAvCallbackID.OnRinging));
             }, ToxAvCallbackID.OnRinging, IntPtr.Zero);
 
             ToxAvFunctions.RegisterCallstateCallback(toxav, onstartcallback = (IntPtr agent, int call_index, IntPtr args) =>
             {
                 if (OnStart != null)
-                    Invoker(OnStart, call_index, args);
+                    Invoker(OnStart, this, new ToxAvEventArgs.CallStateEventArgs(call_index, ToxAvCallbackID.OnStart));
             }, ToxAvCallbackID.OnStart, IntPtr.Zero);
 
             ToxAvFunctions.RegisterCallstateCallback(toxav, onstartingcallback = (IntPtr agent, int call_index, IntPtr args) =>
             {
                 if (OnStarting != null)
-                    Invoker(OnStarting, call_index, args);
+                    Invoker(OnStarting, this, new ToxAvEventArgs.CallStateEventArgs(call_index, ToxAvCallbackID.OnStarting));
             }, ToxAvCallbackID.OnStarting, IntPtr.Zero);
 
             ToxAvFunctions.RegisterCallstateCallback(toxav, onmediachangecallback = (IntPtr agent, int call_index, IntPtr args) =>
             {
                 if (OnMediaChange != null)
-                    Invoker(OnMediaChange, call_index, args);
+                    Invoker(OnMediaChange, this, new ToxAvEventArgs.CallStateEventArgs(call_index, ToxAvCallbackID.OnMediaChange));
             }, ToxAvCallbackID.OnMediaChange, IntPtr.Zero);
 
             ToxAvFunctions.RegisterAudioReceiveCallback(toxav, onreceivedaudiocallback = (IntPtr ptr, int call_index, short[] frame, int frame_size, IntPtr userdata) =>
             {
                 if (OnReceivedAudio != null)
-                    OnReceivedAudio(ptr, call_index, frame, frame_size, userdata);
+                    Invoker(OnReceivedAudio, this, new ToxAvEventArgs.AudioDataEventArgs(call_index, frame));
             }, IntPtr.Zero);
 
             ToxAvFunctions.RegisterVideoReceiveCallback(toxav, onreceivedvideocallback = (IntPtr ptr, int call_index, IntPtr frame, IntPtr userdata) =>
             {
                 if (OnReceivedVideo != null)
-                    OnReceivedVideo(ptr, call_index, frame, userdata);
+                    Invoker(OnReceivedVideo, this, new ToxAvEventArgs.VideoDataEventArgs(call_index, frame));
             }, IntPtr.Zero);
         }
     }
