@@ -36,12 +36,12 @@ class Program
         foreach (ToxNode node in Nodes)
             tox.BootstrapFromNode(node);
 
-        tox.SetName("SharpTox");
-        tox.SetStatusMessage("Testing SharpTox");
+        tox.Name = "SharpTox";
+        tox.StatusMessage = "Testing SharpTox";
 
         tox.Start();
 
-        string id = tox.GetAddress();
+        string id = tox.Id;
         Console.WriteLine("ID: {0}", id);
 
         Console.ReadKey();
@@ -55,19 +55,19 @@ class Program
         new ToxNode("144.76.60.215", 33445, new ToxKey(ToxKeyType.Public, "04119E835DF3E78BACF0F84235B300546AF8B936F035185E2A8E9E0A67C8924F"))
     };
 
-    static void tox_OnFriendMessage(int friendnumber, string message)
+    static void tox_OnFriendMessage(object sender, ToxEventArgs.FriendMessageEventArgs e)
     {
         //get the name associated with the friendnumber
-        string name = tox.GetName(friendnumber);
+        string name = tox.GetName(e.FriendNumber);
 
         //print the message to the console
-        Console.WriteLine("<{0}> {1}", name, message);
+        Console.WriteLine("<{0}> {1}", name, e.Message);
     }
 
-    static void tox_OnFriendRequest(string id, string message)
+    static void tox_OnFriendRequest(object sender, ToxEventArgs.FriendRequestEventArgs e)
     {
         //automatically accept every friend request we receive
-        tox.AddFriendNoRequest(id);
+        tox.AddFriendNoRequest(e.Id);
     }
 }
 ```
