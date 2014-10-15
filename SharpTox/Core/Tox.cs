@@ -982,6 +982,20 @@ namespace SharpTox.Core
         }
 
         /// <summary>
+        /// Check if the given peernumber corresponds to ours.
+        /// </summary>
+        /// <param name="groupnumber"></param>
+        /// <param name="peernumber"></param>
+        /// <returns></returns>
+        public bool PeerNumberIsOurs(int groupnumber, int peernumber)
+        {
+            if (disposed)
+                throw new ObjectDisposedException(GetType().FullName);
+
+            return ToxFunctions.GroupPeerNumberIsOurs(tox, groupnumber, peernumber) == 1;
+        }
+
+        /// <summary>
         /// Retrieves the nospam value.
         /// </summary>
         /// <returns></returns>

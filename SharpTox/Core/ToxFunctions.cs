@@ -218,6 +218,9 @@ namespace SharpTox.Core
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_unset_avatar")]
         public static extern int UnsetAvatar(ToxHandle tox);
 
+        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_group_peernumber_is_ours")]
+        public static extern int GroupPeerNumberIsOurs(ToxHandle tox, int groupnumber, int peernumber);
+
         #endregion
 
         #region Callbacks
