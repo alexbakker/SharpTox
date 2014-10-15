@@ -74,19 +74,19 @@ namespace SharpTox.Av
         public event EventHandler<ToxAvEventArgs.VideoDataEventArgs> OnReceivedVideo;
 
         #region Event delegates
-        private ToxAvDelegates.CallstateCallback oncancelcallback;
-        private ToxAvDelegates.CallstateCallback onendcallback;
-        private ToxAvDelegates.CallstateCallback onendingcallback;
-        private ToxAvDelegates.CallstateCallback oninvitecallback;
-        private ToxAvDelegates.CallstateCallback onpeertimeoutcallback;
-        private ToxAvDelegates.CallstateCallback onrejectcallback;
-        private ToxAvDelegates.CallstateCallback onrequesttimeoutcallback;
-        private ToxAvDelegates.CallstateCallback onringingcallback;
-        private ToxAvDelegates.CallstateCallback onstartcallback;
-        private ToxAvDelegates.CallstateCallback onstartingcallback;
-        private ToxAvDelegates.CallstateCallback onmediachangecallback;
-        private ToxAvDelegates.AudioReceiveCallback onreceivedaudiocallback;
-        private ToxAvDelegates.VideoReceiveCallback onreceivedvideocallback;
+        private ToxAvDelegates.CallstateCallback _onCancelCallback;
+        private ToxAvDelegates.CallstateCallback _onEndCallback;
+        private ToxAvDelegates.CallstateCallback _onEndingCallback;
+        private ToxAvDelegates.CallstateCallback _onInviteCallback;
+        private ToxAvDelegates.CallstateCallback _onPeerTimeoutCallback;
+        private ToxAvDelegates.CallstateCallback _onRejectCallback;
+        private ToxAvDelegates.CallstateCallback _onRequestTimeoutCallback;
+        private ToxAvDelegates.CallstateCallback _onRingingCallback;
+        private ToxAvDelegates.CallstateCallback _onStartCallback;
+        private ToxAvDelegates.CallstateCallback _onStartingCallback;
+        private ToxAvDelegates.CallstateCallback _onMediaChangeCallback;
+        private ToxAvDelegates.AudioReceiveCallback _onReceivedAudioCallback;
+        private ToxAvDelegates.VideoReceiveCallback _onReceivedVideoCallback;
         #endregion
 
         /// <summary>
@@ -102,7 +102,7 @@ namespace SharpTox.Av
         /// </summary>
         public InvokeDelegate Invoker;
 
-        private bool disposed = false;
+        private bool _disposed = false;
 
         /// <summary>
         /// The codec settings used for this instance of toxav.
@@ -125,7 +125,7 @@ namespace SharpTox.Av
             AudioChannels = 1
         };
 
-        private ToxAvHandle toxav;
+        private ToxAvHandle _toxAv;
 
         /// <summary>
         /// The handle of this toxav instance.
@@ -134,11 +134,11 @@ namespace SharpTox.Av
         {
             get
             {
-                return toxav;
+                return _toxAv;
             }
         }
 
-        private ToxHandle toxHandle;
+        private ToxHandle _toxHandle;
 
         /// <summary>
         /// The Tox instance that this toxav instance belongs to.
@@ -147,7 +147,7 @@ namespace SharpTox.Av
         {
             get
             {
-                return toxHandle;
+                return _toxHandle;
             }
         }
 
@@ -161,21 +161,21 @@ namespace SharpTox.Av
         /// </summary>
         /// <param name="tox"></param>
         /// <param name="settings"></param>
-        /// <param name="max_calls"></param>
-        public ToxAv(ToxHandle tox, ToxAvCodecSettings settings, int max_calls)
+        /// <param name="maxCalls"></param>
+        public ToxAv(ToxHandle tox, ToxAvCodecSettings settings, int maxCalls)
         {
-            toxHandle = tox;
-            toxav = ToxAvFunctions.New(tox, max_calls);
+            _toxHandle = tox;
+            _toxAv = ToxAvFunctions.New(tox, maxCalls);
 
-            if (toxav == null || toxav.IsInvalid)
+            if (_toxAv == null || _toxAv.IsInvalid)
                 throw new Exception("Could not create a new instance of toxav.");
 
-            MaxCalls = max_calls;
+            MaxCalls = maxCalls;
             CodecSettings = settings;
 
-            Invoker = dummyinvoker;
+            Invoker = DummyInvoker;
 
-            callbacks();
+            Callbacks();
         }
 
         /// <summary>
@@ -190,15 +190,15 @@ namespace SharpTox.Av
         //dispose pattern as described on msdn for a class that uses a safe handle
         private void Dispose(bool disposing)
         {
-            if (disposed)
+            if (_disposed)
                 return;
 
             if (disposing) { }
 
-            if (!toxav.IsInvalid && !toxav.IsClosed && toxav != null)
-                toxav.Dispose();
+            if (!_toxAv.IsInvalid && !_toxAv.IsClosed && _toxAv != null)
+                _toxAv.Dispose();
 
-            disposed = true;
+            _disposed = true;
         }
 
         /// <summary>
@@ -207,230 +207,230 @@ namespace SharpTox.Av
         [Obsolete("Use Dispose() instead", true)]
         public void Kill()
         {
-            if (toxav.IsClosed || toxav.IsInvalid)
+            if (_toxAv.IsClosed || _toxAv.IsInvalid)
                 throw null;
 
-            toxav.Dispose();
+            _toxAv.Dispose();
         }
 
         /// <summary>
         /// Cancels a call.
         /// </summary>
-        /// <param name="call_index"></param>
-        /// <param name="friend_number"></param>
+        /// <param name="callIndex"></param>
+        /// <param name="friendNumber"></param>
         /// <param name="reason"></param>
         /// <returns></returns>
-        public ToxAvError Cancel(int call_index, int friend_number, string reason)
+        public ToxAvError Cancel(int callIndex, int friendNumber, string reason)
         {
-            if (disposed)
+            if (_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
-            return ToxAvFunctions.Cancel(toxav, call_index, friend_number, reason);
+            return ToxAvFunctions.Cancel(_toxAv, callIndex, friendNumber, reason);
         }
 
         /// <summary>
         /// Answers a call.
         /// </summary>
-        /// <param name="call_index"></param>
+        /// <param name="callIndex"></param>
         /// <param name="settings"></param>
         /// <returns></returns>
-        public ToxAvError Answer(int call_index, ToxAvCodecSettings settings)
+        public ToxAvError Answer(int callIndex, ToxAvCodecSettings settings)
         {
-            if (disposed)
+            if (_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
-            return ToxAvFunctions.Answer(toxav, call_index, ref settings);
+            return ToxAvFunctions.Answer(_toxAv, callIndex, ref settings);
         }
 
         /// <summary>
         /// Creates a new call.
         /// </summary>
-        /// <param name="call_index"></param>
-        /// <param name="friend_number"></param>
+        /// <param name="callIndex"></param>
+        /// <param name="friendNumber"></param>
         /// <param name="settings"></param>
-        /// <param name="ringing_seconds"></param>
+        /// <param name="ringingSeconds"></param>
         /// <returns></returns>
-        public ToxAvError Call(int friend_number, ToxAvCodecSettings settings, int ringing_seconds, out int call_index)
+        public ToxAvError Call(int friendNumber, ToxAvCodecSettings settings, int ringingSeconds, out int callIndex)
         {
-            if (disposed)
+            if (_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
             int index = new int();
-            ToxAvError result = ToxAvFunctions.Call(toxav, ref index, friend_number, ref settings, ringing_seconds);
+            ToxAvError result = ToxAvFunctions.Call(_toxAv, ref index, friendNumber, ref settings, ringingSeconds);
 
-            call_index = index;
+            callIndex = index;
             return result;
         }
 
         /// <summary>
         /// Hangs up an in-progress call.
         /// </summary>
-        /// <param name="call_index"></param>
+        /// <param name="callIndex"></param>
         /// <returns></returns>
-        public ToxAvError Hangup(int call_index)
+        public ToxAvError Hangup(int callIndex)
         {
-            if (disposed)
+            if (_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
-            return ToxAvFunctions.Hangup(toxav, call_index);
+            return ToxAvFunctions.Hangup(_toxAv, callIndex);
         }
 
         /// <summary>
         /// Rejects an incoming call.
         /// </summary>
-        /// <param name="call_index"></param>
+        /// <param name="callIndex"></param>
         /// <param name="reason"></param>
         /// <returns></returns>
-        public ToxAvError Reject(int call_index, string reason)
+        public ToxAvError Reject(int callIndex, string reason)
         {
-            if (disposed)
+            if (_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
-            return ToxAvFunctions.Reject(toxav, call_index, reason);
+            return ToxAvFunctions.Reject(_toxAv, callIndex, reason);
         }
 
         /// <summary>
         /// Stops a call and terminates the transmission without notifying the remote peer.
         /// </summary>
-        /// <param name="call_index"></param>
+        /// <param name="callIndex"></param>
         /// <returns></returns>
-        public ToxAvError StopCall(int call_index)
+        public ToxAvError StopCall(int callIndex)
         {
-            if (disposed)
+            if (_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
-            return ToxAvFunctions.StopCall(toxav, call_index);
+            return ToxAvFunctions.StopCall(_toxAv, callIndex);
         }
 
         /// <summary>
         /// Prepares transmission. Must be called before any transmission occurs.
         /// </summary>
-        /// <param name="call_index"></param>
-        /// <param name="support_video"></param>
-        /// <param name="jbuf_size"></param>
-        /// <param name="VAD_treshold"></param>
+        /// <param name="callIndex"></param>
+        /// <param name="supportVideo"></param>
+        /// <param name="jitterBufferSize"></param>
+        /// <param name="vadTreshold"></param>
         /// <returns></returns>
-        public ToxAvError PrepareTransmission(int call_index, int jbuf_size, int VAD_treshold, bool support_video)
+        public ToxAvError PrepareTransmission(int callIndex, int jitterBufferSize, int vadTreshold, bool supportVideo)
         {
-            if (disposed)
+            if (_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
-            return ToxAvFunctions.PrepareTransmission(toxav, call_index, (uint)jbuf_size, (uint)VAD_treshold, support_video ? 1 : 0);
+            return ToxAvFunctions.PrepareTransmission(_toxAv, callIndex, (uint)jitterBufferSize, (uint)vadTreshold, supportVideo ? 1 : 0);
         }
 
         /// <summary>
         /// Kills the transmission of a call. Should be called at the end of the transmission.
         /// </summary>
-        /// <param name="call_index"></param>
+        /// <param name="callIndex"></param>
         /// <returns></returns>
-        public ToxAvError KillTransmission(int call_index)
+        public ToxAvError KillTransmission(int callIndex)
         {
-            if (disposed)
+            if (_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
-            return ToxAvFunctions.KillTransmission(toxav, call_index);
+            return ToxAvFunctions.KillTransmission(_toxAv, callIndex);
         }
 
         /// <summary>
         /// Get the friend_number of peer participating in conversation
         /// </summary>
-        /// <param name="call_index"></param>
+        /// <param name="callIndex"></param>
         /// <param name="peer"></param>
         /// <returns></returns>
-        public int GetPeerID(int call_index, int peer)
+        public int GetPeerID(int callIndex, int peer)
         {
-            if (disposed)
+            if (_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
-            return ToxAvFunctions.GetPeerID(toxav, call_index, peer);
+            return ToxAvFunctions.GetPeerID(_toxAv, callIndex, peer);
         }
 
         /// <summary>
         /// Checks whether a certain capability is supported.
         /// </summary>
-        /// <param name="call_index"></param>
+        /// <param name="callIndex"></param>
         /// <param name="capability"></param>
         /// <returns></returns>
-        public bool CapabilitySupported(int call_index, ToxAvCapabilities capability)
+        public bool CapabilitySupported(int callIndex, ToxAvCapabilities capability)
         {
-            if (disposed)
+            if (_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
-            return ToxAvFunctions.CapabilitySupported(toxav, call_index, capability) == 1;
+            return ToxAvFunctions.CapabilitySupported(_toxAv, callIndex, capability) == 1;
         }
 
         /// <summary>
         /// Sends an encoded audio frame.
         /// </summary>
-        /// <param name="call_index"></param>
+        /// <param name="callIndex"></param>
         /// <param name="frame"></param>
-        /// <param name="frame_size"></param>
+        /// <param name="frameSize"></param>
         /// <returns></returns>
-        public ToxAvError SendAudio(int call_index, byte[] frame, int frame_size)
+        public ToxAvError SendAudio(int callIndex, byte[] frame, int frameSize)
         {
-            if (disposed)
+            if (_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
-            return ToxAvFunctions.SendAudio(toxav, call_index, frame, (uint)frame_size);
+            return ToxAvFunctions.SendAudio(_toxAv, callIndex, frame, (uint)frameSize);
         }
 
         /// <summary>
         /// Encodes an audio frame.
         /// </summary>
-        /// <param name="call_index"></param>
+        /// <param name="callIndex"></param>
         /// <param name="dest"></param>
-        /// <param name="dest_max"></param>
+        /// <param name="destMax"></param>
         /// <param name="frame"></param>
         /// <returns></returns>
-        public int PrepareAudioFrame(int call_index, byte[] dest, int dest_max, ushort[] frame)
+        public int PrepareAudioFrame(int callIndex, byte[] dest, int destMax, ushort[] frame) //TODO: use 'out' keyword to get the encoded frame
         {
-            if (disposed)
+            if (_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
-            return ToxAvFunctions.PrepareAudioFrame(toxav, call_index, dest, dest_max, frame, frame.Length);
+            return ToxAvFunctions.PrepareAudioFrame(_toxAv, callIndex, dest, destMax, frame, frame.Length);
         }
 
         /// <summary>
         /// Detects whether some activity is present in the call.
         /// </summary>
-        /// <param name="call_index"></param>
+        /// <param name="callIndex"></param>
         /// <param name="pcm"></param>
-        /// <param name="frame_size"></param>
-        /// <param name="ref_energy"></param>
+        /// <param name="frameSize"></param>
+        /// <param name="refEnergy"></param>
         /// <returns></returns>
-        public int HasActivity(int call_index, short[] pcm, ushort frame_size, float ref_energy)
+        public int HasActivity(int callIndex, short[] pcm, ushort frameSize, float refEnergy)
         {
-            if (disposed)
+            if (_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
-            return ToxAvFunctions.HasActivity(toxav, call_index, pcm, frame_size, ref_energy);
+            return ToxAvFunctions.HasActivity(_toxAv, callIndex, pcm, frameSize, refEnergy);
         }
 
         /// <summary>
         /// Retrieves the state of a call.
         /// </summary>
-        /// <param name="call_index"></param>
+        /// <param name="callIndex"></param>
         /// <returns></returns>
-        public ToxAvCallState GetCallState(int call_index)
+        public ToxAvCallState GetCallState(int callIndex)
         {
-            if (disposed)
+            if (_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
-            return ToxAvFunctions.GetCallState(toxav, call_index);
+            return ToxAvFunctions.GetCallState(_toxAv, callIndex);
         }
 
         /// <summary>
         /// Changes the type of an in-progress call
         /// </summary>
-        /// <param name="call_index"></param>
+        /// <param name="callIndex"></param>
         /// <param name="settings"></param>
         /// <returns></returns>
-        public ToxAvError ChangeSettings(int call_index, ToxAvCodecSettings settings)
+        public ToxAvError ChangeSettings(int callIndex, ToxAvCodecSettings settings)
         {
-            if (disposed)
+            if (_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
-            return ToxAvFunctions.ChangeSettings(toxav, call_index, ref settings);
+            return ToxAvFunctions.ChangeSettings(_toxAv, callIndex, ref settings);
         }
 
         /// <summary>
@@ -439,100 +439,100 @@ namespace SharpTox.Av
         /// <param name="call_index"></param>
         /// <param name="peer"></param>
         /// <returns></returns>
-        public ToxAvCodecSettings GetPeerCodecSettings(int call_index, int peer)
+        public ToxAvCodecSettings GetPeerCodecSettings(int callIndex, int peer)
         {
-            if (disposed)
+            if (_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
             ToxAvCodecSettings settings = new ToxAvCodecSettings();
-            ToxAvFunctions.GetPeerCodecSettings(toxav, call_index, peer, ref settings);
+            ToxAvFunctions.GetPeerCodecSettings(_toxAv, callIndex, peer, ref settings);
 
             return settings;
         }
 
-        private object dummyinvoker(Delegate method, params object[] p)
+        private object DummyInvoker(Delegate method, params object[] p)
         {
             return method.DynamicInvoke(p);
         }
 
-        private void callbacks()
+        private void Callbacks()
         {
-            ToxAvFunctions.RegisterCallstateCallback(toxav, oncancelcallback = (IntPtr agent, int call_index, IntPtr args) =>
+            ToxAvFunctions.RegisterCallstateCallback(_toxAv, _onCancelCallback = (IntPtr agent, int callIndex, IntPtr args) =>
             {
                 if (OnCancel != null)
-                    Invoker(OnCancel, this, new ToxAvEventArgs.CallStateEventArgs(call_index, ToxAvCallbackID.OnCancel));
+                    Invoker(OnCancel, this, new ToxAvEventArgs.CallStateEventArgs(callIndex, ToxAvCallbackID.OnCancel));
             }, ToxAvCallbackID.OnCancel, IntPtr.Zero);
 
-            ToxAvFunctions.RegisterCallstateCallback(toxav, onendcallback = (IntPtr agent, int call_index, IntPtr args) =>
+            ToxAvFunctions.RegisterCallstateCallback(_toxAv, _onEndCallback = (IntPtr agent, int callIndex, IntPtr args) =>
             {
                 if (OnEnd != null)
-                    Invoker(OnEnd, this, new ToxAvEventArgs.CallStateEventArgs(call_index, ToxAvCallbackID.OnEnd));
+                    Invoker(OnEnd, this, new ToxAvEventArgs.CallStateEventArgs(callIndex, ToxAvCallbackID.OnEnd));
             }, ToxAvCallbackID.OnEnd, IntPtr.Zero);
 
-            ToxAvFunctions.RegisterCallstateCallback(toxav, onendingcallback = (IntPtr agent, int call_index, IntPtr args) =>
+            ToxAvFunctions.RegisterCallstateCallback(_toxAv, _onEndingCallback = (IntPtr agent, int callIndex, IntPtr args) =>
             {
                 if (OnEnding != null)
-                    Invoker(OnEnding, this, new ToxAvEventArgs.CallStateEventArgs(call_index, ToxAvCallbackID.OnEnding));
+                    Invoker(OnEnding, this, new ToxAvEventArgs.CallStateEventArgs(callIndex, ToxAvCallbackID.OnEnding));
             }, ToxAvCallbackID.OnEnding, IntPtr.Zero);
 
-            ToxAvFunctions.RegisterCallstateCallback(toxav, oninvitecallback = (IntPtr agent, int call_index, IntPtr args) =>
+            ToxAvFunctions.RegisterCallstateCallback(_toxAv, _onInviteCallback = (IntPtr agent, int callIndex, IntPtr args) =>
             {
                 if (OnInvite != null)
-                    Invoker(OnInvite, this, new ToxAvEventArgs.CallStateEventArgs(call_index, ToxAvCallbackID.OnInvite));
+                    Invoker(OnInvite, this, new ToxAvEventArgs.CallStateEventArgs(callIndex, ToxAvCallbackID.OnInvite));
             }, ToxAvCallbackID.OnInvite, IntPtr.Zero);
 
-            ToxAvFunctions.RegisterCallstateCallback(toxav, onpeertimeoutcallback = (IntPtr agent, int call_index, IntPtr args) =>
+            ToxAvFunctions.RegisterCallstateCallback(_toxAv, _onPeerTimeoutCallback = (IntPtr agent, int callIndex, IntPtr args) =>
             {
                 if (OnPeerTimeout != null)
-                    Invoker(OnPeerTimeout, this, new ToxAvEventArgs.CallStateEventArgs(call_index, ToxAvCallbackID.OnPeerTimeout));
+                    Invoker(OnPeerTimeout, this, new ToxAvEventArgs.CallStateEventArgs(callIndex, ToxAvCallbackID.OnPeerTimeout));
             }, ToxAvCallbackID.OnPeerTimeout, IntPtr.Zero);
 
-            ToxAvFunctions.RegisterCallstateCallback(toxav, onrejectcallback = (IntPtr agent, int call_index, IntPtr args) =>
+            ToxAvFunctions.RegisterCallstateCallback(_toxAv, _onRejectCallback = (IntPtr agent, int callIndex, IntPtr args) =>
             {
                 if (OnReject != null)
-                    Invoker(OnReject, this, new ToxAvEventArgs.CallStateEventArgs(call_index, ToxAvCallbackID.OnReject));
+                    Invoker(OnReject, this, new ToxAvEventArgs.CallStateEventArgs(callIndex, ToxAvCallbackID.OnReject));
             }, ToxAvCallbackID.OnReject, IntPtr.Zero);
 
-            ToxAvFunctions.RegisterCallstateCallback(toxav, onrequesttimeoutcallback = (IntPtr agent, int call_index, IntPtr args) =>
+            ToxAvFunctions.RegisterCallstateCallback(_toxAv, _onRequestTimeoutCallback = (IntPtr agent, int callIndex, IntPtr args) =>
             {
                 if (OnRequestTimeout != null)
-                    Invoker(OnRequestTimeout, this, new ToxAvEventArgs.CallStateEventArgs(call_index, ToxAvCallbackID.OnRequestTimeout));
+                    Invoker(OnRequestTimeout, this, new ToxAvEventArgs.CallStateEventArgs(callIndex, ToxAvCallbackID.OnRequestTimeout));
             }, ToxAvCallbackID.OnRequestTimeout, IntPtr.Zero);
 
-            ToxAvFunctions.RegisterCallstateCallback(toxav, onringingcallback = (IntPtr agent, int call_index, IntPtr args) =>
+            ToxAvFunctions.RegisterCallstateCallback(_toxAv, _onRingingCallback = (IntPtr agent, int callIndex, IntPtr args) =>
             {
                 if (OnRinging != null)
-                    Invoker(OnRinging, this, new ToxAvEventArgs.CallStateEventArgs(call_index, ToxAvCallbackID.OnRinging));
+                    Invoker(OnRinging, this, new ToxAvEventArgs.CallStateEventArgs(callIndex, ToxAvCallbackID.OnRinging));
             }, ToxAvCallbackID.OnRinging, IntPtr.Zero);
 
-            ToxAvFunctions.RegisterCallstateCallback(toxav, onstartcallback = (IntPtr agent, int call_index, IntPtr args) =>
+            ToxAvFunctions.RegisterCallstateCallback(_toxAv, _onStartCallback = (IntPtr agent, int callIndex, IntPtr args) =>
             {
                 if (OnStart != null)
-                    Invoker(OnStart, this, new ToxAvEventArgs.CallStateEventArgs(call_index, ToxAvCallbackID.OnStart));
+                    Invoker(OnStart, this, new ToxAvEventArgs.CallStateEventArgs(callIndex, ToxAvCallbackID.OnStart));
             }, ToxAvCallbackID.OnStart, IntPtr.Zero);
 
-            ToxAvFunctions.RegisterCallstateCallback(toxav, onstartingcallback = (IntPtr agent, int call_index, IntPtr args) =>
+            ToxAvFunctions.RegisterCallstateCallback(_toxAv, _onStartingCallback = (IntPtr agent, int callIndex, IntPtr args) =>
             {
                 if (OnStarting != null)
-                    Invoker(OnStarting, this, new ToxAvEventArgs.CallStateEventArgs(call_index, ToxAvCallbackID.OnStarting));
+                    Invoker(OnStarting, this, new ToxAvEventArgs.CallStateEventArgs(callIndex, ToxAvCallbackID.OnStarting));
             }, ToxAvCallbackID.OnStarting, IntPtr.Zero);
 
-            ToxAvFunctions.RegisterCallstateCallback(toxav, onmediachangecallback = (IntPtr agent, int call_index, IntPtr args) =>
+            ToxAvFunctions.RegisterCallstateCallback(_toxAv, _onMediaChangeCallback = (IntPtr agent, int callIndex, IntPtr args) =>
             {
                 if (OnMediaChange != null)
-                    Invoker(OnMediaChange, this, new ToxAvEventArgs.CallStateEventArgs(call_index, ToxAvCallbackID.OnMediaChange));
+                    Invoker(OnMediaChange, this, new ToxAvEventArgs.CallStateEventArgs(callIndex, ToxAvCallbackID.OnMediaChange));
             }, ToxAvCallbackID.OnMediaChange, IntPtr.Zero);
 
-            ToxAvFunctions.RegisterAudioReceiveCallback(toxav, onreceivedaudiocallback = (IntPtr ptr, int call_index, short[] frame, int frame_size, IntPtr userdata) =>
+            ToxAvFunctions.RegisterAudioReceiveCallback(_toxAv, _onReceivedAudioCallback = (IntPtr ptr, int callIndex, short[] frame, int frameSize, IntPtr userData) =>
             {
                 if (OnReceivedAudio != null)
-                    Invoker(OnReceivedAudio, this, new ToxAvEventArgs.AudioDataEventArgs(call_index, frame));
+                    Invoker(OnReceivedAudio, this, new ToxAvEventArgs.AudioDataEventArgs(callIndex, frame));
             }, IntPtr.Zero);
 
-            ToxAvFunctions.RegisterVideoReceiveCallback(toxav, onreceivedvideocallback = (IntPtr ptr, int call_index, IntPtr frame, IntPtr userdata) =>
+            ToxAvFunctions.RegisterVideoReceiveCallback(_toxAv, _onReceivedVideoCallback = (IntPtr ptr, int callIndex, IntPtr frame, IntPtr userData) =>
             {
                 if (OnReceivedVideo != null)
-                    Invoker(OnReceivedVideo, this, new ToxAvEventArgs.VideoDataEventArgs(call_index, frame));
+                    Invoker(OnReceivedVideo, this, new ToxAvEventArgs.VideoDataEventArgs(callIndex, frame));
             }, IntPtr.Zero);
         }
     }

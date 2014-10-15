@@ -18,12 +18,12 @@
         /// <summary>
         /// Initializes a new instance of the <see cref="ToxKeyPair"/> class.
         /// </summary>
-        /// <param name="public_key"></param>
-        /// <param name="secret_key"></param>
-        internal ToxKeyPair(ToxKey public_key, ToxKey secret_key)
+        /// <param name="publicKey"></param>
+        /// <param name="secretKey"></param>
+        internal ToxKeyPair(ToxKey publicKey, ToxKey secretKey)
         {
-            PublicKey = public_key;
-            SecretKey = secret_key;
+            PublicKey = publicKey;
+            SecretKey = secretKey;
         }
     }
 }

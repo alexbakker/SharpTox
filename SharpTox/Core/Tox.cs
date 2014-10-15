@@ -11,7 +11,7 @@ using SharpTox.Encryption;
 namespace SharpTox.Core
 {
     /// <summary>
-    /// Represents an instance of tox.
+    /// Represents an instance of Tox.
     /// </summary>
     public class Tox : IDisposable
     {
@@ -133,35 +133,38 @@ namespace SharpTox.Core
         public InvokeDelegate Invoker;
 
         #region Callback Delegates
-        private ToxDelegates.CallbackFriendRequestDelegate friendrequestdelegate;
-        private ToxDelegates.CallbackConnectionStatusDelegate connectionstatusdelegate;
-        private ToxDelegates.CallbackFriendMessageDelegate friendmessagedelegate;
-        private ToxDelegates.CallbackFriendActionDelegate friendactiondelegate;
-        private ToxDelegates.CallbackNameChangeDelegate namechangedelegate;
-        private ToxDelegates.CallbackStatusMessageDelegate statusmessagedelegate;
-        private ToxDelegates.CallbackUserStatusDelegate userstatusdelegate;
-        private ToxDelegates.CallbackTypingChangeDelegate typingchangedelegate;
+        private ToxDelegates.CallbackFriendRequestDelegate _onFriendRequestCallback;
+        private ToxDelegates.CallbackConnectionStatusDelegate _onConnectionStatusCallback;
+        private ToxDelegates.CallbackFriendMessageDelegate _onFriendMessageCallback;
+        private ToxDelegates.CallbackFriendActionDelegate _onFriendActionCallback;
+        private ToxDelegates.CallbackNameChangeDelegate _onNameChangeCallback;
+        private ToxDelegates.CallbackStatusMessageDelegate _onStatusMessageCallback;
+        private ToxDelegates.CallbackUserStatusDelegate _onUserStatusCallback;
+        private ToxDelegates.CallbackTypingChangeDelegate _onTypingChangeCallback;
 
-        private ToxDelegates.CallbackGroupInviteDelegate groupinvitedelegate;
-        private ToxDelegates.CallbackGroupActionDelegate groupactiondelegate;
-        private ToxDelegates.CallbackGroupMessageDelegate groupmessagedelegate;
-        private ToxDelegates.CallbackGroupNamelistChangeDelegate groupnamelistchangedelegate;
+        private ToxDelegates.CallbackGroupInviteDelegate _onGroupInviteCallback;
+        private ToxDelegates.CallbackGroupActionDelegate _onGroupActionCallback;
+        private ToxDelegates.CallbackGroupMessageDelegate _onGroupMessageCallback;
+        private ToxDelegates.CallbackGroupNamelistChangeDelegate _onGroupNamelistChangeCallback;
 
-        private ToxDelegates.CallbackFileControlDelegate filecontroldelegate;
-        private ToxDelegates.CallbackFileDataDelegate filedatadelegate;
-        private ToxDelegates.CallbackFileSendRequestDelegate filesendrequestdelegate;
+        private ToxDelegates.CallbackFileControlDelegate _onFileControlCallback;
+        private ToxDelegates.CallbackFileDataDelegate _onFileDataCallback;
+        private ToxDelegates.CallbackFileSendRequestDelegate _onFileSendrequestCallback;
 
-        private ToxDelegates.CallbackReadReceiptDelegate readreceiptdelegate;
+        private ToxDelegates.CallbackReadReceiptDelegate _onReadReceiptCallback;
 
-        private ToxDelegates.CallbackAvatarDataDelegate avatardatadelegate;
-        private ToxDelegates.CallbackAvatarInfoDelegate avatarinfodelegate;
+        private ToxDelegates.CallbackAvatarDataDelegate _onAvatarDataCallback;
+        private ToxDelegates.CallbackAvatarInfoDelegate _onAvatarInfoCallback;
         #endregion
 
-        private ToxHandle tox;
-        private Thread thread;
+        private ToxHandle _tox;
+        private Thread _thread;
 
-        private bool disposed = false;
-        private bool connected = false;
+        private bool _disposed = false;
+        private bool _connected = false;
+
+        private List<ToxDelegates.CallbackPacketDelegate> _lossyPacketHandlers = new List<ToxDelegates.CallbackPacketDelegate>();
+        private List<ToxDelegates.CallbackPacketDelegate> _losslessPacketHandlers = new List<ToxDelegates.CallbackPacketDelegate>();
 
         /// <summary>
         /// Options used for this instance of Tox.
@@ -175,7 +178,7 @@ namespace SharpTox.Core
         {
             get
             {
-                if (disposed)
+                if (_disposed)
                     throw new ObjectDisposedException(GetType().FullName);
 
                 byte format = 0;
@@ -184,7 +187,7 @@ namespace SharpTox.Core
                 byte[] buf = new byte[ToxConstants.MaxAvatarDataLength];
                 byte[] hash = new byte[ToxConstants.ToxHashLength];
 
-                if (ToxFunctions.GetSelfAvatar(tox, ref format, buf, ref length, ToxConstants.MaxAvatarDataLength, hash) != 0)
+                if (ToxFunctions.GetSelfAvatar(_tox, ref format, buf, ref length, ToxConstants.MaxAvatarDataLength, hash) != 0)
                     return null;
 
                 byte[] data = new byte[length];
@@ -201,10 +204,10 @@ namespace SharpTox.Core
         {
             get
             {
-                if (disposed)
+                if (_disposed)
                     throw new ObjectDisposedException(GetType().FullName);
 
-                return ToxFunctions.IsConnected(tox) != 0;
+                return ToxFunctions.IsConnected(_tox) != 0;
             }
         }
 
@@ -215,10 +218,10 @@ namespace SharpTox.Core
         {
             get
             {
-                if (disposed)
+                if (_disposed)
                     throw new ObjectDisposedException(GetType().FullName);
 
-                return (int)ToxFunctions.CountFriendlist(tox);
+                return (int)ToxFunctions.CountFriendlist(_tox);
             }
         }
 
@@ -229,13 +232,13 @@ namespace SharpTox.Core
         {
             get
             {
-                if (disposed)
+                if (_disposed)
                     throw new ObjectDisposedException(GetType().FullName);
 
-                uint count = ToxFunctions.CountFriendlist(tox);
+                uint count = ToxFunctions.CountFriendlist(_tox);
                 int[] friends = new int[count];
                 uint[] trunc = new uint[0];
-                uint result = ToxFunctions.GetFriendlist(tox, friends, trunc);
+                uint result = ToxFunctions.GetFriendlist(_tox, friends, trunc);
 
                 if (result == 0)
                     return new int[0];
@@ -251,21 +254,21 @@ namespace SharpTox.Core
         {
             get
             {
-                if (disposed)
+                if (_disposed)
                     throw new ObjectDisposedException(GetType().FullName);
 
                 byte[] bytes = new byte[129];
-                ToxFunctions.GetSelfName(tox, bytes);
+                ToxFunctions.GetSelfName(_tox, bytes);
 
                 return ToxTools.RemoveNull(Encoding.UTF8.GetString(bytes));
             }
             set
             {
-                if (disposed)
+                if (_disposed)
                     throw new ObjectDisposedException(GetType().FullName);
 
                 byte[] bytes = Encoding.UTF8.GetBytes(value);
-                ToxFunctions.SetName(tox, bytes, (ushort)bytes.Length);
+                ToxFunctions.SetName(_tox, bytes, (ushort)bytes.Length);
             }
         }
 
@@ -276,17 +279,17 @@ namespace SharpTox.Core
         {
             get
             {
-                if (disposed)
+                if (_disposed)
                     throw new ObjectDisposedException(GetType().FullName);
 
-                byte[] public_key = new byte[32];
-                byte[] secret_key = new byte[32];
+                byte[] publicKey = new byte[32];
+                byte[] secretKey = new byte[32];
 
-                ToxFunctions.GetKeys(tox, public_key, secret_key);
+                ToxFunctions.GetKeys(_tox, publicKey, secretKey);
 
                 return new ToxKeyPair(
-                    new ToxKey(ToxKeyType.Public, public_key),
-                    new ToxKey(ToxKeyType.Secret, secret_key)
+                    new ToxKey(ToxKeyType.Public, publicKey),
+                    new ToxKey(ToxKeyType.Secret, secretKey)
                     );
             }
         }
@@ -298,11 +301,11 @@ namespace SharpTox.Core
         {
             get
             {
-                if (disposed)
+                if (_disposed)
                     throw new ObjectDisposedException(GetType().FullName);
 
                 byte[] address = new byte[38];
-                ToxFunctions.GetAddress(tox, address);
+                ToxFunctions.GetAddress(_tox, address);
 
                 return ToxTools.HexBinToString(address);
             }
@@ -315,23 +318,23 @@ namespace SharpTox.Core
         {
             get
             {
-                if (disposed)
+                if (_disposed)
                     throw new ObjectDisposedException(GetType().FullName);
 
-                int size = ToxFunctions.GetSelfStatusMessageSize(tox);
+                int size = ToxFunctions.GetSelfStatusMessageSize(_tox);
                 byte[] status = new byte[size];
 
-                ToxFunctions.GetSelfStatusMessage(tox, status, status.Length);
+                ToxFunctions.GetSelfStatusMessage(_tox, status, status.Length);
 
                 return ToxTools.RemoveNull(Encoding.UTF8.GetString(status));
             }
             set
             {
-                if (disposed)
+                if (_disposed)
                     throw new ObjectDisposedException(GetType().FullName);
 
                 byte[] msg = Encoding.UTF8.GetBytes(value);
-                ToxFunctions.SetStatusMessage(tox, msg, (ushort)msg.Length);
+                ToxFunctions.SetStatusMessage(_tox, msg, (ushort)msg.Length);
             }
         }
 
@@ -342,17 +345,17 @@ namespace SharpTox.Core
         {
             get
             {
-                if (disposed)
+                if (_disposed)
                     throw new ObjectDisposedException(GetType().FullName);
 
-                return (ToxUserStatus)ToxFunctions.GetSelfUserStatus(tox);
+                return (ToxUserStatus)ToxFunctions.GetSelfUserStatus(_tox);
             }
             set
             {
-                if (disposed)
+                if (_disposed)
                     throw new ObjectDisposedException(GetType().FullName);
 
-                ToxFunctions.SetUserStatus(tox, (byte)value);
+                ToxFunctions.SetUserStatus(_tox, (byte)value);
             }
         }
 
@@ -363,12 +366,12 @@ namespace SharpTox.Core
         {
             get
             {
-                if (disposed)
+                if (_disposed)
                     throw new ObjectDisposedException(GetType().FullName);
 
-                int[] chats = new int[ToxFunctions.CountChatlist(tox)];
+                int[] chats = new int[ToxFunctions.CountChatlist(_tox)];
                 uint[] trunc = new uint[0];
-                uint result = ToxFunctions.GetChatlist(tox, chats, trunc);
+                uint result = ToxFunctions.GetChatlist(_tox, chats, trunc);
 
                 if (result == 0)
                     return new int[0];
@@ -381,25 +384,25 @@ namespace SharpTox.Core
         {
             get
             {
-                return tox;
+                return _tox;
             }
         }
 
         /// <summary>
-        /// Initializes a new instance of tox.
+        /// Initializes a new instance of Tox.
         /// </summary>
         /// <param name="options"></param>
         public Tox(ToxOptions options)
         {
-            tox = ToxFunctions.New(ref options);
+            _tox = ToxFunctions.New(ref options);
 
-            if (tox == null || tox.IsInvalid)
+            if (_tox == null || _tox.IsInvalid)
                 throw new Exception("Could not create a new instance of toxav.");
 
             Options = options;
-            Invoker = dummyinvoker;
+            Invoker = DummyInvoker;
 
-            callbacks();
+            Callbacks();
         }
 
         public void Dispose()
@@ -411,46 +414,46 @@ namespace SharpTox.Core
         //dispose pattern as described on msdn for a class that uses a safe handle
         private void Dispose(bool disposing)
         {
-            if (disposed)
+            if (_disposed)
                 return;
 
             if (disposing)
             {
-                if (thread != null)
+                if (_thread != null)
                 {
-                    thread.Abort();
-                    thread.Join();
+                    _thread.Abort();
+                    _thread.Join();
                 }
             }
 
-            if (!tox.IsInvalid && !tox.IsClosed && tox != null)
-                tox.Dispose();
+            if (!_tox.IsInvalid && !_tox.IsClosed && _tox != null)
+                _tox.Dispose();
 
-            disposed = true;
+            _disposed = true;
         }
 
-        private object dummyinvoker(Delegate method, params object[] p)
+        private object DummyInvoker(Delegate method, params object[] p)
         {
             return method.DynamicInvoke(p);
         }
 
         /// <summary>
-        /// Sends a file send request to the given friendnumber.
+        /// Sends a file send request to the given friendNumber.
         /// </summary>
-        /// <param name="friendnumber"></param>
-        /// <param name="filesize"></param>
+        /// <param name="friendNumber"></param>
+        /// <param name="fileSize"></param>
         /// <param name="filename">Maximum filename length is 255 bytes.</param>
         /// <returns>the filenumber on success and -1 on failure.</returns>
-        public int NewFileSender(int friendnumber, ulong filesize, string filename)
+        public int NewFileSender(int friendNumber, ulong fileSize, string filename)
         {
-            if (disposed)
+            if (_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
             byte[] name = Encoding.UTF8.GetBytes(filename);
             if (name.Length > 255)
                 throw new Exception("Filename is too long (longer than 255 bytes)");
 
-            int result = ToxFunctions.NewFileSender(tox, friendnumber, filesize, name, (ushort)name.Length);
+            int result = ToxFunctions.NewFileSender(_tox, friendNumber, fileSize, name, (ushort)name.Length);
             if (result != -1)
                 return result;
             else
@@ -460,74 +463,74 @@ namespace SharpTox.Core
         /// <summary>
         /// Sends a file control request.
         /// </summary>
-        /// <param name="friendnumber"></param>
-        /// <param name="send_receive">0 if we're sending and 1 if we're receiving.</param>
-        /// <param name="filenumber"></param>
-        /// <param name="message_id"></param>
+        /// <param name="friendNumber"></param>
+        /// <param name="sendReceive">0 if we're sending and 1 if we're receiving.</param>
+        /// <param name="fileNumber"></param>
+        /// <param name="messageId"></param>
         /// <param name="data"></param>
         /// <returns>true on success and false on failure.</returns>
-        public bool FileSendControl(int friendnumber, int send_receive, int filenumber, ToxFileControl message_id, byte[] data)
+        public bool FileSendControl(int friendNumber, int sendReceive, int fileNumber, ToxFileControl messageId, byte[] data)
         {
-            if (disposed)
+            if (_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
-            return ToxFunctions.FileSendControl(tox, friendnumber, (byte)send_receive, (byte)filenumber, (byte)message_id, data, (ushort)data.Length) == 0;
+            return ToxFunctions.FileSendControl(_tox, friendNumber, (byte)sendReceive, (byte)fileNumber, (byte)messageId, data, (ushort)data.Length) == 0;
         }
 
         /// <summary>
         /// Sends file data.
         /// </summary>
-        /// <param name="friendnumber"></param>
-        /// <param name="filenumber"></param>
+        /// <param name="friendNumber"></param>
+        /// <param name="fileNumber"></param>
         /// <param name="data"></param>
         /// <returns>true on success and false on failure.</returns>
-        public bool FileSendData(int friendnumber, int filenumber, byte[] data)
+        public bool FileSendData(int friendNumber, int fileNumber, byte[] data)
         {
-            if (disposed)
+            if (_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
-            return ToxFunctions.FileSendData(tox, friendnumber, (byte)filenumber, data, (ushort)data.Length) == 0;
+            return ToxFunctions.FileSendData(_tox, friendNumber, (byte)fileNumber, data, (ushort)data.Length) == 0;
         }
 
         /// <summary>
         /// Retrieves the recommended/maximum size of the filedata to send with FileSendData.
         /// </summary>
-        /// <param name="friendnumber"></param>
+        /// <param name="friendNumber"></param>
         /// <returns></returns>
-        public int FileDataSize(int friendnumber)
+        public int FileDataSize(int friendNumber)
         {
-            if (disposed)
+            if (_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
-            return ToxFunctions.FileDataSize(tox, friendnumber);
+            return ToxFunctions.FileDataSize(_tox, friendNumber);
         }
 
         /// <summary>
         /// Retrieves the number of bytes left to be sent/received.
         /// </summary>
-        /// <param name="friendnumber"></param>
-        /// <param name="filenumber"></param>
-        /// <param name="send_receive">0 if we're sending and 1 if we're receiving.</param>
+        /// <param name="friendNumber"></param>
+        /// <param name="fileNumber"></param>
+        /// <param name="sendReceive">0 if we're sending and 1 if we're receiving.</param>
         /// <returns></returns>
-        public ulong FileDataRemaining(int friendnumber, int filenumber, int send_receive)
+        public ulong FileDataRemaining(int friendNumber, int fileNumber, int sendReceive)
         {
-            if (disposed)
+            if (_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
-            return ToxFunctions.FileDataRemaining(tox, friendnumber, (byte)filenumber, (byte)send_receive);
+            return ToxFunctions.FileDataRemaining(_tox, friendNumber, (byte)fileNumber, (byte)sendReceive);
         }
 
         /// <summary>
         /// Retrieves an array of group member names.
         /// </summary>
-        /// <param name="groupnumber"></param>
+        /// <param name="groupNumber"></param>
         /// <returns></returns>
-        public string[] GetGroupNames(int groupnumber)
+        public string[] GetGroupNames(int groupNumber)
         {
-            if (disposed)
+            if (_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
-            int count = ToxFunctions.GroupNumberPeers(tox, groupnumber);
+            int count = ToxFunctions.GroupNumberPeers(_tox, groupNumber);
 
             //just return an empty string array before we get an overflow exception
             if (count <= 0)
@@ -536,7 +539,7 @@ namespace SharpTox.Core
             ushort[] lengths = new ushort[count];
             byte[,] matrix = new byte[count, ToxConstants.MaxNameLength];
 
-            int result = ToxFunctions.GroupGetNames(tox, groupnumber, matrix, lengths, (ushort)count);
+            int result = ToxFunctions.GroupGetNames(_tox, groupNumber, matrix, lengths, (ushort)count);
 
             string[] names = new string[count];
             for (int i = 0; i < count; i++)
@@ -557,34 +560,34 @@ namespace SharpTox.Core
         /// </summary>
         public void Start()
         {
-            if (disposed)
+            if (_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
-            thread = new Thread(loop);
-            thread.Start();
+            _thread = new Thread(Loop);
+            _thread.Start();
         }
 
-        private void loop()
+        private void Loop()
         {
             while (true)
             {
-                if (IsConnected && !connected)
+                if (IsConnected && !_connected)
                 {
                     if (OnConnected != null)
                         Invoker(OnConnected, this, new ToxEventArgs.ConnectionEventArgs(true));
 
-                    connected = true;
+                    _connected = true;
                 }
-                else if (!IsConnected && connected)
+                else if (!IsConnected && _connected)
                 {
                     if (OnDisconnected != null)
                         Invoker(OnDisconnected, this, new ToxEventArgs.ConnectionEventArgs(false));
 
-                    connected = false;
+                    _connected = false;
                 }
 
-                ToxFunctions.Do(tox);
-                Thread.Sleep((int)ToxFunctions.DoInterval(tox));
+                ToxFunctions.Do(_tox);
+                Thread.Sleep((int)ToxFunctions.DoInterval(_tox));
             }
         }
 
@@ -593,16 +596,16 @@ namespace SharpTox.Core
         /// </summary>
         /// <param name="id"></param>
         /// <param name="message"></param>
-        /// <returns>friendnumber</returns>
+        /// <returns>friendNumber</returns>
         public int AddFriend(string id, string message)
         {
-            if (disposed)
+            if (_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
-            byte[] binid = ToxTools.StringToHexBin(id);
-            byte[] binmsg = Encoding.UTF8.GetBytes(message);
+            byte[] binId = ToxTools.StringToHexBin(id);
+            byte[] binMsg = Encoding.UTF8.GetBytes(message);
 
-            int result = ToxFunctions.AddFriend(tox, binid, binmsg, (ushort)binmsg.Length);
+            int result = ToxFunctions.AddFriend(_tox, binId, binMsg, (ushort)binMsg.Length);
 
             if (result < 0)
                 throw new ToxAFException((ToxAFError)result);
@@ -614,13 +617,13 @@ namespace SharpTox.Core
         /// Adds a friend without sending a request.
         /// </summary>
         /// <param name="id"></param>
-        /// <returns>friendnumber</returns>
+        /// <returns>friendNumber</returns>
         public int AddFriendNoRequest(string id)
         {
-            if (disposed)
+            if (_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
-            int result = ToxFunctions.AddFriendNoRequest(tox, ToxTools.StringToHexBin(id));
+            int result = ToxFunctions.AddFriendNoRequest(_tox, ToxTools.StringToHexBin(id));
 
             if (result < 0)
                 throw new ToxAFException((ToxAFError)result);
@@ -629,102 +632,102 @@ namespace SharpTox.Core
         }
 
         /// <summary>
-        /// Bootstraps the tox client with a ToxNode.
+        /// Bootstraps this Tox instance with a ToxNode.
         /// </summary>
         /// <param name="node"></param>
         /// <returns></returns>
         public bool BootstrapFromNode(ToxNode node)
         {
-            if (disposed)
+            if (_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
-            return ToxFunctions.BootstrapFromAddress(tox, node.Address, (ushort)node.Port, node.PublicKey.GetBytes()) == 1;
+            return ToxFunctions.BootstrapFromAddress(_tox, node.Address, (ushort)node.Port, node.PublicKey.GetBytes()) == 1;
         }
 
         /// <summary>
-        /// Checks if there exists a friend with given friendnumber.
+        /// Checks if there exists a friend with given friendNumber.
         /// </summary>
-        /// <param name="friendnumber"></param>
+        /// <param name="friendNumber"></param>
         /// <returns></returns>
-        public bool FriendExists(int friendnumber)
+        public bool FriendExists(int friendNumber)
         {
-            if (disposed)
+            if (_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
-            return ToxFunctions.FriendExists(tox, friendnumber) != 0;
+            return ToxFunctions.FriendExists(_tox, friendNumber) != 0;
         }
 
         /// <summary>
-        /// Retrieves the name of a friendnumber.
+        /// Retrieves the name of a friendNumber.
         /// </summary>
-        /// <param name="friendnumber"></param>
+        /// <param name="friendNumber"></param>
         /// <returns></returns>
-        public string GetName(int friendnumber)
+        public string GetName(int friendNumber)
         {
-            if (disposed)
+            if (_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
-            int size = ToxFunctions.GetNameSize(tox, friendnumber);
+            int size = ToxFunctions.GetNameSize(_tox, friendNumber);
             byte[] name = new byte[size];
 
-            ToxFunctions.GetName(tox, friendnumber, name);
+            ToxFunctions.GetName(_tox, friendNumber, name);
 
             return ToxTools.RemoveNull(Encoding.UTF8.GetString(name));
         }
 
         /// <summary>
-        /// Retrieves a DateTime object of the last time friendnumber was seen online.
+        /// Retrieves a DateTime object of the last time friendNumber was seen online.
         /// </summary>
-        /// <param name="friendnumber"></param>
+        /// <param name="friendNumber"></param>
         /// <returns></returns>
-        public DateTime GetLastOnline(int friendnumber)
+        public DateTime GetLastOnline(int friendNumber)
         {
-            if (disposed)
+            if (_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
-            return ToxTools.EpochToDateTime((long)ToxFunctions.GetLastOnline(tox, friendnumber));
+            return ToxTools.EpochToDateTime((long)ToxFunctions.GetLastOnline(_tox, friendNumber));
         }
 
         /// <summary>
         /// Retrieves the typing status of a friend.
         /// </summary>
-        /// <param name="friendnumber"></param>
+        /// <param name="friendNumber"></param>
         /// <returns></returns>
-        public bool GetIsTyping(int friendnumber)
+        public bool GetIsTyping(int friendNumber)
         {
-            if (disposed)
+            if (_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
-            return ToxFunctions.GetIsTyping(tox, friendnumber) == 1;
+            return ToxFunctions.GetIsTyping(_tox, friendNumber) == 1;
         }
 
         /// <summary>
-        /// Retrieves the friendnumber associated to the specified public address/id.
+        /// Retrieves the friendNumber associated to the specified public address/id.
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
         public int GetFriendNumber(string id)
         {
-            if (disposed)
+            if (_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
-            return ToxFunctions.GetFriendNumber(tox, ToxTools.StringToHexBin(id));
+            return ToxFunctions.GetFriendNumber(_tox, ToxTools.StringToHexBin(id));
         }
 
         /// <summary>
         /// Retrieves the status message of a friend.
         /// </summary>
-        /// <param name="friendnumber"></param>
+        /// <param name="friendNumber"></param>
         /// <returns></returns>
-        public string GetStatusMessage(int friendnumber)
+        public string GetStatusMessage(int friendNumber)
         {
-            if (disposed)
+            if (_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
-            int size = ToxFunctions.GetStatusMessageSize(tox, friendnumber);
+            int size = ToxFunctions.GetStatusMessageSize(_tox, friendNumber);
             byte[] status = new byte[size];
 
-            ToxFunctions.GetStatusMessage(tox, friendnumber, status, status.Length);
+            ToxFunctions.GetStatusMessage(_tox, friendNumber, status, status.Length);
 
             return ToxTools.RemoveNull(Encoding.UTF8.GetString(status));
         }
@@ -735,45 +738,45 @@ namespace SharpTox.Core
         /// <returns></returns>
         public int GetOnlineFriendsCount()
         {
-            if (disposed)
+            if (_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
-            return (int)ToxFunctions.GetNumOnlineFriends(tox);
+            return (int)ToxFunctions.GetNumOnlineFriends(_tox);
         }
 
         /// <summary>
         /// Retrieves a friend's connection status.
         /// </summary>
-        /// <param name="friendnumber"></param>
+        /// <param name="friendNumber"></param>
         /// <returns></returns>
-        public ToxFriendConnectionStatus GetFriendConnectionStatus(int friendnumber)
+        public ToxFriendConnectionStatus GetFriendConnectionStatus(int friendNumber)
         {
-            if (disposed)
+            if (_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
-            return (ToxFriendConnectionStatus)ToxFunctions.GetFriendConnectionStatus(tox, friendnumber);
+            return (ToxFriendConnectionStatus)ToxFunctions.GetFriendConnectionStatus(_tox, friendNumber);
         }
 
-        public bool IsOnline(int friendnumber)
+        public bool IsOnline(int friendNumber)
         {
-            if (disposed)
+            if (_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
-            return GetFriendConnectionStatus(friendnumber) == ToxFriendConnectionStatus.Online;
+            return GetFriendConnectionStatus(friendNumber) == ToxFriendConnectionStatus.Online;
         }
 
         /// <summary>
         /// Retrieves a friend's public id/address.
         /// </summary>
-        /// <param name="friendnumber"></param>
+        /// <param name="friendNumber"></param>
         /// <returns></returns>
-        public ToxKey GetClientId(int friendnumber)
+        public ToxKey GetClientId(int friendNumber)
         {
-            if (disposed)
+            if (_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
             byte[] address = new byte[32];
-            ToxFunctions.GetClientID(tox, friendnumber, address);
+            ToxFunctions.GetClientID(_tox, friendNumber, address);
 
             return new ToxKey(ToxKeyType.Public, address);
         }
@@ -781,119 +784,119 @@ namespace SharpTox.Core
         /// <summary>
         /// Retrieves a friend's current user status.
         /// </summary>
-        /// <param name="friendnumber"></param>
+        /// <param name="friendNumber"></param>
         /// <returns></returns>
-        public ToxUserStatus GetUserStatus(int friendnumber)
+        public ToxUserStatus GetUserStatus(int friendNumber)
         {
-            if (disposed)
+            if (_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
-            return (ToxUserStatus)ToxFunctions.GetUserStatus(tox, friendnumber);
+            return (ToxUserStatus)ToxFunctions.GetUserStatus(_tox, friendNumber);
         }
 
         /// <summary>
-        /// Sets the typing status of this tox instance.
+        /// Sets the typing status of this Tox instance.
         /// </summary>
-        /// <param name="friendnumber"></param>
-        /// <param name="is_typing"></param>
+        /// <param name="friendNumber"></param>
+        /// <param name="isTyping"></param>
         /// <returns></returns>
-        public bool SetUserIsTyping(int friendnumber, bool is_typing)
+        public bool SetUserIsTyping(int friendNumber, bool isTyping)
         {
-            if (disposed)
+            if (_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
-            byte typing = is_typing ? (byte)1 : (byte)0;
-            return ToxFunctions.SetUserIsTyping(tox, friendnumber, typing) == 0;
+            byte typing = isTyping ? (byte)1 : (byte)0;
+            return ToxFunctions.SetUserIsTyping(_tox, friendNumber, typing) == 0;
         }
 
         /// <summary>
         /// Send a message to a friend.
         /// </summary>
-        /// <param name="friendnumber"></param>
+        /// <param name="friendNumber"></param>
         /// <param name="message"></param>
         /// <returns></returns>
-        public int SendMessage(int friendnumber, string message)
+        public int SendMessage(int friendNumber, string message)
         {
-            if (disposed)
+            if (_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
             byte[] bytes = Encoding.UTF8.GetBytes(message);
-            return (int)ToxFunctions.SendMessage(tox, friendnumber, bytes, bytes.Length);
+            return (int)ToxFunctions.SendMessage(_tox, friendNumber, bytes, bytes.Length);
         }
 
         /// <summary>
         /// Sends an action to a friend.
         /// </summary>
-        /// <param name="friendnumber"></param>
+        /// <param name="friendNumber"></param>
         /// <param name="action"></param>
         /// <returns></returns>
-        public int SendAction(int friendnumber, string action)
+        public int SendAction(int friendNumber, string action)
         {
-            if (disposed)
+            if (_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
             byte[] bytes = Encoding.UTF8.GetBytes(action);
-            return (int)ToxFunctions.SendAction(tox, friendnumber, bytes, bytes.Length);
+            return (int)ToxFunctions.SendAction(_tox, friendNumber, bytes, bytes.Length);
         }
 
         /// <summary>
-        /// Ends the tox_do loop and kills this tox instance.
+        /// Ends the tox_do loop and kills this Tox instance.
         /// </summary>
         [Obsolete("Use Dispose() instead", true)]
         public void Kill()
         {
-            if (thread != null)
+            if (_thread != null)
             {
-                thread.Abort();
-                thread.Join();
+                _thread.Abort();
+                _thread.Join();
             }
 
-            if (tox.IsClosed || tox.IsInvalid)
-                throw null;
+            if (_tox.IsClosed || _tox.IsInvalid)
+                return;
 
-            tox.Dispose();
+            _tox.Dispose();
         }
 
         /// <summary>
         /// Deletes a friend.
         /// </summary>
-        /// <param name="friendnumber"></param>
+        /// <param name="friendNumber"></param>
         /// <returns></returns>
-        public bool DeleteFriend(int friendnumber)
+        public bool DeleteFriend(int friendNumber)
         {
-            if (disposed)
+            if (_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
-            return ToxFunctions.DelFriend(tox, friendnumber) == 0;
+            return ToxFunctions.DelFriend(_tox, friendNumber) == 0;
         }
 
         /// <summary>
         /// Joins a group with the given public key of the group.
         /// </summary>
-        /// <param name="friendnumber"></param>
+        /// <param name="friendNumber"></param>
         /// <param name="data">Data obtained from the OnGroupInvite event.</param>
         /// <returns></returns>
-        public int JoinGroup(int friendnumber, byte[] data)
+        public int JoinGroup(int friendNumber, byte[] data)
         {
-            if (disposed)
+            if (_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
-            return ToxFunctions.JoinGroupchat(tox, friendnumber, data, (ushort)data.Length);
+            return ToxFunctions.JoinGroupchat(_tox, friendNumber, data, (ushort)data.Length);
         }
 
         /// <summary>
         /// Retrieves the name of a group member.
         /// </summary>
-        /// <param name="groupnumber"></param>
-        /// <param name="peernumber"></param>
+        /// <param name="groupNumber"></param>
+        /// <param name="peerNumber"></param>
         /// <returns></returns>
-        public string GetGroupMemberName(int groupnumber, int peernumber)
+        public string GetGroupMemberName(int groupNumber, int peerNumber)
         {
-            if (disposed)
+            if (_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
             byte[] name = new byte[ToxConstants.MaxNameLength];
-            if (ToxFunctions.GroupPeername(tox, groupnumber, peernumber, name) == -1)
+            if (ToxFunctions.GroupPeername(_tox, groupNumber, peerNumber, name) == -1)
                 throw new Exception("Could not get peer name");
 
             return ToxTools.RemoveNull(Encoding.UTF8.GetString(name));
@@ -902,71 +905,71 @@ namespace SharpTox.Core
         /// <summary>
         /// Retrieves the number of group members in a group chat.
         /// </summary>
-        /// <param name="groupnumber"></param>
+        /// <param name="groupNumber"></param>
         /// <returns></returns>
-        public int GetGroupMemberCount(int groupnumber)
+        public int GetGroupMemberCount(int groupNumber)
         {
-            if (disposed)
+            if (_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
-            return ToxFunctions.GroupNumberPeers(tox, groupnumber);
+            return ToxFunctions.GroupNumberPeers(_tox, groupNumber);
         }
 
         /// <summary>
         /// Deletes a group chat.
         /// </summary>
-        /// <param name="groupnumber"></param>
+        /// <param name="groupNumber"></param>
         /// <returns></returns>
-        public bool DeleteGroupChat(int groupnumber)
+        public bool DeleteGroupChat(int groupNumber)
         {
-            if (disposed)
+            if (_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
-            return ToxFunctions.DelGroupchat(tox, groupnumber) == 0;
+            return ToxFunctions.DelGroupchat(_tox, groupNumber) == 0;
         }
 
         /// <summary>
         /// Invites a friend to a group chat.
         /// </summary>
-        /// <param name="friendnumber"></param>
-        /// <param name="groupnumber"></param>
+        /// <param name="friendNumber"></param>
+        /// <param name="groupNumber"></param>
         /// <returns></returns>
-        public bool InviteFriend(int friendnumber, int groupnumber)
+        public bool InviteFriend(int friendNumber, int groupNumber)
         {
-            if (disposed)
+            if (_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
-            return ToxFunctions.InviteFriend(tox, friendnumber, groupnumber) == 0;
+            return ToxFunctions.InviteFriend(_tox, friendNumber, groupNumber) == 0;
         }
 
         /// <summary>
         /// Sends a message to a group.
         /// </summary>
-        /// <param name="groupnumber"></param>
+        /// <param name="groupNumber"></param>
         /// <param name="message"></param>
         /// <returns></returns>
-        public bool SendGroupMessage(int groupnumber, string message)
+        public bool SendGroupMessage(int groupNumber, string message)
         {
-            if (disposed)
+            if (_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
             byte[] msg = Encoding.UTF8.GetBytes(message);
-            return ToxFunctions.GroupMessageSend(tox, groupnumber, msg, (ushort)msg.Length) == 0;
+            return ToxFunctions.GroupMessageSend(_tox, groupNumber, msg, (ushort)msg.Length) == 0;
         }
 
         /// <summary>
         /// Sends an action to a group.
         /// </summary>
-        /// <param name="groupnumber"></param>
+        /// <param name="groupNumber"></param>
         /// <param name="action"></param>
         /// <returns></returns>
-        public bool SendGroupAction(int groupnumber, string action)
+        public bool SendGroupAction(int groupNumber, string action)
         {
-            if (disposed)
+            if (_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
             byte[] act = Encoding.UTF8.GetBytes(action);
-            return ToxFunctions.GroupActionSend(tox, groupnumber, act, (ushort)act.Length) == 0;
+            return ToxFunctions.GroupActionSend(_tox, groupNumber, act, (ushort)act.Length) == 0;
         }
 
         /// <summary>
@@ -975,24 +978,24 @@ namespace SharpTox.Core
         /// <returns></returns>
         public int NewGroup()
         {
-            if (disposed)
+            if (_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
-            return ToxFunctions.AddGroupchat(tox);
+            return ToxFunctions.AddGroupchat(_tox);
         }
 
         /// <summary>
         /// Check if the given peernumber corresponds to ours.
         /// </summary>
-        /// <param name="groupnumber"></param>
-        /// <param name="peernumber"></param>
+        /// <param name="groupNumber"></param>
+        /// <param name="peerNumber"></param>
         /// <returns></returns>
-        public bool PeerNumberIsOurs(int groupnumber, int peernumber)
+        public bool PeerNumberIsOurs(int groupNumber, int peerNumber)
         {
-            if (disposed)
+            if (_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
-            return ToxFunctions.GroupPeerNumberIsOurs(tox, groupnumber, peernumber) == 1;
+            return ToxFunctions.GroupPeerNumberIsOurs(_tox, groupNumber, peerNumber) == 1;
         }
 
         /// <summary>
@@ -1001,10 +1004,10 @@ namespace SharpTox.Core
         /// <returns></returns>
         public uint GetNospam()
         {
-            if (disposed)
+            if (_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
-            return ToxFunctions.GetNospam(tox);
+            return ToxFunctions.GetNospam(_tox);
         }
 
         /// <summary>
@@ -1013,21 +1016,21 @@ namespace SharpTox.Core
         /// <param name="nospam"></param>
         public void SetNospam(uint nospam)
         {
-            if (disposed)
+            if (_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
-            ToxFunctions.SetNospam(tox, nospam);
+            ToxFunctions.SetNospam(_tox, nospam);
         }
 
         /// <summary>
-        /// Sends a lossy packet to the specified friendnumber.
+        /// Sends a lossy packet to the specified friendNumber.
         /// </summary>
-        /// <param name="friendnumber"></param>
+        /// <param name="friendNumber"></param>
         /// <param name="data"></param>
         /// <returns></returns>
-        public bool SendLossyPacket(int friendnumber, byte[] data)
+        public bool SendLossyPacket(int friendNumber, byte[] data)
         {
-            if (disposed)
+            if (_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
             if (data.Length > ToxConstants.MaxCustomPacketSize)
@@ -1036,18 +1039,18 @@ namespace SharpTox.Core
             if (data[0] < 200 || data[0] > 254)
                 throw new ArgumentException("First byte of data is not in the 200-254 range.");
 
-            return ToxFunctions.SendLossyPacket(tox, friendnumber, data, (uint)data.Length) == 0;
+            return ToxFunctions.SendLossyPacket(_tox, friendNumber, data, (uint)data.Length) == 0;
         }
 
         /// <summary>
-        /// Sends a lossless packet to the specified friendnumber.
+        /// Sends a lossless packet to the specified friendNumber.
         /// </summary>
-        /// <param name="friendnumber"></param>
+        /// <param name="friendNumber"></param>
         /// <param name="data"></param>
         /// <returns></returns>
-        public bool SendLosslessPacket(int friendnumber, byte[] data)
+        public bool SendLosslessPacket(int friendNumber, byte[] data)
         {
-            if (disposed)
+            if (_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
             if (data.Length > ToxConstants.MaxCustomPacketSize)
@@ -1056,131 +1059,128 @@ namespace SharpTox.Core
             if (data[0] < 160 || data[0] > 191)
                 throw new ArgumentException("First byte of data is not in the 160-191 range.");
 
-            return ToxFunctions.SendLosslessPacket(tox, friendnumber, data, (uint)data.Length) == 0;
+            return ToxFunctions.SendLosslessPacket(_tox, friendNumber, data, (uint)data.Length) == 0;
         }
 
         /// <summary>
         /// Registers a handler for lossy packets starting with start_byte. These packets can be captured with <see cref="OnLossyPacket"/>.
         /// </summary>
-        /// <param name="friendnumber"></param>
-        /// <param name="start_byte"></param>
+        /// <param name="friendNumber"></param>
+        /// <param name="startByte"></param>
         /// <returns></returns>
-        public bool RegisterLossyPacketHandler(int friendnumber, byte start_byte)
+        public bool RegisterLossyPacketHandler(int friendNumber, byte startByte)
         {
-            if (disposed)
+            if (_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
-            if (start_byte < 200 || start_byte > 254)
+            if (startByte < 200 || startByte > 254)
                 throw new ArgumentException("start_byte is not in the 200-254 range.");
 
             ToxDelegates.CallbackPacketDelegate del = ((IntPtr obj, byte[] data, uint length) => 
             {
                 if (OnLossyPacket != null)
-                    Invoker(OnLossyPacket, this, new ToxEventArgs.CustomPacketEventArgs(friendnumber, data));
+                    Invoker(OnLossyPacket, this, new ToxEventArgs.CustomPacketEventArgs(friendNumber, data));
 
                 return 1;
 
             });
-            lossyPacketHandlers.Add(del);
+            _lossyPacketHandlers.Add(del);
 
-            return ToxFunctions.CallbackLossyPacket(tox, friendnumber, start_byte, del, IntPtr.Zero) == 0;
+            return ToxFunctions.CallbackLossyPacket(_tox, friendNumber, startByte, del, IntPtr.Zero) == 0;
         }
-
-        private List<ToxDelegates.CallbackPacketDelegate> lossyPacketHandlers = new List<ToxDelegates.CallbackPacketDelegate>();
-        private List<ToxDelegates.CallbackPacketDelegate> losslessPacketHandlers = new List<ToxDelegates.CallbackPacketDelegate>();
 
         /// <summary>
         /// Registers a handler for lossy packets starting with start_byte.
         /// </summary>
-        /// <param name="friendnumber"></param>
-        /// <param name="start_byte"></param>
+        /// <param name="friendNumber"></param>
+        /// <param name="startByte"></param>
         /// <param name="callback"></param>
         /// <returns></returns>
-        public bool RegisterLossyPacketHandler(int friendnumber, byte start_byte, ToxDelegates.CallbackPacketDelegate callback)
+        public bool RegisterLossyPacketHandler(int friendNumber, byte startByte, ToxDelegates.CallbackPacketDelegate callback)
         {
-            if (disposed)
+            if (_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
-            if (start_byte < 200 || start_byte > 254)
+            if (startByte < 200 || startByte > 254)
                 throw new ArgumentException("start_byte is not in the 200-254 range.");
 
-            return ToxFunctions.CallbackLossyPacket(tox, friendnumber, start_byte, callback, IntPtr.Zero) == 0;
+            return ToxFunctions.CallbackLossyPacket(_tox, friendNumber, startByte, callback, IntPtr.Zero) == 0;
         }
 
         /// <summary>
         /// Registers a handler for lossless packets starting with start_byte. These packets can be captured with <see cref="OnLosslessPacket"/>.
         /// </summary>
-        /// <param name="friendnumber"></param>
-        /// <param name="start_byte"></param>
+        /// <param name="friendNumber"></param>
+        /// <param name="startByte"></param>
         /// <returns></returns>
-        public bool RegisterLosslessPacketHandler(int friendnumber, byte start_byte)
+        public bool RegisterLosslessPacketHandler(int friendNumber, byte startByte)
         {
-            if (disposed)
+            if (_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
-            if (start_byte < 160 || start_byte > 191)
+            if (startByte < 160 || startByte > 191)
                 throw new ArgumentException("start_byte is not in the 160-191 range.");
 
             ToxDelegates.CallbackPacketDelegate del = ((IntPtr obj, byte[] data, uint length) =>
             {
                 if (OnLosslessPacket != null)
-                    Invoker(OnLosslessPacket, this, new ToxEventArgs.CustomPacketEventArgs(friendnumber, data));
+                    Invoker(OnLosslessPacket, this, new ToxEventArgs.CustomPacketEventArgs(friendNumber, data));
 
                 return 1;
 
             });
-            losslessPacketHandlers.Add(del);
+            _losslessPacketHandlers.Add(del);
 
-            return ToxFunctions.CallbackLosslessPacket(tox, friendnumber, start_byte, del, IntPtr.Zero) == 0;
+            return ToxFunctions.CallbackLosslessPacket(_tox, friendNumber, startByte, del, IntPtr.Zero) == 0;
         }
 
         /// <summary>
         /// Registers a handler for lossless packets starting with start_byte.
         /// </summary>
-        /// <param name="friendnumber"></param>
-        /// <param name="start_byte"></param>
+        /// <param name="friendNumber"></param>
+        /// <param name="startByte"></param>
         /// <param name="callback"></param>
         /// <returns></returns>
-        public bool RegisterLosslessPacketHandler(int friendnumber, byte start_byte, ToxDelegates.CallbackPacketDelegate callback)
+        public bool RegisterLosslessPacketHandler(int friendNumber, byte startByte, ToxDelegates.CallbackPacketDelegate callback)
         {
-            if (disposed)
+            if (_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
-            if (start_byte < 160 || start_byte > 191)
+            if (startByte < 160 || startByte > 191)
                 throw new ArgumentException("start_byte is not in the 160-191 range.");
 
-            return ToxFunctions.CallbackLosslessPacket(tox, friendnumber, start_byte, callback, IntPtr.Zero) == 0;
+            return ToxFunctions.CallbackLosslessPacket(_tox, friendNumber, startByte, callback, IntPtr.Zero) == 0;
         }
 
         /// <summary>
-        /// Retrieves a ToxData object that contains the data of this tox instance.
+        /// Retrieves a ToxData object that contains the data of this Tox instance.
         /// </summary>
         /// <returns></returns>
         public ToxData GetData()
         {
-            if (disposed)
+            if (_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
-            byte[] bytes = new byte[ToxFunctions.Size(tox)];
-            ToxFunctions.Save(tox, bytes);
+            byte[] bytes = new byte[ToxFunctions.Size(_tox)];
+            ToxFunctions.Save(_tox, bytes);
 
             return new ToxData(bytes);
         }
 
         /// <summary>
-        /// Retrieves a ToxData object that contains the data of this tox instance, encrypted with the given passphrase.
+        /// Retrieves a ToxData object that contains the data of this Tox instance, encrypted with the given passphrase.
         /// </summary>
         /// <param name="passphrase"></param>
         /// <returns></returns>
         public ToxData GetData(string passphrase)
         {
-            if (disposed)
+            if (_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
-            byte[] bytes = new byte[ToxEncryptionFunctions.EncryptedSize(tox)];
+            byte[] bytes = new byte[ToxEncryptionFunctions.EncryptedSize(_tox)];
             byte[] phrase = Encoding.UTF8.GetBytes(passphrase);
 
-            if (ToxEncryptionFunctions.EncryptedSave(tox, bytes, phrase, (uint)phrase.Length) != 0)
+            if (ToxEncryptionFunctions.EncryptedSave(_tox, bytes, phrase, (uint)phrase.Length) != 0)
                 return null;
 
             return new ToxData(bytes);
@@ -1193,45 +1193,45 @@ namespace SharpTox.Core
         /// <returns></returns>
         public bool AddTcpRelay(ToxNode node)
         {
-            if (disposed)
+            if (_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
-            return ToxFunctions.AddTcpRelay(tox, node.Address, (ushort)node.Port, node.PublicKey.GetBytes()) == 1;
+            return ToxFunctions.AddTcpRelay(_tox, node.Address, (ushort)node.Port, node.PublicKey.GetBytes()) == 1;
         }
 
         /// <summary>
-        /// Loads tox data.
+        /// Loads Tox data.
         /// </summary>
         /// <param name="data"></param>
         /// <returns></returns>
         public bool Load(ToxData data)
         {
-            if (disposed)
+            if (_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
             if (data == null || data.IsEncrypted)
                 return false;
 
-            int result = ToxFunctions.Load(tox, data.Bytes, (uint)data.Bytes.Length);
+            int result = ToxFunctions.Load(_tox, data.Bytes, (uint)data.Bytes.Length);
 
             return (result == 0 || result == -1);
         }
 
         /// <summary>
-        /// Loads and decrypts tox data.
+        /// Loads and decrypts Tox data.
         /// </summary>
         /// <param name="data"></param>
         /// <param name="passphrase"></param>
         /// <returns></returns>
         public bool Load(ToxData data, string passphrase)
         {
-            if (disposed)
+            if (_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
             byte[] phrase = Encoding.UTF8.GetBytes(passphrase);
 
             if (data.IsEncrypted)
-                return ToxEncryptionFunctions.EncryptedLoad(tox, data.Bytes, (uint)data.Bytes.Length, phrase, (uint)phrase.Length) == 0;
+                return ToxEncryptionFunctions.EncryptedLoad(_tox, data.Bytes, (uint)data.Bytes.Length, phrase, (uint)phrase.Length) == 0;
             else 
                 return Load(data);
         }
@@ -1244,10 +1244,10 @@ namespace SharpTox.Core
         /// <returns></returns>
         public bool SetAvatar(ToxAvatarFormat format, byte[] data)
         {
-            if (disposed)
+            if (_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
-            return ToxFunctions.SetAvatar(tox, (byte)format, data, (uint)data.Length) == 0;
+            return ToxFunctions.SetAvatar(_tox, (byte)format, data, (uint)data.Length) == 0;
         }
 
         /// <summary>
@@ -1257,7 +1257,7 @@ namespace SharpTox.Core
         /// <returns></returns>
         public byte[] GetHash(byte[] data)
         {
-            if (disposed)
+            if (_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
             byte[] hash = new byte[ToxConstants.ToxHashLength];
@@ -1271,40 +1271,40 @@ namespace SharpTox.Core
         /// <summary>
         /// Requests avatar info from a friend.
         /// </summary>
-        /// <param name="friendnumber"></param>
+        /// <param name="friendNumber"></param>
         /// <returns></returns>
-        public bool RequestAvatarInfo(int friendnumber)
+        public bool RequestAvatarInfo(int friendNumber)
         {
-            if (disposed)
+            if (_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
-            return ToxFunctions.RequestAvatarInfo(tox, friendnumber) == 0;
+            return ToxFunctions.RequestAvatarInfo(_tox, friendNumber) == 0;
         }
 
         /// <summary>
         /// Requests avatar data from a friend.
         /// </summary>
-        /// <param name="friendnumber"></param>
+        /// <param name="friendNumber"></param>
         /// <returns></returns>
-        public bool RequestAvatarData(int friendnumber)
+        public bool RequestAvatarData(int friendNumber)
         {
-            if (disposed)
+            if (_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
-            return ToxFunctions.RequestAvatarData(tox, friendnumber) == 0;
+            return ToxFunctions.RequestAvatarData(_tox, friendNumber) == 0;
         }
 
         /// <summary>
         /// Sends avatar info to a friend.
         /// </summary>
-        /// <param name="friendnumber"></param>
+        /// <param name="friendNumber"></param>
         /// <returns></returns>
-        public bool SendAvatarInfo(int friendnumber)
+        public bool SendAvatarInfo(int friendNumber)
         {
-            if (disposed)
+            if (_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
-            return ToxFunctions.SendAvatarInfo(tox, friendnumber) == 0;
+            return ToxFunctions.SendAvatarInfo(_tox, friendNumber) == 0;
         }
 
         /// <summary>
@@ -1314,10 +1314,10 @@ namespace SharpTox.Core
         [Obsolete("Use UnsetAvatar() instead")]
         public bool RemoveAvatar()
         {
-            /*if (disposed)
+            /*if (_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
-            return ToxFunctions.SetAvatar(tox, (byte)ToxAvatarFormat.None, null, 0) == 0;*/
+            return ToxFunctions.SetAvatar(_tox, (byte)ToxAvatarFormat.None, null, 0) == 0;*/
             return UnsetAvatar();
         }
 
@@ -1327,122 +1327,122 @@ namespace SharpTox.Core
         /// <returns></returns>
         public bool UnsetAvatar()
         {
-            if (disposed)
+            if (_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
-            return ToxFunctions.UnsetAvatar(tox) == 0;
+            return ToxFunctions.UnsetAvatar(_tox) == 0;
         }
 
-        private void callbacks()
+        private void Callbacks()
         {
-            ToxFunctions.CallbackFriendRequest(tox, friendrequestdelegate = (IntPtr t, byte[] id, byte[] message, ushort length, IntPtr userdata) =>
+            ToxFunctions.CallbackFriendRequest(_tox, _onFriendRequestCallback = (IntPtr tox, byte[] id, byte[] message, ushort length, IntPtr userData) =>
             {
                 if (OnFriendRequest != null)
                     Invoker(OnFriendRequest, this, new ToxEventArgs.FriendRequestEventArgs(ToxTools.RemoveNull(ToxTools.HexBinToString(id)), Encoding.UTF8.GetString(message, 0, length)));
             }, IntPtr.Zero);
 
-            ToxFunctions.CallbackConnectionStatus(tox, connectionstatusdelegate = (IntPtr t, int friendnumber, byte status, IntPtr userdata) =>
+            ToxFunctions.CallbackConnectionStatus(_tox, _onConnectionStatusCallback = (IntPtr tox, int friendNumber, byte status, IntPtr userData) =>
             {
                 if (OnConnectionStatusChanged != null)
-                    Invoker(OnConnectionStatusChanged, this, new ToxEventArgs.ConnectionStatusEventArgs(friendnumber, (ToxFriendConnectionStatus)status));
+                    Invoker(OnConnectionStatusChanged, this, new ToxEventArgs.ConnectionStatusEventArgs(friendNumber, (ToxFriendConnectionStatus)status));
             }, IntPtr.Zero);
 
-            ToxFunctions.CallbackFriendMessage(tox, friendmessagedelegate = (IntPtr t, int friendnumber, byte[] message, ushort length, IntPtr userdata) =>
+            ToxFunctions.CallbackFriendMessage(_tox, _onFriendMessageCallback = (IntPtr tox, int friendNumber, byte[] message, ushort length, IntPtr userData) =>
             {
                 if (OnFriendMessage != null)
-                    Invoker(OnFriendMessage, this, new ToxEventArgs.FriendMessageEventArgs(friendnumber, ToxTools.RemoveNull(Encoding.UTF8.GetString(message, 0, length))));
+                    Invoker(OnFriendMessage, this, new ToxEventArgs.FriendMessageEventArgs(friendNumber, ToxTools.RemoveNull(Encoding.UTF8.GetString(message, 0, length))));
             }, IntPtr.Zero);
 
-            ToxFunctions.CallbackFriendAction(tox, friendactiondelegate = (IntPtr t, int friendnumber, byte[] action, ushort length, IntPtr userdata) =>
+            ToxFunctions.CallbackFriendAction(_tox, _onFriendActionCallback = (IntPtr tox, int friendNumber, byte[] action, ushort length, IntPtr userData) =>
             {
                 if (OnFriendAction != null)
-                    Invoker(OnFriendAction, this, new ToxEventArgs.FriendActionEventArgs(friendnumber, ToxTools.RemoveNull(Encoding.UTF8.GetString(action, 0, length))));
+                    Invoker(OnFriendAction, this, new ToxEventArgs.FriendActionEventArgs(friendNumber, ToxTools.RemoveNull(Encoding.UTF8.GetString(action, 0, length))));
             }, IntPtr.Zero);
 
-            ToxFunctions.CallbackNameChange(tox, namechangedelegate = (IntPtr t, int friendnumber, byte[] newname, ushort length, IntPtr userdata) =>
+            ToxFunctions.CallbackNameChange(_tox, _onNameChangeCallback = (IntPtr tox, int friendNumber, byte[] newName, ushort length, IntPtr userData) =>
             {
                 if (OnNameChange != null)
-                    Invoker(OnNameChange, this, new ToxEventArgs.NameChangeEventArgs(friendnumber, ToxTools.RemoveNull(Encoding.UTF8.GetString(newname, 0, length))));
+                    Invoker(OnNameChange, this, new ToxEventArgs.NameChangeEventArgs(friendNumber, ToxTools.RemoveNull(Encoding.UTF8.GetString(newName, 0, length))));
             }, IntPtr.Zero);
 
-            ToxFunctions.CallbackStatusMessage(tox, statusmessagedelegate = (IntPtr t, int friendnumber, byte[] newstatus, ushort length, IntPtr userdata) =>
+            ToxFunctions.CallbackStatusMessage(_tox, _onStatusMessageCallback = (IntPtr tox, int friendNumber, byte[] newStatus, ushort length, IntPtr userData) =>
             {
                 if (OnStatusMessage != null)
-                    Invoker(OnStatusMessage, this, new ToxEventArgs.StatusMessageEventArgs(friendnumber, ToxTools.RemoveNull(Encoding.UTF8.GetString(newstatus, 0, length))));
+                    Invoker(OnStatusMessage, this, new ToxEventArgs.StatusMessageEventArgs(friendNumber, ToxTools.RemoveNull(Encoding.UTF8.GetString(newStatus, 0, length))));
             }, IntPtr.Zero);
 
-            ToxFunctions.CallbackUserStatus(tox, userstatusdelegate = (IntPtr t, int friendnumber, ToxUserStatus status, IntPtr userdata) =>
+            ToxFunctions.CallbackUserStatus(_tox, _onUserStatusCallback = (IntPtr tox, int friendNumber, ToxUserStatus status, IntPtr userData) =>
             {
                 if (OnUserStatus != null)
-                    Invoker(OnUserStatus, this, new ToxEventArgs.UserStatusEventArgs(friendnumber, status));
+                    Invoker(OnUserStatus, this, new ToxEventArgs.UserStatusEventArgs(friendNumber, status));
             }, IntPtr.Zero);
 
-            ToxFunctions.CallbackTypingChange(tox, typingchangedelegate = (IntPtr t, int friendnumber, byte typing, IntPtr userdata) =>
+            ToxFunctions.CallbackTypingChange(_tox, _onTypingChangeCallback = (IntPtr tox, int friendNumber, byte typing, IntPtr userData) =>
             {
-                bool is_typing = typing != 0;
+                bool isTyping = typing != 0;
 
                 if (OnTypingChange != null)
-                    Invoker(OnTypingChange, this, new ToxEventArgs.TypingStatusEventArgs(friendnumber, is_typing));
+                    Invoker(OnTypingChange, this, new ToxEventArgs.TypingStatusEventArgs(friendNumber, isTyping));
             }, IntPtr.Zero);
 
-            ToxFunctions.CallbackGroupAction(tox, groupactiondelegate = (IntPtr t, int groupnumber, int friendgroupnumber, byte[] action, ushort length, IntPtr userdata) =>
+            ToxFunctions.CallbackGroupAction(_tox, _onGroupActionCallback = (IntPtr tox, int groupNumber, int peerNumber, byte[] action, ushort length, IntPtr userData) =>
             {
                 if (OnGroupAction != null)
-                    Invoker(OnGroupAction, this, new ToxEventArgs.GroupActionEventArgs(groupnumber, friendgroupnumber, ToxTools.RemoveNull(Encoding.UTF8.GetString(action, 0, length))));
+                    Invoker(OnGroupAction, this, new ToxEventArgs.GroupActionEventArgs(groupNumber, peerNumber, ToxTools.RemoveNull(Encoding.UTF8.GetString(action, 0, length))));
             }, IntPtr.Zero);
 
-            ToxFunctions.CallbackGroupMessage(tox, groupmessagedelegate = (IntPtr t, int groupnumber, int friendgroupnumber, byte[] message, ushort length, IntPtr userdata) =>
+            ToxFunctions.CallbackGroupMessage(_tox, _onGroupMessageCallback = (IntPtr tox, int groupNumber, int peerNumber, byte[] message, ushort length, IntPtr userData) =>
             {
                 if (OnGroupMessage != null)
-                    Invoker(OnGroupMessage, this, new ToxEventArgs.GroupMessageEventArgs(groupnumber, friendgroupnumber, ToxTools.RemoveNull(Encoding.UTF8.GetString(message, 0, length))));
+                    Invoker(OnGroupMessage, this, new ToxEventArgs.GroupMessageEventArgs(groupNumber, peerNumber, ToxTools.RemoveNull(Encoding.UTF8.GetString(message, 0, length))));
             }, IntPtr.Zero);
 
-            ToxFunctions.CallbackGroupInvite(tox, groupinvitedelegate = (IntPtr t, int friendnumber, byte[] data, ushort length, IntPtr userdata) =>
+            ToxFunctions.CallbackGroupInvite(_tox, _onGroupInviteCallback = (IntPtr tox, int friendNumber, byte[] data, ushort length, IntPtr userData) =>
             {
                 if (OnGroupInvite != null)
-                    Invoker(OnGroupInvite, this, new ToxEventArgs.GroupInviteEventArgs(friendnumber, data));
+                    Invoker(OnGroupInvite, this, new ToxEventArgs.GroupInviteEventArgs(friendNumber, data));
             }, IntPtr.Zero);
 
-            ToxFunctions.CallbackGroupNamelistChange(tox, groupnamelistchangedelegate = (IntPtr t, int groupnumber, int peernumber, ToxChatChange change, IntPtr userdata) =>
+            ToxFunctions.CallbackGroupNamelistChange(_tox, _onGroupNamelistChangeCallback = (IntPtr tox, int groupNumber, int peerNumber, ToxChatChange change, IntPtr userData) =>
             {
                 if (OnGroupNamelistChange != null)
-                    Invoker(OnGroupNamelistChange, this, new ToxEventArgs.GroupNamelistChangeEventArgs(groupnumber, peernumber, change));
+                    Invoker(OnGroupNamelistChange, this, new ToxEventArgs.GroupNamelistChangeEventArgs(groupNumber, peerNumber, change));
             }, IntPtr.Zero);
 
-            ToxFunctions.CallbackFileControl(tox, filecontroldelegate = (IntPtr t, int friendnumber, byte receive_send, byte filenumber, byte control_type, byte[] data, ushort length, IntPtr userdata) =>
+            ToxFunctions.CallbackFileControl(_tox, _onFileControlCallback = (IntPtr tox, int friendNumber, byte receiveSend, byte fileNumber, byte controlYype, byte[] data, ushort length, IntPtr userData) =>
             {
                 if (OnFileControl != null)
-                    Invoker(OnFileControl, this, new ToxEventArgs.FileControlEventArgs(friendnumber, filenumber, receive_send == 1, (ToxFileControl)control_type, data));
+                    Invoker(OnFileControl, this, new ToxEventArgs.FileControlEventArgs(friendNumber, fileNumber, receiveSend == 1, (ToxFileControl)controlYype, data));
             }, IntPtr.Zero);
 
-            ToxFunctions.CallbackFileData(tox, filedatadelegate = (IntPtr t, int friendnumber, byte filenumber, byte[] data, ushort length, IntPtr userdata) =>
+            ToxFunctions.CallbackFileData(_tox, _onFileDataCallback = (IntPtr tox, int friendNumber, byte fileNumber, byte[] data, ushort length, IntPtr userData) =>
             {
                 if (OnFileData != null)
-                    Invoker(OnFileData, this, new ToxEventArgs.FileDataEventArgs(friendnumber, filenumber, data));
+                    Invoker(OnFileData, this, new ToxEventArgs.FileDataEventArgs(friendNumber, fileNumber, data));
             }, IntPtr.Zero);
 
-            ToxFunctions.CallbackFileSendRequest(tox, filesendrequestdelegate = (IntPtr t, int friendnumber, byte filenumber, ulong filesize, byte[] filename, ushort filename_length, IntPtr userdata) =>
+            ToxFunctions.CallbackFileSendRequest(_tox, _onFileSendrequestCallback = (IntPtr tox, int friendNumber, byte fileNumber, ulong fileSize, byte[] filename, ushort filenameLength, IntPtr userData) =>
             {
                 if (OnFileSendRequest != null)
-                    Invoker(OnFileSendRequest, this, new ToxEventArgs.FileSendRequestEventArgs(friendnumber, filenumber, filesize, ToxTools.RemoveNull(Encoding.UTF8.GetString(filename, 0, filename_length))));
+                    Invoker(OnFileSendRequest, this, new ToxEventArgs.FileSendRequestEventArgs(friendNumber, fileNumber, fileSize, ToxTools.RemoveNull(Encoding.UTF8.GetString(filename, 0, filenameLength))));
             }, IntPtr.Zero);
 
-            ToxFunctions.CallbackReadReceipt(tox, readreceiptdelegate = (IntPtr t, int friendnumber, uint receipt, IntPtr userdata) =>
+            ToxFunctions.CallbackReadReceipt(_tox, _onReadReceiptCallback = (IntPtr tox, int friendNumber, uint receipt, IntPtr userData) =>
             {
                 if (OnReadReceipt != null)
-                    Invoker(OnReadReceipt, this, new ToxEventArgs.ReadReceiptEventArgs(friendnumber, (int)receipt));
+                    Invoker(OnReadReceipt, this, new ToxEventArgs.ReadReceiptEventArgs(friendNumber, (int)receipt));
             }, IntPtr.Zero);
 
-            ToxFunctions.CallbackAvatarInfo(tox, avatarinfodelegate = (IntPtr t, int friendnumber, byte format, byte[] hash, IntPtr userdata) =>
+            ToxFunctions.CallbackAvatarInfo(_tox, _onAvatarInfoCallback = (IntPtr tox, int friendNumber, byte format, byte[] hash, IntPtr userData) =>
             {
                 if (OnAvatarInfo != null)
-                    Invoker(OnAvatarInfo, this, new ToxEventArgs.AvatarInfoEventArgs(friendnumber, (ToxAvatarFormat)format, hash));
+                    Invoker(OnAvatarInfo, this, new ToxEventArgs.AvatarInfoEventArgs(friendNumber, (ToxAvatarFormat)format, hash));
             }, IntPtr.Zero);
 
-            ToxFunctions.CallbackAvatarData(tox, avatardatadelegate = (IntPtr t, int friendnumber, byte format, byte[] hash, byte[] data, uint datalen, IntPtr userdata) =>
+            ToxFunctions.CallbackAvatarData(_tox, _onAvatarDataCallback = (IntPtr tox, int friendNumber, byte format, byte[] hash, byte[] data, uint dataLength, IntPtr userData) =>
             {
                 if (OnAvatarData != null)
-                    Invoker(OnAvatarData, this, new ToxEventArgs.AvatarDataEventArgs(friendnumber, new ToxAvatar((ToxAvatarFormat)format, (byte[])data.Clone(), hash)));
+                    Invoker(OnAvatarData, this, new ToxEventArgs.AvatarDataEventArgs(friendNumber, new ToxAvatar((ToxAvatarFormat)format, (byte[])data.Clone(), hash)));
             }, IntPtr.Zero);
         }
     }

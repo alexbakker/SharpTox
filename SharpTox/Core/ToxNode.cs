@@ -29,12 +29,12 @@ namespace SharpTox.Core
         /// </summary>
         /// <param name="address"></param>
         /// <param name="port"></param>
-        /// <param name="public_key"></param>
-        public ToxNode(string address, int port, ToxKey public_key)
+        /// <param name="publicKey"></param>
+        public ToxNode(string address, int port, ToxKey publicKey)
         {
             Address = address;
             Port = port;
-            PublicKey = public_key;
+            PublicKey = publicKey;
         }
         
         /// <summary>

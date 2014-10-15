@@ -5,7 +5,7 @@
     /// </summary>
     public class ToxKey
     {
-        private byte[] key;
+        private byte[] _key;
 
         /// <summary>
         /// The key type (either public or secret).
@@ -20,7 +20,7 @@
         public ToxKey(ToxKeyType type, byte[] key)
         {
             KeyType = type;
-            this.key = key;
+            _key = key;
         }
 
         /// <summary>
@@ -31,7 +31,7 @@
         public ToxKey(ToxKeyType type, string key)
         {
             KeyType = type;
-            this.key = ToxTools.StringToHexBin(key);
+            _key = ToxTools.StringToHexBin(key);
         }
 
         /// <summary>
@@ -40,7 +40,7 @@
         /// <returns></returns>
         public byte[] GetBytes()
         {
-            return key;
+            return _key;
         }
 
         /// <summary>
@@ -49,7 +49,7 @@
         /// <returns></returns>
         public string GetString()
         {
-            return ToxTools.HexBinToString(key);
+            return ToxTools.HexBinToString(_key);
         }
     }
 }

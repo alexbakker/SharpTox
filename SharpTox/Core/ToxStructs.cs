@@ -41,12 +41,12 @@ namespace SharpTox.Core
         /// <summary>
         /// Initializes a new instance of the <see cref="ToxOptions"/> struct.
         /// </summary>
-        /// <param name="ipv6_enabled"></param>
-        /// <param name="udp_disabled"></param>
-        public ToxOptions(bool ipv6_enabled, bool udp_disabled)
+        /// <param name="ipv6Enabled"></param>
+        /// <param name="udpDisabled"></param>
+        public ToxOptions(bool ipv6Enabled, bool udpDisabled)
         {
-            Ipv6Enabled = ipv6_enabled;
-            UdpDisabled = udp_disabled;
+            Ipv6Enabled = ipv6Enabled;
+            UdpDisabled = udpDisabled;
             ProxyEnabled = false;
             ProxyAddress = null;
             ProxyPort = 0;
@@ -55,25 +55,25 @@ namespace SharpTox.Core
         /// <summary>
         /// Initializes a new instance of the <see cref="ToxOptions"/> struct.
         /// </summary>
-        /// <param name="ipv6_enabled"></param>
-        /// <param name="proxy_address"></param>
-        /// <param name="proxy_port"></param>
-        public ToxOptions(bool ipv6_enabled, string proxy_address, int proxy_port)
+        /// <param name="ipv6Enabled"></param>
+        /// <param name="proxyAddress"></param>
+        /// <param name="proxyPort"></param>
+        public ToxOptions(bool ipv6Enabled, string proxyAddress, int proxyPort)
         {
-            Ipv6Enabled = ipv6_enabled;
+            Ipv6Enabled = ipv6Enabled;
             UdpDisabled = true;
             ProxyEnabled = true;
 
             char[] dest = new char[256];
-            char[] source_array = proxy_address.ToCharArray();
+            char[] sourceArray = proxyAddress.ToCharArray();
 
-            if (source_array.Length > dest.Length)
+            if (sourceArray.Length > dest.Length)
                 throw new Exception("Argument proxy_address is longer than 256 chars");
 
-            Array.Copy(source_array, 0, dest, 0, source_array.Length);
+            Array.Copy(sourceArray, 0, dest, 0, sourceArray.Length);
 
             ProxyAddress = dest;
-            ProxyPort = (ushort)proxy_port;
+            ProxyPort = (ushort)proxyPort;
         }
     }
 }
