@@ -225,64 +225,64 @@ namespace SharpTox.Core
 
         #region Callbacks
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_callback_friend_request")]
-        public static extern void CallbackFriendRequest(ToxHandle tox, ToxDelegates.CallbackFriendRequestDelegate callback, IntPtr userdata);
+        public static extern void RegisterFriendRequestCallback(ToxHandle tox, ToxDelegates.CallbackFriendRequestDelegate callback, IntPtr userdata);
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_callback_connection_status")]
-        public static extern void CallbackConnectionStatus(ToxHandle tox, ToxDelegates.CallbackConnectionStatusDelegate callback, IntPtr userdata);
+        public static extern void RegisterConnectionStatusCallback(ToxHandle tox, ToxDelegates.CallbackConnectionStatusDelegate callback, IntPtr userdata);
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_callback_friend_message")]
-        public static extern void CallbackFriendMessage(ToxHandle tox, ToxDelegates.CallbackFriendMessageDelegate callback, IntPtr userdata);
+        public static extern void RegisterFriendMessageCallback(ToxHandle tox, ToxDelegates.CallbackFriendMessageDelegate callback, IntPtr userdata);
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_callback_friend_action")]
-        public static extern void CallbackFriendAction(ToxHandle tox, ToxDelegates.CallbackFriendActionDelegate callback, IntPtr userdata);
+        public static extern void RegisterFriendActionCallback(ToxHandle tox, ToxDelegates.CallbackFriendActionDelegate callback, IntPtr userdata);
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_callback_name_change")]
-        public static extern void CallbackNameChange(ToxHandle tox, ToxDelegates.CallbackNameChangeDelegate callback, IntPtr userdata);
+        public static extern void RegisterNameChangeCallback(ToxHandle tox, ToxDelegates.CallbackNameChangeDelegate callback, IntPtr userdata);
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_callback_status_message")]
-        public static extern void CallbackStatusMessage(ToxHandle tox, ToxDelegates.CallbackStatusMessageDelegate callback, IntPtr userdata);
+        public static extern void RegisterStatusMessageCallback(ToxHandle tox, ToxDelegates.CallbackStatusMessageDelegate callback, IntPtr userdata);
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_callback_user_status")]
-        public static extern void CallbackUserStatus(ToxHandle tox, ToxDelegates.CallbackUserStatusDelegate callback, IntPtr userdata);
+        public static extern void RegisterUserStatusCallback(ToxHandle tox, ToxDelegates.CallbackUserStatusDelegate callback, IntPtr userdata);
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, EntryPoint = "tox_callback_typing_change")]
-        public static extern void CallbackTypingChange(ToxHandle tox, ToxDelegates.CallbackTypingChangeDelegate callback, IntPtr userdata);
+        public static extern void RegisterTypingChangeCallback(ToxHandle tox, ToxDelegates.CallbackTypingChangeDelegate callback, IntPtr userdata);
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_callback_group_invite")]
-        public static extern void CallbackGroupInvite(ToxHandle tox, ToxDelegates.CallbackGroupInviteDelegate callback, IntPtr userdata);
+        public static extern void RegisterGroupInviteCallback(ToxHandle tox, ToxDelegates.CallbackGroupInviteDelegate callback, IntPtr userdata);
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_callback_group_message")]
-        public static extern void CallbackGroupMessage(ToxHandle tox, ToxDelegates.CallbackGroupMessageDelegate callback, IntPtr userdata);
+        public static extern void RegisterGroupMessageCallback(ToxHandle tox, ToxDelegates.CallbackGroupMessageDelegate callback, IntPtr userdata);
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_callback_group_action")]
-        public static extern void CallbackGroupAction(ToxHandle tox, ToxDelegates.CallbackGroupActionDelegate callback, IntPtr userdata);
+        public static extern void RegisterGroupActionCallback(ToxHandle tox, ToxDelegates.CallbackGroupActionDelegate callback, IntPtr userdata);
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_callback_group_namelist_change")]
-        public static extern void CallbackGroupNamelistChange(ToxHandle tox, ToxDelegates.CallbackGroupNamelistChangeDelegate callback, IntPtr userdata);
+        public static extern void RegisterGroupNamelistChangeCallback(ToxHandle tox, ToxDelegates.CallbackGroupNamelistChangeDelegate callback, IntPtr userdata);
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_callback_file_send_request")]
-        public static extern void CallbackFileSendRequest(ToxHandle tox, ToxDelegates.CallbackFileSendRequestDelegate callback, IntPtr userdata);
+        public static extern void RegisterFileSendRequestCallback(ToxHandle tox, ToxDelegates.CallbackFileSendRequestDelegate callback, IntPtr userdata);
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_callback_file_control")]
-        public static extern void CallbackFileControl(ToxHandle tox, ToxDelegates.CallbackFileControlDelegate callback, IntPtr userdata);
+        public static extern void RegisterFileControlCallback(ToxHandle tox, ToxDelegates.CallbackFileControlDelegate callback, IntPtr userdata);
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_callback_file_data")]
-        public static extern void CallbackFileData(ToxHandle tox, ToxDelegates.CallbackFileDataDelegate callback, IntPtr userdata);
+        public static extern void RegisterFileDataCallback(ToxHandle tox, ToxDelegates.CallbackFileDataDelegate callback, IntPtr userdata);
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_callback_read_receipt")]
-        public static extern void CallbackReadReceipt(ToxHandle tox, ToxDelegates.CallbackReadReceiptDelegate callback, IntPtr userdata);
+        public static extern void RegisterReadReceiptCallback(ToxHandle tox, ToxDelegates.CallbackReadReceiptDelegate callback, IntPtr userdata);
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_lossy_packet_registerhandler")]
-        public static extern int CallbackLossyPacket(ToxHandle tox, int friendnumber, byte start_byte, ToxDelegates.CallbackPacketDelegate callback, IntPtr obj);
+        public static extern int RegisterLossyPacketCallback(ToxHandle tox, int friendnumber, byte start_byte, ToxDelegates.CallbackPacketDelegate callback, IntPtr obj);
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_lossless_packet_registerhandler")]
-        public static extern int CallbackLosslessPacket(ToxHandle tox, int friendnumber, byte start_byte, ToxDelegates.CallbackPacketDelegate callback, IntPtr obj);
+        public static extern int RegisterLosslessPacketCallback(ToxHandle tox, int friendnumber, byte start_byte, ToxDelegates.CallbackPacketDelegate callback, IntPtr obj);
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_callback_avatar_info")]
-        public static extern void CallbackAvatarInfo(ToxHandle tox, ToxDelegates.CallbackAvatarInfoDelegate callback, IntPtr userdata);
+        public static extern void RegisterAvatarInfoCallback(ToxHandle tox, ToxDelegates.CallbackAvatarInfoDelegate callback, IntPtr userdata);
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_callback_avatar_data")]
-        public static extern void CallbackAvatarData(ToxHandle tox, ToxDelegates.CallbackAvatarDataDelegate callback, IntPtr userdata);
+        public static extern void RegisterAvatarDataCallback(ToxHandle tox, ToxDelegates.CallbackAvatarDataDelegate callback, IntPtr userdata);
 
         #endregion
     }

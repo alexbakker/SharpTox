@@ -15,116 +15,6 @@ namespace SharpTox.Core
     /// </summary>
     public class Tox : IDisposable
     {
-        /// <summary>
-        /// Occurs when a friend request is received.
-        /// </summary>
-        public event EventHandler<ToxEventArgs.FriendRequestEventArgs> OnFriendRequest;
-
-        /// <summary>
-        /// Occurs when the connection status of a friend has changed.
-        /// </summary>
-        public event EventHandler<ToxEventArgs.ConnectionStatusEventArgs> OnConnectionStatusChanged;
-
-        /// <summary>
-        /// Occurs when a message is received from a friend.
-        /// </summary>
-        public event EventHandler<ToxEventArgs.FriendMessageEventArgs> OnFriendMessage;
-
-        /// <summary>
-        /// Occurs when an action is received from a friend.
-        /// </summary>
-        public event EventHandler<ToxEventArgs.FriendActionEventArgs> OnFriendAction;
-
-        /// <summary>
-        /// Occurs when a friend has changed his/her name.
-        /// </summary>
-        public event EventHandler<ToxEventArgs.NameChangeEventArgs> OnNameChange;
-
-        /// <summary>
-        /// Occurs when a friend has changed their status message.
-        /// </summary>
-        public event EventHandler<ToxEventArgs.StatusMessageEventArgs> OnStatusMessage;
-
-        /// <summary>
-        /// Occurs when a friend has changed their user status.
-        /// </summary>
-        public event EventHandler<ToxEventArgs.UserStatusEventArgs> OnUserStatus;
-
-        /// <summary>
-        /// Occurs when a friend's typing status has changed.
-        /// </summary>
-        public event EventHandler<ToxEventArgs.TypingStatusEventArgs> OnTypingChange;
-
-        /// <summary>
-        /// Occurs when an action is received from a group.
-        /// </summary>
-        public event EventHandler<ToxEventArgs.GroupActionEventArgs> OnGroupAction;
-
-        /// <summary>
-        /// Occurs when a message is received from a group.
-        /// </summary>
-        public event EventHandler<ToxEventArgs.GroupMessageEventArgs> OnGroupMessage;
-
-        /// <summary>
-        /// Occurs when a friend has sent an invite to a group.
-        /// </summary>
-        public event EventHandler<ToxEventArgs.GroupInviteEventArgs> OnGroupInvite;
-
-        /// <summary>
-        /// Occurs when the name list of a group has changed.
-        /// </summary>
-        public event EventHandler<ToxEventArgs.GroupNamelistChangeEventArgs> OnGroupNamelistChange;
-
-        /// <summary>
-        /// Occurs when a file control request is received.
-        /// </summary>
-        public event EventHandler<ToxEventArgs.FileControlEventArgs> OnFileControl;
-
-        /// <summary>
-        /// Occurs when file data is received.
-        /// </summary>
-        public event EventHandler<ToxEventArgs.FileDataEventArgs> OnFileData;
-
-        /// <summary>
-        /// Occurs when a file send request is received.
-        /// </summary>
-        public event EventHandler<ToxEventArgs.FileSendRequestEventArgs> OnFileSendRequest;
-
-        /// <summary>
-        /// Occurs when a read receipt is received.
-        /// </summary>
-        public event EventHandler<ToxEventArgs.ReadReceiptEventArgs> OnReadReceipt;
-
-        /// <summary>
-        /// Occurs when a lossy packet is received.
-        /// </summary>
-        public event EventHandler<ToxEventArgs.CustomPacketEventArgs> OnLossyPacket;
-
-        /// <summary>
-        /// Occurs when a lossless packet is received.
-        /// </summary>
-        public event EventHandler<ToxEventArgs.CustomPacketEventArgs> OnLosslessPacket;
-
-        /// <summary>
-        /// Occurs when a connection to the DHT has been established.
-        /// </summary>
-        public event EventHandler<ToxEventArgs.ConnectionEventArgs> OnConnected;
-        
-        /// <summary>
-        /// Occurs when the connection to the DHT was lost.
-        /// </summary>
-        public event EventHandler<ToxEventArgs.ConnectionEventArgs> OnDisconnected;
-
-        /// <summary>
-        /// Occurs when avatar info is received.
-        /// </summary>
-        public event EventHandler<ToxEventArgs.AvatarInfoEventArgs> OnAvatarInfo;
-
-        /// <summary>
-        /// Occurs when avatar data is received.
-        /// </summary>
-        public event EventHandler<ToxEventArgs.AvatarDataEventArgs> OnAvatarData;
-
         public delegate object InvokeDelegate(Delegate method, params object[] p);
 
         /// <summary>
@@ -149,7 +39,7 @@ namespace SharpTox.Core
 
         private ToxDelegates.CallbackFileControlDelegate _onFileControlCallback;
         private ToxDelegates.CallbackFileDataDelegate _onFileDataCallback;
-        private ToxDelegates.CallbackFileSendRequestDelegate _onFileSendrequestCallback;
+        private ToxDelegates.CallbackFileSendRequestDelegate _onFileSendRequestCallback;
 
         private ToxDelegates.CallbackReadReceiptDelegate _onReadReceiptCallback;
 
@@ -401,8 +291,6 @@ namespace SharpTox.Core
 
             Options = options;
             Invoker = DummyInvoker;
-
-            Callbacks();
         }
 
         public void Dispose()
@@ -1076,7 +964,7 @@ namespace SharpTox.Core
             if (startByte < 200 || startByte > 254)
                 throw new ArgumentException("start_byte is not in the 200-254 range.");
 
-            ToxDelegates.CallbackPacketDelegate del = ((IntPtr obj, byte[] data, uint length) => 
+            ToxDelegates.CallbackPacketDelegate del = ((IntPtr obj, byte[] data, uint length) =>
             {
                 if (OnLossyPacket != null)
                     Invoker(OnLossyPacket, this, new ToxEventArgs.CustomPacketEventArgs(friendNumber, data));
@@ -1086,7 +974,7 @@ namespace SharpTox.Core
             });
             _lossyPacketHandlers.Add(del);
 
-            return ToxFunctions.CallbackLossyPacket(_tox, friendNumber, startByte, del, IntPtr.Zero) == 0;
+            return ToxFunctions.RegisterLossyPacketCallback(_tox, friendNumber, startByte, del, IntPtr.Zero) == 0;
         }
 
         /// <summary>
@@ -1104,7 +992,7 @@ namespace SharpTox.Core
             if (startByte < 200 || startByte > 254)
                 throw new ArgumentException("start_byte is not in the 200-254 range.");
 
-            return ToxFunctions.CallbackLossyPacket(_tox, friendNumber, startByte, callback, IntPtr.Zero) == 0;
+            return ToxFunctions.RegisterLossyPacketCallback(_tox, friendNumber, startByte, callback, IntPtr.Zero) == 0;
         }
 
         /// <summary>
@@ -1131,7 +1019,7 @@ namespace SharpTox.Core
             });
             _losslessPacketHandlers.Add(del);
 
-            return ToxFunctions.CallbackLosslessPacket(_tox, friendNumber, startByte, del, IntPtr.Zero) == 0;
+            return ToxFunctions.RegisterLosslessPacketCallback(_tox, friendNumber, startByte, del, IntPtr.Zero) == 0;
         }
 
         /// <summary>
@@ -1149,7 +1037,7 @@ namespace SharpTox.Core
             if (startByte < 160 || startByte > 191)
                 throw new ArgumentException("start_byte is not in the 160-191 range.");
 
-            return ToxFunctions.CallbackLosslessPacket(_tox, friendNumber, startByte, callback, IntPtr.Zero) == 0;
+            return ToxFunctions.RegisterLosslessPacketCallback(_tox, friendNumber, startByte, callback, IntPtr.Zero) == 0;
         }
 
         /// <summary>
@@ -1232,7 +1120,7 @@ namespace SharpTox.Core
 
             if (data.IsEncrypted)
                 return ToxEncryptionFunctions.EncryptedLoad(_tox, data.Bytes, (uint)data.Bytes.Length, phrase, (uint)phrase.Length) == 0;
-            else 
+            else
                 return Load(data);
         }
 
@@ -1333,118 +1221,533 @@ namespace SharpTox.Core
             return ToxFunctions.UnsetAvatar(_tox) == 0;
         }
 
-        private void Callbacks()
+        #region Events
+        private EventHandler<ToxEventArgs.FriendRequestEventArgs> _onFriendRequest;
+
+        /// <summary>
+        /// Occurs when a friend request is received.
+        /// </summary>
+        public event EventHandler<ToxEventArgs.FriendRequestEventArgs> OnFriendRequest
         {
-            ToxFunctions.CallbackFriendRequest(_tox, _onFriendRequestCallback = (IntPtr tox, byte[] id, byte[] message, ushort length, IntPtr userData) =>
+            add
             {
-                if (OnFriendRequest != null)
-                    Invoker(OnFriendRequest, this, new ToxEventArgs.FriendRequestEventArgs(ToxTools.RemoveNull(ToxTools.HexBinToString(id)), Encoding.UTF8.GetString(message, 0, length)));
-            }, IntPtr.Zero);
+                if (_onFriendRequestCallback == null)
+                {
+                    _onFriendRequestCallback = (IntPtr tox, byte[] id, byte[] message, ushort length, IntPtr userData) =>
+                    {
+                        if (_onFriendRequest != null)
+                            Invoker(_onFriendRequest, this, new ToxEventArgs.FriendRequestEventArgs(ToxTools.RemoveNull(ToxTools.HexBinToString(id)), Encoding.UTF8.GetString(message, 0, length)));
+                    };
 
-            ToxFunctions.CallbackConnectionStatus(_tox, _onConnectionStatusCallback = (IntPtr tox, int friendNumber, byte status, IntPtr userData) =>
+                    ToxFunctions.RegisterFriendRequestCallback(_tox, _onFriendRequestCallback, IntPtr.Zero);
+                }
+
+                _onFriendRequest += value;
+            }
+            remove
             {
-                if (OnConnectionStatusChanged != null)
-                    Invoker(OnConnectionStatusChanged, this, new ToxEventArgs.ConnectionStatusEventArgs(friendNumber, (ToxFriendConnectionStatus)status));
-            }, IntPtr.Zero);
-
-            ToxFunctions.CallbackFriendMessage(_tox, _onFriendMessageCallback = (IntPtr tox, int friendNumber, byte[] message, ushort length, IntPtr userData) =>
-            {
-                if (OnFriendMessage != null)
-                    Invoker(OnFriendMessage, this, new ToxEventArgs.FriendMessageEventArgs(friendNumber, ToxTools.RemoveNull(Encoding.UTF8.GetString(message, 0, length))));
-            }, IntPtr.Zero);
-
-            ToxFunctions.CallbackFriendAction(_tox, _onFriendActionCallback = (IntPtr tox, int friendNumber, byte[] action, ushort length, IntPtr userData) =>
-            {
-                if (OnFriendAction != null)
-                    Invoker(OnFriendAction, this, new ToxEventArgs.FriendActionEventArgs(friendNumber, ToxTools.RemoveNull(Encoding.UTF8.GetString(action, 0, length))));
-            }, IntPtr.Zero);
-
-            ToxFunctions.CallbackNameChange(_tox, _onNameChangeCallback = (IntPtr tox, int friendNumber, byte[] newName, ushort length, IntPtr userData) =>
-            {
-                if (OnNameChange != null)
-                    Invoker(OnNameChange, this, new ToxEventArgs.NameChangeEventArgs(friendNumber, ToxTools.RemoveNull(Encoding.UTF8.GetString(newName, 0, length))));
-            }, IntPtr.Zero);
-
-            ToxFunctions.CallbackStatusMessage(_tox, _onStatusMessageCallback = (IntPtr tox, int friendNumber, byte[] newStatus, ushort length, IntPtr userData) =>
-            {
-                if (OnStatusMessage != null)
-                    Invoker(OnStatusMessage, this, new ToxEventArgs.StatusMessageEventArgs(friendNumber, ToxTools.RemoveNull(Encoding.UTF8.GetString(newStatus, 0, length))));
-            }, IntPtr.Zero);
-
-            ToxFunctions.CallbackUserStatus(_tox, _onUserStatusCallback = (IntPtr tox, int friendNumber, ToxUserStatus status, IntPtr userData) =>
-            {
-                if (OnUserStatus != null)
-                    Invoker(OnUserStatus, this, new ToxEventArgs.UserStatusEventArgs(friendNumber, status));
-            }, IntPtr.Zero);
-
-            ToxFunctions.CallbackTypingChange(_tox, _onTypingChangeCallback = (IntPtr tox, int friendNumber, byte typing, IntPtr userData) =>
-            {
-                bool isTyping = typing != 0;
-
-                if (OnTypingChange != null)
-                    Invoker(OnTypingChange, this, new ToxEventArgs.TypingStatusEventArgs(friendNumber, isTyping));
-            }, IntPtr.Zero);
-
-            ToxFunctions.CallbackGroupAction(_tox, _onGroupActionCallback = (IntPtr tox, int groupNumber, int peerNumber, byte[] action, ushort length, IntPtr userData) =>
-            {
-                if (OnGroupAction != null)
-                    Invoker(OnGroupAction, this, new ToxEventArgs.GroupActionEventArgs(groupNumber, peerNumber, ToxTools.RemoveNull(Encoding.UTF8.GetString(action, 0, length))));
-            }, IntPtr.Zero);
-
-            ToxFunctions.CallbackGroupMessage(_tox, _onGroupMessageCallback = (IntPtr tox, int groupNumber, int peerNumber, byte[] message, ushort length, IntPtr userData) =>
-            {
-                if (OnGroupMessage != null)
-                    Invoker(OnGroupMessage, this, new ToxEventArgs.GroupMessageEventArgs(groupNumber, peerNumber, ToxTools.RemoveNull(Encoding.UTF8.GetString(message, 0, length))));
-            }, IntPtr.Zero);
-
-            ToxFunctions.CallbackGroupInvite(_tox, _onGroupInviteCallback = (IntPtr tox, int friendNumber, byte[] data, ushort length, IntPtr userData) =>
-            {
-                if (OnGroupInvite != null)
-                    Invoker(OnGroupInvite, this, new ToxEventArgs.GroupInviteEventArgs(friendNumber, data));
-            }, IntPtr.Zero);
-
-            ToxFunctions.CallbackGroupNamelistChange(_tox, _onGroupNamelistChangeCallback = (IntPtr tox, int groupNumber, int peerNumber, ToxChatChange change, IntPtr userData) =>
-            {
-                if (OnGroupNamelistChange != null)
-                    Invoker(OnGroupNamelistChange, this, new ToxEventArgs.GroupNamelistChangeEventArgs(groupNumber, peerNumber, change));
-            }, IntPtr.Zero);
-
-            ToxFunctions.CallbackFileControl(_tox, _onFileControlCallback = (IntPtr tox, int friendNumber, byte receiveSend, byte fileNumber, byte controlYype, byte[] data, ushort length, IntPtr userData) =>
-            {
-                if (OnFileControl != null)
-                    Invoker(OnFileControl, this, new ToxEventArgs.FileControlEventArgs(friendNumber, fileNumber, receiveSend == 1, (ToxFileControl)controlYype, data));
-            }, IntPtr.Zero);
-
-            ToxFunctions.CallbackFileData(_tox, _onFileDataCallback = (IntPtr tox, int friendNumber, byte fileNumber, byte[] data, ushort length, IntPtr userData) =>
-            {
-                if (OnFileData != null)
-                    Invoker(OnFileData, this, new ToxEventArgs.FileDataEventArgs(friendNumber, fileNumber, data));
-            }, IntPtr.Zero);
-
-            ToxFunctions.CallbackFileSendRequest(_tox, _onFileSendrequestCallback = (IntPtr tox, int friendNumber, byte fileNumber, ulong fileSize, byte[] filename, ushort filenameLength, IntPtr userData) =>
-            {
-                if (OnFileSendRequest != null)
-                    Invoker(OnFileSendRequest, this, new ToxEventArgs.FileSendRequestEventArgs(friendNumber, fileNumber, fileSize, ToxTools.RemoveNull(Encoding.UTF8.GetString(filename, 0, filenameLength))));
-            }, IntPtr.Zero);
-
-            ToxFunctions.CallbackReadReceipt(_tox, _onReadReceiptCallback = (IntPtr tox, int friendNumber, uint receipt, IntPtr userData) =>
-            {
-                if (OnReadReceipt != null)
-                    Invoker(OnReadReceipt, this, new ToxEventArgs.ReadReceiptEventArgs(friendNumber, (int)receipt));
-            }, IntPtr.Zero);
-
-            ToxFunctions.CallbackAvatarInfo(_tox, _onAvatarInfoCallback = (IntPtr tox, int friendNumber, byte format, byte[] hash, IntPtr userData) =>
-            {
-                if (OnAvatarInfo != null)
-                    Invoker(OnAvatarInfo, this, new ToxEventArgs.AvatarInfoEventArgs(friendNumber, (ToxAvatarFormat)format, hash));
-            }, IntPtr.Zero);
-
-            ToxFunctions.CallbackAvatarData(_tox, _onAvatarDataCallback = (IntPtr tox, int friendNumber, byte format, byte[] hash, byte[] data, uint dataLength, IntPtr userData) =>
-            {
-                if (OnAvatarData != null)
-                    Invoker(OnAvatarData, this, new ToxEventArgs.AvatarDataEventArgs(friendNumber, new ToxAvatar((ToxAvatarFormat)format, (byte[])data.Clone(), hash)));
-            }, IntPtr.Zero);
+                _onFriendRequest -= value;
+            }
         }
+
+        private EventHandler<ToxEventArgs.ConnectionStatusEventArgs> _onConnectionStatusChanged;
+
+        /// <summary>
+        /// Occurs when the connection status of a friend has changed.
+        /// </summary>
+        public event EventHandler<ToxEventArgs.ConnectionStatusEventArgs> OnConnectionStatusChanged
+        {
+            add
+            {
+                if (_onConnectionStatusCallback == null)
+                {
+                    _onConnectionStatusCallback = (IntPtr tox, int friendNumber, byte status, IntPtr userData) =>
+                    {
+                        if (_onConnectionStatusChanged != null)
+                            Invoker(_onConnectionStatusChanged, this, new ToxEventArgs.ConnectionStatusEventArgs(friendNumber, (ToxFriendConnectionStatus)status));
+                    };
+
+                    ToxFunctions.RegisterConnectionStatusCallback(_tox, _onConnectionStatusCallback, IntPtr.Zero);
+                }
+
+                _onConnectionStatusChanged += value;
+            }
+            remove
+            {
+                _onConnectionStatusChanged -= value;
+            }
+        }
+
+        private EventHandler<ToxEventArgs.FriendMessageEventArgs> _onFriendMessage;
+
+        /// <summary>
+        /// Occurs when a message is received from a friend.
+        /// </summary>
+        public event EventHandler<ToxEventArgs.FriendMessageEventArgs> OnFriendMessage
+        {
+            add
+            {
+                if (_onFriendMessageCallback == null)
+                {
+                    _onFriendMessageCallback = (IntPtr tox, int friendNumber, byte[] message, ushort length, IntPtr userData) =>
+                    {
+                        if (_onFriendMessage != null)
+                            Invoker(_onFriendMessage, this, new ToxEventArgs.FriendMessageEventArgs(friendNumber, ToxTools.RemoveNull(Encoding.UTF8.GetString(message, 0, length))));
+                    };
+
+                    ToxFunctions.RegisterFriendMessageCallback(_tox, _onFriendMessageCallback, IntPtr.Zero);
+                }
+
+                _onFriendMessage += value;
+            }
+            remove
+            {
+                _onFriendMessage -= value;
+            }
+        }
+
+        private EventHandler<ToxEventArgs.FriendActionEventArgs> _onFriendAction;
+
+        /// <summary>
+        /// Occurs when an action is received from a friend.
+        /// </summary>
+        public event EventHandler<ToxEventArgs.FriendActionEventArgs> OnFriendAction
+        {
+            add
+            {
+                if (_onFriendActionCallback == null)
+                {
+                    _onFriendActionCallback = (IntPtr tox, int friendNumber, byte[] action, ushort length, IntPtr userData) =>
+                    {
+                        if (_onFriendAction != null)
+                            Invoker(_onFriendAction, this, new ToxEventArgs.FriendActionEventArgs(friendNumber, ToxTools.RemoveNull(Encoding.UTF8.GetString(action, 0, length))));
+                    };
+
+                    ToxFunctions.RegisterFriendActionCallback(_tox, _onFriendActionCallback, IntPtr.Zero);
+                }
+
+                _onFriendAction += value;
+            }
+            remove
+            {
+                _onFriendAction -= value;
+            }
+        }
+
+        private EventHandler<ToxEventArgs.NameChangeEventArgs> _onNameChange;
+
+        /// <summary>
+        /// Occurs when a friend has changed his/her name.
+        /// </summary>
+        public event EventHandler<ToxEventArgs.NameChangeEventArgs> OnNameChange
+        {
+            add
+            {
+                if (_onNameChangeCallback == null)
+                {
+                    _onNameChangeCallback = (IntPtr tox, int friendNumber, byte[] newName, ushort length, IntPtr userData) =>
+                    {
+                        if (_onNameChange != null)
+                            Invoker(_onNameChange, this, new ToxEventArgs.NameChangeEventArgs(friendNumber, ToxTools.RemoveNull(Encoding.UTF8.GetString(newName, 0, length))));
+                    };
+
+                    ToxFunctions.RegisterNameChangeCallback(_tox, _onNameChangeCallback, IntPtr.Zero);
+                }
+
+                _onNameChange += value;
+            }
+            remove
+            {
+                _onNameChange -= value;
+            }
+        }
+
+        private EventHandler<ToxEventArgs.StatusMessageEventArgs> _onStatusMessage;
+
+        /// <summary>
+        /// Occurs when a friend has changed their status message.
+        /// </summary>
+        public event EventHandler<ToxEventArgs.StatusMessageEventArgs> OnStatusMessage
+        {
+            add
+            {
+                if (_onStatusMessageCallback == null)
+                {
+                    _onStatusMessageCallback = (IntPtr tox, int friendNumber, byte[] newStatus, ushort length, IntPtr userData) =>
+                    {
+                        if (_onStatusMessage != null)
+                            Invoker(_onStatusMessage, this, new ToxEventArgs.StatusMessageEventArgs(friendNumber, ToxTools.RemoveNull(Encoding.UTF8.GetString(newStatus, 0, length))));
+                    };
+
+                    ToxFunctions.RegisterStatusMessageCallback(_tox, _onStatusMessageCallback, IntPtr.Zero);
+                }
+
+                _onStatusMessage += value;
+            }
+            remove
+            {
+                _onStatusMessage -= value;
+            }
+        }
+
+        private EventHandler<ToxEventArgs.UserStatusEventArgs> _onUserStatus;
+
+        /// <summary>
+        /// Occurs when a friend has changed their user status.
+        /// </summary>
+        public event EventHandler<ToxEventArgs.UserStatusEventArgs> OnUserStatus
+        {
+            add
+            {
+                if (_onUserStatusCallback == null)
+                {
+                    _onUserStatusCallback = (IntPtr tox, int friendNumber, ToxUserStatus status, IntPtr userData) =>
+                    {
+                        if (_onUserStatus != null)
+                            Invoker(_onUserStatus, this, new ToxEventArgs.UserStatusEventArgs(friendNumber, status));
+                    };
+
+                    ToxFunctions.RegisterUserStatusCallback(_tox, _onUserStatusCallback, IntPtr.Zero);
+                }
+
+                _onUserStatus += value;
+            }
+            remove
+            {
+                _onUserStatus -= value;
+            }
+        }
+
+        private EventHandler<ToxEventArgs.TypingStatusEventArgs> _onTypingChange;
+
+        /// <summary>
+        /// Occurs when a friend's typing status has changed.
+        /// </summary>
+        public event EventHandler<ToxEventArgs.TypingStatusEventArgs> OnTypingChange
+        {
+            add
+            {
+                if (_onTypingChangeCallback == null)
+                {
+                    _onTypingChangeCallback = (IntPtr tox, int friendNumber, byte typing, IntPtr userData) =>
+                    {
+                        bool isTyping = typing != 0;
+
+                        if (_onTypingChange != null)
+                            Invoker(_onTypingChange, this, new ToxEventArgs.TypingStatusEventArgs(friendNumber, isTyping));
+                    };
+
+                    ToxFunctions.RegisterTypingChangeCallback(_tox, _onTypingChangeCallback, IntPtr.Zero);
+                }
+
+                _onTypingChange += value;
+            }
+            remove
+            {
+                _onTypingChange -= value;
+            }
+        }
+
+        private EventHandler<ToxEventArgs.GroupActionEventArgs> _onGroupAction;
+
+        /// <summary>
+        /// Occurs when an action is received from a group.
+        /// </summary>
+        public event EventHandler<ToxEventArgs.GroupActionEventArgs> OnGroupAction
+        {
+            add
+            {
+                if (_onGroupActionCallback == null)
+                {
+                    _onGroupActionCallback = (IntPtr tox, int groupNumber, int peerNumber, byte[] action, ushort length, IntPtr userData) =>
+                    {
+                        if (_onGroupAction != null)
+                            Invoker(_onGroupAction, this, new ToxEventArgs.GroupActionEventArgs(groupNumber, peerNumber, ToxTools.RemoveNull(Encoding.UTF8.GetString(action, 0, length))));
+                    };
+
+                    ToxFunctions.RegisterGroupActionCallback(_tox, _onGroupActionCallback, IntPtr.Zero);
+                }
+
+                _onGroupAction += value;
+            }
+            remove
+            {
+                _onGroupAction -= value;
+            }
+        }
+
+        private EventHandler<ToxEventArgs.GroupMessageEventArgs> _onGroupMessage;
+
+        /// <summary>
+        /// Occurs when a message is received from a group.
+        /// </summary>
+        public event EventHandler<ToxEventArgs.GroupMessageEventArgs> OnGroupMessage
+        {
+            add
+            {
+                if (_onGroupMessageCallback == null)
+                {
+                    _onGroupMessageCallback = (IntPtr tox, int groupNumber, int peerNumber, byte[] message, ushort length, IntPtr userData) =>
+                    {
+                        if (_onGroupMessage != null)
+                            Invoker(_onGroupMessage, this, new ToxEventArgs.GroupMessageEventArgs(groupNumber, peerNumber, ToxTools.RemoveNull(Encoding.UTF8.GetString(message, 0, length))));
+                    };
+
+                    ToxFunctions.RegisterGroupMessageCallback(_tox, _onGroupMessageCallback, IntPtr.Zero);
+                }
+
+                _onGroupMessage += value;
+            }
+            remove
+            {
+                _onGroupMessage -= value;
+            }
+        }
+
+        private EventHandler<ToxEventArgs.GroupInviteEventArgs> _onGroupInvite;
+
+        /// <summary>
+        /// Occurs when a friend has sent an invite to a group.
+        /// </summary>
+        public event EventHandler<ToxEventArgs.GroupInviteEventArgs> OnGroupInvite
+        {
+            add
+            {
+                if (_onGroupInviteCallback == null)
+                {
+                    _onGroupInviteCallback = (IntPtr tox, int friendNumber, byte[] data, ushort length, IntPtr userData) =>
+                    {
+                        if (_onGroupInvite != null)
+                            Invoker(_onGroupInvite, this, new ToxEventArgs.GroupInviteEventArgs(friendNumber, data));
+                    };
+
+                    ToxFunctions.RegisterGroupInviteCallback(_tox, _onGroupInviteCallback, IntPtr.Zero);
+                }
+
+                _onGroupInvite += value;
+            }
+            remove
+            {
+                _onGroupInvite -= value;
+            }
+        }
+
+        private EventHandler<ToxEventArgs.GroupNamelistChangeEventArgs> _onGroupNamelistChange;
+
+        /// <summary>
+        /// Occurs when the name list of a group has changed.
+        /// </summary>
+        public event EventHandler<ToxEventArgs.GroupNamelistChangeEventArgs> OnGroupNamelistChange
+        {
+            add
+            {
+                if (_onGroupNamelistChangeCallback == null)
+                {
+                    _onGroupNamelistChangeCallback = (IntPtr tox, int groupNumber, int peerNumber, ToxChatChange change, IntPtr userData) =>
+                    {
+                        if (_onGroupNamelistChange != null)
+                            Invoker(_onGroupNamelistChange, this, new ToxEventArgs.GroupNamelistChangeEventArgs(groupNumber, peerNumber, change));
+                    };
+
+                    ToxFunctions.RegisterGroupNamelistChangeCallback(_tox, _onGroupNamelistChangeCallback, IntPtr.Zero);
+                }
+
+                _onGroupNamelistChange += value;
+            }
+            remove
+            {
+                _onGroupNamelistChange -= value;
+            }
+        }
+
+        private EventHandler<ToxEventArgs.FileControlEventArgs> _onFileControl;
+
+        /// <summary>
+        /// Occurs when a file control request is received.
+        /// </summary>
+        public event EventHandler<ToxEventArgs.FileControlEventArgs> OnFileControl
+        {
+            add
+            {
+                if (_onFileControlCallback == null)
+                {
+                    _onFileControlCallback = (IntPtr tox, int friendNumber, byte receiveSend, byte fileNumber, byte controlYype, byte[] data, ushort length, IntPtr userData) =>
+                    {
+                        if (_onFileControl != null)
+                            Invoker(_onFileControl, this, new ToxEventArgs.FileControlEventArgs(friendNumber, fileNumber, receiveSend == 1, (ToxFileControl)controlYype, data));
+                    };
+
+                    ToxFunctions.RegisterFileControlCallback(_tox, _onFileControlCallback, IntPtr.Zero);
+                }
+
+                _onFileControl += value;
+            }
+            remove
+            {
+                _onFileControl -= value;
+            }
+        }
+
+        private EventHandler<ToxEventArgs.FileDataEventArgs> _onFileData;
+
+        /// <summary>
+        /// Occurs when file data is received.
+        /// </summary>
+        public event EventHandler<ToxEventArgs.FileDataEventArgs> OnFileData
+        {
+            add
+            {
+                if (_onFileDataCallback == null)
+                {
+                    _onFileDataCallback = (IntPtr tox, int friendNumber, byte fileNumber, byte[] data, ushort length, IntPtr userData) =>
+                    {
+                        if (_onFileData != null)
+                            Invoker(_onFileData, this, new ToxEventArgs.FileDataEventArgs(friendNumber, fileNumber, data));
+                    };
+
+                    ToxFunctions.RegisterFileDataCallback(_tox, _onFileDataCallback, IntPtr.Zero);
+                }
+
+                _onFileData += value;
+            }
+            remove
+            {
+                _onFileData -= value;
+            }
+        }
+
+        private EventHandler<ToxEventArgs.FileSendRequestEventArgs> _onFileSendRequest;
+
+        /// <summary>
+        /// Occurs when a file send request is received.
+        /// </summary>
+        public event EventHandler<ToxEventArgs.FileSendRequestEventArgs> OnFileSendRequest
+        {
+            add
+            {
+                if (_onFileSendRequestCallback == null)
+                {
+                    _onFileSendRequestCallback = (IntPtr tox, int friendNumber, byte fileNumber, ulong fileSize, byte[] filename, ushort filenameLength, IntPtr userData) =>
+                    {
+                        if (_onFileSendRequest != null)
+                            Invoker(_onFileSendRequest, this, new ToxEventArgs.FileSendRequestEventArgs(friendNumber, fileNumber, fileSize, ToxTools.RemoveNull(Encoding.UTF8.GetString(filename, 0, filenameLength))));
+                    };
+
+                    ToxFunctions.RegisterFileSendRequestCallback(_tox, _onFileSendRequestCallback, IntPtr.Zero);
+                }
+
+                _onFileSendRequest += value;
+            }
+            remove
+            {
+                _onFileSendRequest -= value;
+            }
+        }
+
+        private EventHandler<ToxEventArgs.ReadReceiptEventArgs> _onReadReceipt;
+
+        /// <summary>
+        /// Occurs when a read receipt is received.
+        /// </summary>
+        public event EventHandler<ToxEventArgs.ReadReceiptEventArgs> OnReadReceipt
+        {
+            add
+            {
+                if (_onReadReceiptCallback == null)
+                {
+                    _onReadReceiptCallback = (IntPtr tox, int friendNumber, uint receipt, IntPtr userData) =>
+                    {
+                        if (_onReadReceipt != null)
+                            Invoker(_onReadReceipt, this, new ToxEventArgs.ReadReceiptEventArgs(friendNumber, (int)receipt));
+                    };
+
+                    ToxFunctions.RegisterReadReceiptCallback(_tox, _onReadReceiptCallback, IntPtr.Zero);
+                }
+
+                _onReadReceipt += value;
+            }
+            remove
+            {
+                _onReadReceipt -= value;
+            }
+        }
+
+        private EventHandler<ToxEventArgs.AvatarInfoEventArgs> _onAvatarInfo;
+
+        /// <summary>
+        /// Occurs when avatar info is received.
+        /// </summary>
+        public event EventHandler<ToxEventArgs.AvatarInfoEventArgs> OnAvatarInfo
+        {
+            add
+            {
+                if (_onAvatarInfoCallback == null)
+                {
+                    _onAvatarInfoCallback = (IntPtr tox, int friendNumber, byte format, byte[] hash, IntPtr userData) =>
+                    {
+                        if (_onAvatarInfo != null)
+                            Invoker(_onAvatarInfo, this, new ToxEventArgs.AvatarInfoEventArgs(friendNumber, (ToxAvatarFormat)format, hash));
+                    };
+
+                    ToxFunctions.RegisterAvatarInfoCallback(_tox, _onAvatarInfoCallback, IntPtr.Zero);
+                }
+
+                _onAvatarInfo += value;
+            }
+            remove
+            {
+                _onAvatarInfo -= value;
+            }
+        }
+
+        private EventHandler<ToxEventArgs.AvatarDataEventArgs> _onAvatarData;
+
+        /// <summary>
+        /// Occurs when avatar data is received.
+        /// </summary>
+        public event EventHandler<ToxEventArgs.AvatarDataEventArgs> OnAvatarData
+        {
+            add
+            {
+                if (_onAvatarDataCallback == null)
+                {
+                    _onAvatarDataCallback = (IntPtr tox, int friendNumber, byte format, byte[] hash, byte[] data, uint dataLength, IntPtr userData) =>
+                    {
+                        if (_onAvatarData != null)
+                            Invoker(_onAvatarData, this, new ToxEventArgs.AvatarDataEventArgs(friendNumber, new ToxAvatar((ToxAvatarFormat)format, (byte[])data.Clone(), hash)));
+                    };
+
+                    ToxFunctions.RegisterAvatarDataCallback(_tox, _onAvatarDataCallback, IntPtr.Zero);
+                }
+
+                _onAvatarData += value;
+            }
+            remove
+            {
+                _onAvatarData -= value;
+            }
+        }
+
+        /// <summary>
+        /// Occurs when a lossy packet is received.
+        /// </summary>
+        public event EventHandler<ToxEventArgs.CustomPacketEventArgs> OnLossyPacket;
+
+        /// <summary>
+        /// Occurs when a lossless packet is received.
+        /// </summary>
+        public event EventHandler<ToxEventArgs.CustomPacketEventArgs> OnLosslessPacket;
+
+        /// <summary>
+        /// Occurs when a connection to the DHT has been established.
+        /// </summary>
+        public event EventHandler<ToxEventArgs.ConnectionEventArgs> OnConnected;
+
+        /// <summary>
+        /// Occurs when the connection to the DHT was lost.
+        /// </summary>
+        public event EventHandler<ToxEventArgs.ConnectionEventArgs> OnDisconnected;
+        #endregion
     }
 }
 
