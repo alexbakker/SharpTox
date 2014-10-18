@@ -1,4 +1,4 @@
-﻿using Microsoft.Win32.SafeHandles;
+﻿using SharpTox.Core;
 
 namespace SharpTox.Av
 {

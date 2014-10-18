@@ -4,6 +4,7 @@ using System;
 using System.IO;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Collections.Generic;
 
 using SharpTox.Encryption;
@@ -48,7 +49,7 @@ namespace SharpTox.Core
         #endregion
 
         private ToxHandle _tox;
-        private Thread _thread;
+        private CancellationTokenSource _cancelTokenSource = new CancellationTokenSource();
 
         private bool _disposed = false;
         private bool _connected = false;
@@ -81,7 +82,7 @@ namespace SharpTox.Core
                     return null;
 
                 byte[] data = new byte[length];
-                Array.Copy(buf, 0, data, 0, length);
+                Array.Copy(buf, 0, data, 0, (int)length);
 
                 return new ToxAvatar((ToxAvatarFormat)format, data, hash);
             }
@@ -150,7 +151,7 @@ namespace SharpTox.Core
                 byte[] bytes = new byte[129];
                 ToxFunctions.GetSelfName(_tox, bytes);
 
-                return ToxTools.RemoveNull(Encoding.UTF8.GetString(bytes));
+                return ToxTools.RemoveNull(Encoding.UTF8.GetString(bytes, 0, bytes.Length));
             }
             set
             {
@@ -216,7 +217,7 @@ namespace SharpTox.Core
 
                 ToxFunctions.GetSelfStatusMessage(_tox, status, status.Length);
 
-                return ToxTools.RemoveNull(Encoding.UTF8.GetString(status));
+                return ToxTools.RemoveNull(Encoding.UTF8.GetString(status, 0, status.Length));
             }
             set
             {
@@ -307,10 +308,10 @@ namespace SharpTox.Core
 
             if (disposing)
             {
-                if (_thread != null)
+                if (_cancelTokenSource != null)
                 {
-                    _thread.Abort();
-                    _thread.Join();
+                    _cancelTokenSource.Cancel();
+                    _cancelTokenSource.Dispose();
                 }
             }
 
@@ -437,7 +438,7 @@ namespace SharpTox.Core
                 for (int j = 0; j < name.Length; j++)
                     name[j] = matrix[i, j];
 
-                names[i] = ToxTools.RemoveNull(Encoding.UTF8.GetString(name));
+                names[i] = ToxTools.RemoveNull(Encoding.UTF8.GetString(name, 0, name.Length));
             }
 
             return names;
@@ -451,32 +452,42 @@ namespace SharpTox.Core
             if (_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
-            _thread = new Thread(Loop);
-            _thread.Start();
+            Loop();
         }
 
         private void Loop()
         {
-            while (true)
+            Task.Factory.StartNew(() =>
             {
-                if (IsConnected && !_connected)
+                while (true)
                 {
-                    if (OnConnected != null)
-                        Invoker(OnConnected, this, new ToxEventArgs.ConnectionEventArgs(true));
+                    if (_cancelTokenSource.IsCancellationRequested)
+                        break;
 
-                    _connected = true;
+                    if (IsConnected && !_connected)
+                    {
+                        if (OnConnected != null)
+                            Invoker(OnConnected, this, new ToxEventArgs.ConnectionEventArgs(true));
+
+                        _connected = true;
+                    }
+                    else if (!IsConnected && _connected)
+                    {
+                        if (OnDisconnected != null)
+                            Invoker(OnDisconnected, this, new ToxEventArgs.ConnectionEventArgs(false));
+
+                        _connected = false;
+                    }
+
+                    ToxFunctions.Do(_tox);
+
+#if IS_PORTABLE
+                    Task.Delay((int)ToxFunctions.DoInterval(_tox));
+#else
+                    Thread.Sleep((int)ToxFunctions.DoInterval(_tox));
+#endif
                 }
-                else if (!IsConnected && _connected)
-                {
-                    if (OnDisconnected != null)
-                        Invoker(OnDisconnected, this, new ToxEventArgs.ConnectionEventArgs(false));
-
-                    _connected = false;
-                }
-
-                ToxFunctions.Do(_tox);
-                Thread.Sleep((int)ToxFunctions.DoInterval(_tox));
-            }
+            }, _cancelTokenSource.Token, TaskCreationOptions.LongRunning, TaskScheduler.Default);
         }
 
         /// <summary>
@@ -560,7 +571,7 @@ namespace SharpTox.Core
 
             ToxFunctions.GetName(_tox, friendNumber, name);
 
-            return ToxTools.RemoveNull(Encoding.UTF8.GetString(name));
+            return ToxTools.RemoveNull(Encoding.UTF8.GetString(name, 0, name.Length));
         }
 
         /// <summary>
@@ -617,7 +628,7 @@ namespace SharpTox.Core
 
             ToxFunctions.GetStatusMessage(_tox, friendNumber, status, status.Length);
 
-            return ToxTools.RemoveNull(Encoding.UTF8.GetString(status));
+            return ToxTools.RemoveNull(Encoding.UTF8.GetString(status, 0, status.Length));
         }
 
         /// <summary>
@@ -733,10 +744,10 @@ namespace SharpTox.Core
         [Obsolete("Use Dispose() instead", true)]
         public void Kill()
         {
-            if (_thread != null)
+            if (_cancelTokenSource != null)
             {
-                _thread.Abort();
-                _thread.Join();
+                _cancelTokenSource.Cancel();
+                _cancelTokenSource.Dispose();
             }
 
             if (_tox.IsClosed || _tox.IsInvalid)
@@ -787,7 +798,7 @@ namespace SharpTox.Core
             if (ToxFunctions.GroupPeername(_tox, groupNumber, peerNumber, name) == -1)
                 throw new Exception("Could not get peer name");
 
-            return ToxTools.RemoveNull(Encoding.UTF8.GetString(name));
+            return ToxTools.RemoveNull(Encoding.UTF8.GetString(name, 0, name.Length));
         }
 
         /// <summary>

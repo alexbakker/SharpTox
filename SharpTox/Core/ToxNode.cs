@@ -36,7 +36,8 @@ namespace SharpTox.Core
             Port = port;
             PublicKey = publicKey;
         }
-        
+
+#if !IS_PORTABLE
         /// <summary>
         /// Parses and returns an array of nodes grabbed from https://wiki.tox.im/Nodes. Only use this if you're desperate.
         /// </summary>
@@ -97,5 +98,6 @@ namespace SharpTox.Core
 
             return list.ToArray();
         }
+#endif
     }
 }

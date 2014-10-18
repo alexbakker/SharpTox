@@ -41,6 +41,7 @@ namespace SharpTox.Core
             _encrypted = ToxEncryptionFunctions.IsSaveEncrypted(data) == 1;
         }
 
+#if !IS_PORTABLE
         /// <summary>
         /// Saves this Tox data to the disk with the specified filename.
         /// </summary>
@@ -86,6 +87,7 @@ namespace SharpTox.Core
 
             return new ToxData(bytes);
         }
+#endif
 
         /// <summary>
         /// Creates a new instance of ToxData from the specified byte array.
