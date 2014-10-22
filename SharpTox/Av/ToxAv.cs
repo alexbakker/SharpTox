@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Runtime.InteropServices;
+
 using SharpTox.Core;
 
 namespace SharpTox.Av
@@ -708,10 +710,17 @@ namespace SharpTox.Av
             {
                 if (_onReceivedAudioCallback == null)
                 {
-                    _onReceivedAudioCallback = (IntPtr ptr, int callIndex, short[] frame, int frameSize, IntPtr userData) =>
+                    _onReceivedAudioCallback = (IntPtr ptr, int callIndex, IntPtr frame, int frameSize, IntPtr userData) =>
                     {
                         if (_onReceivedAudio != null)
-                            Invoker(_onReceivedAudio, this, new ToxAvEventArgs.AudioDataEventArgs(callIndex, frame));
+                        {
+                            int channels = (int)GetPeerCodecSettings(callIndex, 0).AudioChannels;
+                            short[] samples = new short[frameSize * channels];
+
+                            Marshal.Copy(frame, samples, 0, samples.Length);
+
+                            Invoker(_onReceivedAudio, this, new ToxAvEventArgs.AudioDataEventArgs(callIndex, samples));
+                        }
                     };
 
                     ToxAvFunctions.RegisterAudioReceiveCallback(_toxAv, _onReceivedAudioCallback, IntPtr.Zero);
