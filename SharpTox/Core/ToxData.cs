@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 
 using SharpTox.Encryption;
 
@@ -97,6 +98,39 @@ namespace SharpTox.Core
         public static ToxData FromBytes(byte[] bytes)
         {
             return new ToxData(bytes);
+        }
+
+        public static bool operator ==(ToxData data1, ToxData data2)
+        {
+            if (object.ReferenceEquals(data1, data2))
+                return true;
+
+            if ((object)data1 == null ^ (object)data2 == null)
+                return false;
+
+            return data1._data.SequenceEqual(data2._data);
+        }
+
+        public static bool operator !=(ToxData data1, ToxData data2)
+        {
+            return !(data1 == data2);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj == null)
+                return false;
+
+            ToxData data = obj as ToxData;
+            if ((object)data == null)
+                return false;
+
+            return this == data;
+        }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
         }
     }
 }

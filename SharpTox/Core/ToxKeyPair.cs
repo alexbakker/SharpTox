@@ -25,5 +25,38 @@
             PublicKey = publicKey;
             SecretKey = secretKey;
         }
+
+        public static bool operator ==(ToxKeyPair pair1, ToxKeyPair pair2)
+        {
+            if (object.ReferenceEquals(pair1, pair2))
+                return true;
+
+            if ((object)pair1 == null ^ (object)pair2 == null)
+                return false;
+
+            return (pair1.PublicKey == pair2.PublicKey && pair1.SecretKey == pair2.SecretKey);
+        }
+
+        public static bool operator !=(ToxKeyPair pair1, ToxKeyPair pair2)
+        {
+            return !(pair1 == pair2);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj == null)
+                return false;
+
+            ToxKeyPair pair = obj as ToxKeyPair;
+            if ((object)pair == null)
+                return false;
+
+            return this == pair;
+        }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
     }
 }

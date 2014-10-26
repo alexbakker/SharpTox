@@ -37,6 +37,39 @@ namespace SharpTox.Core
             PublicKey = publicKey;
         }
 
+        public static bool operator ==(ToxNode node1, ToxNode node2)
+        {
+            if (object.ReferenceEquals(node1, node2))
+                return true;
+
+            if ((object)node1 == null ^ (object)node2 == null)
+                return false;
+
+            return (node1.PublicKey == node2.PublicKey && node1.Port == node2.Port && node1.Address == node2.Address);
+        }
+
+        public static bool operator !=(ToxNode node1, ToxNode node2)
+        {
+            return !(node1 == node2);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj == null)
+                return false;
+
+            ToxNode node = obj as ToxNode;
+            if ((object)node == null)
+                return false;
+
+            return this == node;
+        }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
+
 #if !IS_PORTABLE
         /// <summary>
         /// Parses and returns an array of nodes grabbed from https://wiki.tox.im/Nodes. Only use this if you're desperate.
