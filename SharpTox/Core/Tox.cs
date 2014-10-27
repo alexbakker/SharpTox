@@ -522,12 +522,7 @@ namespace SharpTox.Core
             if (_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
-            int result = ToxFunctions.AddFriendNoRequest(_tox, ToxTools.StringToHexBin(id));
-
-            if (result < 0)
-                throw new ToxAFException((ToxAFError)result);
-
-            return result;
+            return ToxFunctions.AddFriendNoRequest(_tox, ToxTools.StringToHexBin(id));
         }
 
         /// <summary>
