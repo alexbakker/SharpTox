@@ -39,7 +39,7 @@ namespace SharpTox.Core
         internal ToxData(byte[] data)
         {
             _data = data;
-            _encrypted = ToxEncryptionFunctions.IsSaveEncrypted(data) == 1;
+            _encrypted = ToxEncryptionFunctions.IsDataEncrypted(data) == 1;
         }
 
 #if !IS_PORTABLE
