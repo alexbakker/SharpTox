@@ -318,7 +318,36 @@ namespace SharpTox.Core
             if (!_tox.IsInvalid && !_tox.IsClosed && _tox != null)
                 _tox.Dispose();
 
+            ClearEventSubscriptions();
+
             _disposed = true;
+        }
+
+        private void ClearEventSubscriptions()
+        {
+            _onAvatarData = null;
+            _onAvatarInfo = null;
+            _onConnectionStatusChanged = null;
+            _onFileControl = null;
+            _onFileData = null;
+            _onFileSendRequest = null;
+            _onFriendAction = null;
+            _onFriendMessage = null;
+            _onFriendRequest = null;
+            _onGroupAction = null;
+            _onGroupInvite = null;
+            _onGroupMessage = null;
+            _onGroupNamelistChange = null;
+            _onNameChange = null;
+            _onReadReceipt = null;
+            _onStatusMessage = null;
+            _onTypingChange = null;
+            _onUserStatus = null;
+
+            OnLosslessPacket = null;
+            OnLossyPacket = null;
+            OnConnected = null;
+            OnDisconnected = null;
         }
 
         private object DummyInvoker(Delegate method, params object[] p)

@@ -133,7 +133,26 @@ namespace SharpTox.Av
             if (!_toxAv.IsInvalid && !_toxAv.IsClosed && _toxAv != null)
                 _toxAv.Dispose();
 
+            ClearEventSubscriptions();
+
             _disposed = true;
+        }
+
+        private void ClearEventSubscriptions()
+        {
+            _onCancel = null;
+            _onEnd = null;
+            _onEnding = null;
+            _onInvite = null;
+            _onMediaChange = null;
+            _onPeerTimeout = null;
+            _onReceivedAudio = null;
+            _onReceivedVideo = null;
+            _onReject = null;
+            _onRequestTimeout = null;
+            _onRinging = null;
+            _onStart = null;
+            _onStarting = null;
         }
 
         /// <summary>
