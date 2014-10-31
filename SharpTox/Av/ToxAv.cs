@@ -42,11 +42,6 @@ namespace SharpTox.Av
         private bool _disposed = false;
 
         /// <summary>
-        /// The codec settings used for this instance of toxav.
-        /// </summary>
-        public readonly ToxAvCodecSettings CodecSettings;
-
-        /// <summary>
         /// The default codec settings.
         /// </summary>
         public static readonly ToxAvCodecSettings DefaultCodecSettings = new ToxAvCodecSettings()
@@ -99,7 +94,7 @@ namespace SharpTox.Av
         /// <param name="tox"></param>
         /// <param name="settings"></param>
         /// <param name="maxCalls"></param>
-        public ToxAv(ToxHandle tox, ToxAvCodecSettings settings, int maxCalls)
+        public ToxAv(ToxHandle tox, int maxCalls)
         {
             _toxHandle = tox;
             _toxAv = ToxAvFunctions.New(tox, maxCalls);
@@ -108,8 +103,6 @@ namespace SharpTox.Av
                 throw new Exception("Could not create a new instance of toxav.");
 
             MaxCalls = maxCalls;
-            CodecSettings = settings;
-
             Invoker = DummyInvoker;
         }
 
