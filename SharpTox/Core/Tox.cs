@@ -37,6 +37,7 @@ namespace SharpTox.Core
         private ToxDelegates.CallbackGroupActionDelegate _onGroupActionCallback;
         private ToxDelegates.CallbackGroupMessageDelegate _onGroupMessageCallback;
         private ToxDelegates.CallbackGroupNamelistChangeDelegate _onGroupNamelistChangeCallback;
+        private ToxDelegates.CallbackGroupTitleDelegate _onGroupTitleCallback;
 
         private ToxDelegates.CallbackFileControlDelegate _onFileControlCallback;
         private ToxDelegates.CallbackFileDataDelegate _onFileDataCallback;
@@ -1256,6 +1257,22 @@ namespace SharpTox.Core
             return ToxFunctions.UnsetAvatar(_tox) == 0;
         }
 
+        /// <summary>
+        /// Changes the title of a group.
+        /// </summary>
+        /// <param name="groupNumber"></param>
+        /// <param name="title"></param>
+        /// <returns></returns>
+        public bool SetGroupTitle(int groupNumber, string title)
+        {
+            if (Encoding.UTF8.GetByteCount(title) > ToxConstants.MaxNameLength)
+                throw new ArgumentException("The specified group title is longer than 256 bytes");
+
+            byte[] bytes = Encoding.UTF8.GetBytes(title);
+
+            return ToxFunctions.GroupSetTitle(_tox, groupNumber, bytes, (byte)bytes.Length) == 0;
+        }
+
         #region Events
         private EventHandler<ToxEventArgs.FriendRequestEventArgs> _onFriendRequest;
 
@@ -1760,6 +1777,34 @@ namespace SharpTox.Core
             remove
             {
                 _onAvatarData -= value;
+            }
+        }
+
+        private EventHandler<ToxEventArgs.GroupTitleEventArgs> _onGroupTitleChanged;
+
+        /// <summary>
+        /// Occurs when the title of a groupchat is changed.
+        /// </summary>
+        public event EventHandler<ToxEventArgs.GroupTitleEventArgs> OnGroupTitleChanged
+        {
+            add
+            {
+                if (_onGroupTitleCallback == null)
+                {
+                    _onGroupTitleCallback = (IntPtr tox, int groupNumber, int peerNumber, byte[] title, byte length, IntPtr userData) =>
+                    {
+                        if (_onGroupTitleChanged != null)
+                            Invoker(_onGroupTitleChanged, this, new ToxEventArgs.GroupTitleEventArgs(groupNumber, peerNumber, Encoding.UTF8.GetString(title, 0, length)));
+                    };
+
+                    ToxFunctions.RegisterGroupTitleCallback(_tox, _onGroupTitleCallback, IntPtr.Zero);
+                }
+
+                _onGroupTitleChanged += value;
+            }
+            remove
+            {
+                _onGroupTitleChanged -= value;
             }
         }
 

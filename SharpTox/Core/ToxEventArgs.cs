@@ -273,5 +273,16 @@ namespace SharpTox.Core
                 Avatar = avatar;
             }
         }
+
+        public class GroupTitleEventArgs : GroupBaseEventArgs
+        {
+            public string Title { get; private set; }
+
+            public GroupTitleEventArgs(int groupNumber, int peerNumber, string title)
+                : base(groupNumber, peerNumber)
+            {
+                Title = title;
+            }
+        }
     }
 }
