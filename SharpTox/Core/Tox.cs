@@ -1265,6 +1265,9 @@ namespace SharpTox.Core
         /// <returns></returns>
         public bool SetGroupTitle(int groupNumber, string title)
         {
+            if (_disposed)
+                throw new ObjectDisposedException(GetType().FullName);
+
             if (Encoding.UTF8.GetByteCount(title) > ToxConstants.MaxNameLength)
                 throw new ArgumentException("The specified group title is longer than 256 bytes");
 
