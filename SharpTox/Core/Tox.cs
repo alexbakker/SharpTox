@@ -1256,6 +1256,19 @@ namespace SharpTox.Core
             return ToxFunctions.UnsetAvatar(_tox) == 0;
         }
 
+        /// <summary>
+        /// Retrieves the type of a group.
+        /// </summary>
+        /// <param name="groupNumber"></param>
+        /// <returns></returns>
+        public ToxGroupType GetGroupType(int groupNumber)
+        {
+            if (_disposed)
+                throw new ObjectDisposedException(GetType().FullName);
+
+            return (ToxGroupType)ToxFunctions.GroupGetType(_tox, groupNumber);
+        }
+
         #region Events
         private EventHandler<ToxEventArgs.FriendRequestEventArgs> _onFriendRequest;
 

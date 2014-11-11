@@ -221,6 +221,9 @@ namespace SharpTox.Core
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_group_peernumber_is_ours")]
         public static extern int GroupPeerNumberIsOurs(ToxHandle tox, int groupnumber, int peernumber);
 
+        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_group_get_type")]
+        public static extern int GroupGetType(ToxHandle tox, int groupnumber);
+
         #endregion
 
         #region Callbacks
