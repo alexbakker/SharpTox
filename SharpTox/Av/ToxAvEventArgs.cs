@@ -51,20 +51,18 @@ namespace SharpTox.Av
         public class GroupAudioDataEventArgs : EventArgs
         {
             public int GroupNumber { get; private set; }
-
             public int PeerNumber { get; private set; }
 
             public short[] Data { get; private set; }
 
             public int Channels { get; private set; }
-
             public int SampleRate { get; private set; }
 
             public GroupAudioDataEventArgs(int groupNumber, int peerNumber, short[] data, int channels, int sampleRate)
             {
                 GroupNumber = groupNumber;
                 PeerNumber = peerNumber;
-                Data = data;
+                Data = (short[])data.Clone();
                 Channels = channels;
                 SampleRate = sampleRate;
             }

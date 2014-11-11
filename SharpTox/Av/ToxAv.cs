@@ -456,6 +456,14 @@ namespace SharpTox.Av
             return result;
         }
 
+        public bool GroupSendAudio(int groupNumber, short[] pcm, int channels, int sampleRate)
+        {
+            if (_disposed)
+                throw new ObjectDisposedException(GetType().FullName);
+
+            return ToxAvFunctions.GroupSendAudio(_toxHandle, groupNumber, pcm, (uint)pcm.Length, (byte)channels, (uint)sampleRate) == 0;
+        }
+
         private object DummyInvoker(Delegate method, params object[] p)
         {
             return method.DynamicInvoke(p);
