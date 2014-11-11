@@ -149,6 +149,8 @@ namespace SharpTox.Av
             _onRinging = null;
             _onStart = null;
             _onStarting = null;
+
+            OnReceivedGroupAudio = null;
         }
 
         /// <summary>
