@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.InteropServices;
+using System.Collections.Generic;
 
 using SharpTox.Core;
 
@@ -38,6 +39,8 @@ namespace SharpTox.Av
         /// The invoke delegate to use when raising events. Note that <see cref="OnReceivedAudio"/> and <see cref="OnReceivedVideo"/> will not use this.
         /// </summary>
         public InvokeDelegate Invoker;
+
+        private List<ToxAvDelegates.GroupAudioReceiveCallback> _groupAudioHandlers = new List<ToxAvDelegates.GroupAudioReceiveCallback>();
 
         private bool _disposed = false;
 
@@ -383,7 +386,7 @@ namespace SharpTox.Av
         /// <summary>
         /// Retrieves a peer's codec settings.
         /// </summary>
-        /// <param name="call_index"></param>
+        /// <param name="callIndex"></param>
         /// <param name="peer"></param>
         /// <returns></returns>
         public ToxAvCodecSettings GetPeerCodecSettings(int callIndex, int peer)
@@ -395,6 +398,62 @@ namespace SharpTox.Av
             ToxAvFunctions.GetPeerCodecSettings(_toxAv, callIndex, peer, ref settings);
 
             return settings;
+        }
+
+        /// <summary>
+        /// Creates a new audio groupchat.
+        /// </summary>
+        /// <returns></returns>
+        public int AddAvGroupchat()
+        {
+            if (_disposed)
+                throw new ObjectDisposedException(GetType().FullName);
+
+            ToxAvDelegates.GroupAudioReceiveCallback callback = (IntPtr tox, int groupNumber, int peerNumber, IntPtr frame, uint sampleCount, byte channels, uint sampleRate, IntPtr userData) =>
+            {
+                if (OnReceivedGroupAudio != null)
+                {
+                    short[] samples = new short[sampleCount * channels];
+                    Marshal.Copy(frame, samples, 0, samples.Length);
+
+                    Invoker(OnReceivedGroupAudio, this, new ToxAvEventArgs.GroupAudioDataEventArgs(groupNumber, peerNumber, samples, (int)channels, (int)sampleRate));
+                }
+            };
+
+            int result = ToxAvFunctions.AddAvGroupchat(_toxHandle, callback, IntPtr.Zero);
+            if (result != -1)
+                _groupAudioHandlers.Add(callback);
+
+            return result;
+        }
+
+        /// <summary>
+        /// Joins an audio groupchat.
+        /// </summary>
+        /// <param name="friendNumber"></param>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        public int JoinAvGroupchat(int friendNumber, byte[] data)
+        {
+            if (_disposed)
+                throw new ObjectDisposedException(GetType().FullName);
+
+            ToxAvDelegates.GroupAudioReceiveCallback callback = (IntPtr tox, int groupNumber, int peerNumber, IntPtr frame, uint sampleCount, byte channels, uint sampleRate, IntPtr userData) =>
+            {
+                if (OnReceivedGroupAudio != null)
+                {
+                    short[] samples = new short[sampleCount * channels];
+                    Marshal.Copy(frame, samples, 0, samples.Length);
+
+                    Invoker(OnReceivedGroupAudio, this, new ToxAvEventArgs.GroupAudioDataEventArgs(groupNumber, peerNumber, samples, (int)channels, (int)sampleRate));
+                }
+            };
+
+            int result = ToxAvFunctions.JoinAvGroupchat(_toxHandle, friendNumber, data, (ushort)data.Length, callback, IntPtr.Zero);
+            if (result != -1)
+                _groupAudioHandlers.Add(callback);
+
+            return result;
         }
 
         private object DummyInvoker(Delegate method, params object[] p)
@@ -773,6 +832,12 @@ namespace SharpTox.Av
                 _onReceivedVideo -= value;
             }
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public event EventHandler<ToxAvEventArgs.GroupAudioDataEventArgs> OnReceivedGroupAudio;
+
         #endregion
     }
 }

@@ -32,7 +32,7 @@ namespace SharpTox.Core
         public delegate void CallbackFriendRequestDelegate(IntPtr tox, [MarshalAs(UnmanagedType.LPArray, SizeConst = 38)] byte[] address, [In, MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 3)] byte[] message, ushort length, IntPtr userData);
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        public delegate void CallbackGroupInviteDelegate(IntPtr tox, int friendNumber, [In, MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 3)] byte[] data, ushort length, IntPtr userData);
+        public delegate void CallbackGroupInviteDelegate(IntPtr tox, int friendNumber, byte type, [In, MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 3)] byte[] data, ushort length, IntPtr userData);
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         public delegate void CallbackGroupMessageDelegate(IntPtr tox, int groupNumber, int peerNumber, [In, MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 4)] byte[] message, ushort length, IntPtr userData);

@@ -1550,10 +1550,10 @@ namespace SharpTox.Core
             {
                 if (_onGroupInviteCallback == null)
                 {
-                    _onGroupInviteCallback = (IntPtr tox, int friendNumber, byte[] data, ushort length, IntPtr userData) =>
+                    _onGroupInviteCallback = (IntPtr tox, int friendNumber, byte type, byte[] data, ushort length, IntPtr userData) =>
                     {
                         if (_onGroupInvite != null)
-                            Invoker(_onGroupInvite, this, new ToxEventArgs.GroupInviteEventArgs(friendNumber, data));
+                            Invoker(_onGroupInvite, this, new ToxEventArgs.GroupInviteEventArgs(friendNumber, (ToxGroupType)type, data));
                     };
 
                     ToxFunctions.RegisterGroupInviteCallback(_tox, _onGroupInviteCallback, IntPtr.Zero);
