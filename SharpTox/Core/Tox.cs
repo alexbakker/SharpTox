@@ -188,7 +188,7 @@ namespace SharpTox.Core
         /// <summary>
         /// The string of a 32 byte long Tox Id to share with others.
         /// </summary>
-        public string Id
+        public ToxId Id
         {
             get
             {
@@ -198,7 +198,7 @@ namespace SharpTox.Core
                 byte[] address = new byte[38];
                 ToxFunctions.GetAddress(_tox, address);
 
-                return ToxTools.HexBinToString(address);
+                return new ToxId(address);
             }
         }
 
@@ -527,13 +527,27 @@ namespace SharpTox.Core
         /// <returns>friendNumber</returns>
         public int AddFriend(string id, string message)
         {
+            return AddFriend(new ToxId(id), message);
+        }
+
+        public int AddFriend(byte[] id, string message)
+        {
+            return AddFriend(new ToxId(id), message);
+        }
+
+        /// <summary>
+        /// Adds a friend.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="message"></param>
+        /// <returns>friendNumber</returns>
+        public int AddFriend(ToxId id, string message)
+        {
             if (_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
-            byte[] binId = ToxTools.StringToHexBin(id);
-            byte[] binMsg = Encoding.UTF8.GetBytes(message);
-
-            int result = ToxFunctions.AddFriend(_tox, binId, binMsg, (ushort)binMsg.Length);
+            byte[] msg = Encoding.UTF8.GetBytes(message);
+            int result = ToxFunctions.AddFriend(_tox, id.Bytes, msg, (ushort)msg.Length);
 
             if (result < 0)
                 throw new ToxAFException((ToxAFError)result);

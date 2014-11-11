@@ -103,6 +103,7 @@
     <Compile Include="Core\ToxEventArgs.cs" />
     <Compile Include="Core\ToxExceptions.cs" />
     <Compile Include="Core\ToxHandle.cs" />
+    <Compile Include="Core\ToxId.cs" />
     <Compile Include="Core\ToxKey.cs" />
     <Compile Include="Core\ToxKeyPair.cs" />
     <Compile Include="Core\ToxStructs.cs" />

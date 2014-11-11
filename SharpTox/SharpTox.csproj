@@ -93,6 +93,7 @@
     <Compile Include="Core\ToxEventArgs.cs" />
     <Compile Include="Core\ToxExceptions.cs" />
     <Compile Include="Core\ToxHandle.cs" />
+    <Compile Include="Core\ToxId.cs" />
     <Compile Include="Core\ToxKey.cs" />
     <Compile Include="Core\ToxKeyPair.cs" />
     <Compile Include="Core\ToxStructs.cs" />
@@ -118,7 +119,7 @@
     <Reference Include="System" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
   </Target>
