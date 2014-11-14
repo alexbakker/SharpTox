@@ -224,6 +224,9 @@ namespace SharpTox.Core
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_group_set_title")]
         public static extern int GroupSetTitle(ToxHandle tox, int groupnumber, byte[] title, byte length);
 
+        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_group_get_type")]
+        public static extern int GroupGetType(ToxHandle tox, int groupnumber);
+
         #endregion
 
         #region Callbacks

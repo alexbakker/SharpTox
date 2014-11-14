@@ -1264,7 +1264,7 @@ namespace SharpTox.Core
         /// <param name="title"></param>
         /// <returns></returns>
         public bool SetGroupTitle(int groupNumber, string title)
-        {
+            {
             if (_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
@@ -1274,6 +1274,18 @@ namespace SharpTox.Core
             byte[] bytes = Encoding.UTF8.GetBytes(title);
 
             return ToxFunctions.GroupSetTitle(_tox, groupNumber, bytes, (byte)bytes.Length) == 0;
+        }
+
+        /// Retrieves the type of a group.
+        /// </summary>
+        /// <param name="groupNumber"></param>
+        /// <returns></returns>
+        public ToxGroupType GetGroupType(int groupNumber)
+        {
+            if (_disposed)
+                throw new ObjectDisposedException(GetType().FullName);
+
+            return (ToxGroupType)ToxFunctions.GroupGetType(_tox, groupNumber);
         }
 
         #region Events
@@ -1570,10 +1582,10 @@ namespace SharpTox.Core
             {
                 if (_onGroupInviteCallback == null)
                 {
-                    _onGroupInviteCallback = (IntPtr tox, int friendNumber, byte[] data, ushort length, IntPtr userData) =>
+                    _onGroupInviteCallback = (IntPtr tox, int friendNumber, byte type, byte[] data, ushort length, IntPtr userData) =>
                     {
                         if (_onGroupInvite != null)
-                            Invoker(_onGroupInvite, this, new ToxEventArgs.GroupInviteEventArgs(friendNumber, data));
+                            Invoker(_onGroupInvite, this, new ToxEventArgs.GroupInviteEventArgs(friendNumber, (ToxGroupType)type, data));
                     };
 
                     ToxFunctions.RegisterGroupInviteCallback(_tox, _onGroupInviteCallback, IntPtr.Zero);

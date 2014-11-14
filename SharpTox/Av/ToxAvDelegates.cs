@@ -14,6 +14,9 @@ namespace SharpTox.Av
         public delegate void AudioReceiveCallback(IntPtr toxav, int callIndex, IntPtr frame, int frameSize, IntPtr userData);
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        public delegate void GroupAudioReceiveCallback(IntPtr tox, int groupNumber, int peerNumber, IntPtr frame, uint sampleCount, byte channels, uint sampleRate, IntPtr userData);
+
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         public delegate void VideoReceiveCallback(IntPtr toxav, int callIndex, IntPtr frame, IntPtr userData);
     }
 }

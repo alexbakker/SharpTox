@@ -171,4 +171,10 @@
         /// </summary>
         Png,
     }
+
+    public enum ToxGroupType
+    {
+        Text,
+        Av
+    }
 }
