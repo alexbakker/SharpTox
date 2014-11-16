@@ -1294,9 +1294,12 @@ namespace SharpTox.Core
                 throw new ObjectDisposedException(GetType().FullName);
 
             byte[] title = new byte[ToxConstants.MaxNameLength];
-            ToxFunctions.GroupGetTitle(_tox, groupNumber, title, (uint)title.Length);
+            int length = ToxFunctions.GroupGetTitle(_tox, groupNumber, title, (uint)title.Length);
 
-            return ToxTools.RemoveNull(Encoding.UTF8.GetString(title, 0, title.Length));
+            if (length == -1)
+                return string.Empty;
+
+            return ToxTools.RemoveNull(Encoding.UTF8.GetString(title, 0, length));
         }
 
         #region Events
