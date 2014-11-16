@@ -219,13 +219,16 @@ namespace SharpTox.Core
         public static extern int UnsetAvatar(ToxHandle tox);
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_group_peernumber_is_ours")]
-        public static extern int GroupPeerNumberIsOurs(ToxHandle tox, int groupnumber, int peernumber);
+        public static extern uint GroupPeerNumberIsOurs(ToxHandle tox, int groupnumber, int peernumber);
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_group_set_title")]
         public static extern int GroupSetTitle(ToxHandle tox, int groupnumber, byte[] title, byte length);
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_group_get_type")]
         public static extern int GroupGetType(ToxHandle tox, int groupnumber);
+
+        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_group_get_title")]
+        public static extern int GroupGetTitle(ToxHandle tox, int groupnumber, byte[] title, uint max_length);
 
         #endregion
 

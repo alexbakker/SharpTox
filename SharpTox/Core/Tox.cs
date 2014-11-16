@@ -1288,6 +1288,17 @@ namespace SharpTox.Core
             return (ToxGroupType)ToxFunctions.GroupGetType(_tox, groupNumber);
         }
 
+        public string GetGroupTitle(int groupNumber)
+        {
+            if (_disposed)
+                throw new ObjectDisposedException(GetType().FullName);
+
+            byte[] title = new byte[ToxConstants.MaxNameLength];
+            ToxFunctions.GroupGetTitle(_tox, groupNumber, title, (uint)title.Length);
+
+            return ToxTools.RemoveNull(Encoding.UTF8.GetString(title, 0, title.Length));
+        }
+
         #region Events
         private EventHandler<ToxEventArgs.FriendRequestEventArgs> _onFriendRequest;
 
