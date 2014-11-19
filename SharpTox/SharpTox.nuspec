@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>SharpTox</id>
+    <version>1.0.0.0</version>
+    <authors>Impy</authors>
+    <owners>Impy</owners>
+    <licenseUrl>https://github.com/Impyy/SharpTox/blob/master/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/Impyy/SharpTox</projectUrl>
+    <iconUrl>https://github.com/Tox/Tox-Misc/blob/master/Icon_Vector.png</iconUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>.NET wrapper for the Tox Library.</description>
+    <releaseNotes>Initial release.</releaseNotes>
+    <copyright>Copyright 2014</copyright>
+    <tags>C# tox wrapper</tags>
+    <dependencies>
+    </dependencies>
+    <files>
+      <file src="bin\Debug\SharpTox.dll" target="lib" />
+    </files>
+  </metadata>
+</package>

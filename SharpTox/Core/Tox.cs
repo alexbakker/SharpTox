@@ -1276,6 +1276,7 @@ namespace SharpTox.Core
             return ToxFunctions.GroupSetTitle(_tox, groupNumber, bytes, (byte)bytes.Length) == 0;
         }
 
+        /// <summary>
         /// Retrieves the type of a group.
         /// </summary>
         /// <param name="groupNumber"></param>
@@ -1288,6 +1289,11 @@ namespace SharpTox.Core
             return (ToxGroupType)ToxFunctions.GroupGetType(_tox, groupNumber);
         }
 
+        /// <summary>
+        /// Retrieves the title of a group.
+        /// </summary>
+        /// <param name="groupNumber"></param>
+        /// <returns></returns>
         public string GetGroupTitle(int groupNumber)
         {
             if (_disposed)
