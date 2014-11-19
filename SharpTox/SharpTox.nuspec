@@ -15,8 +15,8 @@
     <tags>C# tox wrapper</tags>
     <dependencies>
     </dependencies>
-    <files>
-      <file src="bin\Debug\SharpTox.dll" target="lib" />
-    </files>
   </metadata>
+  <files>
+    <file src="bin\x86\Debug\SharpTox.dll" target="lib" />
+  </files>
 </package>
