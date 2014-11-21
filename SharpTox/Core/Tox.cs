@@ -1320,7 +1320,10 @@ namespace SharpTox.Core
                 throw new ObjectDisposedException(GetType().FullName);
 
             byte[] key = new byte[ToxConstants.ClientIdSize];
-            ToxFunctions.GroupPeerPubkey(_tox, groupNumber, peerNumber, key);
+            int result = ToxFunctions.GroupPeerPubkey(_tox, groupNumber, peerNumber, key);
+
+            if (result != 0)
+                return null;
 
             return new ToxKey(ToxKeyType.Public, key);
         }
