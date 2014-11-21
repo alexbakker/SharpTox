@@ -1308,6 +1308,23 @@ namespace SharpTox.Core
             return ToxTools.RemoveNull(Encoding.UTF8.GetString(title, 0, length));
         }
 
+        /// <summary>
+        /// Retrieves the public key of a peer.
+        /// </summary>
+        /// <param name="groupNumber"></param>
+        /// <param name="peerNumber"></param>
+        /// <returns></returns>
+        public ToxKey GetGroupPeerPublicKey(int groupNumber, int peerNumber)
+        {
+            if (_disposed)
+                throw new ObjectDisposedException(GetType().FullName);
+
+            byte[] key = new byte[ToxConstants.ClientIdSize];
+            ToxFunctions.GroupPeerPubkey(_tox, groupNumber, peerNumber, key);
+
+            return new ToxKey(ToxKeyType.Public, key);
+        }
+
         #region Events
         private EventHandler<ToxEventArgs.FriendRequestEventArgs> _onFriendRequest;
 

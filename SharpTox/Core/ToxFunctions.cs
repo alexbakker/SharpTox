@@ -230,6 +230,9 @@ namespace SharpTox.Core
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_group_get_title")]
         public static extern int GroupGetTitle(ToxHandle tox, int groupnumber, byte[] title, uint max_length);
 
+        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_group_peer_pubkey")]
+        public static extern int GroupPeerPubkey(ToxHandle tox, int groupnumber, int peernumber, byte[] pk);
+
         #endregion
 
         #region Callbacks
