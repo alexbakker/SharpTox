@@ -1,6 +1,8 @@
 ﻿using System;
-using System.Runtime.InteropServices;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 
 using SharpTox.Core;
 
@@ -14,15 +16,14 @@ namespace SharpTox.Av
         #region Event delegates
         private ToxAvDelegates.CallstateCallback _onCancelCallback;
         private ToxAvDelegates.CallstateCallback _onEndCallback;
-        private ToxAvDelegates.CallstateCallback _onEndingCallback;
         private ToxAvDelegates.CallstateCallback _onInviteCallback;
         private ToxAvDelegates.CallstateCallback _onPeerTimeoutCallback;
         private ToxAvDelegates.CallstateCallback _onRejectCallback;
         private ToxAvDelegates.CallstateCallback _onRequestTimeoutCallback;
         private ToxAvDelegates.CallstateCallback _onRingingCallback;
         private ToxAvDelegates.CallstateCallback _onStartCallback;
-        private ToxAvDelegates.CallstateCallback _onStartingCallback;
-        private ToxAvDelegates.CallstateCallback _onMediaChangeCallback;
+        private ToxAvDelegates.CallstateCallback _onPeerCSChangeCallback;
+        private ToxAvDelegates.CallstateCallback _onSelfCSChangeCallback;
         private ToxAvDelegates.AudioReceiveCallback _onReceivedAudioCallback;
         private ToxAvDelegates.VideoReceiveCallback _onReceivedVideoCallback;
         #endregion
@@ -38,11 +39,11 @@ namespace SharpTox.Av
         /// <summary>
         /// The invoke delegate to use when raising events. Note that <see cref="OnReceivedAudio"/> and <see cref="OnReceivedVideo"/> will not use this.
         /// </summary>
-        public InvokeDelegate Invoker;
+        public InvokeDelegate Invoker { get; set; }
 
         private List<ToxAvDelegates.GroupAudioReceiveCallback> _groupAudioHandlers = new List<ToxAvDelegates.GroupAudioReceiveCallback>();
-
         private bool _disposed = false;
+        private CancellationTokenSource _cancelTokenSource = new CancellationTokenSource();
 
         /// <summary>
         /// The default codec settings.
@@ -89,13 +90,12 @@ namespace SharpTox.Av
         /// <summary>
         /// The maximum amount of calls this instance of toxav is allowed to have.
         /// </summary>
-        public readonly int MaxCalls;
+        public int MaxCalls { get; private set; }
 
         /// <summary>
         /// Initialises a new instance of toxav.
         /// </summary>
         /// <param name="tox"></param>
-        /// <param name="settings"></param>
         /// <param name="maxCalls"></param>
         public ToxAv(ToxHandle tox, int maxCalls)
         {
@@ -124,7 +124,14 @@ namespace SharpTox.Av
             if (_disposed)
                 return;
 
-            if (disposing) { }
+            if (disposing)
+            {
+                if (_cancelTokenSource != null)
+                {
+                    _cancelTokenSource.Cancel();
+                    _cancelTokenSource.Dispose();
+                }
+            }
 
             if (!_toxAv.IsInvalid && !_toxAv.IsClosed && _toxAv != null)
                 _toxAv.Dispose();
@@ -138,9 +145,7 @@ namespace SharpTox.Av
         {
             _onCancel = null;
             _onEnd = null;
-            _onEnding = null;
             _onInvite = null;
-            _onMediaChange = null;
             _onPeerTimeout = null;
             _onReceivedAudio = null;
             _onReceivedVideo = null;
@@ -148,7 +153,8 @@ namespace SharpTox.Av
             _onRequestTimeout = null;
             _onRinging = null;
             _onStart = null;
-            _onStarting = null;
+            _onPeerCSChange = null;
+            _onSelfCSChange = null;
 
             OnReceivedGroupAudio = null;
         }
@@ -163,6 +169,37 @@ namespace SharpTox.Av
                 throw null;
 
             _toxAv.Dispose();
+        }
+
+        /// <summary>
+        /// Starts the main toxav_do loop.
+        /// </summary>
+        public void Start()
+        {
+            if (_disposed)
+                throw new ObjectDisposedException(GetType().FullName);
+
+            Loop();
+        }
+
+        private void Loop()
+        {
+            Task.Factory.StartNew(() =>
+            {
+                while (true)
+                {
+                    if (_cancelTokenSource.IsCancellationRequested)
+                        break;
+
+                    ToxAvFunctions.Do(_toxAv);
+
+#if IS_PORTABLE
+                    Task.Delay((int)ToxAvFunctions.DoInterval(_toxAv));
+#else
+                    Thread.Sleep((int)ToxAvFunctions.DoInterval(_toxAv));
+#endif
+                }
+            }, _cancelTokenSource.Token, TaskCreationOptions.LongRunning, TaskScheduler.Default);
         }
 
         /// <summary>
@@ -458,6 +495,15 @@ namespace SharpTox.Av
             return result;
         }
 
+
+        /// <summary>
+        /// Sends an audio frame to a group.
+        /// </summary>
+        /// <param name="groupNumber"></param>
+        /// <param name="pcm"></param>
+        /// <param name="channels"></param>
+        /// <param name="sampleRate"></param>
+        /// <returns></returns>
         public bool GroupSendAudio(int groupNumber, short[] pcm, int channels, int sampleRate)
         {
             if (_disposed)
@@ -525,34 +571,6 @@ namespace SharpTox.Av
             remove
             {
                 _onEnd -= value;
-            }
-        }
-
-        private EventHandler<ToxAvEventArgs.CallStateEventArgs> _onEnding;
-
-        /// <summary>
-        /// Occurs when a call is ending.
-        /// </summary>
-        public event EventHandler<ToxAvEventArgs.CallStateEventArgs> OnEnding
-        {
-            add
-            {
-                if (_onEndingCallback == null)
-                {
-                    _onEndingCallback = (IntPtr agent, int callIndex, IntPtr args) =>
-                    {
-                        if (_onEnding != null)
-                            Invoker(_onEnding, this, new ToxAvEventArgs.CallStateEventArgs(callIndex, ToxAvCallbackID.OnEnding));
-                    };
-
-                    ToxAvFunctions.RegisterCallstateCallback(_toxAv, _onEndingCallback, ToxAvCallbackID.OnEnding, IntPtr.Zero);
-                }
-
-                _onEnding += value;
-            }
-            remove
-            {
-                _onEnding -= value;
             }
         }
 
@@ -724,59 +742,59 @@ namespace SharpTox.Av
             }
         }
 
-        private EventHandler<ToxAvEventArgs.CallStateEventArgs> _onStarting;
-
-        /// <summary>
-        /// Occurs when the person on the other end has started the call.
-        /// </summary>
-        public event EventHandler<ToxAvEventArgs.CallStateEventArgs> OnStarting
-        {
-            add
-            {
-                if (_onStartingCallback == null)
-                {
-                    _onStartingCallback = (IntPtr agent, int callIndex, IntPtr args) =>
-                    {
-                        if (_onStarting != null)
-                            Invoker(_onStarting, this, new ToxAvEventArgs.CallStateEventArgs(callIndex, ToxAvCallbackID.OnStarting));
-                    };
-
-                    ToxAvFunctions.RegisterCallstateCallback(_toxAv, _onStartingCallback, ToxAvCallbackID.OnStarting, IntPtr.Zero);
-                }
-
-                _onStarting += value;
-            }
-            remove
-            {
-                _onStarting -= value;
-            }
-        }
-
-        private EventHandler<ToxAvEventArgs.CallStateEventArgs> _onMediaChange;
+        private EventHandler<ToxAvEventArgs.CallStateEventArgs> _onPeerCSChange;
 
         /// <summary>
         /// Occurs when a peer wants to change the call type.
         /// </summary>
-        public event EventHandler<ToxAvEventArgs.CallStateEventArgs> OnMediaChange
+        public event EventHandler<ToxAvEventArgs.CallStateEventArgs> OnPeerCodecSettingsChanged
         {
             add
             {
-                if (_onMediaChangeCallback == null)
+                if (_onPeerCSChangeCallback == null)
                 {
-                    _onMediaChangeCallback = (IntPtr agent, int callIndex, IntPtr args) =>
+                    _onPeerCSChangeCallback = (IntPtr agent, int callIndex, IntPtr args) =>
                     {
-                        if (_onMediaChange != null)
-                            Invoker(_onMediaChange, this, new ToxAvEventArgs.CallStateEventArgs(callIndex, ToxAvCallbackID.OnMediaChange));
+                        if (_onPeerCSChange != null)
+                            Invoker(_onPeerCSChange, this, new ToxAvEventArgs.CallStateEventArgs(callIndex, ToxAvCallbackID.OnPeerCSChange));
                     };
 
-                    ToxAvFunctions.RegisterCallstateCallback(_toxAv, _onMediaChangeCallback, ToxAvCallbackID.OnMediaChange, IntPtr.Zero);
+                    ToxAvFunctions.RegisterCallstateCallback(_toxAv, _onPeerCSChangeCallback, ToxAvCallbackID.OnPeerCSChange, IntPtr.Zero);
                 }
 
-                _onMediaChange += value;
+                _onPeerCSChange += value;
             }
             remove
             {
-                _onMediaChange -= value;
+                _onPeerCSChange -= value;
+            }
+        }
+
+        private EventHandler<ToxAvEventArgs.CallStateEventArgs> _onSelfCSChange;
+
+        /// <summary>
+        /// Occurs when a peer wants to change the call type.
+        /// </summary>
+        public event EventHandler<ToxAvEventArgs.CallStateEventArgs> OnSelfCodecSettingsChanged
+        {
+            add
+            {
+                if (_onSelfCSChangeCallback == null)
+                {
+                    _onSelfCSChangeCallback = (IntPtr agent, int callIndex, IntPtr args) =>
+                    {
+                        if (_onSelfCSChange != null)
+                            Invoker(_onSelfCSChange, this, new ToxAvEventArgs.CallStateEventArgs(callIndex, ToxAvCallbackID.OnSelfCSChange));
+                    };
+
+                    ToxAvFunctions.RegisterCallstateCallback(_toxAv, _onSelfCSChangeCallback, ToxAvCallbackID.OnSelfCSChange, IntPtr.Zero);
+                }
+
+                _onSelfCSChange += value;
+            }
+            remove
+            {
+                _onSelfCSChange -= value;
             }
         }
 
