@@ -29,14 +29,6 @@ namespace SharpTox.Av
         #endregion
 
         /// <summary>
-        /// The delegate used for <see cref="Invoker"/>
-        /// </summary>
-        /// <param name="method"></param>
-        /// <param name="p"></param>
-        /// <returns></returns>
-        public delegate object InvokeDelegate(Delegate method, params object[] p);
-
-        /// <summary>
         /// The invoke delegate to use when raising events. Note that <see cref="OnReceivedAudio"/> and <see cref="OnReceivedVideo"/> will not use this.
         /// </summary>
         public InvokeDelegate Invoker { get; set; }
@@ -108,6 +100,14 @@ namespace SharpTox.Av
             MaxCalls = maxCalls;
             Invoker = DummyInvoker;
         }
+
+        /// <summary>
+        /// Initialises a new instance of toxav.
+        /// </summary>
+        /// <param name="tox"></param>
+        /// <param name="maxCalls"></param>
+        public ToxAv(Tox tox, int maxCalls)
+            : this(tox.Handle, maxCalls) { }
 
         /// <summary>
         /// Releases all resources used by this instance of tox.

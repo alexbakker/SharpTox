@@ -11,17 +11,17 @@ using SharpTox.Encryption;
 
 namespace SharpTox.Core
 {
+    public delegate object InvokeDelegate(Delegate method, params object[] p);
+
     /// <summary>
     /// Represents an instance of Tox.
     /// </summary>
     public class Tox : IDisposable
     {
-        public delegate object InvokeDelegate(Delegate method, params object[] p);
-
         /// <summary>
         /// The invoke delegate to use when raising events.
         /// </summary>
-        public InvokeDelegate Invoker;
+        public InvokeDelegate Invoker { get; set; }
 
         #region Callback Delegates
         private ToxDelegates.CallbackFriendRequestDelegate _onFriendRequestCallback;
@@ -272,6 +272,9 @@ namespace SharpTox.Core
             }
         }
 
+        /// <summary>
+        /// The handle of this instance of Tox.
+        /// </summary>
         public ToxHandle Handle
         {
             get
