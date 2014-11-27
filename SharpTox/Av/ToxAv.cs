@@ -299,12 +299,12 @@ namespace SharpTox.Av
         /// <param name="jitterBufferSize"></param>
         /// <param name="vadTreshold"></param>
         /// <returns></returns>
-        public ToxAvError PrepareTransmission(int callIndex, int jitterBufferSize, int vadTreshold, bool supportVideo)
+        public ToxAvError PrepareTransmission(int callIndex, bool supportVideo)
         {
             if (_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
-            return ToxAvFunctions.PrepareTransmission(_toxAv, callIndex, (uint)jitterBufferSize, (uint)vadTreshold, supportVideo ? 1 : 0);
+            return ToxAvFunctions.PrepareTransmission(_toxAv, callIndex, supportVideo ? 1 : 0);
         }
 
         /// <summary>

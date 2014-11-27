@@ -45,7 +45,7 @@ namespace SharpTox.Av
         public static extern ToxAvError StopCall(ToxAvHandle toxAv, int callIndex);
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "toxav_prepare_transmission")]
-        public static extern ToxAvError PrepareTransmission(ToxAvHandle toxAv, int callIndex, uint jitterBufferSize, uint vadTreshold, int videoSupported);
+        public static extern ToxAvError PrepareTransmission(ToxAvHandle toxAv, int callIndex, int videoSupported);
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "toxav_kill_transmission")]
         public static extern ToxAvError KillTransmission(ToxAvHandle toxAv, int callIndex);
