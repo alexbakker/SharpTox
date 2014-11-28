@@ -382,14 +382,15 @@ namespace SharpTox.Av
         /// <param name="callIndex"></param>
         /// <param name="dest"></param>
         /// <param name="destMax"></param>
-        /// <param name="frame"></param>
+        /// <param name="frames"></param>
+        /// <param name="perframe"></param>
         /// <returns></returns>
-        public int PrepareAudioFrame(int callIndex, byte[] dest, int destMax, ushort[] frame) //TODO: use 'out' keyword to get the encoded frame
+        public int PrepareAudioFrame(int callIndex, byte[] dest, int destMax, ushort[] frames, int perframe) //TODO: use 'out' keyword to get the encoded frame
         {
             if (_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
-            return ToxAvFunctions.PrepareAudioFrame(_toxAv, callIndex, dest, destMax, frame, frame.Length);
+            return ToxAvFunctions.PrepareAudioFrame(_toxAv, callIndex, dest, destMax, frames, perframe);
         }
 
         /// <summary>
@@ -514,15 +515,16 @@ namespace SharpTox.Av
         /// </summary>
         /// <param name="groupNumber"></param>
         /// <param name="pcm"></param>
+        /// <param name="perframe"></param>
         /// <param name="channels"></param>
         /// <param name="sampleRate"></param>
         /// <returns></returns>
-        public bool GroupSendAudio(int groupNumber, short[] pcm, int channels, int sampleRate)
+        public bool GroupSendAudio(int groupNumber, short[] pcm, int perframe, int channels, int sampleRate)
         {
             if (_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
-            return ToxAvFunctions.GroupSendAudio(_toxHandle, groupNumber, pcm, (uint)pcm.Length, (byte)channels, (uint)sampleRate) == 0;
+            return ToxAvFunctions.GroupSendAudio(_toxHandle, groupNumber, pcm, (uint)perframe, (byte)channels, (uint)sampleRate) == 0;
         }
 
         /// <summary>
