@@ -18,7 +18,7 @@ namespace SharpTox.Av
         public static extern ToxAvHandle New(ToxHandle tox, int maxCalls);
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "toxav_prepare_audio_frame")]
-        public static extern int PrepareAudioFrame(ToxAvHandle toxAv, int callIndex, byte[] dest, int destMax, ushort[] frame, int frameSize);
+        public static extern int PrepareAudioFrame(ToxAvHandle toxAv, int callIndex, byte[] dest, int destMax, short[] frame, int frameSize);
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "toxav_prepare_video_frame")]
         public static extern int PrepareVideoFrame(ToxAvHandle toxAv, int callIndex, byte[] dest, int destMax, IntPtr image);

@@ -385,7 +385,7 @@ namespace SharpTox.Av
         /// <param name="frames"></param>
         /// <param name="perframe"></param>
         /// <returns></returns>
-        public int PrepareAudioFrame(int callIndex, byte[] dest, int destMax, ushort[] frames, int perframe) //TODO: use 'out' keyword to get the encoded frame
+        public int PrepareAudioFrame(int callIndex, byte[] dest, int destMax, short[] frames, int perframe) //TODO: use 'out' keyword to get the encoded frame
         {
             if (_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
