@@ -84,10 +84,16 @@ namespace SharpTox.Av
         public static extern int GroupSendAudio(ToxHandle tox, int groupNumber, short[] pcm, uint sampleCount, byte channels, uint sampleRate);
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "toxav_do_interval")]
-        public static extern uint DoInterval(ToxAvHandle toxav);
+        public static extern uint DoInterval(ToxAvHandle toxAv);
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "toxav_do")]
-        public static extern void Do(ToxAvHandle toxav);
+        public static extern void Do(ToxAvHandle toxAv);
+
+        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "toxav_set_vad_treshold")]
+        public static extern int SetVadTreshold(ToxAvHandle toxav, int callIndex, uint treshold);
+
+        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "toxav_get_active_count")]
+        public static extern int GetActiveCount(ToxAvHandle toxav);
 
         #endregion
 

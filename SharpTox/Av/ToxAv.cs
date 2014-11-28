@@ -80,6 +80,21 @@ namespace SharpTox.Av
         }
 
         /// <summary>
+        /// Retrieves the number of active calls.
+        /// </summary>
+        public int ActiveCalls
+        {
+            get
+            {
+                if (_disposed)
+                    throw new ObjectDisposedException(GetType().FullName);
+
+                int count = ToxAvFunctions.GetActiveCount(_toxAv);
+                return count == -1 ? 0 : count;
+            }
+        }
+
+        /// <summary>
         /// The maximum amount of calls this instance of toxav is allowed to have.
         /// </summary>
         public int MaxCalls { get; private set; }
@@ -296,8 +311,6 @@ namespace SharpTox.Av
         /// </summary>
         /// <param name="callIndex"></param>
         /// <param name="supportVideo"></param>
-        /// <param name="jitterBufferSize"></param>
-        /// <param name="vadTreshold"></param>
         /// <returns></returns>
         public ToxAvError PrepareTransmission(int callIndex, bool supportVideo)
         {
@@ -510,6 +523,20 @@ namespace SharpTox.Av
                 throw new ObjectDisposedException(GetType().FullName);
 
             return ToxAvFunctions.GroupSendAudio(_toxHandle, groupNumber, pcm, (uint)pcm.Length, (byte)channels, (uint)sampleRate) == 0;
+        }
+
+        /// <summary>
+        /// Sets VAD activity treshold for calculating VAD. 40 is some middle value for treshold.
+        /// </summary>
+        /// <param name="callIndex"></param>
+        /// <param name="treshold"></param>
+        /// <returns></returns>
+        public ToxAvError SetVadTreshold(int callIndex, uint treshold)
+        {
+            if (_disposed)
+                throw new ObjectDisposedException(GetType().FullName);
+
+            return (ToxAvError)ToxAvFunctions.SetVadTreshold(_toxAv, callIndex, treshold);
         }
 
         private object DummyInvoker(Delegate method, params object[] p)
