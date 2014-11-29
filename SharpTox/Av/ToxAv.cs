@@ -840,10 +840,6 @@ namespace SharpTox.Av
                 {
                     _onReceivedAudioCallback = (IntPtr ptr, int callIndex, IntPtr frame, int frameSize, IntPtr userData) =>
                     {
-                        //how ugly
-                        if (ptr != _toxAv.DangerousGetHandle())
-                            return;
-
                         if (_onReceivedAudio != null)
                         {
                             int channels = (int)GetPeerCodecSettings(callIndex, 0).AudioChannels;
@@ -855,7 +851,7 @@ namespace SharpTox.Av
                         }
                     };
 
-                    ToxAvFunctions.RegisterAudioReceiveCallback(_onReceivedAudioCallback, IntPtr.Zero);
+                    ToxAvFunctions.RegisterAudioReceiveCallback(_toxAv, _onReceivedAudioCallback, IntPtr.Zero);
                 }
 
                 _onReceivedAudio += value;
@@ -879,15 +875,11 @@ namespace SharpTox.Av
                 {
                     _onReceivedVideoCallback = (IntPtr ptr, int callIndex, IntPtr frame, IntPtr userData) =>
                     {
-                        //how ugly
-                        if (ptr != _toxAv.DangerousGetHandle())
-                            return;
-
                         if (_onReceivedVideo != null)
                             Invoker(_onReceivedVideo, this, new ToxAvEventArgs.VideoDataEventArgs(callIndex, frame));
                     };
 
-                    ToxAvFunctions.RegisterVideoReceiveCallback(_onReceivedVideoCallback, IntPtr.Zero);
+                    ToxAvFunctions.RegisterVideoReceiveCallback(_toxAv, _onReceivedVideoCallback, IntPtr.Zero);
                 }
 
                 _onReceivedVideo += value;

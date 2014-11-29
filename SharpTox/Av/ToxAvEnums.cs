@@ -84,39 +84,84 @@
         None = 0,
 
         /// <summary>
-        /// Internal error.
+        /// Unknown error.
         /// </summary>
-        Internal = -1,
-
-        /// <summary>
-        /// Already has an active call.
-        /// </summary>
-        AlreadyInCall = -2,
+        Unknown = -1,
 
         /// <summary>
         /// Trying to perform call action while not in a call.
         /// </summary>
-        NoCall = -3,
+        NoCall = -20,
 
         /// <summary>
         /// Trying to perform call action while in invalid state.
         /// </summary>
-        InvalidState = -4,
+        InvalidState = -21,
+
+        /// <summary>
+        /// Trying to call peer when already in a call with peer.
+        /// </summary>
+        AlreadyInCallWithPeer = -22,
+
+        /// <summary>
+        /// Cannot handle more calls.
+        /// </summary>
+        ReachedCallLimit = -23,
+
+        /// <summary>
+        /// Failed creating CSSession.
+        /// </summary>
+        InitializingCodecs = -30,
+
+        /// <summary>
+        /// Error setting resolution.
+        /// </summary>
+        SettingVideoResolution = -31,
+
+        /// <summary>
+        /// Error setting bitrate.
+        /// </summary>
+        SettingVideoBitrate = -32,
+
+        /// <summary>
+        /// Error splitting video payload.
+        /// </summary>
+        SplittingVideoPayload = -33,
+
+        /// <summary>
+        /// vpx_codec_encode failed.
+        /// </summary>
+        EncodingVideo = -34,
+
+        /// <summary>
+        /// opus_encode failed.
+        /// </summary>
+        EncodingAudio = -35,
+
+        /// <summary>
+        /// Sending lossy packet failed.
+        /// </summary>
+        SendingPayload = -40,
+
+        /// <summary>
+        /// One of the rtp sessions failed to initialize.
+        /// </summary>
+        CreatingRtpSessions = -41,
 
         /// <summary>
         /// Trying to perform rtp action on invalid session.
         /// </summary>
-        NoRtpSession = -5,
+        NoRtpSession = -50,
 
         /// <summary>
         /// Codec state not initialized.
         /// </summary>
-        InvalidCodecState = -6,
+        InvalidCodecState = -51,
 
         /// <summary>
         /// Split packet exceeds it's limit.
         /// </summary>
-        PacketTooLarge = -7
+        PacketTooLarge = -52,
     }
 
     /// <summary>
