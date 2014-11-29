@@ -52,6 +52,7 @@ namespace SharpTox.Core
         private ToxHandle _tox;
         private CancellationTokenSource _cancelTokenSource = new CancellationTokenSource();
 
+        private bool _running = false;
         private bool _disposed = false;
         private bool _connected = false;
 
@@ -485,14 +486,19 @@ namespace SharpTox.Core
             if (_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
+            if (_running)
+                return;
+
             Loop();
         }
 
         private void Loop()
         {
+            _running = true;
+
             Task.Factory.StartNew(() =>
             {
-                while (true)
+                while (_running)
                 {
                     if (_cancelTokenSource.IsCancellationRequested)
                         break;
