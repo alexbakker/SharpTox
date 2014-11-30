@@ -394,22 +394,6 @@ namespace SharpTox.Av
         }
 
         /// <summary>
-        /// Detects whether some activity is present in the call.
-        /// </summary>
-        /// <param name="callIndex"></param>
-        /// <param name="pcm"></param>
-        /// <param name="frameSize"></param>
-        /// <param name="refEnergy"></param>
-        /// <returns></returns>
-        public int HasActivity(int callIndex, short[] pcm, ushort frameSize, float refEnergy)
-        {
-            if (_disposed)
-                throw new ObjectDisposedException(GetType().FullName);
-
-            return ToxAvFunctions.HasActivity(_toxAv, callIndex, pcm, frameSize, refEnergy);
-        }
-
-        /// <summary>
         /// Retrieves the state of a call.
         /// </summary>
         /// <param name="callIndex"></param>
@@ -525,20 +509,6 @@ namespace SharpTox.Av
                 throw new ObjectDisposedException(GetType().FullName);
 
             return ToxAvFunctions.GroupSendAudio(_toxHandle, groupNumber, pcm, (uint)perframe, (byte)channels, (uint)sampleRate) == 0;
-        }
-
-        /// <summary>
-        /// Sets VAD activity treshold for calculating VAD. 40 is some middle value for treshold.
-        /// </summary>
-        /// <param name="callIndex"></param>
-        /// <param name="treshold"></param>
-        /// <returns></returns>
-        public ToxAvError SetVadTreshold(int callIndex, uint treshold)
-        {
-            if (_disposed)
-                throw new ObjectDisposedException(GetType().FullName);
-
-            return (ToxAvError)ToxAvFunctions.SetVadTreshold(_toxAv, callIndex, treshold);
         }
 
         private object DummyInvoker(Delegate method, params object[] p)

@@ -65,9 +65,6 @@ namespace SharpTox.Av
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "toxav_get_tox")]
         public static extern IntPtr GetTox(ToxAvHandle toxAv);
 
-        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "toxav_has_activity")]
-        public static extern int HasActivity(ToxAvHandle toxAv, int callIndex, short[] pcm, ushort frameSize, float refEnergy);
-
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "toxav_get_call_state")]
         public static extern ToxAvCallState GetCallState(ToxAvHandle toxAv, int callIndex);
 
@@ -88,9 +85,6 @@ namespace SharpTox.Av
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "toxav_do")]
         public static extern void Do(ToxAvHandle toxAv);
-
-        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "toxav_set_vad_treshold")]
-        public static extern int SetVadTreshold(ToxAvHandle toxav, int callIndex, uint treshold);
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "toxav_get_active_count")]
         public static extern int GetActiveCount(ToxAvHandle toxav);
