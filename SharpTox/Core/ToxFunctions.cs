@@ -1,4 +1,4 @@
-﻿#pragma warning disable 1591
+﻿﻿#pragma warning disable 1591
 
 using System;
 using System.Collections.Generic;
@@ -14,7 +14,11 @@ namespace SharpTox.Core
     /// </summary>
     public static class ToxFunctions
     {
-        const string dll = "libtox";
+#if POSIX
+		const string dll = "libtoxcore.so";
+#else 
+		const string dll = "libtox";
+#endif
 
         #region Functions
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_new")]

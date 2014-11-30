@@ -8,7 +8,11 @@ namespace SharpTox.Dns
 {
     public static class ToxDnsFunctions
     {
-        const string dll = "libtox";
+#if POSIX
+		const string dll = "libtoxdns.so";
+#else 
+		const string dll = "libtox";
+#endif
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_dns3_new")]
         public static extern ToxDnsHandle New(byte[] publicKey);
