@@ -7,7 +7,11 @@ namespace SharpTox.Encryption
 {
     public static class ToxEncryptionFunctions
     {
-        const string dll = "libtox";
+#if POSIX
+		const string dll = "libtoxencryptsave.so";
+#else 
+		const string dll = "libtox";
+#endif
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_pass_encryption_extra_length")]
         public static extern int PassEncryptionExtraLength();

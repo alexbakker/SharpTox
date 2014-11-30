@@ -8,7 +8,11 @@ namespace SharpTox.Av
 {
     public static class ToxAvFunctions
     {
-        const string dll = "libtox";
+#if POSIX
+		const string dll = "libtoxav.so";
+#else 
+		const string dll = "libtox";
+#endif
 
         #region Functions
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "toxav_kill")]
