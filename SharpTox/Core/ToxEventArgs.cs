@@ -135,10 +135,13 @@ namespace SharpTox.Core
         {
             public byte[] Data { get; private set; }
 
-            public GroupInviteEventArgs(int friendNumber, byte[] data)
+            public ToxGroupType GroupType { get; private set; }
+
+            public GroupInviteEventArgs(int friendNumber, ToxGroupType type, byte[] data)
                 : base(friendNumber)
             {
                 Data = (byte[])data.Clone();
+                GroupType = type; 
             }
         }
 
@@ -271,6 +274,17 @@ namespace SharpTox.Core
                 : base(friendNumber)
             {
                 Avatar = avatar;
+            }
+        }
+
+        public class GroupTitleEventArgs : GroupBaseEventArgs
+        {
+            public string Title { get; private set; }
+
+            public GroupTitleEventArgs(int groupNumber, int peerNumber, string title)
+                : base(groupNumber, peerNumber)
+            {
+                Title = title;
             }
         }
     }

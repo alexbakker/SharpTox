@@ -34,5 +34,10 @@
         /// The maximum size of an avatar in bytes.
         /// </summary>
         public const int MaxAvatarDataLength = 16384;
+
+        /// <summary>
+        /// The size of a public key.
+        /// </summary>
+        public const int ClientIdSize = 32;
     }
 }

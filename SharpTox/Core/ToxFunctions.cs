@@ -1,4 +1,4 @@
-﻿#pragma warning disable 1591
+﻿﻿#pragma warning disable 1591
 
 using System;
 using System.Collections.Generic;
@@ -14,7 +14,11 @@ namespace SharpTox.Core
     /// </summary>
     public static class ToxFunctions
     {
-        const string dll = "libtox";
+#if POSIX
+		const string dll = "libtoxcore.so";
+#else 
+		const string dll = "libtox";
+#endif
 
         #region Functions
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_new")]
@@ -219,7 +223,19 @@ namespace SharpTox.Core
         public static extern int UnsetAvatar(ToxHandle tox);
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_group_peernumber_is_ours")]
-        public static extern int GroupPeerNumberIsOurs(ToxHandle tox, int groupnumber, int peernumber);
+        public static extern uint GroupPeerNumberIsOurs(ToxHandle tox, int groupnumber, int peernumber);
+
+        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_group_set_title")]
+        public static extern int GroupSetTitle(ToxHandle tox, int groupnumber, byte[] title, byte length);
+
+        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_group_get_type")]
+        public static extern int GroupGetType(ToxHandle tox, int groupnumber);
+
+        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_group_get_title")]
+        public static extern int GroupGetTitle(ToxHandle tox, int groupnumber, byte[] title, uint max_length);
+
+        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_group_peer_pubkey")]
+        public static extern int GroupPeerPubkey(ToxHandle tox, int groupnumber, int peernumber, byte[] pk);
 
         #endregion
 
@@ -283,6 +299,9 @@ namespace SharpTox.Core
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_callback_avatar_data")]
         public static extern void RegisterAvatarDataCallback(ToxHandle tox, ToxDelegates.CallbackAvatarDataDelegate callback, IntPtr userdata);
+
+        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_callback_group_title")]
+        public static extern void RegisterGroupTitleCallback(ToxHandle tox, ToxDelegates.CallbackGroupTitleDelegate callback, IntPtr userdata);
 
         #endregion
     }

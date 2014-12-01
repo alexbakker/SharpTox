@@ -10,11 +10,11 @@ Feel free to contribute!
 
 * The libtox(core, av and dns) library, you should compile that yourself from the [ProjectTox GitHub repo](https://github.com/irungentoo/ProjectTox-Core "Tox Github repo"). Guidelines on how to do this can be found [here](https://github.com/irungentoo/toxcore/blob/master/INSTALL.md "Crosscompile guidelines"). If you don't feel like compiling this yourself, you can find automatic builds for windows here: [x86](https://jenkins.libtoxcore.so/job/toxcore_win32_dll/ "x86 dll") or [x64](https://jenkins.libtoxcore.so/job/toxcore_win64_dll/ "x64 dll")
 
-* Depending on how you compiled the core libraries, the names of those may differ from the defaults in SharpTox. Be sure to change the value of the const string **dll** in ToxFunctions.cs, ToxAvFunctions.cs and ToxDnsFunctions.cs accordingly.
+* Depending on how you compiled the core libraries, the names of those may differ from the defaults in SharpTox. Be sure to change the value of the const string **dll** in ToxFunctions.cs, ToxAvFunctions.cs, ToxDnsFunctions.cs and ToxEncryptionFunctions.cs accordingly if needed.
 
-Looking for precompiled binaries? [Check this](https://github.com/irungentoo/ProjectTox-Core "SharpTox Binaries").
+Looking for precompiled binaries? [Check this](https://jenkins.impy.me/ "SharpTox Binaries").
 
-Please note that at this time, this project hasn't been tested on any operating system other than Windows. You are of course, free to give it a try on the operating system of your choice.
+SharpTox should also work on Unix-like systems (mostly untested). Select the POSIX build configs if you're interested in that.
 
 ### Basic Usage
 ```csharp
@@ -80,6 +80,5 @@ Toxy is available [here](https://github.com/Reverp/Toxy-WPF).
 
 Contact
 -------
-* Join the official IRC channel #tox on freenode
-[![Official Tox IRC Channel](https://kiwiirc.com/buttons/irc.freenode.net/tox.png)](https://kiwiirc.com/client/irc.freenode.net/?theme=basic#tox)
-* Send me an email: [admin@impy.me](mailto:admin@impy.me)
+* Join the official IRC channel #tox-dev on freenode
+[![Official Tox Dev IRC Channel](https://kiwiirc.com/buttons/irc.freenode.net/tox-dev.png)](https://kiwiirc.com/client/irc.freenode.net/?theme=basic#tox-dev)

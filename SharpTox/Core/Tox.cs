@@ -11,17 +11,17 @@ using SharpTox.Encryption;
 
 namespace SharpTox.Core
 {
+    public delegate object InvokeDelegate(Delegate method, params object[] p);
+
     /// <summary>
     /// Represents an instance of Tox.
     /// </summary>
     public class Tox : IDisposable
     {
-        public delegate object InvokeDelegate(Delegate method, params object[] p);
-
         /// <summary>
         /// The invoke delegate to use when raising events.
         /// </summary>
-        public InvokeDelegate Invoker;
+        public InvokeDelegate Invoker { get; set; }
 
         #region Callback Delegates
         private ToxDelegates.CallbackFriendRequestDelegate _onFriendRequestCallback;
@@ -37,6 +37,7 @@ namespace SharpTox.Core
         private ToxDelegates.CallbackGroupActionDelegate _onGroupActionCallback;
         private ToxDelegates.CallbackGroupMessageDelegate _onGroupMessageCallback;
         private ToxDelegates.CallbackGroupNamelistChangeDelegate _onGroupNamelistChangeCallback;
+        private ToxDelegates.CallbackGroupTitleDelegate _onGroupTitleCallback;
 
         private ToxDelegates.CallbackFileControlDelegate _onFileControlCallback;
         private ToxDelegates.CallbackFileDataDelegate _onFileDataCallback;
@@ -51,6 +52,7 @@ namespace SharpTox.Core
         private ToxHandle _tox;
         private CancellationTokenSource _cancelTokenSource = new CancellationTokenSource();
 
+        private bool _running = false;
         private bool _disposed = false;
         private bool _connected = false;
 
@@ -271,6 +273,9 @@ namespace SharpTox.Core
             }
         }
 
+        /// <summary>
+        /// The handle of this instance of Tox.
+        /// </summary>
         public ToxHandle Handle
         {
             get
@@ -481,14 +486,19 @@ namespace SharpTox.Core
             if (_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
+            if (_running)
+                return;
+
             Loop();
         }
 
         private void Loop()
         {
+            _running = true;
+
             Task.Factory.StartNew(() =>
             {
-                while (true)
+                while (_running)
                 {
                     if (_cancelTokenSource.IsCancellationRequested)
                         break;
@@ -1270,6 +1280,77 @@ namespace SharpTox.Core
             return ToxFunctions.UnsetAvatar(_tox) == 0;
         }
 
+        /// <summary>
+        /// Changes the title of a group.
+        /// </summary>
+        /// <param name="groupNumber"></param>
+        /// <param name="title"></param>
+        /// <returns></returns>
+        public bool SetGroupTitle(int groupNumber, string title)
+            {
+            if (_disposed)
+                throw new ObjectDisposedException(GetType().FullName);
+
+            if (Encoding.UTF8.GetByteCount(title) > ToxConstants.MaxNameLength)
+                throw new ArgumentException("The specified group title is longer than 256 bytes");
+
+            byte[] bytes = Encoding.UTF8.GetBytes(title);
+
+            return ToxFunctions.GroupSetTitle(_tox, groupNumber, bytes, (byte)bytes.Length) == 0;
+        }
+
+        /// <summary>
+        /// Retrieves the type of a group.
+        /// </summary>
+        /// <param name="groupNumber"></param>
+        /// <returns></returns>
+        public ToxGroupType GetGroupType(int groupNumber)
+        {
+            if (_disposed)
+                throw new ObjectDisposedException(GetType().FullName);
+
+            return (ToxGroupType)ToxFunctions.GroupGetType(_tox, groupNumber);
+        }
+
+        /// <summary>
+        /// Retrieves the title of a group.
+        /// </summary>
+        /// <param name="groupNumber"></param>
+        /// <returns></returns>
+        public string GetGroupTitle(int groupNumber)
+        {
+            if (_disposed)
+                throw new ObjectDisposedException(GetType().FullName);
+
+            byte[] title = new byte[ToxConstants.MaxNameLength];
+            int length = ToxFunctions.GroupGetTitle(_tox, groupNumber, title, (uint)title.Length);
+
+            if (length == -1)
+                return string.Empty;
+
+            return ToxTools.RemoveNull(Encoding.UTF8.GetString(title, 0, length));
+        }
+
+        /// <summary>
+        /// Retrieves the public key of a peer.
+        /// </summary>
+        /// <param name="groupNumber"></param>
+        /// <param name="peerNumber"></param>
+        /// <returns></returns>
+        public ToxKey GetGroupPeerPublicKey(int groupNumber, int peerNumber)
+        {
+            if (_disposed)
+                throw new ObjectDisposedException(GetType().FullName);
+
+            byte[] key = new byte[ToxConstants.ClientIdSize];
+            int result = ToxFunctions.GroupPeerPubkey(_tox, groupNumber, peerNumber, key);
+
+            if (result != 0)
+                return null;
+
+            return new ToxKey(ToxKeyType.Public, key);
+        }
+
         #region Events
         private EventHandler<ToxEventArgs.FriendRequestEventArgs> _onFriendRequest;
 
@@ -1564,10 +1645,10 @@ namespace SharpTox.Core
             {
                 if (_onGroupInviteCallback == null)
                 {
-                    _onGroupInviteCallback = (IntPtr tox, int friendNumber, byte[] data, ushort length, IntPtr userData) =>
+                    _onGroupInviteCallback = (IntPtr tox, int friendNumber, byte type, byte[] data, ushort length, IntPtr userData) =>
                     {
                         if (_onGroupInvite != null)
-                            Invoker(_onGroupInvite, this, new ToxEventArgs.GroupInviteEventArgs(friendNumber, data));
+                            Invoker(_onGroupInvite, this, new ToxEventArgs.GroupInviteEventArgs(friendNumber, (ToxGroupType)type, data));
                     };
 
                     ToxFunctions.RegisterGroupInviteCallback(_tox, _onGroupInviteCallback, IntPtr.Zero);
@@ -1774,6 +1855,34 @@ namespace SharpTox.Core
             remove
             {
                 _onAvatarData -= value;
+            }
+        }
+
+        private EventHandler<ToxEventArgs.GroupTitleEventArgs> _onGroupTitleChanged;
+
+        /// <summary>
+        /// Occurs when the title of a groupchat is changed.
+        /// </summary>
+        public event EventHandler<ToxEventArgs.GroupTitleEventArgs> OnGroupTitleChanged
+        {
+            add
+            {
+                if (_onGroupTitleCallback == null)
+                {
+                    _onGroupTitleCallback = (IntPtr tox, int groupNumber, int peerNumber, byte[] title, byte length, IntPtr userData) =>
+                    {
+                        if (_onGroupTitleChanged != null)
+                            Invoker(_onGroupTitleChanged, this, new ToxEventArgs.GroupTitleEventArgs(groupNumber, peerNumber, Encoding.UTF8.GetString(title, 0, length)));
+                    };
+
+                    ToxFunctions.RegisterGroupTitleCallback(_tox, _onGroupTitleCallback, IntPtr.Zero);
+                }
+
+                _onGroupTitleChanged += value;
+            }
+            remove
+            {
+                _onGroupTitleChanged -= value;
             }
         }
 
