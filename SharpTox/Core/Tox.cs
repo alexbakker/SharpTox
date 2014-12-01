@@ -535,22 +535,6 @@ namespace SharpTox.Core
         /// <param name="id"></param>
         /// <param name="message"></param>
         /// <returns>friendNumber</returns>
-        public int AddFriend(string id, string message)
-        {
-            return AddFriend(new ToxId(id), message);
-        }
-
-        public int AddFriend(byte[] id, string message)
-        {
-            return AddFriend(new ToxId(id), message);
-        }
-
-        /// <summary>
-        /// Adds a friend.
-        /// </summary>
-        /// <param name="id"></param>
-        /// <param name="message"></param>
-        /// <returns>friendNumber</returns>
         public int AddFriend(ToxId id, string message)
         {
             if (_disposed)
@@ -570,12 +554,12 @@ namespace SharpTox.Core
         /// </summary>
         /// <param name="id"></param>
         /// <returns>friendNumber</returns>
-        public int AddFriendNoRequest(string id)
+        public int AddFriendNoRequest(ToxId id)
         {
             if (_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
-            return ToxFunctions.AddFriendNoRequest(_tox, ToxTools.StringToHexBin(id));
+            return ToxFunctions.AddFriendNoRequest(_tox, id.Bytes);
         }
 
         /// <summary>
