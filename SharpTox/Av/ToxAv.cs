@@ -66,7 +66,7 @@ namespace SharpTox.Av
             }
         }
 
-        private ToxHandle _toxHandle;
+        private ToxHandle _tox;
 
         /// <summary>
         /// The Tox instance that this toxav instance belongs to.
@@ -75,7 +75,7 @@ namespace SharpTox.Av
         {
             get
             {
-                return _toxHandle;
+                return _tox;
             }
         }
 
@@ -106,7 +106,7 @@ namespace SharpTox.Av
         /// <param name="maxCalls"></param>
         public ToxAv(ToxHandle tox, int maxCalls)
         {
-            _toxHandle = tox;
+            _tox = tox;
             _toxAv = ToxAvFunctions.New(tox, maxCalls);
 
             if (_toxAv == null || _toxAv.IsInvalid)
@@ -457,7 +457,7 @@ namespace SharpTox.Av
                 }
             };
 
-            int result = ToxAvFunctions.AddAvGroupchat(_toxHandle, callback, IntPtr.Zero);
+            int result = ToxAvFunctions.AddAvGroupchat(_tox, callback, IntPtr.Zero);
             if (result != -1)
                 _groupAudioHandlers.Add(callback);
 
@@ -486,13 +486,12 @@ namespace SharpTox.Av
                 }
             };
 
-            int result = ToxAvFunctions.JoinAvGroupchat(_toxHandle, friendNumber, data, (ushort)data.Length, callback, IntPtr.Zero);
+            int result = ToxAvFunctions.JoinAvGroupchat(_tox, friendNumber, data, (ushort)data.Length, callback, IntPtr.Zero);
             if (result != -1)
                 _groupAudioHandlers.Add(callback);
 
             return result;
         }
-
 
         /// <summary>
         /// Sends an audio frame to a group.
@@ -508,7 +507,7 @@ namespace SharpTox.Av
             if (_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
-            return ToxAvFunctions.GroupSendAudio(_toxHandle, groupNumber, pcm, (uint)perframe, (byte)channels, (uint)sampleRate) == 0;
+            return ToxAvFunctions.GroupSendAudio(_tox, groupNumber, pcm, (uint)perframe, (byte)channels, (uint)sampleRate) == 0;
         }
 
         private object DummyInvoker(Delegate method, params object[] p)

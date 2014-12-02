@@ -1159,12 +1159,11 @@ namespace SharpTox.Core
             if (_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
-            byte[] phrase = Encoding.UTF8.GetBytes(passphrase);
-
-            if (data.IsEncrypted)
-                return ToxEncryptionFunctions.EncryptedLoad(_tox, data.Bytes, (uint)data.Bytes.Length, phrase, (uint)phrase.Length) == 0;
-            else
+            if (!data.IsEncrypted)
                 return Load(data);
+
+            byte[] phrase = Encoding.UTF8.GetBytes(passphrase);
+            return ToxEncryptionFunctions.EncryptedLoad(_tox, data.Bytes, (uint)data.Bytes.Length, phrase, (uint)phrase.Length) == 0;
         }
 
         /// <summary>
@@ -1236,20 +1235,6 @@ namespace SharpTox.Core
                 throw new ObjectDisposedException(GetType().FullName);
 
             return ToxFunctions.SendAvatarInfo(_tox, friendNumber) == 0;
-        }
-
-        /// <summary>
-        /// Removes the avatar of this Tox instance.
-        /// </summary>
-        /// <returns></returns>
-        [Obsolete("Use UnsetAvatar() instead")]
-        public bool RemoveAvatar()
-        {
-            /*if (_disposed)
-                throw new ObjectDisposedException(GetType().FullName);
-
-            return ToxFunctions.SetAvatar(_tox, (byte)ToxAvatarFormat.None, null, 0) == 0;*/
-            return UnsetAvatar();
         }
 
         /// <summary>
