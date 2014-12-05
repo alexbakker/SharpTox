@@ -552,14 +552,14 @@ namespace SharpTox.Core
         /// <summary>
         /// Adds a friend without sending a request.
         /// </summary>
-        /// <param name="id"></param>
+        /// <param name="publicKey"></param>
         /// <returns>friendNumber</returns>
-        public int AddFriendNoRequest(ToxId id)
+        public int AddFriendNoRequest(ToxKey publicKey)
         {
             if (_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
-            return ToxFunctions.AddFriendNoRequest(_tox, id.Bytes);
+            return ToxFunctions.AddFriendNoRequest(_tox, publicKey.GetBytes());
         }
 
         /// <summary>
@@ -1332,10 +1332,10 @@ namespace SharpTox.Core
             {
                 if (_onFriendRequestCallback == null)
                 {
-                    _onFriendRequestCallback = (IntPtr tox, byte[] id, byte[] message, ushort length, IntPtr userData) =>
+                    _onFriendRequestCallback = (IntPtr tox, byte[] publicKey, byte[] message, ushort length, IntPtr userData) =>
                     {
                         if (_onFriendRequest != null)
-                            Invoker(_onFriendRequest, this, new ToxEventArgs.FriendRequestEventArgs(ToxTools.RemoveNull(ToxTools.HexBinToString(id)), Encoding.UTF8.GetString(message, 0, length)));
+                            Invoker(_onFriendRequest, this, new ToxEventArgs.FriendRequestEventArgs(ToxTools.RemoveNull(ToxTools.HexBinToString(publicKey)), Encoding.UTF8.GetString(message, 0, length)));
                     };
 
                     ToxFunctions.RegisterFriendRequestCallback(_tox, _onFriendRequestCallback, IntPtr.Zero);
