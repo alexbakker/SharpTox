@@ -41,7 +41,7 @@ class Program
 
         tox.Start();
 
-        string id = tox.Id;
+        string id = tox.Id.ToString();
         Console.WriteLine("ID: {0}", id);
 
         Console.ReadKey();
@@ -67,7 +67,7 @@ class Program
     static void tox_OnFriendRequest(object sender, ToxEventArgs.FriendRequestEventArgs e)
     {
         //automatically accept every friend request we receive
-        tox.AddFriendNoRequest(e.Id);
+        tox.AddFriendNoRequest(new ToxKey(ToxKeyType.Public, e.Id));
     }
 }
 ```
