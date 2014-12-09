@@ -150,7 +150,7 @@ namespace SharpTox.Core
                 if (_disposed)
                     throw new ObjectDisposedException(GetType().FullName);
 
-                byte[] bytes = new byte[129];
+                byte[] bytes = new byte[ToxConstants.MaxNameLength];
                 ToxFunctions.GetSelfName(_tox, bytes);
 
                 return ToxTools.RemoveNull(Encoding.UTF8.GetString(bytes, 0, bytes.Length));
@@ -175,8 +175,8 @@ namespace SharpTox.Core
                 if (_disposed)
                     throw new ObjectDisposedException(GetType().FullName);
 
-                byte[] publicKey = new byte[32];
-                byte[] secretKey = new byte[32];
+                byte[] publicKey = new byte[ToxConstants.ClientIdSize];
+                byte[] secretKey = new byte[ToxConstants.ClientIdSize];
 
                 ToxFunctions.GetKeys(_tox, publicKey, secretKey);
 
@@ -706,7 +706,7 @@ namespace SharpTox.Core
             if (_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
-            byte[] address = new byte[32];
+            byte[] address = new byte[ToxConstants.ClientIdSize];
             ToxFunctions.GetClientID(_tox, friendNumber, address);
 
             return new ToxKey(ToxKeyType.Public, address);
