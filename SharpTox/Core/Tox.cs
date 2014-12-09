@@ -1007,10 +1007,10 @@ namespace SharpTox.Core
             if (startByte < 200 || startByte > 254)
                 throw new ArgumentException("start_byte is not in the 200-254 range.");
 
-            ToxDelegates.CallbackPacketDelegate del = ((IntPtr obj, byte[] data, uint length) =>
+            ToxDelegates.CallbackPacketDelegate del = ((IntPtr tox, int friendNum, byte[] data, uint length, IntPtr obj) =>
             {
                 if (OnLossyPacket != null)
-                    Invoker(OnLossyPacket, this, new ToxEventArgs.CustomPacketEventArgs(friendNumber, data));
+                    Invoker(OnLossyPacket, this, new ToxEventArgs.CustomPacketEventArgs(friendNum, data));
 
                 return 1;
 
@@ -1052,10 +1052,10 @@ namespace SharpTox.Core
             if (startByte < 160 || startByte > 191)
                 throw new ArgumentException("start_byte is not in the 160-191 range.");
 
-            ToxDelegates.CallbackPacketDelegate del = ((IntPtr obj, byte[] data, uint length) =>
+            ToxDelegates.CallbackPacketDelegate del = ((IntPtr tox, int friendNum, byte[] data, uint length, IntPtr obj) =>
             {
                 if (OnLosslessPacket != null)
-                    Invoker(OnLosslessPacket, this, new ToxEventArgs.CustomPacketEventArgs(friendNumber, data));
+                    Invoker(OnLosslessPacket, this, new ToxEventArgs.CustomPacketEventArgs(friendNum, data));
 
                 return 1;
 

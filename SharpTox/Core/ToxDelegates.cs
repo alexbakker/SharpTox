@@ -56,7 +56,7 @@ namespace SharpTox.Core
         public delegate void CallbackReadReceiptDelegate(IntPtr tox, int friendNumber, uint receipt, IntPtr userData);
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        public delegate int CallbackPacketDelegate(IntPtr obj, [In, MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 2)] byte[] data, uint length);
+        public delegate int CallbackPacketDelegate(IntPtr tox, int friendNumber, [In, MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 3)] byte[] data, uint length, IntPtr obj);
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         public delegate void CallbackAvatarInfoDelegate(IntPtr tox, int friendNumber, byte format, [In, MarshalAs(UnmanagedType.LPArray, SizeConst = ToxConstants.ToxHashLength)] byte[] hash, IntPtr userData);
