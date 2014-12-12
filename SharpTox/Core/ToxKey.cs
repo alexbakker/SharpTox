@@ -1,11 +1,13 @@
-﻿namespace SharpTox.Core
+﻿using System.Linq;
+
+namespace SharpTox.Core
 {
     /// <summary>
     /// Represents a 32 byte long tox key (either public or secret).
     /// </summary>
     public class ToxKey
     {
-        private byte[] key;
+        private byte[] _key;
 
         /// <summary>
         /// The key type (either public or secret).
@@ -20,7 +22,7 @@
         public ToxKey(ToxKeyType type, byte[] key)
         {
             KeyType = type;
-            this.key = key;
+            _key = key;
         }
 
         /// <summary>
@@ -31,7 +33,7 @@
         public ToxKey(ToxKeyType type, string key)
         {
             KeyType = type;
-            this.key = ToxTools.StringToHexBin(key);
+            _key = ToxTools.StringToHexBin(key);
         }
 
         /// <summary>
@@ -40,7 +42,7 @@
         /// <returns></returns>
         public byte[] GetBytes()
         {
-            return key;
+            return _key;
         }
 
         /// <summary>
@@ -49,7 +51,45 @@
         /// <returns></returns>
         public string GetString()
         {
-            return ToxTools.HexBinToString(key);
+            return ToxTools.HexBinToString(_key);
+        }
+
+        public static bool operator ==(ToxKey key1, ToxKey key2)
+        {
+            if (object.ReferenceEquals(key1, key2))
+                return true;
+
+            if ((object)key1 == null ^ (object)key2 == null)
+                return false;
+
+            return (key1._key.SequenceEqual(key2._key) && key1.KeyType == key2.KeyType);
+        }
+
+        public static bool operator !=(ToxKey key1, ToxKey key2)
+        {
+            return !(key1 == key2);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj == null)
+                return false;
+
+            ToxKey key = obj as ToxKey;
+            if ((object)key == null)
+                return false;
+
+            return this == key;
+        }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
+
+        public override string ToString()
+        {
+            return ToxTools.HexBinToString(_key);
         }
     }
 }

@@ -12,8 +12,8 @@ namespace SharpTox.Core
         /// <summary>
         /// The ToxAFError for this exception.
         /// </summary>
-        public ToxAFError Error { get { return error; } }
-        private ToxAFError error;
+        public ToxAFError Error { get { return _error; } }
+        private ToxAFError _error;
 
         /// <summary>
         /// Initialises a new instance of the ToxAFException class with a specified error.
@@ -22,7 +22,7 @@ namespace SharpTox.Core
         public ToxAFException(ToxAFError error)
             : base("Could not add address to the friend list")
         {
-            this.error = error;
+            _error = error;
         }
     }
 }
