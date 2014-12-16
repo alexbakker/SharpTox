@@ -320,10 +320,10 @@ namespace SharpTox.Core
                 }
             }
 
+            ClearEventSubscriptions();
+
             if (!_tox.IsInvalid && !_tox.IsClosed && _tox != null)
                 _tox.Dispose();
-
-            ClearEventSubscriptions();
 
             _disposed = true;
         }
@@ -1345,6 +1345,12 @@ namespace SharpTox.Core
             }
             remove
             {
+                if (_onFriendRequest.GetInvocationList().Length == 1)
+                {
+                    ToxFunctions.RegisterFriendRequestCallback(_tox, null, IntPtr.Zero);
+                    _onFriendRequestCallback = null;
+                }
+
                 _onFriendRequest -= value;
             }
         }
@@ -1373,6 +1379,12 @@ namespace SharpTox.Core
             }
             remove
             {
+                if (_onConnectionStatusChanged.GetInvocationList().Length == 1)
+                {
+                    ToxFunctions.RegisterConnectionStatusCallback(_tox, null, IntPtr.Zero);
+                    _onConnectionStatusCallback = null;
+                }
+
                 _onConnectionStatusChanged -= value;
             }
         }
@@ -1401,6 +1413,12 @@ namespace SharpTox.Core
             }
             remove
             {
+                if (_onFriendMessage.GetInvocationList().Length == 1)
+                {
+                    ToxFunctions.RegisterFriendMessageCallback(_tox, null, IntPtr.Zero);
+                    _onFriendMessageCallback = null;
+                }
+
                 _onFriendMessage -= value;
             }
         }
@@ -1429,6 +1447,12 @@ namespace SharpTox.Core
             }
             remove
             {
+                if (_onFriendAction.GetInvocationList().Length == 1)
+                {
+                    ToxFunctions.RegisterFriendActionCallback(_tox, null, IntPtr.Zero);
+                    _onFriendActionCallback = null;
+                }
+
                 _onFriendAction -= value;
             }
         }
@@ -1457,6 +1481,12 @@ namespace SharpTox.Core
             }
             remove
             {
+                if (_onNameChange.GetInvocationList().Length == 1)
+                {
+                    ToxFunctions.RegisterNameChangeCallback(_tox, null, IntPtr.Zero);
+                    _onNameChangeCallback = null;
+                }
+
                 _onNameChange -= value;
             }
         }
@@ -1485,6 +1515,12 @@ namespace SharpTox.Core
             }
             remove
             {
+                if (_onStatusMessage.GetInvocationList().Length == 1)
+                {
+                    ToxFunctions.RegisterStatusMessageCallback(_tox, null, IntPtr.Zero);
+                    _onStatusMessageCallback = null;
+                }
+
                 _onStatusMessage -= value;
             }
         }
@@ -1513,6 +1549,12 @@ namespace SharpTox.Core
             }
             remove
             {
+                if (_onUserStatus.GetInvocationList().Length == 1)
+                {
+                    ToxFunctions.RegisterUserStatusCallback(_tox, null, IntPtr.Zero);
+                    _onUserStatusCallback = null;
+                }
+
                 _onUserStatus -= value;
             }
         }
@@ -1543,6 +1585,12 @@ namespace SharpTox.Core
             }
             remove
             {
+                if (_onTypingChange.GetInvocationList().Length == 1)
+                {
+                    ToxFunctions.RegisterTypingChangeCallback(_tox, null, IntPtr.Zero);
+                    _onTypingChangeCallback = null;
+                }
+
                 _onTypingChange -= value;
             }
         }
@@ -1571,6 +1619,12 @@ namespace SharpTox.Core
             }
             remove
             {
+                if (_onGroupAction.GetInvocationList().Length == 1)
+                {
+                    ToxFunctions.RegisterGroupActionCallback(_tox, null, IntPtr.Zero);
+                    _onGroupActionCallback = null;
+                }
+
                 _onGroupAction -= value;
             }
         }
@@ -1599,6 +1653,12 @@ namespace SharpTox.Core
             }
             remove
             {
+                if (_onGroupMessage.GetInvocationList().Length == 1)
+                {
+                    ToxFunctions.RegisterGroupMessageCallback(_tox, null, IntPtr.Zero);
+                    _onGroupMessageCallback = null;
+                }
+
                 _onGroupMessage -= value;
             }
         }
@@ -1627,6 +1687,12 @@ namespace SharpTox.Core
             }
             remove
             {
+                if (_onGroupInvite.GetInvocationList().Length == 1)
+                {
+                    ToxFunctions.RegisterGroupInviteCallback(_tox, null, IntPtr.Zero);
+                    _onGroupInviteCallback = null;
+                }
+
                 _onGroupInvite -= value;
             }
         }
@@ -1655,6 +1721,12 @@ namespace SharpTox.Core
             }
             remove
             {
+                if (_onGroupNamelistChange.GetInvocationList().Length == 1)
+                {
+                    ToxFunctions.RegisterGroupNamelistChangeCallback(_tox, null, IntPtr.Zero);
+                    _onGroupNamelistChangeCallback = null;
+                }
+
                 _onGroupNamelistChange -= value;
             }
         }
@@ -1683,6 +1755,12 @@ namespace SharpTox.Core
             }
             remove
             {
+                if (_onFileControl.GetInvocationList().Length == 1)
+                {
+                    ToxFunctions.RegisterFileControlCallback(_tox, null, IntPtr.Zero);
+                    _onFileControlCallback = null;
+                }
+
                 _onFileControl -= value;
             }
         }
@@ -1711,6 +1789,12 @@ namespace SharpTox.Core
             }
             remove
             {
+                if (_onFileData.GetInvocationList().Length == 1)
+                {
+                    ToxFunctions.RegisterFileDataCallback(_tox, null, IntPtr.Zero);
+                    _onFileDataCallback = null;
+                }
+
                 _onFileData -= value;
             }
         }
@@ -1739,6 +1823,12 @@ namespace SharpTox.Core
             }
             remove
             {
+                if (_onFileSendRequest.GetInvocationList().Length == 1)
+                {
+                    ToxFunctions.RegisterFileSendRequestCallback(_tox, null, IntPtr.Zero);
+                    _onFileSendRequestCallback = null;
+                }
+
                 _onFileSendRequest -= value;
             }
         }
@@ -1767,6 +1857,12 @@ namespace SharpTox.Core
             }
             remove
             {
+                if (_onReadReceipt.GetInvocationList().Length == 1)
+                {
+                    ToxFunctions.RegisterReadReceiptCallback(_tox, null, IntPtr.Zero);
+                    _onReadReceiptCallback = null;
+                }
+
                 _onReadReceipt -= value;
             }
         }
@@ -1795,6 +1891,12 @@ namespace SharpTox.Core
             }
             remove
             {
+                if (_onAvatarInfo.GetInvocationList().Length == 1)
+                {
+                    ToxFunctions.RegisterAvatarInfoCallback(_tox, null, IntPtr.Zero);
+                    _onAvatarInfoCallback = null;
+                }
+
                 _onAvatarInfo -= value;
             }
         }
@@ -1823,6 +1925,12 @@ namespace SharpTox.Core
             }
             remove
             {
+                if (_onAvatarData.GetInvocationList().Length == 1)
+                {
+                    ToxFunctions.RegisterAvatarDataCallback(_tox, null, IntPtr.Zero);
+                    _onAvatarDataCallback = null;
+                }
+
                 _onAvatarData -= value;
             }
         }
@@ -1851,6 +1959,12 @@ namespace SharpTox.Core
             }
             remove
             {
+                if (_onGroupTitleChanged.GetInvocationList().Length == 1)
+                {
+                    ToxFunctions.RegisterGroupTitleCallback(_tox, null, IntPtr.Zero);
+                    _onGroupTitleCallback = null;
+                }
+
                 _onGroupTitleChanged -= value;
             }
         }

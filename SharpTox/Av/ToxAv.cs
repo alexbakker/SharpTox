@@ -148,10 +148,10 @@ namespace SharpTox.Av
                 }
             }
 
+            ClearEventSubscriptions();
+
             if (!_toxAv.IsInvalid && !_toxAv.IsClosed && _toxAv != null)
                 _toxAv.Dispose();
-
-            ClearEventSubscriptions();
 
             _disposed = true;
         }
@@ -482,7 +482,7 @@ namespace SharpTox.Av
                     short[] samples = new short[sampleCount * channels];
                     Marshal.Copy(frame, samples, 0, samples.Length);
 
-                    Invoker(OnReceivedGroupAudio, this, new ToxAvEventArgs.GroupAudioDataEventArgs(groupNumber, peerNumber, samples, (int)channels, (int)sampleRate));
+                    OnReceivedGroupAudio(this, new ToxAvEventArgs.GroupAudioDataEventArgs(groupNumber, peerNumber, samples, (int)channels, (int)sampleRate));
                 }
             };
 
@@ -540,6 +540,12 @@ namespace SharpTox.Av
             }
             remove
             {
+                if (_onCancel.GetInvocationList().Length == 1)
+                {
+                    ToxAvFunctions.RegisterCallstateCallback(_toxAv, null, ToxAvCallbackID.OnCancel, IntPtr.Zero);
+                    _onCancelCallback = null;
+                }
+
                 _onCancel -= value;
             }
         }
@@ -568,6 +574,12 @@ namespace SharpTox.Av
             }
             remove
             {
+                if (_onEnd.GetInvocationList().Length == 1)
+                {
+                    ToxAvFunctions.RegisterCallstateCallback(_toxAv, null, ToxAvCallbackID.OnEnd, IntPtr.Zero);
+                    _onEndCallback = null;
+                }
+
                 _onEnd -= value;
             }
         }
@@ -596,6 +608,12 @@ namespace SharpTox.Av
             }
             remove
             {
+                if (_onInvite.GetInvocationList().Length == 1)
+                {
+                    ToxAvFunctions.RegisterCallstateCallback(_toxAv, null, ToxAvCallbackID.OnInvite, IntPtr.Zero);
+                    _onInviteCallback = null;
+                }
+
                 _onInvite -= value;
             }
         }
@@ -624,6 +642,12 @@ namespace SharpTox.Av
             }
             remove
             {
+                if (_onPeerTimeout.GetInvocationList().Length == 1)
+                {
+                    ToxAvFunctions.RegisterCallstateCallback(_toxAv, null, ToxAvCallbackID.OnPeerTimeout, IntPtr.Zero);
+                    _onPeerTimeoutCallback = null;
+                }
+
                 _onPeerTimeout -= value;
             }
         }
@@ -652,6 +676,12 @@ namespace SharpTox.Av
             }
             remove
             {
+                if (_onReject.GetInvocationList().Length == 1)
+                {
+                    ToxAvFunctions.RegisterCallstateCallback(_toxAv, null, ToxAvCallbackID.OnReject, IntPtr.Zero);
+                    _onRejectCallback = null;
+                }
+
                 _onReject -= value;
             }
         }
@@ -680,6 +710,12 @@ namespace SharpTox.Av
             }
             remove
             {
+                if (_onRequestTimeout.GetInvocationList().Length == 1)
+                {
+                    ToxAvFunctions.RegisterCallstateCallback(_toxAv, null, ToxAvCallbackID.OnRequestTimeout, IntPtr.Zero);
+                    _onRequestTimeoutCallback = null;
+                }
+
                 _onRequestTimeout -= value;
             }
         }
@@ -708,6 +744,12 @@ namespace SharpTox.Av
             }
             remove
             {
+                if (_onRinging.GetInvocationList().Length == 1)
+                {
+                    ToxAvFunctions.RegisterCallstateCallback(_toxAv, null, ToxAvCallbackID.OnRinging, IntPtr.Zero);
+                    _onRingingCallback = null;
+                }
+
                 _onRinging -= value;
             }
         }
@@ -736,6 +778,12 @@ namespace SharpTox.Av
             }
             remove
             {
+                if (_onStart.GetInvocationList().Length == 1)
+                {
+                    ToxAvFunctions.RegisterCallstateCallback(_toxAv, null, ToxAvCallbackID.OnStart, IntPtr.Zero);
+                    _onStartCallback = null;
+                }
+
                 _onStart -= value;
             }
         }
@@ -764,6 +812,12 @@ namespace SharpTox.Av
             }
             remove
             {
+                if (_onPeerCSChange.GetInvocationList().Length == 1)
+                {
+                    ToxAvFunctions.RegisterCallstateCallback(_toxAv, null, ToxAvCallbackID.OnPeerCSChange, IntPtr.Zero);
+                    _onPeerCSChangeCallback = null;
+                }
+
                 _onPeerCSChange -= value;
             }
         }
@@ -792,6 +846,12 @@ namespace SharpTox.Av
             }
             remove
             {
+                if (_onSelfCSChange.GetInvocationList().Length == 1)
+                {
+                    ToxAvFunctions.RegisterCallstateCallback(_toxAv, null, ToxAvCallbackID.OnSelfCSChange, IntPtr.Zero);
+                    _onSelfCSChangeCallback = null;
+                }
+
                 _onSelfCSChange -= value;
             }
         }
@@ -799,7 +859,7 @@ namespace SharpTox.Av
         private EventHandler<ToxAvEventArgs.AudioDataEventArgs> _onReceivedAudio;
 
         /// <summary>
-        /// Occurs when an audio frame was received.
+        /// Occurs when an audio frame was received. Note: doesn't use 'Invoker'.
         /// </summary>
         public event EventHandler<ToxAvEventArgs.AudioDataEventArgs> OnReceivedAudio
         {
@@ -816,7 +876,7 @@ namespace SharpTox.Av
 
                             Marshal.Copy(frame, samples, 0, samples.Length);
 
-                            Invoker(_onReceivedAudio, this, new ToxAvEventArgs.AudioDataEventArgs(callIndex, samples));
+                            _onReceivedAudio(this, new ToxAvEventArgs.AudioDataEventArgs(callIndex, samples));
                         }
                     };
 
@@ -827,6 +887,12 @@ namespace SharpTox.Av
             }
             remove
             {
+                if (_onReceivedAudio.GetInvocationList().Length == 1)
+                {
+                    ToxAvFunctions.RegisterAudioReceiveCallback(_toxAv, null, IntPtr.Zero);
+                    _onReceivedAudioCallback = null;
+                }
+
                 _onReceivedAudio -= value;
             }
         }
@@ -834,7 +900,7 @@ namespace SharpTox.Av
         private EventHandler<ToxAvEventArgs.VideoDataEventArgs> _onReceivedVideo;
 
         /// <summary>
-        /// Occurs when a video frame was received.
+        /// Occurs when a video frame was received. Note: doesn't use 'Invoker'.
         /// </summary>
         public event EventHandler<ToxAvEventArgs.VideoDataEventArgs> OnReceivedVideo
         {
@@ -845,7 +911,7 @@ namespace SharpTox.Av
                     _onReceivedVideoCallback = (IntPtr ptr, int callIndex, IntPtr frame, IntPtr userData) =>
                     {
                         if (_onReceivedVideo != null)
-                            Invoker(_onReceivedVideo, this, new ToxAvEventArgs.VideoDataEventArgs(callIndex, frame));
+                            _onReceivedVideo(this, new ToxAvEventArgs.VideoDataEventArgs(callIndex, frame));
                     };
 
                     ToxAvFunctions.RegisterVideoReceiveCallback(_toxAv, _onReceivedVideoCallback, IntPtr.Zero);
@@ -855,12 +921,18 @@ namespace SharpTox.Av
             }
             remove
             {
+                if (_onReceivedVideo.GetInvocationList().Length == 1)
+                {
+                    ToxAvFunctions.RegisterVideoReceiveCallback(_toxAv, null, IntPtr.Zero);
+                    _onReceivedVideoCallback = null;
+                }
+
                 _onReceivedVideo -= value;
             }
         }
 
         /// <summary>
-        /// 
+        /// Occurs when an audio was received from a group. Note: doesn't use 'Invoker'.
         /// </summary>
         public event EventHandler<ToxAvEventArgs.GroupAudioDataEventArgs> OnReceivedGroupAudio;
 
