@@ -102,7 +102,7 @@ namespace SharpTox.Av
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "toxav_register_audio_callback")]
         public static extern void RegisterAudioReceiveCallback(ToxAvHandle toxAv, ToxAvDelegates.AudioReceiveCallback callback, IntPtr userData);
 
-        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "toxav_register_video_callback ")]
+        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "toxav_register_video_callback")]
         public static extern void RegisterVideoReceiveCallback(ToxAvHandle toxAv, ToxAvDelegates.VideoReceiveCallback callback, IntPtr userData);
 
         #endregion
