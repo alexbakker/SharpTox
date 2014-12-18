@@ -35,7 +35,8 @@ namespace SharpTox.Av
 
         private List<ToxAvDelegates.GroupAudioReceiveCallback> _groupAudioHandlers = new List<ToxAvDelegates.GroupAudioReceiveCallback>();
         private bool _disposed = false;
-        private CancellationTokenSource _cancelTokenSource = new CancellationTokenSource();
+        private bool _running = false;
+        private CancellationTokenSource _cancelTokenSource;
 
         /// <summary>
         /// The default codec settings.
@@ -194,27 +195,73 @@ namespace SharpTox.Av
             if (_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
+            if (_running)
+                return;
+
             Loop();
+        }
+
+        /// <summary>
+        /// Stops the main toxav_do loop if it's running.
+        /// </summary>
+        public void Stop()
+        {
+            if (_disposed)
+                throw new ObjectDisposedException(GetType().FullName);
+
+            if (!_running)
+                return;
+
+            if (_cancelTokenSource != null)
+            {
+                _cancelTokenSource.Cancel();
+                _cancelTokenSource.Dispose();
+
+                _running = false;
+            }
         }
 
         private void Loop()
         {
+            _cancelTokenSource = new CancellationTokenSource();
+            _running = true;
+
             Task.Factory.StartNew(() =>
             {
-                while (true)
+                while (_running)
                 {
                     if (_cancelTokenSource.IsCancellationRequested)
                         break;
 
-                    ToxAvFunctions.Do(_toxAv);
+                    int delay = DoIterate();
 
 #if IS_PORTABLE
-                    Task.Delay((int)ToxAvFunctions.DoInterval(_toxAv));
+                    Task.Delay(delay);
 #else
-                    Thread.Sleep((int)ToxAvFunctions.DoInterval(_toxAv));
+                    Thread.Sleep(delay);
 #endif
                 }
             }, _cancelTokenSource.Token, TaskCreationOptions.LongRunning, TaskScheduler.Default);
+        }
+
+        /// <summary>
+        /// Runs the loop once in the current thread and returns the next timeout.
+        /// </summary>
+        public int Iterate()
+        {
+            if (_disposed)
+                throw new ObjectDisposedException(GetType().FullName);
+
+            if (_running)
+                throw new Exception("Loop already running");
+
+            return DoIterate();
+        }
+
+        private int DoIterate()
+        {
+            ToxAvFunctions.Do(_toxAv);
+            return (int)ToxAvFunctions.DoInterval(_toxAv);
         }
 
         /// <summary>

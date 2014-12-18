@@ -50,7 +50,7 @@ namespace SharpTox.Core
         #endregion
 
         private ToxHandle _tox;
-        private CancellationTokenSource _cancelTokenSource = new CancellationTokenSource();
+        private CancellationTokenSource _cancelTokenSource;
 
         private bool _running = false;
         private bool _disposed = false;
@@ -492,8 +492,49 @@ namespace SharpTox.Core
             Loop();
         }
 
+        /// <summary>
+        /// Stops the main tox_do loop if it's running.
+        /// </summary>
+        public void Stop()
+        {
+            if (_disposed)
+                throw new ObjectDisposedException(GetType().FullName);
+
+            if (!_running)
+                return;
+
+            if (_cancelTokenSource != null)
+            {
+                _cancelTokenSource.Cancel();
+                _cancelTokenSource.Dispose();
+
+                _running = false;
+            }
+        }
+
+        /// <summary>
+        /// Runs the loop once in the current thread and returns the next timeout.
+        /// </summary>
+        public int Iterate()
+        {
+            if (_disposed)
+                throw new ObjectDisposedException(GetType().FullName);
+
+            if (_running)
+                throw new Exception("Loop already running");
+
+            return DoIterate();
+        }
+
+        private int DoIterate()
+        {
+            ToxFunctions.Do(_tox);
+            return (int)ToxFunctions.DoInterval(_tox);
+        }
+
         private void Loop()
         {
+            _cancelTokenSource = new CancellationTokenSource();
             _running = true;
 
             Task.Factory.StartNew(() =>
@@ -518,12 +559,12 @@ namespace SharpTox.Core
                         _connected = false;
                     }
 
-                    ToxFunctions.Do(_tox);
+                    int delay = DoIterate();
 
 #if IS_PORTABLE
-                    Task.Delay((int)ToxFunctions.DoInterval(_tox));
+                    Task.Delay(delay);
 #else
-                    Thread.Sleep((int)ToxFunctions.DoInterval(_tox));
+                    Thread.Sleep(delay);
 #endif
                 }
             }, _cancelTokenSource.Token, TaskCreationOptions.LongRunning, TaskScheduler.Default);
