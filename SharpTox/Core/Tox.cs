@@ -492,6 +492,26 @@ namespace SharpTox.Core
             Loop();
         }
 
+        /// <summary>
+        /// Runs the loop once in the current thread and returns the next timeout.
+        /// </summary>
+        public int Iterate()
+        {
+            if (_disposed)
+                throw new ObjectDisposedException(GetType().FullName);
+
+            if (_running)
+                throw new Exception("Loop already running");
+
+            return DoIterate();
+        }
+
+        private int DoIterate()
+        {
+            ToxFunctions.Do(_tox);
+            return (int)ToxFunctions.DoInterval(_tox);
+        }
+
         private void Loop()
         {
             _running = true;
@@ -518,12 +538,12 @@ namespace SharpTox.Core
                         _connected = false;
                     }
 
-                    ToxFunctions.Do(_tox);
+                    int delay = DoIterate();
 
 #if IS_PORTABLE
-                    Task.Delay((int)ToxFunctions.DoInterval(_tox));
+                    Task.Delay(delay);
 #else
-                    Thread.Sleep((int)ToxFunctions.DoInterval(_tox));
+                    Thread.Sleep(delay);
 #endif
                 }
             }, _cancelTokenSource.Token, TaskCreationOptions.LongRunning, TaskScheduler.Default);
