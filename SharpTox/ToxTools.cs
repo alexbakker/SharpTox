@@ -25,6 +25,12 @@ namespace SharpTox
             return bin;
         }
 
+        internal static string GetString(byte[] data)
+        {
+            int index = Array.IndexOf<byte>(data, 0);
+            return Encoding.UTF8.GetString(data, 0, index == -1 ? data.Length : index);
+        }
+
         //getting rid of string null terminations
         internal static string RemoveNull(string s)
         {
