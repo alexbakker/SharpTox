@@ -50,7 +50,7 @@ namespace SharpTox.Core
         #endregion
 
         private ToxHandle _tox;
-        private CancellationTokenSource _cancelTokenSource = new CancellationTokenSource();
+        private CancellationTokenSource _cancelTokenSource;
 
         private bool _running = false;
         private bool _disposed = false;
@@ -493,6 +493,26 @@ namespace SharpTox.Core
         }
 
         /// <summary>
+        /// Stops the main tox_do loop if it's running.
+        /// </summary>
+        public void Stop()
+        {
+            if (_disposed)
+                throw new ObjectDisposedException(GetType().FullName);
+
+            if (!_running)
+                return;
+
+            if (_cancelTokenSource != null)
+            {
+                _cancelTokenSource.Cancel();
+                _cancelTokenSource.Dispose();
+
+                _running = false;
+            }
+        }
+
+        /// <summary>
         /// Runs the loop once in the current thread and returns the next timeout.
         /// </summary>
         public int Iterate()
@@ -514,6 +534,7 @@ namespace SharpTox.Core
 
         private void Loop()
         {
+            _cancelTokenSource = new CancellationTokenSource();
             _running = true;
 
             Task.Factory.StartNew(() =>
