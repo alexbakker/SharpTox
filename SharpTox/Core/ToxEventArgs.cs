@@ -20,12 +20,12 @@ namespace SharpTox.Core
 
         public abstract class GroupBaseEventArgs : EventArgs
         {
-            public int GroupNumber { get; private set; }
+            public ToxGroup Group { get; private set; }
             public int PeerNumber { get; private set; }
 
-            protected GroupBaseEventArgs(int groupNumber, int peerNumber)
+            protected GroupBaseEventArgs(ToxGroup group, int peerNumber)
             {
-                GroupNumber = groupNumber;
+                Group = group;
                 PeerNumber = peerNumber;
             }
         }
@@ -149,8 +149,8 @@ namespace SharpTox.Core
         {
             public string Message { get; private set; }
 
-            public GroupMessageEventArgs(int groupNumber, int peerNumber, string message)
-                : base(groupNumber, peerNumber)
+            public GroupMessageEventArgs(ToxGroup group, int peerNumber, string message)
+                : base(group, peerNumber)
             {
                 Message = message;
             }
@@ -160,8 +160,8 @@ namespace SharpTox.Core
         {
             public string Action { get; private set; }
 
-            public GroupActionEventArgs(int groupNumber, int peerNumber, string action)
-                : base(groupNumber, peerNumber)
+            public GroupActionEventArgs(ToxGroup group, int peerNumber, string action)
+                : base(group, peerNumber)
             {
                 Action = action;
             }
@@ -171,8 +171,8 @@ namespace SharpTox.Core
         {
             public ToxChatChange Change { get; private set; }
 
-            public GroupNamelistChangeEventArgs(int groupNumber, int peerNumber, ToxChatChange change)
-                : base(groupNumber, peerNumber)
+            public GroupNamelistChangeEventArgs(ToxGroup group, int peerNumber, ToxChatChange change)
+                : base(group, peerNumber)
             {
                 Change = change;
             }
@@ -281,8 +281,8 @@ namespace SharpTox.Core
         {
             public string Title { get; private set; }
 
-            public GroupTitleEventArgs(int groupNumber, int peerNumber, string title)
-                : base(groupNumber, peerNumber)
+            public GroupTitleEventArgs(ToxGroup group, int peerNumber, string title)
+                : base(group, peerNumber)
             {
                 Title = title;
             }

@@ -45,6 +45,7 @@ namespace SharpTox.Core
         public bool DeleteGroupChat(int groupNumber)
         {
             Tox.CheckDisposed();
+            Tox.DeleteGroup(this);
             return ToxFunctions.DelGroupchat(Tox.Handle, groupNumber) == 0;
         }
 

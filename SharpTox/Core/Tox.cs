@@ -912,6 +912,27 @@ namespace SharpTox.Core
                 throw new ObjectDisposedException(GetType().FullName);
         }
 
+        Dictionary<int, ToxGroup> _groups = new Dictionary<int, ToxGroup>();
+        private ToxGroup GroupFromGroupNumber(int groupNumber)
+        {
+            ToxGroup group;
+            if (_groups.TryGetValue(groupNumber, out group))
+            {
+                return group;
+            }
+
+            group = new ToxGroup(this, groupNumber);
+
+            _groups[groupNumber] = group;
+
+            return group;
+        }
+
+        internal void DeleteGroup(ToxGroup group)
+        {
+            _groups.Remove(group.Number);
+        }
+
         #region Events
         private EventHandler<ToxEventArgs.FriendRequestEventArgs> _onFriendRequest;
 
@@ -1200,7 +1221,7 @@ namespace SharpTox.Core
                 {
                     _onGroupActionCallback = (IntPtr tox, int groupNumber, int peerNumber, byte[] action, ushort length, IntPtr userData) =>
                     {
-                        var e = new ToxEventArgs.GroupActionEventArgs(groupNumber, peerNumber, ToxTools.GetString(action));
+                        var e = new ToxEventArgs.GroupActionEventArgs(GroupFromGroupNumber(groupNumber), peerNumber, ToxTools.GetString(action));
                         _onGroupAction(this, e);
                     };
 
@@ -1234,7 +1255,7 @@ namespace SharpTox.Core
                 {
                     _onGroupMessageCallback = (IntPtr tox, int groupNumber, int peerNumber, byte[] message, ushort length, IntPtr userData) =>
                     {
-                        var e = new ToxEventArgs.GroupMessageEventArgs(groupNumber, peerNumber, ToxTools.GetString(message));
+                        var e = new ToxEventArgs.GroupMessageEventArgs(GroupFromGroupNumber(groupNumber), peerNumber, ToxTools.GetString(message));
                         _onGroupMessage(this, e);
                     };
 
@@ -1302,7 +1323,7 @@ namespace SharpTox.Core
                 {
                     _onGroupNamelistChangeCallback = (IntPtr tox, int groupNumber, int peerNumber, ToxChatChange change, IntPtr userData) =>
                     {
-                        var e = new ToxEventArgs.GroupNamelistChangeEventArgs(groupNumber, peerNumber, change);
+                        var e = new ToxEventArgs.GroupNamelistChangeEventArgs(GroupFromGroupNumber(groupNumber), peerNumber, change);
                         _onGroupNamelistChange(this, e);
                     };
 
@@ -1540,7 +1561,7 @@ namespace SharpTox.Core
                 {
                     _onGroupTitleCallback = (IntPtr tox, int groupNumber, int peerNumber, byte[] title, byte length, IntPtr userData) =>
                     {
-                        var e = new ToxEventArgs.GroupTitleEventArgs(groupNumber, peerNumber, Encoding.UTF8.GetString(title, 0, length));
+                        var e = new ToxEventArgs.GroupTitleEventArgs(GroupFromGroupNumber(groupNumber), peerNumber, Encoding.UTF8.GetString(title, 0, length));
                         _onGroupTitleChanged(this, e);
                     };
 
