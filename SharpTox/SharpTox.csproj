@@ -186,6 +186,7 @@
     <Compile Include="Core\ToxNode.cs" />
     <Compile Include="ToxTools.cs" />
     <Compile Include="Core\ToxFriend.cs" />
+    <Compile Include="Core\ToxGroup.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />

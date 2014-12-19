@@ -654,76 +654,14 @@ namespace SharpTox.Core
         }
 
         /// <summary>
-        /// Retrieves the number of group members in a group chat.
+        /// Creates a new group.
         /// </summary>
-        /// <param name="groupNumber"></param>
         /// <returns></returns>
-        public int GetGroupMemberCount(int groupNumber)
-        {
-            CheckDisposed();
-            return ToxFunctions.GroupNumberPeers(_tox, groupNumber);
-        }
-
-        /// <summary>
-        /// Deletes a group chat.
-        /// </summary>
-        /// <param name="groupNumber"></param>
-        /// <returns></returns>
-        public bool DeleteGroupChat(int groupNumber)
-        {
-            CheckDisposed();
-            return ToxFunctions.DelGroupchat(_tox, groupNumber) == 0;
-        }
-
-        /// <summary>
-        /// Invites a friend to a group chat.
-        /// </summary>
-        /// <param name="friendNumber"></param>
-        /// <param name="groupNumber"></param>
-        /// <returns></returns>
-        public bool InviteFriend(int friendNumber, int groupNumber)
-        {
-            CheckDisposed();
-            return ToxFunctions.InviteFriend(_tox, friendNumber, groupNumber) == 0;
-        }
-
-        /// <summary>
-        /// Sends a message to a group.
-        /// </summary>
-        /// <param name="groupNumber"></param>
-        /// <param name="message"></param>
-        /// <returns></returns>
-        public bool SendGroupMessage(int groupNumber, string message)
+        public ToxGroup CreateGroup()
         {
             CheckDisposed();
 
-            byte[] msg = Encoding.UTF8.GetBytes(message);
-            return ToxFunctions.GroupMessageSend(_tox, groupNumber, msg, (ushort)msg.Length) == 0;
-        }
-
-        /// <summary>
-        /// Sends an action to a group.
-        /// </summary>
-        /// <param name="groupNumber"></param>
-        /// <param name="action"></param>
-        /// <returns></returns>
-        public bool SendGroupAction(int groupNumber, string action)
-        {
-            CheckDisposed();
-
-            byte[] act = Encoding.UTF8.GetBytes(action);
-            return ToxFunctions.GroupActionSend(_tox, groupNumber, act, (ushort)act.Length) == 0;
-        }
-
-        /// <summary>
-        /// Creates a new group and retrieves the group number.
-        /// </summary>
-        /// <returns></returns>
-        public int NewGroup()
-        {
-            CheckDisposed();
-
-            return ToxFunctions.AddGroupchat(_tox);
+            return new ToxGroup(this);
         }
 
         /// <summary>
@@ -927,53 +865,6 @@ namespace SharpTox.Core
         {
             CheckDisposed();
             return ToxFunctions.UnsetAvatar(_tox) == 0;
-        }
-
-        /// <summary>
-        /// Changes the title of a group.
-        /// </summary>
-        /// <param name="groupNumber"></param>
-        /// <param name="title"></param>
-        /// <returns></returns>
-        public bool SetGroupTitle(int groupNumber, string title)
-        {
-            CheckDisposed();
-
-            if (Encoding.UTF8.GetByteCount(title) > ToxConstants.MaxNameLength)
-                throw new ArgumentException("The specified group title is longer than 256 bytes");
-
-            byte[] bytes = Encoding.UTF8.GetBytes(title);
-
-            return ToxFunctions.GroupSetTitle(_tox, groupNumber, bytes, (byte)bytes.Length) == 0;
-        }
-
-        /// <summary>
-        /// Retrieves the type of a group.
-        /// </summary>
-        /// <param name="groupNumber"></param>
-        /// <returns></returns>
-        public ToxGroupType GetGroupType(int groupNumber)
-        {
-            CheckDisposed();
-            return (ToxGroupType)ToxFunctions.GroupGetType(_tox, groupNumber);
-        }
-
-        /// <summary>
-        /// Retrieves the title of a group.
-        /// </summary>
-        /// <param name="groupNumber"></param>
-        /// <returns></returns>
-        public string GetGroupTitle(int groupNumber)
-        {
-            CheckDisposed();
-
-            byte[] title = new byte[ToxConstants.MaxNameLength];
-            int length = ToxFunctions.GroupGetTitle(_tox, groupNumber, title, (uint)title.Length);
-
-            if (length == -1)
-                return string.Empty;
-
-            return ToxTools.GetString(title);
         }
 
         /// <summary>
