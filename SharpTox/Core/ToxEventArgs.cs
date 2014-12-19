@@ -10,11 +10,11 @@ namespace SharpTox.Core
         #region Base Classes
         public abstract class FriendBaseEventArgs : EventArgs
         {
-            public int FriendNumber { get; private set; }
+            public ToxFriend Friend { get; private set; }
 
-            protected FriendBaseEventArgs(int friendNumber)
+            protected FriendBaseEventArgs(ToxFriend friend)
             {
-                FriendNumber = friendNumber;
+                Friend = friend;
             }
         }
 
@@ -34,8 +34,8 @@ namespace SharpTox.Core
         {
             public int FileNumber { get; private set; }
 
-            protected FileBaseEventArgs(int friendNumber, int fileNumber)
-                : base(friendNumber)
+            protected FileBaseEventArgs(ToxFriend friend, int fileNumber)
+                : base(friend)
             {
                 FileNumber = fileNumber;
             }
@@ -58,8 +58,8 @@ namespace SharpTox.Core
         {
             public ToxFriendConnectionStatus Status { get; private set; }
 
-            public ConnectionStatusEventArgs(int friendNumber, ToxFriendConnectionStatus status)
-                : base(friendNumber)
+            public ConnectionStatusEventArgs(ToxFriend friend, ToxFriendConnectionStatus status)
+                : base(friend)
             {
                 Status = status;
             }
@@ -69,8 +69,8 @@ namespace SharpTox.Core
         {
             public string Message { get; private set; }
 
-            public FriendMessageEventArgs(int friendNumber, string message)
-                : base(friendNumber)
+            public FriendMessageEventArgs(ToxFriend friend, string message)
+                : base(friend)
             {
                 Message = message;
             }
@@ -80,8 +80,8 @@ namespace SharpTox.Core
         {
             public string Action { get; private set; }
 
-            public FriendActionEventArgs(int friendNumber, string action)
-                : base(friendNumber)
+            public FriendActionEventArgs(ToxFriend friend, string action)
+                : base(friend)
             {
                 Action = action;
             }
@@ -91,8 +91,8 @@ namespace SharpTox.Core
         {
             public string Name { get; private set; }
 
-            public NameChangeEventArgs(int friendNumber, string name)
-                : base(friendNumber)
+            public NameChangeEventArgs(ToxFriend friend, string name)
+                : base(friend)
             {
                 Name = name;
             }
@@ -102,8 +102,8 @@ namespace SharpTox.Core
         {
             public string StatusMessage { get; private set; }
 
-            public StatusMessageEventArgs(int friendNumber, string statusMessage)
-                : base(friendNumber)
+            public StatusMessageEventArgs(ToxFriend friend, string statusMessage)
+                : base(friend)
             {
                 StatusMessage = statusMessage;
             }
@@ -113,8 +113,8 @@ namespace SharpTox.Core
         {
             public ToxUserStatus UserStatus { get; private set; }
 
-            public UserStatusEventArgs(int friendNumber, ToxUserStatus userStatus)
-                : base(friendNumber)
+            public UserStatusEventArgs(ToxFriend friend, ToxUserStatus userStatus)
+                : base(friend)
             {
                 UserStatus = userStatus;
             }
@@ -124,8 +124,8 @@ namespace SharpTox.Core
         {
             public bool IsTyping { get; private set; }
 
-            public TypingStatusEventArgs(int friendNumber, bool isTyping)
-                : base(friendNumber)
+            public TypingStatusEventArgs(ToxFriend friend, bool isTyping)
+                : base(friend)
             {
                 IsTyping = isTyping;
             }
@@ -137,8 +137,8 @@ namespace SharpTox.Core
 
             public ToxGroupType GroupType { get; private set; }
 
-            public GroupInviteEventArgs(int friendNumber, ToxGroupType type, byte[] data)
-                : base(friendNumber)
+            public GroupInviteEventArgs(ToxFriend friend, ToxGroupType type, byte[] data)
+                : base(friend)
             {
                 Data = (byte[])data.Clone();
                 GroupType = type; 
@@ -186,8 +186,8 @@ namespace SharpTox.Core
 
             public byte[] Data { get; private set; }
 
-            public FileControlEventArgs(int friendNumber, int fileNumber, bool isSend, ToxFileControl control, byte[] data)
-                : base(friendNumber, fileNumber)
+            public FileControlEventArgs(ToxFriend friend, int fileNumber, bool isSend, ToxFileControl control, byte[] data)
+                : base(friend, fileNumber)
             {
                 IsSend = isSend;
                 Control = control;
@@ -199,8 +199,8 @@ namespace SharpTox.Core
         {
             public byte[] Data { get; private set; }
 
-            public FileDataEventArgs(int friendNumber, int fileNumber, byte[] data)
-                : base(friendNumber, fileNumber)
+            public FileDataEventArgs(ToxFriend friend, int fileNumber, byte[] data)
+                : base(friend, fileNumber)
             {
                 Data = (byte[])data.Clone();
             }
@@ -212,8 +212,8 @@ namespace SharpTox.Core
 
             public string FileName { get; private set; }
 
-            public FileSendRequestEventArgs(int friendNumber, int fileNumber, ulong fileSize, string fileName)
-                : base(friendNumber, fileNumber)
+            public FileSendRequestEventArgs(ToxFriend friend, int fileNumber, ulong fileSize, string fileName)
+                : base(friend, fileNumber)
             {
                 FileSize = fileSize;
                 FileName = fileName;
@@ -224,8 +224,8 @@ namespace SharpTox.Core
         {
             public int Receipt { get; private set; }
 
-            public ReadReceiptEventArgs(int friendNumber, int receipt)
-                : base(friendNumber)
+            public ReadReceiptEventArgs(ToxFriend friend, int receipt)
+                : base(friend)
             {
                 Receipt = receipt;
             }
@@ -235,8 +235,8 @@ namespace SharpTox.Core
         {
             public byte[] Packet { get; private set; }
 
-            public CustomPacketEventArgs(int friendNumber, byte[] packet)
-                : base(friendNumber)
+            public CustomPacketEventArgs(ToxFriend friend, byte[] packet)
+                : base(friend)
             {
                 Packet = (byte[])packet.Clone();
             }
@@ -258,8 +258,8 @@ namespace SharpTox.Core
 
             public byte[] Hash { get; private set; }
 
-            public AvatarInfoEventArgs(int friendNumber, ToxAvatarFormat format, byte[] hash)
-                : base(friendNumber)
+            public AvatarInfoEventArgs(ToxFriend friend, ToxAvatarFormat format, byte[] hash)
+                : base(friend)
             {
                 Format = format;
                 Hash = (byte[])hash.Clone();
@@ -270,8 +270,8 @@ namespace SharpTox.Core
         {
             public ToxAvatar Avatar { get; private set; }
 
-            public AvatarDataEventArgs(int friendNumber, ToxAvatar avatar)
-                : base(friendNumber)
+            public AvatarDataEventArgs(ToxFriend friend, ToxAvatar avatar)
+                : base(friend)
             {
                 Avatar = avatar;
             }
