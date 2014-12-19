@@ -5,10 +5,17 @@ namespace SharpTox.Core
 {
     public class ToxFriend
     {
+        /// <summary>
+        /// The Tox instance that belongs to this friend.
+        /// </summary>
         public Tox Tox { get; private set; }
+
+        /// <summary>
+        /// The number that is associated with this friend.
+        /// </summary>
         public int Number { get; private set; }
 
-        public ToxFriend(Tox tox, int friendNumber)
+        internal ToxFriend(Tox tox, int friendNumber)
         {
             Tox = tox;
             Number = friendNumber;
@@ -109,10 +116,10 @@ namespace SharpTox.Core
         }
 
         /// <summary>
-        /// Retrieves a friend's public id/address.
+        /// Retrieves a friend's public key.
         /// </summary>
         /// <value>Friend's pubic id/address.</value>
-        public ToxKey ClientId
+        public ToxKey PublicKey
         {
             get
             {
@@ -172,7 +179,7 @@ namespace SharpTox.Core
         }
 
         /// <summary>
-        /// Sends the avatar info to afriend.
+        /// Sends the avatar info to a friend.
         /// This is not done automatically, you have to send specifically
         /// for every friend.
         /// </summary>
@@ -190,20 +197,17 @@ namespace SharpTox.Core
         public bool RequestAvatarData()
         {
             Tox.CheckDisposed();
-
             return ToxFunctions.RequestAvatarData(Tox.Handle, Number) == 0;
         }
 
         /// <summary>
         /// Requests avatar info from a friend.
         /// </summary>
-        /// <param name="friendNumber"></param>
         /// <returns></returns>
-        public bool RequestAvatarInfo(int friendNumber)
+        public bool RequestAvatarInfo()
         {
             Tox.CheckDisposed();
-
-            return ToxFunctions.RequestAvatarInfo(Tox.Handle, friendNumber) == 0;
+            return ToxFunctions.RequestAvatarInfo(Tox.Handle, Number) == 0;
         }
 
         /// <summary>
@@ -241,7 +245,6 @@ namespace SharpTox.Core
         /// <summary>
         /// Sends a lossy packet to the friend..
         /// </summary>
-        /// <param name="friendNumber"></param>
         /// <param name="data"></param>
         /// <returns></returns>
         public bool SendLossyPacket(byte[] data)
@@ -260,7 +263,6 @@ namespace SharpTox.Core
         /// <summary>
         /// Sends a lossless packet to the friend..
         /// </summary>
-        /// <param name="friendNumber"></param>
         /// <param name="data"></param>
         /// <returns></returns>
         public bool SendLosslessPacket(byte[] data)
