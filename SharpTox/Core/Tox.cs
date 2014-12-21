@@ -348,69 +348,6 @@ namespace SharpTox.Core
         }
 
         /// <summary>
-        /// Sends a file send request to the given friendNumber.
-        /// </summary>
-        /// <param name="friendNumber"></param>
-        /// <param name="fileSize"></param>
-        /// <param name="filename">Maximum filename length is 255 bytes.</param>
-        /// <returns>the filenumber on success and -1 on failure.</returns>
-        public int NewFileSender(int friendNumber, ulong fileSize, string filename)
-        {
-            CheckDisposed();
-
-            byte[] name = Encoding.UTF8.GetBytes(filename);
-            if (name.Length > 255)
-                throw new Exception("Filename is too long (longer than 255 bytes)");
-
-            int result = ToxFunctions.NewFileSender(_tox, friendNumber, fileSize, name, (ushort)name.Length);
-            if (result != -1)
-                return result;
-            else
-                throw new Exception("Could not create new file sender");
-        }
-
-        /// <summary>
-        /// Sends a file control request.
-        /// </summary>
-        /// <param name="friendNumber"></param>
-        /// <param name="sendReceive">0 if we're sending and 1 if we're receiving.</param>
-        /// <param name="fileNumber"></param>
-        /// <param name="messageId"></param>
-        /// <param name="data"></param>
-        /// <returns>true on success and false on failure.</returns>
-        public bool FileSendControl(int friendNumber, int sendReceive, int fileNumber, ToxFileControl messageId, byte[] data)
-        {
-            CheckDisposed();
-            return ToxFunctions.FileSendControl(_tox, friendNumber, (byte)sendReceive, (byte)fileNumber, (byte)messageId, data, (ushort)data.Length) == 0;
-        }
-
-        /// <summary>
-        /// Sends file data.
-        /// </summary>
-        /// <param name="friendNumber"></param>
-        /// <param name="fileNumber"></param>
-        /// <param name="data"></param>
-        /// <returns>true on success and false on failure.</returns>
-        public bool FileSendData(int friendNumber, int fileNumber, byte[] data)
-        {
-            CheckDisposed();
-            return ToxFunctions.FileSendData(_tox, friendNumber, (byte)fileNumber, data, (ushort)data.Length) == 0;
-        }
-
-        /// <summary>
-        /// Retrieves the number of bytes left to be sent/received.
-        /// </summary>
-        /// <param name="friendNumber"></param>
-        /// <param name="fileNumber"></param>
-        /// <param name="sendReceive">0 if we're sending and 1 if we're receiving.</param>
-        /// <returns></returns>
-        public ulong FileDataRemaining(int friendNumber, int fileNumber, int sendReceive)
-        {
-            CheckDisposed();
-            return ToxFunctions.FileDataRemaining(_tox, friendNumber, (byte)fileNumber, (byte)sendReceive);
-        }
-
-        /// <summary>
         /// Starts the main tox_do loop.
         /// </summary>
         public void Start()
