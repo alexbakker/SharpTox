@@ -78,10 +78,12 @@ namespace SharpTox.Core
         /// </summary>
         /// <param name="data"></param>
         /// <returns>true on success and false on failure.</returns>
-        public bool FileSendData(byte[] data)
+        unsafe public bool SendData(ArraySegment<byte> data)
         {
             CheckDisposed();
-            return ToxFunctions.FileSendData(Friend.Tox.Handle, Friend.Number, (byte)Number, data, (ushort)data.Length) == 0;
+            var array = data.Array;
+            fixed (byte *ptr = array)
+            return ToxFunctions.FileSendData(Friend.Tox.Handle, Friend.Number, (byte)Number, (IntPtr)ptr, (ushort)data.Count) == 0;
         }
 
         /// <summary>

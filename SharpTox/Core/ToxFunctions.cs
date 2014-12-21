@@ -1,4 +1,4 @@
-﻿﻿#pragma warning disable 1591
+﻿#pragma warning disable 1591
 
 using System;
 using System.Collections.Generic;
@@ -175,7 +175,7 @@ namespace SharpTox.Core
         public static extern int FileSendControl(ToxHandle tox, int friendnumber, byte send_receive, byte filenumber, byte message_id, byte[] data, ushort length);
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_file_send_data")]
-        public static extern int FileSendData(ToxHandle tox, int friendnumber, byte filenumber, byte[] data, ushort length);
+        public static extern int FileSendData(ToxHandle tox, int friendnumber, byte filenumber, IntPtr data, ushort length);
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_file_data_size")]
         public static extern int FileDataSize(ToxHandle tox, int friendnumber);
