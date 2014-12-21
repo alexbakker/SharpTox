@@ -15,6 +15,21 @@ namespace SharpTox.Core
             Group = group;
             Number = peerNumber;
         }
+        /// <summary>
+        /// Check if the given peernumber corresponds to ours.
+        /// </summary>
+        /// <param name="groupNumber"></param>
+        /// <param name="peerNumber"></param>
+        /// <returns></returns>
+        public bool IsMe
+        {
+            get
+            {
+                Group.Tox.CheckDisposed();
+
+                return ToxFunctions.GroupPeerNumberIsOurs(Group.Tox.Handle, Group.Number, Number) == 1;
+            }
+        }
     }
 }
 
