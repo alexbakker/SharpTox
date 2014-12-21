@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Linq;
 using System.Text;
+using System.Collections.Generic;
 
 namespace SharpTox.Core
 {
@@ -13,11 +15,13 @@ namespace SharpTox.Core
             if (tox == null)
                 throw new ArgumentNullException("tox");
 
+            Tox = tox;
+
             Tox.CheckDisposed();
             Number = ToxFunctions.AddGroupchat(Tox.Handle);
         }
 
-        internal ToxGroup(Tox tox, int groupNumber)
+        public ToxGroup(Tox tox, int groupNumber)
         {
             Tox = tox;
             Number = groupNumber;
@@ -130,6 +134,78 @@ namespace SharpTox.Core
             {
                 Tox.CheckDisposed();
                 return (ToxGroupType)ToxFunctions.GroupGetType(Tox.Handle, Number);
+            }
+        }
+
+        /// <summary>
+        /// Retrieves an array of group member names.
+        /// </summary>
+        /// <param name="groupNumber"></param>
+        /// <returns></returns>
+        public string[] PeerNames
+        {
+            get
+            {
+                Tox.CheckDisposed();
+
+                int count = ToxFunctions.GroupNumberPeers(Tox.Handle, Number);
+
+                //just return an empty string array before we get an overflow exception
+                if (count <= 0)
+                    return new string[0];
+
+                ushort[] lengths = new ushort[count];
+                byte[,] matrix = new byte[count, ToxConstants.MaxNameLength];
+
+                int result = ToxFunctions.GroupGetNames(Tox.Handle, Number, matrix, lengths, (ushort)count);
+                if (result != 0)
+                    throw new Exception("Error while trying to retrieve PeerNames");
+
+                string[] names = new string[count];
+                for (int i = 0; i < count; i++)
+                {
+                    byte[] name = new byte[lengths[i]];
+
+                    for (int j = 0; j < name.Length; j++)
+                        name[j] = matrix[i, j];
+
+                    names[i] = ToxTools.GetString(name);
+                }
+
+                return names;
+            }
+        }
+
+        Dictionary<int, ToxGroupPeer> peers = new Dictionary<int, ToxGroupPeer>();
+        internal ToxGroupPeer PeerFromPeerNumber(int peerNumber)
+        {
+            ToxGroupPeer peer;
+            if (!peers.TryGetValue(peerNumber, out peer))
+                peer = new ToxGroupPeer(this, peerNumber);
+
+            return peer;
+        }
+
+        internal void Change(ToxGroupPeer peer, ToxChatChange change)
+        {
+            if (change == ToxChatChange.PeerAdd)
+                peers.Add(peer.Number, peer);
+            else if (change == ToxChatChange.PeerDel)
+                peers.Remove(peer.Number);
+            else if (change == ToxChatChange.PeerName)
+                peer.Name = Tox.GetGroupMemberName(Number, peer.Number);
+        }
+
+
+        /// <summary>
+        /// Returns peers in the group chat.
+        /// </summary>
+        /// <value>Peers of this group chat.</value>
+        public ToxGroupPeer[] Peers
+        {
+            get
+            {
+                return peers.Select((kvp) => kvp.Value).ToArray();
             }
         }
     }

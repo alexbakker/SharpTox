@@ -21,12 +21,12 @@ namespace SharpTox.Core
         public abstract class GroupBaseEventArgs : EventArgs
         {
             public ToxGroup Group { get; private set; }
-            public int PeerNumber { get; private set; }
+            public ToxGroupPeer Peer { get; private set; }
 
-            protected GroupBaseEventArgs(ToxGroup group, int peerNumber)
+            protected GroupBaseEventArgs(ToxGroup group, ToxGroupPeer peer)
             {
                 Group = group;
-                PeerNumber = peerNumber;
+                Peer = peer;
             }
         }
 
@@ -133,15 +133,12 @@ namespace SharpTox.Core
 
         public class GroupInviteEventArgs : FriendBaseEventArgs
         {
-            public byte[] Data { get; private set; }
+            public ToxGroupInvite GroupInvite { get; private set; }
 
-            public ToxGroupType GroupType { get; private set; }
-
-            public GroupInviteEventArgs(ToxFriend friend, ToxGroupType type, byte[] data)
-                : base(friend)
+            public GroupInviteEventArgs(ToxGroupInvite groupInvite)
+                : base(groupInvite.Friend)
             {
-                Data = (byte[])data.Clone();
-                GroupType = type; 
+                GroupInvite = groupInvite;
             }
         }
 
@@ -149,8 +146,8 @@ namespace SharpTox.Core
         {
             public string Message { get; private set; }
 
-            public GroupMessageEventArgs(ToxGroup group, int peerNumber, string message)
-                : base(group, peerNumber)
+            public GroupMessageEventArgs(ToxGroup group, ToxGroupPeer peer, string message)
+                : base(group, peer)
             {
                 Message = message;
             }
@@ -160,8 +157,8 @@ namespace SharpTox.Core
         {
             public string Action { get; private set; }
 
-            public GroupActionEventArgs(ToxGroup group, int peerNumber, string action)
-                : base(group, peerNumber)
+            public GroupActionEventArgs(ToxGroup group, ToxGroupPeer peer, string action)
+                : base(group, peer)
             {
                 Action = action;
             }
@@ -171,8 +168,8 @@ namespace SharpTox.Core
         {
             public ToxChatChange Change { get; private set; }
 
-            public GroupNamelistChangeEventArgs(ToxGroup group, int peerNumber, ToxChatChange change)
-                : base(group, peerNumber)
+            public GroupNamelistChangeEventArgs(ToxGroup group, ToxGroupPeer peer, ToxChatChange change)
+                : base(group, peer)
             {
                 Change = change;
             }
@@ -281,8 +278,8 @@ namespace SharpTox.Core
         {
             public string Title { get; private set; }
 
-            public GroupTitleEventArgs(ToxGroup group, int peerNumber, string title)
-                : base(group, peerNumber)
+            public GroupTitleEventArgs(ToxGroup group, ToxGroupPeer peer, string title)
+                : base(group, peer)
             {
                 Title = title;
             }
