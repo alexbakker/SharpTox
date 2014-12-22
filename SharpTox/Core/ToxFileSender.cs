@@ -70,11 +70,12 @@ namespace SharpTox.Core
         /// Sends a file control request.
         /// </summary>
         /// <param name="messageId"></param>
+        /// <param name="data"></param>
         /// <returns>true on success and false on failure.</returns>
-        public bool Control(ToxFileControl messageId)
+        public bool Control(ToxFileControl messageId, byte[] data)
         {
             CheckDisposed();
-            return ToxFunctions.FileSendControl(Friend.Tox.Handle, Friend.Number, (byte)Type, (byte)Number, (byte)messageId, IntPtr.Zero, 0) == 0;
+            return ToxFunctions.FileSendControl(Friend.Tox.Handle, Friend.Number, (byte)Type, (byte)Number, (byte)messageId, data, (ushort)data.Length) == 0;
         }
 
         /// <summary>

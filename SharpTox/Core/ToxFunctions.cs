@@ -172,7 +172,7 @@ namespace SharpTox.Core
         public static extern int NewFileSender(ToxHandle tox, int friendnumber, ulong filesize, byte[] filename, ushort filename_length); //max filename length is 255 bytes
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_file_send_control")]
-        public static extern int FileSendControl(ToxHandle tox, int friendnumber, byte send_receive, byte filenumber, byte message_id, IntPtr data, ushort length);
+        public static extern int FileSendControl(ToxHandle tox, int friendnumber, byte send_receive, byte filenumber, byte message_id, byte[] data, ushort length);
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_file_send_data")]
         public static extern int FileSendData(ToxHandle tox, int friendnumber, byte filenumber, IntPtr data, ushort length);
