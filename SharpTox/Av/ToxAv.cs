@@ -252,30 +252,27 @@ namespace SharpTox.Av
         /// <param name="friendNumber"></param>
         /// <param name="reason"></param>
         /// <returns></returns>
-        public ToxAvError Cancel(int callIndex, int friendNumber, string reason)
+        public void Cancel(int callIndex, int friendNumber, string reason)
         {
             CheckDisposed();
 
-            return ToxAvFunctions.Cancel(_toxAv, callIndex, friendNumber, reason);
+            ToxAvException.Check(ToxAvFunctions.Cancel(_toxAv, callIndex, friendNumber, reason));
         }
 
         /// <summary>
         /// Creates a new call.
         /// </summary>
-        /// <param name="callIndex"></param>
         /// <param name="friendNumber"></param>
         /// <param name="settings"></param>
         /// <param name="ringingSeconds"></param>
-        /// <returns></returns>
-        public ToxAvError Call(int friendNumber, ToxAvCodecSettings settings, int ringingSeconds, out int callIndex)
+        /// <returns>call index</returns>
+        public int Call(int friendNumber, ToxAvCodecSettings settings, int ringingSeconds)
         {
             CheckDisposed();
 
             int index = new int();
-            ToxAvError result = ToxAvFunctions.Call(_toxAv, ref index, friendNumber, ref settings, ringingSeconds);
-
-            callIndex = index;
-            return result;
+            ToxAvException.Check(ToxAvFunctions.Call(_toxAv, ref index, friendNumber, ref settings, ringingSeconds));
+            return index;
         }
 
         /// <summary>
@@ -365,7 +362,7 @@ namespace SharpTox.Av
         }
 
         private Dictionary<int, ToxAvCall> _calls = new Dictionary<int, ToxAvCall>();
-        private ToxAvCall CallFromCallIndex(int callIndex)
+        public ToxAvCall CallFromCallIndex(int callIndex)
         {
             ToxAvCall call;
             if (_calls.TryGetValue(callIndex, out call))

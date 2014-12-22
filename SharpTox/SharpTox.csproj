@@ -194,6 +194,7 @@
     <Compile Include="Core\IToxItertable.cs" />
     <Compile Include="Av\ToxAvCall.cs" />
     <Compile Include="Av\ToxAvExtensions.cs" />
+    <Compile Include="Av\ToxAvException.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />

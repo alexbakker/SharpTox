@@ -19,22 +19,22 @@ namespace SharpTox.Av
         /// </summary>
         /// <param name="settings"></param>
         /// <returns></returns>
-        public ToxAvError Answer(ToxAvCodecSettings settings)
+        public void Answer(ToxAvCodecSettings settings)
         {
             ToxAv.CheckDisposed();
 
-            return ToxAvFunctions.Answer(ToxAv.Handle, Index, ref settings);
+            ToxAvException.Check(ToxAvFunctions.Answer(ToxAv.Handle, Index, ref settings));
         }
 
         /// <summary>
         /// Hangs up an in-progress call.
         /// </summary>
         /// <returns></returns>
-        public ToxAvError Hangup()
+        public void Hangup()
         {
             ToxAv.CheckDisposed();
 
-            return ToxAvFunctions.Hangup(ToxAv.Handle, Index);
+            ToxAvException.Check(ToxAvFunctions.Hangup(ToxAv.Handle, Index));
         }
 
         /// <summary>
@@ -42,22 +42,22 @@ namespace SharpTox.Av
         /// </summary>
         /// <param name="reason"></param>
         /// <returns></returns>
-        public ToxAvError Reject(string reason)
+        public void Reject(string reason)
         {
             ToxAv.CheckDisposed();
 
-            return ToxAvFunctions.Reject(ToxAv.Handle, Index, reason);
+            ToxAvException.Check(ToxAvFunctions.Reject(ToxAv.Handle, Index, reason));
         }
 
         /// <summary>
         /// Stops a call and terminates the transmission without notifying the remote peer.
         /// </summary>
         /// <returns></returns>
-        public ToxAvError Stop()
+        public void Stop()
         {
             ToxAv.CheckDisposed();
 
-            return ToxAvFunctions.StopCall(ToxAv.Handle, Index);
+            ToxAvException.Check(ToxAvFunctions.StopCall(ToxAv.Handle, Index));
         }
 
         /// <summary>
@@ -78,11 +78,11 @@ namespace SharpTox.Av
         /// <param name="frame"></param>
         /// <param name="frameSize"></param>
         /// <returns></returns>
-        public ToxAvError SendAudio(byte[] frame, int frameSize)
+        public void SendAudio(byte[] frame, int frameSize)
         {
             ToxAv.CheckDisposed();
 
-            return ToxAvFunctions.SendAudio(ToxAv.Handle, Index, frame, (uint)frameSize);
+            ToxAvException.Check(ToxAvFunctions.SendAudio(ToxAv.Handle, Index, frame, (uint)frameSize));
         }
 
         /// <summary>
@@ -119,11 +119,11 @@ namespace SharpTox.Av
         /// </summary>
         /// <param name="settings"></param>
         /// <returns></returns>
-        public ToxAvError ChangeSettings(ToxAvCodecSettings settings)
+        public void ChangeSettings(ToxAvCodecSettings settings)
         {
             ToxAv.CheckDisposed();
 
-            return ToxAvFunctions.ChangeSettings(ToxAv.Handle, Index, ref settings);
+            ToxAvException.Check(ToxAvFunctions.ChangeSettings(ToxAv.Handle, Index, ref settings));
         }
 
         /// <summary>
@@ -131,22 +131,22 @@ namespace SharpTox.Av
         /// </summary>
         /// <param name="supportVideo"></param>
         /// <returns></returns>
-        public ToxAvError PrepareTransmission(bool supportVideo)
+        public void PrepareTransmission(bool supportVideo)
         {
             ToxAv.CheckDisposed();
 
-            return ToxAvFunctions.PrepareTransmission(ToxAv.Handle, Index, supportVideo ? 1 : 0);
+            ToxAvException.Check(ToxAvFunctions.PrepareTransmission(ToxAv.Handle, Index, supportVideo ? 1 : 0));
         }
 
         /// <summary>
         /// Kills the transmission of a call. Should be called at the end of the transmission.
         /// </summary>
         /// <returns></returns>
-        public ToxAvError KillTransmission()
+        public void KillTransmission()
         {
             ToxAv.CheckDisposed();
 
-            return ToxAvFunctions.KillTransmission(ToxAv.Handle, Index);
+            ToxAvException.Check(ToxAvFunctions.KillTransmission(ToxAv.Handle, Index));
         }
 
         /// <summary>
