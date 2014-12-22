@@ -75,7 +75,7 @@ namespace SharpTox.Core
         public bool Control(ToxFileControl messageId, byte[] data)
         {
             CheckDisposed();
-            return ToxFunctions.FileSendControl(Friend.Tox.Handle, Friend.Number, (byte)Type, (byte)Number, (byte)messageId, data, (ushort)data.Length) == 0;
+            return ToxFunctions.FileSendControl(Friend.Tox.Handle, Friend.Number, (byte)Type, (byte)Number, (byte)messageId, data, (ushort)(data == null ? 0 : data.Length)) == 0;
         }
 
         /// <summary>
