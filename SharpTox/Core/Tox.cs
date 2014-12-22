@@ -402,6 +402,21 @@ namespace SharpTox.Core
 
         private int DoIterate()
         {
+            if (IsConnected && !_connected)
+            {
+                if (OnConnected != null)
+                    OnConnected(this, new ToxEventArgs.ConnectionEventArgs(true));
+
+                _connected = true;
+            }
+            else if (!IsConnected && _connected)
+            {
+                if (OnDisconnected != null)
+                    OnDisconnected(this, new ToxEventArgs.ConnectionEventArgs(false));
+
+                _connected = false;
+            }
+
             ToxFunctions.Do(_tox);
             return (int)ToxFunctions.DoInterval(_tox);
         }
@@ -417,21 +432,6 @@ namespace SharpTox.Core
                 {
                     if (_cancelTokenSource.IsCancellationRequested)
                         break;
-
-                    if (IsConnected && !_connected)
-                    {
-                        if (OnConnected != null)
-                            OnConnected(this, new ToxEventArgs.ConnectionEventArgs(true));
-
-                        _connected = true;
-                    }
-                    else if (!IsConnected && _connected)
-                    {
-                        if (OnDisconnected != null)
-                            OnDisconnected(this, new ToxEventArgs.ConnectionEventArgs(false));
-
-                        _connected = false;
-                    }
 
                     int delay = DoIterate();
 
