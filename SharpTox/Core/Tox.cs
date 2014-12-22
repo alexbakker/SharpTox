@@ -536,23 +536,6 @@ namespace SharpTox.Core
         }
 
         /// <summary>
-        /// Retrieves the name of a group member.
-        /// </summary>
-        /// <param name="groupNumber"></param>
-        /// <param name="peerNumber"></param>
-        /// <returns></returns>
-        public string GetGroupMemberName(int groupNumber, int peerNumber)
-        {
-            CheckDisposed();
-
-            byte[] name = new byte[ToxConstants.MaxNameLength];
-            if (ToxFunctions.GroupPeername(_tox, groupNumber, peerNumber, name) == -1)
-                throw new Exception("Could not get peer name");
-
-            return ToxTools.GetString(name);
-        }
-
-        /// <summary>
         /// Creates a new group.
         /// </summary>
         /// <returns></returns>

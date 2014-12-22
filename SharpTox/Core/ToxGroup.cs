@@ -193,9 +193,25 @@ namespace SharpTox.Core
             else if (change == ToxChatChange.PeerDel)
                 peers.Remove(peer.Number);
             else if (change == ToxChatChange.PeerName)
-                peer.Name = Tox.GetGroupMemberName(Number, peer.Number);
+                peer.Name = GetGroupMemberName(peer.Number);
         }
 
+        /// <summary>
+        /// Retrieves the name of a group member.
+        /// </summary>
+        /// <param name="groupNumber"></param>
+        /// <param name="peerNumber"></param>
+        /// <returns></returns>
+        private string GetGroupMemberName(int peerNumber)
+        {
+            Tox.CheckDisposed();
+
+            byte[] name = new byte[ToxConstants.MaxNameLength];
+            if (ToxFunctions.GroupPeername(Tox.Handle, Number, peerNumber, name) == -1)
+                throw new Exception("Could not get peer name");
+
+            return ToxTools.GetString(name);
+        }
 
         /// <summary>
         /// Returns peers in the group chat.
