@@ -8,7 +8,7 @@ namespace SharpTox.Av
         public ToxAv ToxAv { get; private set; }
         public int Index { get; private set; }
 
-        public ToxAvCall(ToxAv toxAv, int callIndex)
+        internal ToxAvCall(ToxAv toxAv, int callIndex)
         {
             ToxAv = toxAv;
             Index = callIndex;
