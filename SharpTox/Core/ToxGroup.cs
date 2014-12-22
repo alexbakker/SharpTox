@@ -10,7 +10,7 @@ namespace SharpTox.Core
         public Tox Tox { get; private set; }
         public int Number { get; private set; }
 
-        public ToxGroup(Tox tox)
+        internal ToxGroup(Tox tox)
         {
             if (tox == null)
                 throw new ArgumentNullException("tox");
@@ -21,7 +21,7 @@ namespace SharpTox.Core
             Number = ToxFunctions.AddGroupchat(Tox.Handle);
         }
 
-        public ToxGroup(Tox tox, int groupNumber)
+        internal ToxGroup(Tox tox, int groupNumber)
         {
             Tox = tox;
             Number = groupNumber;
