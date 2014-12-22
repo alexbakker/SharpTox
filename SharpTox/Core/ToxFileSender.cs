@@ -88,7 +88,7 @@ namespace SharpTox.Core
             CheckDisposed();
             var array = data.Array;
             fixed (byte *ptr = array)
-            return ToxFunctions.FileSendData(Friend.Tox.Handle, Friend.Number, (byte)Number, (IntPtr)ptr, (ushort)data.Count) == 0;
+            return ToxFunctions.FileSendData(Friend.Tox.Handle, Friend.Number, (byte)Number, (IntPtr)ptr + data.Offset, (ushort)data.Count) == 0;
         }
 
         /// <summary>
