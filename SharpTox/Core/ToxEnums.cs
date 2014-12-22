@@ -177,4 +177,10 @@
         Text,
         Av
     }
+
+    public enum ToxFileSenderType : byte
+    {
+        Send = 0,
+        Receive = 1
+    }
 }
