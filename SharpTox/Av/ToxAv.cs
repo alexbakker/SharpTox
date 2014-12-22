@@ -12,7 +12,7 @@ namespace SharpTox.Av
     /// <summary>
     /// Represents an instance of toxav.
     /// </summary>
-    public class ToxAv : IDisposable
+    public class ToxAv : IDisposable, IToxItertable
     {
         #region Event delegates
         private ToxAvDelegates.CallstateCallback _onCancelCallback;

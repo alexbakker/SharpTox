@@ -17,7 +17,7 @@ namespace SharpTox.Core
     /// <summary>
     /// Represents an instance of Tox.
     /// </summary>
-    public class Tox : IDisposable
+    public class Tox : IDisposable, IToxItertable
     {
         #region Callback Delegates
         private ToxDelegates.CallbackFriendRequestDelegate _onFriendRequestCallback;
