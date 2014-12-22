@@ -221,7 +221,7 @@ namespace SharpTox.Core
         {
             get
             {
-                return peers.Select((kvp) => kvp.Value).ToArray();
+                return peers.Values.ToArray();
             }
         }
     }
