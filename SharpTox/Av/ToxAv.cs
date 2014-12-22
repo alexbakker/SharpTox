@@ -67,18 +67,11 @@ namespace SharpTox.Av
             }
         }
 
-        private ToxHandle _tox;
-
         /// <summary>
-        /// The Tox instance that this toxav instance belongs to.
+        /// The tox instance.
         /// </summary>
-        public ToxHandle ToxHandle
-        {
-            get
-            {
-                return _tox;
-            }
-        }
+        /// <value>The tox.</value>
+        public Tox Tox { get; private set; }
 
         /// <summary>
         /// Retrieves the number of active calls.
@@ -105,10 +98,10 @@ namespace SharpTox.Av
         /// </summary>
         /// <param name="tox"></param>
         /// <param name="maxCalls"></param>
-        public ToxAv(ToxHandle tox, int maxCalls)
+        public ToxAv(Tox tox, int maxCalls)
         {
-            _tox = tox;
-            _toxAv = ToxAvFunctions.New(tox, maxCalls);
+            Tox = tox;
+            _toxAv = ToxAvFunctions.New(tox.Handle, maxCalls);
 
             if (_toxAv == null || _toxAv.IsInvalid)
                 throw new Exception("Could not create a new instance of toxav.");
@@ -116,14 +109,6 @@ namespace SharpTox.Av
             MaxCalls = maxCalls;
             Invoker = DummyInvoker;
         }
-
-        /// <summary>
-        /// Initialises a new instance of toxav.
-        /// </summary>
-        /// <param name="tox"></param>
-        /// <param name="maxCalls"></param>
-        public ToxAv(Tox tox, int maxCalls)
-            : this(tox.Handle, maxCalls) { }
 
         /// <summary>
         /// Releases all resources used by this instance of tox.
@@ -504,7 +489,7 @@ namespace SharpTox.Av
                 }
             };
 
-            int result = ToxAvFunctions.AddAvGroupchat(_tox, callback, IntPtr.Zero);
+            int result = ToxAvFunctions.AddAvGroupchat(Tox.Handle, callback, IntPtr.Zero);
             if (result != -1)
                 _groupAudioHandlers.Add(callback);
 
@@ -533,7 +518,7 @@ namespace SharpTox.Av
                 }
             };
 
-            int result = ToxAvFunctions.JoinAvGroupchat(_tox, friendNumber, data, (ushort)data.Length, callback, IntPtr.Zero);
+            int result = ToxAvFunctions.JoinAvGroupchat(Tox.Handle, friendNumber, data, (ushort)data.Length, callback, IntPtr.Zero);
             if (result != -1)
                 _groupAudioHandlers.Add(callback);
 
@@ -554,7 +539,7 @@ namespace SharpTox.Av
             if (_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
-            return ToxAvFunctions.GroupSendAudio(_tox, groupNumber, pcm, (uint)perframe, (byte)channels, (uint)sampleRate) == 0;
+            return ToxAvFunctions.GroupSendAudio(Tox.Handle, groupNumber, pcm, (uint)perframe, (byte)channels, (uint)sampleRate) == 0;
         }
 
         private object DummyInvoker(Delegate method, params object[] p)
