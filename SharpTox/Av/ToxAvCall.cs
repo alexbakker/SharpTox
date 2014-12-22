@@ -172,6 +172,16 @@ namespace SharpTox.Av
                 return ToxAv.Tox.FriendFromFriendNumber(GetPeerID(0));
             }
         }
+
+        /// <summary>
+        /// Cancels a call.
+        /// </summary>
+        /// <param name="reason"></param>
+        /// <returns></returns>
+        public void Cancel(string reason)
+        {
+            ToxAvException.Check(ToxAvFunctions.Cancel(ToxAv.Handle, Index, Friend.Number, reason));
+        }
     }
 }
 

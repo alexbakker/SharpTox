@@ -246,20 +246,6 @@ namespace SharpTox.Av
         }
 
         /// <summary>
-        /// Cancels a call.
-        /// </summary>
-        /// <param name="callIndex"></param>
-        /// <param name="friendNumber"></param>
-        /// <param name="reason"></param>
-        /// <returns></returns>
-        public void Cancel(int callIndex, int friendNumber, string reason)
-        {
-            CheckDisposed();
-
-            ToxAvException.Check(ToxAvFunctions.Cancel(_toxAv, callIndex, friendNumber, reason));
-        }
-
-        /// <summary>
         /// Retrieves a peer's codec settings.
         /// </summary>
         /// <param name="callIndex"></param>
