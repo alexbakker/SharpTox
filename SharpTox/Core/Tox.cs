@@ -57,6 +57,15 @@ namespace SharpTox.Core
 
         private Dictionary<int, ToxFriend> _friends = new Dictionary<int, ToxFriend>();
 
+        private Lazy<SharpTox.Av.ToxAv> _toxAv;
+        public SharpTox.Av.ToxAv ToxAv
+        {
+            get
+            {
+                return _toxAv.Value;
+            }
+        }
+
         /// <summary>
         /// Options used for this instance of Tox.
         /// </summary>
@@ -297,6 +306,8 @@ namespace SharpTox.Core
                 throw new Exception("Could not create a new instance of toxav.");
 
             Options = options;
+
+            _toxAv = new Lazy<SharpTox.Av.ToxAv>(() => new SharpTox.Av.ToxAv(this, 64));
         }
 
         public void Dispose()
@@ -418,7 +429,12 @@ namespace SharpTox.Core
             }
 
             ToxFunctions.Do(_tox);
-            return (int)ToxFunctions.DoInterval(_tox);
+            var delay = (int)ToxFunctions.DoInterval(_tox);
+
+            if (_toxAv.IsValueCreated)
+                return Math.Min(delay, _toxAv.Value.Iterate());
+
+            return delay;
         }
 
         private void Loop()

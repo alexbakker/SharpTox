@@ -93,7 +93,7 @@ namespace SharpTox.Av
         /// </summary>
         /// <param name="tox"></param>
         /// <param name="maxCalls"></param>
-        public ToxAv(Tox tox, int maxCalls)
+        internal ToxAv(Tox tox, int maxCalls)
         {
             Tox = tox;
             _toxAv = ToxAvFunctions.New(tox.Handle, maxCalls);
@@ -257,22 +257,6 @@ namespace SharpTox.Av
             CheckDisposed();
 
             ToxAvException.Check(ToxAvFunctions.Cancel(_toxAv, callIndex, friendNumber, reason));
-        }
-
-        /// <summary>
-        /// Creates a new call.
-        /// </summary>
-        /// <param name="friendNumber"></param>
-        /// <param name="settings"></param>
-        /// <param name="ringingSeconds"></param>
-        /// <returns>a call</returns>
-        public ToxAvCall Call(int friendNumber, ToxAvCodecSettings settings, int ringingSeconds)
-        {
-            CheckDisposed();
-
-            int index;
-            ToxAvException.Check(ToxAvFunctions.Call(_toxAv, out index, friendNumber, ref settings, ringingSeconds));
-            return CallFromCallIndex(index);
         }
 
         /// <summary>
