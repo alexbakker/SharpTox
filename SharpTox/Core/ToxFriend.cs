@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Linq;
 using System.Text;
+using System.Collections.Generic;
 
 namespace SharpTox.Core
 {
@@ -276,6 +278,43 @@ namespace SharpTox.Core
                 throw new ArgumentException("First byte of data is not in the 160-191 range.");
 
             return ToxFunctions.SendLosslessPacket(Tox.Handle, Number, data, (uint)data.Length) == 0;
+        }
+
+        Dictionary<int, ToxFileSender> _fileSenders = new Dictionary<int, ToxFileSender>();
+        internal ToxFileSender FileSenderFromFileNumber(int fileNumber, Func<ToxFileSender> creator)
+        {
+            ToxFileSender fileSender;
+            if (_fileSenders.TryGetValue(fileNumber, out fileSender))
+                return fileSender;
+
+            fileSender = creator();
+            _fileSenders.Add(fileSender.Number, fileSender);
+
+            return fileSender;
+        }
+        /// <summary>
+        /// Returns all file senders currently active for this user.
+        /// </summary>
+        /// <value>Array of file senders.</value>
+        public ToxFileSender[] FileSenders
+        {
+            get
+            {
+                return _fileSenders.Values.ToArray();
+            }
+        }
+
+        /// <summary>
+        /// Send a file to a friend.
+        /// </summary>
+        /// <returns>The file sender instance.</returns>
+        /// <param name="filename">Filename.</param>
+        /// <param name="size">Size of the file.</param>
+        public ToxFileSender SendFile(string filename, int size)
+        {
+            var fileSender = new ToxFileSender(this, filename, (ulong)size);
+            fileSender = FileSenderFromFileNumber(fileSender.Number, () => fileSender);
+            return fileSender;
         }
     }
 }

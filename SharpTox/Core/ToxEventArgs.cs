@@ -32,12 +32,12 @@ namespace SharpTox.Core
 
         public abstract class FileBaseEventArgs : FriendBaseEventArgs
         {
-            public int FileNumber { get; private set; }
+            public ToxFileSender FileSender { get; private set; }
 
-            protected FileBaseEventArgs(ToxFriend friend, int fileNumber)
+            protected FileBaseEventArgs(ToxFriend friend, ToxFileSender fileSender)
                 : base(friend)
             {
-                FileNumber = fileNumber;
+                FileSender = fileSender;
             }
         }
         #endregion
@@ -177,14 +177,14 @@ namespace SharpTox.Core
 
         public class FileControlEventArgs : FileBaseEventArgs
         {
-            public ToxFileControl Control{get;private set;}
+            public ToxFileControl Control{ get;private set; }
 
             public bool IsSend { get; private set; }
 
             public byte[] Data { get; private set; }
 
-            public FileControlEventArgs(ToxFriend friend, int fileNumber, bool isSend, ToxFileControl control, byte[] data)
-                : base(friend, fileNumber)
+            public FileControlEventArgs(ToxFriend friend, ToxFileSender fileSender, bool isSend, ToxFileControl control, byte[] data)
+                : base(friend, fileSender)
             {
                 IsSend = isSend;
                 Control = control;
@@ -196,8 +196,8 @@ namespace SharpTox.Core
         {
             public byte[] Data { get; private set; }
 
-            public FileDataEventArgs(ToxFriend friend, int fileNumber, byte[] data)
-                : base(friend, fileNumber)
+            public FileDataEventArgs(ToxFriend friend, ToxFileSender fileSender, byte[] data)
+                : base(friend, fileSender)
             {
                 Data = (byte[])data.Clone();
             }
@@ -205,15 +205,9 @@ namespace SharpTox.Core
 
         public class FileSendRequestEventArgs : FileBaseEventArgs
         {
-            public ulong FileSize { get; private set; }
-
-            public string FileName { get; private set; }
-
-            public FileSendRequestEventArgs(ToxFriend friend, int fileNumber, ulong fileSize, string fileName)
-                : base(friend, fileNumber)
+            public FileSendRequestEventArgs(ToxFriend friend, ToxFileSender fileSender)
+                : base(friend, fileSender)
             {
-                FileSize = fileSize;
-                FileName = fileName;
             }
         }
 

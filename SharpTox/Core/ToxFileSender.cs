@@ -30,7 +30,7 @@ namespace SharpTox.Core
             Friend.Tox.CheckDisposed();
         }
 
-        public ToxFileSender(ToxFriend friend, string filename, ulong size)
+        internal ToxFileSender(ToxFriend friend, string filename, ulong size)
         {
 
             Friend = friend;
@@ -50,14 +50,12 @@ namespace SharpTox.Core
                 throw new Exception("Could not create new file sender");
         }
 
-        public ToxFileSender(ToxFriend friend, string filename, long size)
-            : this (friend, filename, (ulong)size)
+        internal ToxFileSender(ToxFriend friend, int number, string filename, ulong size)
         {
-        }
-
-        public ToxFileSender(ToxFriend friend, string filename, int size)
-            : this (friend, filename, (ulong)size)
-        {
+            Friend = friend;
+            Number = number;
+            Filename = filename;
+            _size = size;
         }
 
         /// <summary>

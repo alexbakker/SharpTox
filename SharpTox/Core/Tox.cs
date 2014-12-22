@@ -1223,7 +1223,9 @@ namespace SharpTox.Core
                 {
                     _onFileControlCallback = (IntPtr tox, int friendNumber, byte receiveSend, byte fileNumber, byte controlYype, byte[] data, ushort length, IntPtr userData) =>
                     {
-                        var e = new ToxEventArgs.FileControlEventArgs(FriendFromFriendNumber(friendNumber), fileNumber, receiveSend == 1, (ToxFileControl)controlYype, data);
+                        var friend = FriendFromFriendNumber(friendNumber);
+                        var toxFileSender = friend.FileSenderFromFileNumber(fileNumber, null);
+                        var e = new ToxEventArgs.FileControlEventArgs(friend, toxFileSender, receiveSend == 1, (ToxFileControl)controlYype, data);
                         _onFileControl(this, e);
                     };
 
@@ -1257,7 +1259,9 @@ namespace SharpTox.Core
                 {
                     _onFileDataCallback = (IntPtr tox, int friendNumber, byte fileNumber, byte[] data, ushort length, IntPtr userData) =>
                     {
-                        var e = new ToxEventArgs.FileDataEventArgs(FriendFromFriendNumber(friendNumber), fileNumber, data);
+                        var friend = FriendFromFriendNumber(friendNumber);
+                        var fileSender = friend.FileSenderFromFileNumber(fileNumber, null);
+                        var e = new ToxEventArgs.FileDataEventArgs(friend, fileSender, data);
                         _onFileData(this, e);
                     };
 
@@ -1291,7 +1295,9 @@ namespace SharpTox.Core
                 {
                     _onFileSendRequestCallback = (IntPtr tox, int friendNumber, byte fileNumber, ulong fileSize, byte[] filename, ushort filenameLength, IntPtr userData) =>
                     {
-                        var e = new ToxEventArgs.FileSendRequestEventArgs(FriendFromFriendNumber(friendNumber), fileNumber, fileSize, ToxTools.GetString(filename));
+                        var friend = FriendFromFriendNumber(friendNumber);
+                        var fileSender = friend.FileSenderFromFileNumber(fileNumber, () =>  new ToxFileSender(friend, fileNumber, ToxTools.GetString(filename), fileSize));
+                        var e = new ToxEventArgs.FileSendRequestEventArgs(friend, fileSender);
                         _onFileSendRequest(this, e);
                     };
 
