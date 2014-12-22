@@ -279,44 +279,6 @@ namespace SharpTox.Av
         }
 
         /// <summary>
-        /// Prepares transmission. Must be called before any transmission occurs.
-        /// </summary>
-        /// <param name="callIndex"></param>
-        /// <param name="supportVideo"></param>
-        /// <returns></returns>
-        public ToxAvError PrepareTransmission(int callIndex, bool supportVideo)
-        {
-            CheckDisposed();
-
-            return ToxAvFunctions.PrepareTransmission(_toxAv, callIndex, supportVideo ? 1 : 0);
-        }
-
-        /// <summary>
-        /// Kills the transmission of a call. Should be called at the end of the transmission.
-        /// </summary>
-        /// <param name="callIndex"></param>
-        /// <returns></returns>
-        public ToxAvError KillTransmission(int callIndex)
-        {
-            CheckDisposed();
-
-            return ToxAvFunctions.KillTransmission(_toxAv, callIndex);
-        }
-
-        /// <summary>
-        /// Get the friend_number of peer participating in conversation
-        /// </summary>
-        /// <param name="callIndex"></param>
-        /// <param name="peer"></param>
-        /// <returns></returns>
-        public int GetPeerID(int callIndex, int peer)
-        {
-            CheckDisposed();
-
-            return ToxAvFunctions.GetPeerID(_toxAv, callIndex, peer);
-        }
-
-        /// <summary>
         /// Retrieves a peer's codec settings.
         /// </summary>
         /// <param name="callIndex"></param>

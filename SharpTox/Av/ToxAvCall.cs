@@ -124,6 +124,42 @@ namespace SharpTox.Av
 
             return ToxAvFunctions.ChangeSettings(ToxAv.Handle, Index, ref settings);
         }
+
+        /// <summary>
+        /// Prepares transmission. Must be called before any transmission occurs.
+        /// </summary>
+        /// <param name="supportVideo"></param>
+        /// <returns></returns>
+        public ToxAvError PrepareTransmission(bool supportVideo)
+        {
+            ToxAv.CheckDisposed();
+
+            return ToxAvFunctions.PrepareTransmission(ToxAv.Handle, Index, supportVideo ? 1 : 0);
+        }
+
+        /// <summary>
+        /// Kills the transmission of a call. Should be called at the end of the transmission.
+        /// </summary>
+        /// <returns></returns>
+        public ToxAvError KillTransmission()
+        {
+            ToxAv.CheckDisposed();
+
+            return ToxAvFunctions.KillTransmission(ToxAv.Handle, Index);
+        }
+
+        /// <summary>
+        /// Get the friend_number of peer participating in conversation
+        /// </summary>
+        /// <param name="peer"></param>
+        /// <returns></returns>
+        public int GetPeerID(int peer)
+        {
+            ToxAv.CheckDisposed();
+
+            return ToxAvFunctions.GetPeerID(ToxAv.Handle, Index, peer);
+        }
+
     }
 }
 
