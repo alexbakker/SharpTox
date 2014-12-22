@@ -736,25 +736,6 @@ namespace SharpTox.Core
             return ToxFunctions.UnsetAvatar(_tox) == 0;
         }
 
-        /// <summary>
-        /// Retrieves the public key of a peer.
-        /// </summary>
-        /// <param name="groupNumber"></param>
-        /// <param name="peerNumber"></param>
-        /// <returns></returns>
-        public ToxKey GetGroupPeerPublicKey(int groupNumber, int peerNumber)
-        {
-            CheckDisposed();
-
-            byte[] key = new byte[ToxConstants.ClientIdSize];
-            int result = ToxFunctions.GroupPeerPubkey(_tox, groupNumber, peerNumber, key);
-
-            if (result != 0)
-                return null;
-
-            return new ToxKey(ToxKeyType.Public, key);
-        }
-
         private ToxFriend FriendFromFriendNumber(int friendNumber)
         {
             ToxFriend friend;
