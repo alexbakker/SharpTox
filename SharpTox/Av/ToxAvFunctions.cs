@@ -28,7 +28,7 @@ namespace SharpTox.Av
         public static extern int PrepareVideoFrame(ToxAvHandle toxAv, int callIndex, byte[] dest, int destMax, IntPtr image);
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "toxav_call")]
-        public static extern ToxAvError Call(ToxAvHandle toxAv, ref int callIndex, int friend_number, ref ToxAvCodecSettings settings, int ringingSeconds);
+        public static extern ToxAvError Call(ToxAvHandle toxAv, out int callIndex, int friend_number, ref ToxAvCodecSettings settings, int ringingSeconds);
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "toxav_hangup")]
         public static extern ToxAvError Hangup(ToxAvHandle toxAv, int callIndex);

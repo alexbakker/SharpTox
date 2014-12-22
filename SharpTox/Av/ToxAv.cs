@@ -265,14 +265,14 @@ namespace SharpTox.Av
         /// <param name="friendNumber"></param>
         /// <param name="settings"></param>
         /// <param name="ringingSeconds"></param>
-        /// <returns>call index</returns>
-        public int Call(int friendNumber, ToxAvCodecSettings settings, int ringingSeconds)
+        /// <returns>a call</returns>
+        public ToxAvCall Call(int friendNumber, ToxAvCodecSettings settings, int ringingSeconds)
         {
             CheckDisposed();
 
-            int index = new int();
-            ToxAvException.Check(ToxAvFunctions.Call(_toxAv, ref index, friendNumber, ref settings, ringingSeconds));
-            return index;
+            int index;
+            ToxAvException.Check(ToxAvFunctions.Call(_toxAv, out index, friendNumber, ref settings, ringingSeconds));
+            return CallFromCallIndex(index);
         }
 
         /// <summary>
