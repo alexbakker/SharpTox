@@ -71,11 +71,11 @@ namespace SharpTox.Core
         /// <param name="groupNumber"></param>
         /// <param name="message"></param>
         /// <returns></returns>
-        public bool SendGroupMessage(int groupNumber, string message)
+        public bool SendGroupMessage(string message)
         {
             Tox.CheckDisposed();
             byte[] msg = Encoding.UTF8.GetBytes(message);
-            return ToxFunctions.GroupMessageSend(Tox.Handle, groupNumber, msg, (ushort)msg.Length) == 0;
+            return ToxFunctions.GroupMessageSend(Tox.Handle, Number, msg, (ushort)msg.Length) == 0;
         }
 
         /// <summary>
