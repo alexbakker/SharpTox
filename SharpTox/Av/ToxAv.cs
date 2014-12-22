@@ -550,8 +550,7 @@ namespace SharpTox.Av
                 {
                     _onCancelCallback = (IntPtr agent, int callIndex, IntPtr args) =>
                     {
-                        if (_onCancel != null)
-                            _onCancel(this, new ToxAvEventArgs.CallStateEventArgs(callIndex, ToxAvCallbackID.OnCancel));
+                        _onCancel(this, new ToxAvEventArgs.CallStateEventArgs(callIndex, ToxAvCallbackID.OnCancel));
                     };
 
                     ToxAvFunctions.RegisterCallstateCallback(_toxAv, _onCancelCallback, ToxAvCallbackID.OnCancel, IntPtr.Zero);
@@ -584,8 +583,7 @@ namespace SharpTox.Av
                 {
                     _onEndCallback = (IntPtr agent, int callIndex, IntPtr args) =>
                     {
-                        if (_onEnd != null)
-                            _onEnd(this, new ToxAvEventArgs.CallStateEventArgs(callIndex, ToxAvCallbackID.OnEnd));
+                        _onEnd(this, new ToxAvEventArgs.CallStateEventArgs(callIndex, ToxAvCallbackID.OnEnd));
                     };
 
                     ToxAvFunctions.RegisterCallstateCallback(_toxAv, _onEndCallback, ToxAvCallbackID.OnEnd, IntPtr.Zero);
@@ -618,8 +616,7 @@ namespace SharpTox.Av
                 {
                     _onInviteCallback = (IntPtr agent, int callIndex, IntPtr args) =>
                     {
-                        if (_onInvite != null)
-                            _onInvite(this, new ToxAvEventArgs.CallStateEventArgs(callIndex, ToxAvCallbackID.OnInvite));
+                        _onInvite(this, new ToxAvEventArgs.CallStateEventArgs(callIndex, ToxAvCallbackID.OnInvite));
                     };
 
                     ToxAvFunctions.RegisterCallstateCallback(_toxAv, _onInviteCallback, ToxAvCallbackID.OnInvite, IntPtr.Zero);
@@ -652,8 +649,7 @@ namespace SharpTox.Av
                 {
                     _onPeerTimeoutCallback = (IntPtr agent, int callIndex, IntPtr args) =>
                     {
-                        if (_onPeerTimeout != null)
-                            _onPeerTimeout(this, new ToxAvEventArgs.CallStateEventArgs(callIndex, ToxAvCallbackID.OnPeerTimeout));
+                        _onPeerTimeout(this, new ToxAvEventArgs.CallStateEventArgs(callIndex, ToxAvCallbackID.OnPeerTimeout));
                     };
 
                     ToxAvFunctions.RegisterCallstateCallback(_toxAv, _onPeerTimeoutCallback, ToxAvCallbackID.OnPeerTimeout, IntPtr.Zero);
@@ -686,8 +682,7 @@ namespace SharpTox.Av
                 {
                     _onRejectCallback = (IntPtr agent, int callIndex, IntPtr args) =>
                     {
-                        if (_onReject != null)
-                            _onReject(this, new ToxAvEventArgs.CallStateEventArgs(callIndex, ToxAvCallbackID.OnReject));
+                        _onReject(this, new ToxAvEventArgs.CallStateEventArgs(callIndex, ToxAvCallbackID.OnReject));
                     };
 
                     ToxAvFunctions.RegisterCallstateCallback(_toxAv, _onRejectCallback, ToxAvCallbackID.OnReject, IntPtr.Zero);
@@ -720,8 +715,7 @@ namespace SharpTox.Av
                 {
                     _onRequestTimeoutCallback = (IntPtr agent, int callIndex, IntPtr args) =>
                     {
-                        if (_onRequestTimeout != null)
-                            _onRequestTimeout(this, new ToxAvEventArgs.CallStateEventArgs(callIndex, ToxAvCallbackID.OnRequestTimeout));
+                        _onRequestTimeout(this, new ToxAvEventArgs.CallStateEventArgs(callIndex, ToxAvCallbackID.OnRequestTimeout));
                     };
 
                     ToxAvFunctions.RegisterCallstateCallback(_toxAv, _onRequestTimeoutCallback, ToxAvCallbackID.OnRequestTimeout, IntPtr.Zero);
@@ -754,8 +748,7 @@ namespace SharpTox.Av
                 {
                     _onRingingCallback = (IntPtr agent, int callIndex, IntPtr args) =>
                     {
-                        if (_onRinging != null)
-                            _onRinging(this, new ToxAvEventArgs.CallStateEventArgs(callIndex, ToxAvCallbackID.OnRinging));
+                        _onRinging(this, new ToxAvEventArgs.CallStateEventArgs(callIndex, ToxAvCallbackID.OnRinging));
                     };
 
                     ToxAvFunctions.RegisterCallstateCallback(_toxAv, _onRingingCallback, ToxAvCallbackID.OnRinging, IntPtr.Zero);
@@ -788,8 +781,7 @@ namespace SharpTox.Av
                 {
                     _onStartCallback = (IntPtr agent, int callIndex, IntPtr args) =>
                     {
-                        if (_onStart != null)
-                            _onStart(this, new ToxAvEventArgs.CallStateEventArgs(callIndex, ToxAvCallbackID.OnStart));
+                        _onStart(this, new ToxAvEventArgs.CallStateEventArgs(callIndex, ToxAvCallbackID.OnStart));
                     };
 
                     ToxAvFunctions.RegisterCallstateCallback(_toxAv, _onStartCallback, ToxAvCallbackID.OnStart, IntPtr.Zero);
@@ -822,8 +814,7 @@ namespace SharpTox.Av
                 {
                     _onPeerCSChangeCallback = (IntPtr agent, int callIndex, IntPtr args) =>
                     {
-                        if (_onPeerCSChange != null)
-                            _onPeerCSChange(this, new ToxAvEventArgs.CallStateEventArgs(callIndex, ToxAvCallbackID.OnPeerCSChange));
+                        _onPeerCSChange(this, new ToxAvEventArgs.CallStateEventArgs(callIndex, ToxAvCallbackID.OnPeerCSChange));
                     };
 
                     ToxAvFunctions.RegisterCallstateCallback(_toxAv, _onPeerCSChangeCallback, ToxAvCallbackID.OnPeerCSChange, IntPtr.Zero);
@@ -856,8 +847,7 @@ namespace SharpTox.Av
                 {
                     _onSelfCSChangeCallback = (IntPtr agent, int callIndex, IntPtr args) =>
                     {
-                        if (_onSelfCSChange != null)
-                            _onSelfCSChange(this, new ToxAvEventArgs.CallStateEventArgs(callIndex, ToxAvCallbackID.OnSelfCSChange));
+                        _onSelfCSChange(this, new ToxAvEventArgs.CallStateEventArgs(callIndex, ToxAvCallbackID.OnSelfCSChange));
                     };
 
                     ToxAvFunctions.RegisterCallstateCallback(_toxAv, _onSelfCSChangeCallback, ToxAvCallbackID.OnSelfCSChange, IntPtr.Zero);
@@ -890,15 +880,12 @@ namespace SharpTox.Av
                 {
                     _onReceivedAudioCallback = (IntPtr ptr, int callIndex, IntPtr frame, int frameSize, IntPtr userData) =>
                     {
-                        if (_onReceivedAudio != null)
-                        {
-                            int channels = (int)GetPeerCodecSettings(callIndex, 0).AudioChannels;
-                            short[] samples = new short[frameSize * channels];
+                        int channels = (int)GetPeerCodecSettings(callIndex, 0).AudioChannels;
+                        short[] samples = new short[frameSize * channels];
 
-                            Marshal.Copy(frame, samples, 0, samples.Length);
+                        Marshal.Copy(frame, samples, 0, samples.Length);
 
-                            _onReceivedAudio(this, new ToxAvEventArgs.AudioDataEventArgs(callIndex, samples));
-                        }
+                        _onReceivedAudio(this, new ToxAvEventArgs.AudioDataEventArgs(callIndex, samples));
                     };
 
                     ToxAvFunctions.RegisterAudioReceiveCallback(_toxAv, _onReceivedAudioCallback, IntPtr.Zero);
@@ -931,8 +918,7 @@ namespace SharpTox.Av
                 {
                     _onReceivedVideoCallback = (IntPtr ptr, int callIndex, IntPtr frame, IntPtr userData) =>
                     {
-                        if (_onReceivedVideo != null)
-                            _onReceivedVideo(this, new ToxAvEventArgs.VideoDataEventArgs(callIndex, frame));
+                        _onReceivedVideo(this, new ToxAvEventArgs.VideoDataEventArgs(callIndex, frame));
                     };
 
                     ToxAvFunctions.RegisterVideoReceiveCallback(_toxAv, _onReceivedVideoCallback, IntPtr.Zero);
