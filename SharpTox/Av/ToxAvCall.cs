@@ -16,7 +16,6 @@ namespace SharpTox.Av
         /// <summary>
         /// Answers a call.
         /// </summary>
-        /// <param name="callIndex"></param>
         /// <param name="settings"></param>
         /// <returns></returns>
         public ToxAvError Answer(ToxAvCodecSettings settings)

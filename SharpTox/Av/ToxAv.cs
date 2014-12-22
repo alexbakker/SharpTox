@@ -279,43 +279,6 @@ namespace SharpTox.Av
         }
 
         /// <summary>
-        /// Hangs up an in-progress call.
-        /// </summary>
-        /// <param name="callIndex"></param>
-        /// <returns></returns>
-        public ToxAvError Hangup(int callIndex)
-        {
-            CheckDisposed();
-
-            return ToxAvFunctions.Hangup(_toxAv, callIndex);
-        }
-
-        /// <summary>
-        /// Rejects an incoming call.
-        /// </summary>
-        /// <param name="callIndex"></param>
-        /// <param name="reason"></param>
-        /// <returns></returns>
-        public ToxAvError Reject(int callIndex, string reason)
-        {
-            CheckDisposed();
-
-            return ToxAvFunctions.Reject(_toxAv, callIndex, reason);
-        }
-
-        /// <summary>
-        /// Stops a call and terminates the transmission without notifying the remote peer.
-        /// </summary>
-        /// <param name="callIndex"></param>
-        /// <returns></returns>
-        public ToxAvError StopCall(int callIndex)
-        {
-            CheckDisposed();
-
-            return ToxAvFunctions.StopCall(_toxAv, callIndex);
-        }
-
-        /// <summary>
         /// Prepares transmission. Must be called before any transmission occurs.
         /// </summary>
         /// <param name="callIndex"></param>
