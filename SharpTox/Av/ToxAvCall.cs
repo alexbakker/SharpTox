@@ -40,13 +40,12 @@ namespace SharpTox.Av
         /// <summary>
         /// Rejects an incoming call.
         /// </summary>
-        /// <param name="reason"></param>
         /// <returns></returns>
-        public void Reject(string reason)
+        public void Reject()
         {
             ToxAv.CheckDisposed();
 
-            ToxAvException.Check(ToxAvFunctions.Reject(ToxAv.Handle, Index, reason));
+            ToxAvException.Check(ToxAvFunctions.Reject(ToxAv.Handle, Index, string.Empty));
         }
 
         /// <summary>
@@ -176,11 +175,10 @@ namespace SharpTox.Av
         /// <summary>
         /// Cancels a call.
         /// </summary>
-        /// <param name="reason"></param>
         /// <returns></returns>
-        public void Cancel(string reason)
+        public void Cancel()
         {
-            ToxAvException.Check(ToxAvFunctions.Cancel(ToxAv.Handle, Index, Friend.Number, reason));
+            ToxAvException.Check(ToxAvFunctions.Cancel(ToxAv.Handle, Index, Friend.Number, string.Empty));
         }
     }
 }
