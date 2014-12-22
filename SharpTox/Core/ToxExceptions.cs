@@ -4,7 +4,7 @@ using SharpTox.Core;
 
 namespace SharpTox.Core
 {
-    public abstract class ToxException : Exception
+    public class ToxException : Exception
     {
         public ToxException(string message)
             : base(message) { }
