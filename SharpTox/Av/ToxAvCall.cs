@@ -1,4 +1,5 @@
 ﻿using System;
+using SharpTox.Core;
 
 namespace SharpTox.Av
 {
@@ -160,6 +161,17 @@ namespace SharpTox.Av
             return ToxAvFunctions.GetPeerID(ToxAv.Handle, Index, peer);
         }
 
+        /// <summary>
+        /// Returns the corresponding friend to this call.
+        /// </summary>
+        /// <value>The friend.</value>
+        public ToxFriend Friend
+        {
+            get
+            {
+                return ToxAv.Tox.FriendFromFriendNumber(GetPeerID(0));
+            }
+        }
     }
 }
 

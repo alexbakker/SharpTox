@@ -736,7 +736,7 @@ namespace SharpTox.Core
             return ToxFunctions.UnsetAvatar(_tox) == 0;
         }
 
-        private ToxFriend FriendFromFriendNumber(int friendNumber)
+        internal ToxFriend FriendFromFriendNumber(int friendNumber)
         {
             ToxFriend friend;
             if (_friends.TryGetValue(friendNumber, out friend))
