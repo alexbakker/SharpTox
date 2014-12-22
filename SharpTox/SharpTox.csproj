@@ -191,6 +191,7 @@
     <Compile Include="Core\ToxGroupPeer.cs" />
     <Compile Include="Core\ToxFileSender.cs" />
     <Compile Include="Core\ToxExtensions.cs" />
+    <Compile Include="Av\ToxAvCall.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
