@@ -281,7 +281,7 @@ namespace SharpTox.Core
         /// Initializes a new instance of Tox with default options.
         /// </summary>
         public Tox()
-            : this(new ToxOptions())
+            : this(new ToxOptions(true, false))
         {
         }
 
