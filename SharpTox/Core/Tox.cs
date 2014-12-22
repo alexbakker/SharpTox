@@ -802,6 +802,14 @@ namespace SharpTox.Core
             _groups.Remove(group.Number);
         }
 
+        public ToxGroup[] Groups
+        {
+            get
+            {
+                return _groups.Values.ToArray();
+            }
+        }
+
         #region Events
         private EventHandler<ToxEventArgs.FriendRequestEventArgs> _onFriendRequest;
 
