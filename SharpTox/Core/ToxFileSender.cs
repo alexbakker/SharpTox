@@ -10,6 +10,7 @@ namespace SharpTox.Core
         public string Filename { get; private set; }
 
         private ulong _size;
+
         public long LongSize
         {
             get
@@ -17,6 +18,7 @@ namespace SharpTox.Core
                 return (long)_size;
             }
         }
+
         public int Size
         {
             get
@@ -72,7 +74,7 @@ namespace SharpTox.Core
         /// <param name="messageId"></param>
         /// <param name="data"></param>
         /// <returns>true on success and false on failure.</returns>
-        public bool Control(ToxFileControl messageId, byte[] data)
+        public bool SendControl(ToxFileControl messageId, byte[] data)
         {
             CheckDisposed();
             return ToxFunctions.FileSendControl(Friend.Tox.Handle, Friend.Number, (byte)Type, (byte)Number, (byte)messageId, data, (ushort)(data == null ? 0 : data.Length)) == 0;
@@ -86,16 +88,17 @@ namespace SharpTox.Core
         unsafe public bool SendData(ArraySegment<byte> data)
         {
             CheckDisposed();
+
             var array = data.Array;
             fixed (byte *ptr = array)
-            return ToxFunctions.FileSendData(Friend.Tox.Handle, Friend.Number, (byte)Number, (IntPtr)ptr + data.Offset, (ushort)data.Count) == 0;
+                return ToxFunctions.FileSendData(Friend.Tox.Handle, Friend.Number, (byte)Number, (IntPtr)ptr + data.Offset, (ushort)data.Count) == 0;
         }
 
         /// <summary>
         /// Retrieves the number of bytes left to be sent/received.
         /// </summary>
         /// <value>The file data remaining.</value>
-        public ulong FileDataRemaining
+        public ulong Remaining
         {
             get
             {
@@ -105,4 +108,3 @@ namespace SharpTox.Core
         }
     }
 }
-

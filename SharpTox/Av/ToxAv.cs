@@ -34,6 +34,16 @@ namespace SharpTox.Av
         private bool _running = false;
         private CancellationTokenSource _cancelTokenSource;
 
+        private Dictionary<int, ToxAvCall> _calls = new Dictionary<int, ToxAvCall>();
+
+        public ToxAvCall[] Calls
+        {
+            get
+            {
+                return _calls.Values.ToArray();
+            }
+        }
+
         /// <summary>
         /// The default codec settings.
         /// </summary>
@@ -246,26 +256,10 @@ namespace SharpTox.Av
         }
 
         /// <summary>
-        /// Retrieves a peer's codec settings.
-        /// </summary>
-        /// <param name="callIndex"></param>
-        /// <param name="peer"></param>
-        /// <returns></returns>
-        public ToxAvCodecSettings GetPeerCodecSettings(int callIndex, int peer)
-        {
-            CheckDisposed();
-
-            ToxAvCodecSettings settings = new ToxAvCodecSettings();
-            ToxAvFunctions.GetPeerCodecSettings(_toxAv, callIndex, peer, ref settings);
-
-            return settings;
-        }
-
-        /// <summary>
         /// Creates a new audio groupchat.
         /// </summary>
         /// <returns></returns>
-        public int AddAvGroupchat()
+        internal int AddAvGroupchat()
         {
             CheckDisposed();
 
@@ -293,7 +287,7 @@ namespace SharpTox.Av
         /// <param name="friendNumber"></param>
         /// <param name="data"></param>
         /// <returns></returns>
-        public int JoinAvGroupchat(int friendNumber, byte[] data)
+        internal int JoinAvGroupchat(int friendNumber, byte[] data)
         {
             CheckDisposed();
 
@@ -315,39 +309,16 @@ namespace SharpTox.Av
             return result;
         }
 
-        /// <summary>
-        /// Sends an audio frame to a group.
-        /// </summary>
-        /// <param name="groupNumber"></param>
-        /// <param name="pcm"></param>
-        /// <param name="perframe"></param>
-        /// <param name="channels"></param>
-        /// <param name="sampleRate"></param>
-        /// <returns></returns>
-        public bool GroupSendAudio(int groupNumber, short[] pcm, int perframe, int channels, int sampleRate)
-        {
-            CheckDisposed();
-
-            return ToxAvFunctions.GroupSendAudio(Tox.Handle, groupNumber, pcm, (uint)perframe, (byte)channels, (uint)sampleRate) == 0;
-        }
-
-        private Dictionary<int, ToxAvCall> _calls = new Dictionary<int, ToxAvCall>();
-        public ToxAvCall CallFromCallIndex(int callIndex)
+        internal ToxAvCall CallFromCallIndex(int callIndex)
         {
             ToxAvCall call;
             if (_calls.TryGetValue(callIndex, out call))
                 return call;
+
             call = new ToxAvCall(this, callIndex);
             _calls[callIndex] = call;
-            return call;
-        }
 
-        public ToxAvCall[] Calls
-        {
-            get
-            {
-                return _calls.Values.ToArray();
-            }
+            return call;
         }
 
         #region Events
@@ -704,12 +675,12 @@ namespace SharpTox.Av
                 {
                     _onReceivedAudioCallback = (IntPtr ptr, int callIndex, IntPtr frame, int frameSize, IntPtr userData) =>
                     {
-                        int channels = (int)GetPeerCodecSettings(callIndex, 0).AudioChannels;
+                        var call = CallFromCallIndex(callIndex);
+                        int channels = (int)call.GetPeerCodecSettings().AudioChannels;
                         short[] samples = new short[frameSize * channels];
 
                         Marshal.Copy(frame, samples, 0, samples.Length);
-
-                        var call = CallFromCallIndex(callIndex);
+                        
                         _onReceivedAudio(this, new ToxAvEventArgs.AudioDataEventArgs(call, samples));
                     };
 

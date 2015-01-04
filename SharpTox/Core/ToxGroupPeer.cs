@@ -9,47 +9,53 @@ namespace SharpTox.Core
 
         public string Name { get; internal set; }
 
-        public int Number { get; private set; }
+        public ToxKey PublicKey { get; private set; }
 
-        internal ToxGroupPeer(ToxGroup group, int peerNumber)
+        internal ToxGroupPeer(ToxGroup group, ToxKey publicKey)
         {
             Group = group;
-            Number = peerNumber;
+            PublicKey = publicKey;
         }
+
         /// <summary>
         /// Check if the given peernumber corresponds to ours.
         /// </summary>
-        /// <param name="groupNumber"></param>
-        /// <param name="peerNumber"></param>
         /// <returns></returns>
-        public bool IsMe
+        public bool IsSelf
+        {
+            get
+            {
+                Group.Tox.CheckDisposed();
+                return ToxFunctions.GroupPeerNumberIsOurs(Group.Tox.Handle, Group.Number, Number) == 1;
+            }
+        }
+
+        internal static ToxKey GetPublicKey(ToxGroup group, int peerNumber)
+        {
+            group.Tox.CheckDisposed();
+
+            byte[] key = new byte[ToxConstants.ClientIdSize];
+            int result = ToxFunctions.GroupPeerPubkey(group.Tox.Handle, group.Number, peerNumber, key);
+
+            if (result != 0)
+                return null;
+
+            return new ToxKey(ToxKeyType.Public, key);
+        }
+
+        public int Number
         {
             get
             {
                 Group.Tox.CheckDisposed();
 
-                return ToxFunctions.GroupPeerNumberIsOurs(Group.Tox.Handle, Group.Number, Number) == 1;
-            }
-        }
+                for (int i = 0; i < Group.MemberCount; i++)
+                {
+                    if (GetPublicKey(Group, i) == PublicKey)
+                        return i;
+                }
 
-        /// <summary>
-        /// Retrieves the public key of a peer.
-        /// </summary>
-        /// <param name="groupNumber"></param>
-        /// <param name="peerNumber"></param>
-        /// <returns></returns>
-        public ToxKey PublicKey
-        {
-            get {
-                Group.Tox.CheckDisposed();
-
-                byte[] key = new byte[ToxConstants.ClientIdSize];
-                int result = ToxFunctions.GroupPeerPubkey(Group.Tox.Handle, Group.Number, Number, key);
-
-                if (result != 0)
-                    return null;
-
-                return new ToxKey(ToxKeyType.Public, key);
+                return -1;
             }
         }
 
@@ -62,4 +68,3 @@ namespace SharpTox.Core
         }
     }
 }
-

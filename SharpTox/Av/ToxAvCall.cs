@@ -22,7 +22,6 @@ namespace SharpTox.Av
         public void Answer(ToxAvCodecSettings settings)
         {
             ToxAv.CheckDisposed();
-
             ToxAvException.Check(ToxAvFunctions.Answer(ToxAv.Handle, Index, ref settings));
         }
 
@@ -33,7 +32,6 @@ namespace SharpTox.Av
         public void Hangup()
         {
             ToxAv.CheckDisposed();
-
             ToxAvException.Check(ToxAvFunctions.Hangup(ToxAv.Handle, Index));
         }
 
@@ -44,7 +42,6 @@ namespace SharpTox.Av
         public void Reject()
         {
             ToxAv.CheckDisposed();
-
             ToxAvException.Check(ToxAvFunctions.Reject(ToxAv.Handle, Index, string.Empty));
         }
 
@@ -55,7 +52,6 @@ namespace SharpTox.Av
         public void Stop()
         {
             ToxAv.CheckDisposed();
-
             ToxAvException.Check(ToxAvFunctions.StopCall(ToxAv.Handle, Index));
         }
 
@@ -67,7 +63,6 @@ namespace SharpTox.Av
         public bool CapabilitySupported(ToxAvCapabilities capability)
         {
             ToxAv.CheckDisposed();
-
             return ToxAvFunctions.CapabilitySupported(ToxAv.Handle, Index, capability) == 1;
         }
 
@@ -80,7 +75,6 @@ namespace SharpTox.Av
         public void SendAudio(byte[] frame, int frameSize)
         {
             ToxAv.CheckDisposed();
-
             ToxAvException.Check(ToxAvFunctions.SendAudio(ToxAv.Handle, Index, frame, (uint)frameSize));
         }
 
@@ -95,7 +89,6 @@ namespace SharpTox.Av
         public int PrepareAudioFrame(byte[] dest, int destMax, short[] frames, int perframe) //TODO: use 'out' keyword to get the encoded frame
         {
             ToxAv.CheckDisposed();
-
             return ToxAvFunctions.PrepareAudioFrame(ToxAv.Handle, Index, dest, destMax, frames, perframe);
         }
 
@@ -108,7 +101,6 @@ namespace SharpTox.Av
             get
             {
                 ToxAv.CheckDisposed();
-
                 return ToxAvFunctions.GetCallState(ToxAv.Handle, Index);
             }
         }
@@ -121,8 +113,23 @@ namespace SharpTox.Av
         public void ChangeSettings(ToxAvCodecSettings settings)
         {
             ToxAv.CheckDisposed();
-
             ToxAvException.Check(ToxAvFunctions.ChangeSettings(ToxAv.Handle, Index, ref settings));
+        }
+
+        /// <summary>
+        /// Retrieves a peer's codec settings.
+        /// </summary>
+        /// <param name="callIndex"></param>
+        /// <param name="peer"></param>
+        /// <returns></returns>
+        public ToxAvCodecSettings GetPeerCodecSettings()
+        {
+            ToxAv.CheckDisposed();
+
+            ToxAvCodecSettings settings = new ToxAvCodecSettings();
+            ToxAvFunctions.GetPeerCodecSettings(ToxAv.Handle, Index, 0, ref settings);
+
+            return settings;
         }
 
         /// <summary>
@@ -133,7 +140,6 @@ namespace SharpTox.Av
         public void PrepareTransmission(bool supportVideo)
         {
             ToxAv.CheckDisposed();
-
             ToxAvException.Check(ToxAvFunctions.PrepareTransmission(ToxAv.Handle, Index, supportVideo ? 1 : 0));
         }
 
@@ -144,7 +150,6 @@ namespace SharpTox.Av
         public void KillTransmission()
         {
             ToxAv.CheckDisposed();
-
             ToxAvException.Check(ToxAvFunctions.KillTransmission(ToxAv.Handle, Index));
         }
 
@@ -156,7 +161,6 @@ namespace SharpTox.Av
         public int GetPeerID(int peer)
         {
             ToxAv.CheckDisposed();
-
             return ToxAvFunctions.GetPeerID(ToxAv.Handle, Index, peer);
         }
 
@@ -182,4 +186,3 @@ namespace SharpTox.Av
         }
     }
 }
-

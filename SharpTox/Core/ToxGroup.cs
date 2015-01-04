@@ -8,31 +8,46 @@ namespace SharpTox.Core
     public class ToxGroup
     {
         public Tox Tox { get; private set; }
+
         public int Number { get; private set; }
 
-        internal ToxGroup(Tox tox)
+        private Dictionary<ToxKey, ToxGroupPeer> _peers = new Dictionary<ToxKey, ToxGroupPeer>();
+
+        internal ToxGroup(Tox tox, ToxGroupType type)
         {
             if (tox == null)
                 throw new ArgumentNullException("tox");
 
             Tox = tox;
 
-            Tox.CheckDisposed();
-            Number = ToxFunctions.AddGroupchat(Tox.Handle);
+            if (type == ToxGroupType.Text)
+            {
+                Tox.CheckDisposed();
+                Number = ToxFunctions.AddGroupchat(Tox.Handle);
+            }
+            else
+            {
+                Tox.CheckDisposed();
+                Tox.ToxAv.CheckDisposed();
+
+                Number = Tox.ToxAv.AddAvGroupchat();
+            }
         }
 
         internal ToxGroup(Tox tox, int groupNumber)
         {
+            if (tox == null)
+                throw new ArgumentNullException("tox");
+
             Tox = tox;
             Number = groupNumber;
         }
 
         /// <summary>
-        /// Retrieves the number of group members in a group chat.
+        /// Retrieves the number of group members in this group chat.
         /// </summary>
-        /// <param name="groupNumber"></param>
         /// <returns></returns>
-        public int GetGroupMemberCount
+        public int MemberCount
         {
             get
             {
@@ -46,7 +61,7 @@ namespace SharpTox.Core
         /// </summary>
         /// <param name="groupNumber"></param>
         /// <returns></returns>
-        public bool DeleteGroupChat(int groupNumber)
+        public bool Delete(int groupNumber)
         {
             Tox.CheckDisposed();
             Tox.DeleteGroup(this);
@@ -56,10 +71,9 @@ namespace SharpTox.Core
         /// <summary>
         /// Invites a friend to a group chat.
         /// </summary>
-        /// <param name="friendNumber"></param>
-        /// <param name="groupNumber"></param>
+        /// <param name="friend"></param>
         /// <returns></returns>
-        public bool InviteFriend(ToxFriend friend)
+        public bool Invite(ToxFriend friend)
         {
             Tox.CheckDisposed();
             return ToxFunctions.InviteFriend(Tox.Handle, friend.Number, Number) == 0;
@@ -68,10 +82,9 @@ namespace SharpTox.Core
         /// <summary>
         /// Sends a message to a group.
         /// </summary>
-        /// <param name="groupNumber"></param>
         /// <param name="message"></param>
         /// <returns></returns>
-        public bool SendGroupMessage(string message)
+        public bool SendMessage(string message)
         {
             Tox.CheckDisposed();
             byte[] msg = Encoding.UTF8.GetBytes(message);
@@ -81,10 +94,9 @@ namespace SharpTox.Core
         /// <summary>
         /// Sends an action to a group.
         /// </summary>
-        /// <param name="groupNumber"></param>
         /// <param name="action"></param>
         /// <returns></returns>
-        public bool SendGroupAction(string action)
+        public bool SendAction(string action)
         {
             Tox.CheckDisposed();
             byte[] act = Encoding.UTF8.GetBytes(action);
@@ -140,8 +152,6 @@ namespace SharpTox.Core
         /// <summary>
         /// Retrieves an array of group member names.
         /// </summary>
-        /// <param name="groupNumber"></param>
-        /// <returns></returns>
         public string[] PeerNames
         {
             get
@@ -176,12 +186,11 @@ namespace SharpTox.Core
             }
         }
 
-        Dictionary<int, ToxGroupPeer> peers = new Dictionary<int, ToxGroupPeer>();
-        internal ToxGroupPeer PeerFromPeerNumber(int peerNumber)
+        internal ToxGroupPeer PeerFromPublicKey(ToxKey publicKey)
         {
             ToxGroupPeer peer;
-            if (!peers.TryGetValue(peerNumber, out peer))
-                peer = new ToxGroupPeer(this, peerNumber);
+            if (!_peers.TryGetValue(publicKey, out peer))
+                peer = new ToxGroupPeer(this, publicKey);
 
             return peer;
         }
@@ -189,9 +198,9 @@ namespace SharpTox.Core
         internal void Change(ToxGroupPeer peer, ToxChatChange change)
         {
             if (change == ToxChatChange.PeerAdd)
-                peers.Add(peer.Number, peer);
+                _peers.Add(peer.PublicKey, peer);
             else if (change == ToxChatChange.PeerDel)
-                peers.Remove(peer.Number);
+                _peers.Remove(peer.PublicKey);
             else if (change == ToxChatChange.PeerName)
                 peer.Name = GetGroupMemberName(peer.Number);
         }
@@ -199,7 +208,6 @@ namespace SharpTox.Core
         /// <summary>
         /// Retrieves the name of a group member.
         /// </summary>
-        /// <param name="groupNumber"></param>
         /// <param name="peerNumber"></param>
         /// <returns></returns>
         private string GetGroupMemberName(int peerNumber)
@@ -221,9 +229,8 @@ namespace SharpTox.Core
         {
             get
             {
-                return peers.Values.ToArray();
+                return _peers.Values.ToArray();
             }
         }
     }
 }
-

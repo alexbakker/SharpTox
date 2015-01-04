@@ -7,4 +7,3 @@ namespace SharpTox.Core
         int Iterate();
     }
 }
-
