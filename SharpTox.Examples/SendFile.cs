@@ -21,6 +21,8 @@ namespace SharpTox.Examples
             _tox = new Tox(new ToxOptions(true, false));
             _tox.OnFileControl += tox_OnFileControl;
             _tox.Start();
+
+            int fileNumber = _tox.NewFileSender(0, 1337, "file.dat");
         }
 
         private void tox_OnFileControl(object sender, ToxEventArgs.FileControlEventArgs e)
