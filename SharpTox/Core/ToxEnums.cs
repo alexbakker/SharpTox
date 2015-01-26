@@ -177,4 +177,11 @@
         Text,
         Av
     }
+
+    public enum ToxProxyType : byte
+    {
+        None,
+        Socks5,
+        Http
+    }
 }
