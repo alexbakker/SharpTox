@@ -4,10 +4,15 @@ using SharpTox.Core;
 
 namespace SharpTox.Core
 {
+    public class ToxException : Exception
+    {
+        public ToxException(string message)
+            : base(message) { }
+    }
     /// <summary>
     /// The exception that is thrown when an error occured while adding a friend
     /// </summary>
-    public class ToxAFException : Exception
+    public class ToxAFException : ToxException
     {
         /// <summary>
         /// The ToxAFError for this exception.

@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Linq;
 using System.Text;
+using System.Collections.Generic;
 
 namespace SharpTox.Core
 {
@@ -14,6 +16,9 @@ namespace SharpTox.Core
         /// The number that is associated with this friend.
         /// </summary>
         public int Number { get; private set; }
+
+        private Dictionary<int, ToxFileSender> _fileSenders = new Dictionary<int, ToxFileSender>();
+        private bool _userIsTyping;
 
         internal ToxFriend(Tox tox, int friendNumber)
         {
@@ -63,6 +68,18 @@ namespace SharpTox.Core
             {
                 Tox.CheckDisposed();
                 return ToxTools.EpochToDateTime((long)ToxFunctions.GetLastOnline(Tox.Handle, Number));
+            }
+        }
+
+        /// <summary>
+        /// Whether or not this friend exists.
+        /// </summary>
+        public bool Exists
+        {
+            get
+            {
+                Tox.CheckDisposed();
+                return ToxFunctions.FriendExists(Tox.Handle, Number) != 0;
             }
         }
 
@@ -145,8 +162,6 @@ namespace SharpTox.Core
             }
         }
 
-        private bool userIsTyping;
-
         /// <summary>
         /// Informs your user friend whether you are typing or not.
         /// </summary>
@@ -155,7 +170,7 @@ namespace SharpTox.Core
         {
             get
             {
-                return userIsTyping;
+                return _userIsTyping;
             }
             set
             {
@@ -164,7 +179,7 @@ namespace SharpTox.Core
                 if (ToxFunctions.SetUserIsTyping(Tox.Handle, Number, typing) != 0)
                     throw new Exception("Couldn't set isTyping for " + Number);
                 else
-                    userIsTyping = value;
+                    _userIsTyping = value;
             }
         }
 
@@ -276,6 +291,44 @@ namespace SharpTox.Core
                 throw new ArgumentException("First byte of data is not in the 160-191 range.");
 
             return ToxFunctions.SendLosslessPacket(Tox.Handle, Number, data, (uint)data.Length) == 0;
+        }
+
+        internal ToxFileSender FileSenderFromFileNumber(int fileNumber, Func<ToxFileSender> creator)
+        {
+            ToxFileSender fileSender;
+            if (_fileSenders.TryGetValue(fileNumber, out fileSender))
+                return fileSender;
+
+            fileSender = creator();
+            _fileSenders.Add(fileSender.Number, fileSender);
+
+            return fileSender;
+        }
+
+        /// <summary>
+        /// Returns all file senders currently active for this user.
+        /// </summary>
+        /// <value>Array of file senders.</value>
+        public ToxFileSender[] FileSenders
+        {
+            get
+            {
+                return _fileSenders.Values.ToArray();
+            }
+        }
+
+        /// <summary>
+        /// Send a file to a friend.
+        /// </summary>
+        /// <returns>The file sender instance.</returns>
+        /// <param name="filename">Filename.</param>
+        /// <param name="size">Size of the file.</param>
+        public ToxFileSender SendFile(string filename, int size)
+        {
+            var fileSender = new ToxFileSender(this, filename, (ulong)size);
+            fileSender = FileSenderFromFileNumber(fileSender.Number, () => fileSender);
+
+            return fileSender;
         }
     }
 }

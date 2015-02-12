@@ -7,11 +7,11 @@ namespace SharpTox.Av
     {
         public abstract class CallBaseEventArgs : EventArgs
         {
-            public int CallIndex { get; private set; }
+            public ToxAvCall Call { get; private set; }
 
-            protected CallBaseEventArgs(int callIndex)
+            protected CallBaseEventArgs(ToxAvCall call)
             {
-                CallIndex = callIndex;
+                Call = call;
             }
         }
 
@@ -19,8 +19,8 @@ namespace SharpTox.Av
         {
             public ToxAvCallbackID Id { get; private set; }
 
-            public CallStateEventArgs(int callIndex, ToxAvCallbackID id)
-                : base(callIndex)
+            public CallStateEventArgs(ToxAvCall call, ToxAvCallbackID id)
+                : base(call)
             {
                 Id = id;
             }
@@ -30,8 +30,8 @@ namespace SharpTox.Av
         {
             public short[] Data { get; private set; }
 
-            public AudioDataEventArgs(int callIndex, short[] data)
-                : base(callIndex)
+            public AudioDataEventArgs(ToxAvCall call, short[] data)
+                : base(call)
             {
                 Data = (short[])data.Clone();
             }
@@ -41,8 +41,8 @@ namespace SharpTox.Av
         {
             public IntPtr Frame { get; private set; }
 
-            public VideoDataEventArgs(int callIndex, IntPtr frame)
-                : base(callIndex)
+            public VideoDataEventArgs(ToxAvCall call, IntPtr frame)
+                : base(call)
             {
                 Frame = frame;
             }

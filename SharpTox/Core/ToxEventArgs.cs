@@ -20,24 +20,24 @@ namespace SharpTox.Core
 
         public abstract class GroupBaseEventArgs : EventArgs
         {
-            public int GroupNumber { get; private set; }
-            public int PeerNumber { get; private set; }
+            public ToxGroup Group { get; private set; }
+            public ToxGroupPeer Peer { get; private set; }
 
-            protected GroupBaseEventArgs(int groupNumber, int peerNumber)
+            protected GroupBaseEventArgs(ToxGroup group, ToxGroupPeer peer)
             {
-                GroupNumber = groupNumber;
-                PeerNumber = peerNumber;
+                Group = group;
+                Peer = peer;
             }
         }
 
         public abstract class FileBaseEventArgs : FriendBaseEventArgs
         {
-            public int FileNumber { get; private set; }
+            public ToxFileSender FileSender { get; private set; }
 
-            protected FileBaseEventArgs(ToxFriend friend, int fileNumber)
+            protected FileBaseEventArgs(ToxFriend friend, ToxFileSender fileSender)
                 : base(friend)
             {
-                FileNumber = fileNumber;
+                FileSender = fileSender;
             }
         }
         #endregion
@@ -133,15 +133,12 @@ namespace SharpTox.Core
 
         public class GroupInviteEventArgs : FriendBaseEventArgs
         {
-            public byte[] Data { get; private set; }
+            public ToxGroupInvite GroupInvite { get; private set; }
 
-            public ToxGroupType GroupType { get; private set; }
-
-            public GroupInviteEventArgs(ToxFriend friend, ToxGroupType type, byte[] data)
-                : base(friend)
+            public GroupInviteEventArgs(ToxGroupInvite groupInvite)
+                : base(groupInvite.Friend)
             {
-                Data = (byte[])data.Clone();
-                GroupType = type; 
+                GroupInvite = groupInvite;
             }
         }
 
@@ -149,8 +146,8 @@ namespace SharpTox.Core
         {
             public string Message { get; private set; }
 
-            public GroupMessageEventArgs(int groupNumber, int peerNumber, string message)
-                : base(groupNumber, peerNumber)
+            public GroupMessageEventArgs(ToxGroup group, ToxGroupPeer peer, string message)
+                : base(group, peer)
             {
                 Message = message;
             }
@@ -160,8 +157,8 @@ namespace SharpTox.Core
         {
             public string Action { get; private set; }
 
-            public GroupActionEventArgs(int groupNumber, int peerNumber, string action)
-                : base(groupNumber, peerNumber)
+            public GroupActionEventArgs(ToxGroup group, ToxGroupPeer peer, string action)
+                : base(group, peer)
             {
                 Action = action;
             }
@@ -171,8 +168,8 @@ namespace SharpTox.Core
         {
             public ToxChatChange Change { get; private set; }
 
-            public GroupNamelistChangeEventArgs(int groupNumber, int peerNumber, ToxChatChange change)
-                : base(groupNumber, peerNumber)
+            public GroupNamelistChangeEventArgs(ToxGroup group, ToxGroupPeer peer, ToxChatChange change)
+                : base(group, peer)
             {
                 Change = change;
             }
@@ -180,14 +177,14 @@ namespace SharpTox.Core
 
         public class FileControlEventArgs : FileBaseEventArgs
         {
-            public ToxFileControl Control{get;private set;}
+            public ToxFileControl Control{ get;private set; }
 
             public bool IsSend { get; private set; }
 
             public byte[] Data { get; private set; }
 
-            public FileControlEventArgs(ToxFriend friend, int fileNumber, bool isSend, ToxFileControl control, byte[] data)
-                : base(friend, fileNumber)
+            public FileControlEventArgs(ToxFriend friend, ToxFileSender fileSender, bool isSend, ToxFileControl control, byte[] data)
+                : base(friend, fileSender)
             {
                 IsSend = isSend;
                 Control = control;
@@ -199,8 +196,8 @@ namespace SharpTox.Core
         {
             public byte[] Data { get; private set; }
 
-            public FileDataEventArgs(ToxFriend friend, int fileNumber, byte[] data)
-                : base(friend, fileNumber)
+            public FileDataEventArgs(ToxFriend friend, ToxFileSender fileSender, byte[] data)
+                : base(friend, fileSender)
             {
                 Data = (byte[])data.Clone();
             }
@@ -208,15 +205,9 @@ namespace SharpTox.Core
 
         public class FileSendRequestEventArgs : FileBaseEventArgs
         {
-            public ulong FileSize { get; private set; }
-
-            public string FileName { get; private set; }
-
-            public FileSendRequestEventArgs(ToxFriend friend, int fileNumber, ulong fileSize, string fileName)
-                : base(friend, fileNumber)
+            public FileSendRequestEventArgs(ToxFriend friend, ToxFileSender fileSender)
+                : base(friend, fileSender)
             {
-                FileSize = fileSize;
-                FileName = fileName;
             }
         }
 
@@ -281,8 +272,8 @@ namespace SharpTox.Core
         {
             public string Title { get; private set; }
 
-            public GroupTitleEventArgs(int groupNumber, int peerNumber, string title)
-                : base(groupNumber, peerNumber)
+            public GroupTitleEventArgs(ToxGroup group, ToxGroupPeer peer, string title)
+                : base(group, peer)
             {
                 Title = title;
             }

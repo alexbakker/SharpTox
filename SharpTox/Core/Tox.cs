@@ -17,7 +17,7 @@ namespace SharpTox.Core
     /// <summary>
     /// Represents an instance of Tox.
     /// </summary>
-    public class Tox : IDisposable
+    public class Tox : IDisposable, IToxItertable
     {
         #region Callback Delegates
         private ToxDelegates.CallbackFriendRequestDelegate _onFriendRequestCallback;
@@ -56,6 +56,17 @@ namespace SharpTox.Core
         private List<ToxDelegates.CallbackPacketDelegate> _losslessPacketHandlers = new List<ToxDelegates.CallbackPacketDelegate>();
 
         private Dictionary<int, ToxFriend> _friends = new Dictionary<int, ToxFriend>();
+        private Dictionary<int, ToxGroup> _groups = new Dictionary<int, ToxGroup>();
+
+        private Lazy<SharpTox.Av.ToxAv> _toxAv;
+
+        public SharpTox.Av.ToxAv ToxAv
+        {
+            get
+            {
+                return _toxAv.Value;
+            }
+        }
 
         /// <summary>
         /// Options used for this instance of Tox.
@@ -95,7 +106,6 @@ namespace SharpTox.Core
             get
             {
                 CheckDisposed();
-
                 return ToxFunctions.IsConnected(_tox) != 0;
             }
         }
@@ -108,7 +118,6 @@ namespace SharpTox.Core
             get
             {
                 CheckDisposed();
-
                 return (int)ToxFunctions.CountFriendlist(_tox);
             }
         }
@@ -139,8 +148,15 @@ namespace SharpTox.Core
             get
             {
                 CheckDisposed();
-
                 return _friendList.Select(FriendFromFriendNumber).ToArray();
+            }
+        }
+
+        public ToxGroup[] Groups
+        {
+            get
+            {
+                return _groups.Values.ToArray();
             }
         }
 
@@ -278,6 +294,14 @@ namespace SharpTox.Core
         }
 
         /// <summary>
+        /// Initializes a new instance of Tox with default options.
+        /// </summary>
+        public Tox()
+            : this(new ToxOptions(true, false))
+        {
+        }
+
+        /// <summary>
         /// Initializes a new instance of Tox.
         /// </summary>
         /// <param name="options"></param>
@@ -286,9 +310,11 @@ namespace SharpTox.Core
             _tox = ToxFunctions.New(ref options);
 
             if (_tox == null || _tox.IsInvalid)
-                throw new Exception("Could not create a new instance of toxav.");
+                throw new Exception("Could not create a new instance of tox.");
 
             Options = options;
+
+            _toxAv = new Lazy<SharpTox.Av.ToxAv>(() => new SharpTox.Av.ToxAv(this, 64));
         }
 
         public void Dispose()
@@ -348,103 +374,6 @@ namespace SharpTox.Core
         }
 
         /// <summary>
-        /// Sends a file send request to the given friendNumber.
-        /// </summary>
-        /// <param name="friendNumber"></param>
-        /// <param name="fileSize"></param>
-        /// <param name="filename">Maximum filename length is 255 bytes.</param>
-        /// <returns>the filenumber on success and -1 on failure.</returns>
-        public int NewFileSender(int friendNumber, ulong fileSize, string filename)
-        {
-            CheckDisposed();
-
-            byte[] name = Encoding.UTF8.GetBytes(filename);
-            if (name.Length > 255)
-                throw new Exception("Filename is too long (longer than 255 bytes)");
-
-            int result = ToxFunctions.NewFileSender(_tox, friendNumber, fileSize, name, (ushort)name.Length);
-            if (result != -1)
-                return result;
-            else
-                throw new Exception("Could not create new file sender");
-        }
-
-        /// <summary>
-        /// Sends a file control request.
-        /// </summary>
-        /// <param name="friendNumber"></param>
-        /// <param name="sendReceive">0 if we're sending and 1 if we're receiving.</param>
-        /// <param name="fileNumber"></param>
-        /// <param name="messageId"></param>
-        /// <param name="data"></param>
-        /// <returns>true on success and false on failure.</returns>
-        public bool FileSendControl(int friendNumber, int sendReceive, int fileNumber, ToxFileControl messageId, byte[] data)
-        {
-            CheckDisposed();
-            return ToxFunctions.FileSendControl(_tox, friendNumber, (byte)sendReceive, (byte)fileNumber, (byte)messageId, data, (ushort)data.Length) == 0;
-        }
-
-        /// <summary>
-        /// Sends file data.
-        /// </summary>
-        /// <param name="friendNumber"></param>
-        /// <param name="fileNumber"></param>
-        /// <param name="data"></param>
-        /// <returns>true on success and false on failure.</returns>
-        public bool FileSendData(int friendNumber, int fileNumber, byte[] data)
-        {
-            CheckDisposed();
-            return ToxFunctions.FileSendData(_tox, friendNumber, (byte)fileNumber, data, (ushort)data.Length) == 0;
-        }
-
-        /// <summary>
-        /// Retrieves the number of bytes left to be sent/received.
-        /// </summary>
-        /// <param name="friendNumber"></param>
-        /// <param name="fileNumber"></param>
-        /// <param name="sendReceive">0 if we're sending and 1 if we're receiving.</param>
-        /// <returns></returns>
-        public ulong FileDataRemaining(int friendNumber, int fileNumber, int sendReceive)
-        {
-            CheckDisposed();
-            return ToxFunctions.FileDataRemaining(_tox, friendNumber, (byte)fileNumber, (byte)sendReceive);
-        }
-
-        /// <summary>
-        /// Retrieves an array of group member names.
-        /// </summary>
-        /// <param name="groupNumber"></param>
-        /// <returns></returns>
-        public string[] GetGroupNames(int groupNumber)
-        {
-            CheckDisposed();
-
-            int count = ToxFunctions.GroupNumberPeers(_tox, groupNumber);
-
-            //just return an empty string array before we get an overflow exception
-            if (count <= 0)
-                return new string[0];
-
-            ushort[] lengths = new ushort[count];
-            byte[,] matrix = new byte[count, ToxConstants.MaxNameLength];
-
-            int result = ToxFunctions.GroupGetNames(_tox, groupNumber, matrix, lengths, (ushort)count);
-
-            string[] names = new string[count];
-            for (int i = 0; i < count; i++)
-            {
-                byte[] name = new byte[lengths[i]];
-
-                for (int j = 0; j < name.Length; j++)
-                    name[j] = matrix[i, j];
-
-                names[i] = ToxTools.GetString(name);
-            }
-
-            return names;
-        }
-
-        /// <summary>
         /// Starts the main tox_do loop.
         /// </summary>
         public void Start()
@@ -491,8 +420,28 @@ namespace SharpTox.Core
 
         private int DoIterate()
         {
+            if (IsConnected && !_connected)
+            {
+                if (OnConnected != null)
+                    OnConnected(this, new ToxEventArgs.ConnectionEventArgs(true));
+
+                _connected = true;
+            }
+            else if (!IsConnected && _connected)
+            {
+                if (OnDisconnected != null)
+                    OnDisconnected(this, new ToxEventArgs.ConnectionEventArgs(false));
+
+                _connected = false;
+            }
+
             ToxFunctions.Do(_tox);
-            return (int)ToxFunctions.DoInterval(_tox);
+            var delay = (int)ToxFunctions.DoInterval(_tox);
+
+            if (_toxAv.IsValueCreated)
+                return Math.Min(delay, _toxAv.Value.Iterate());
+
+            return delay;
         }
 
         private void Loop()
@@ -506,21 +455,6 @@ namespace SharpTox.Core
                 {
                     if (_cancelTokenSource.IsCancellationRequested)
                         break;
-
-                    if (IsConnected && !_connected)
-                    {
-                        if (OnConnected != null)
-                            OnConnected(this, new ToxEventArgs.ConnectionEventArgs(true));
-
-                        _connected = true;
-                    }
-                    else if (!IsConnected && _connected)
-                    {
-                        if (OnDisconnected != null)
-                            OnDisconnected(this, new ToxEventArgs.ConnectionEventArgs(false));
-
-                        _connected = false;
-                    }
 
                     int delay = DoIterate();
 
@@ -539,7 +473,7 @@ namespace SharpTox.Core
         /// <param name="id"></param>
         /// <param name="message"></param>
         /// <returns>friendNumber</returns>
-        public int AddFriend(ToxId id, string message)
+        public ToxFriend AddFriend(ToxId id, string message)
         {
             CheckDisposed();
 
@@ -549,7 +483,7 @@ namespace SharpTox.Core
             if (result < 0)
                 throw new ToxAFException((ToxAFError)result);
 
-            return result;
+            return FriendFromFriendNumber(result);
         }
 
         /// <summary>
@@ -557,10 +491,10 @@ namespace SharpTox.Core
         /// </summary>
         /// <param name="publicKey"></param>
         /// <returns>friendNumber</returns>
-        public int AddFriendNoRequest(ToxKey publicKey)
+        public ToxFriend AddFriendNoRequest(ToxKey publicKey)
         {
             CheckDisposed();
-            return ToxFunctions.AddFriendNoRequest(_tox, publicKey.GetBytes());
+            return FriendFromFriendNumber(ToxFunctions.AddFriendNoRequest(_tox, publicKey.GetBytes()));
         }
 
         /// <summary>
@@ -572,28 +506,6 @@ namespace SharpTox.Core
         {
             CheckDisposed();
             return ToxFunctions.BootstrapFromAddress(_tox, node.Address, (ushort)node.Port, node.PublicKey.GetBytes()) == 1;
-        }
-
-        /// <summary>
-        /// Checks if there exists a friend with given friendNumber.
-        /// </summary>
-        /// <param name="friendNumber"></param>
-        /// <returns></returns>
-        public bool FriendExists(int friendNumber)
-        {
-            CheckDisposed();
-            return ToxFunctions.FriendExists(_tox, friendNumber) != 0;
-        }
-
-        /// <summary>
-        /// Retrieves the friendNumber associated to the specified public address/id.
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        public int GetFriendNumber(string id)
-        {
-            CheckDisposed();
-            return ToxFunctions.GetFriendNumber(_tox, ToxTools.StringToHexBin(id));
         }
 
         /// <summary>
@@ -625,118 +537,14 @@ namespace SharpTox.Core
         }
 
         /// <summary>
-        /// Joins a group with the given public key of the group.
+        /// Creates a new group.
         /// </summary>
-        /// <param name="friendNumber"></param>
-        /// <param name="data">Data obtained from the OnGroupInvite event.</param>
         /// <returns></returns>
-        public int JoinGroup(int friendNumber, byte[] data)
-        {
-            CheckDisposed();
-            return ToxFunctions.JoinGroupchat(_tox, friendNumber, data, (ushort)data.Length);
-        }
-
-        /// <summary>
-        /// Retrieves the name of a group member.
-        /// </summary>
-        /// <param name="groupNumber"></param>
-        /// <param name="peerNumber"></param>
-        /// <returns></returns>
-        public string GetGroupMemberName(int groupNumber, int peerNumber)
+        public ToxGroup CreateGroup(ToxGroupType type)
         {
             CheckDisposed();
 
-            byte[] name = new byte[ToxConstants.MaxNameLength];
-            if (ToxFunctions.GroupPeername(_tox, groupNumber, peerNumber, name) == -1)
-                throw new Exception("Could not get peer name");
-
-            return ToxTools.GetString(name);
-        }
-
-        /// <summary>
-        /// Retrieves the number of group members in a group chat.
-        /// </summary>
-        /// <param name="groupNumber"></param>
-        /// <returns></returns>
-        public int GetGroupMemberCount(int groupNumber)
-        {
-            CheckDisposed();
-            return ToxFunctions.GroupNumberPeers(_tox, groupNumber);
-        }
-
-        /// <summary>
-        /// Deletes a group chat.
-        /// </summary>
-        /// <param name="groupNumber"></param>
-        /// <returns></returns>
-        public bool DeleteGroupChat(int groupNumber)
-        {
-            CheckDisposed();
-            return ToxFunctions.DelGroupchat(_tox, groupNumber) == 0;
-        }
-
-        /// <summary>
-        /// Invites a friend to a group chat.
-        /// </summary>
-        /// <param name="friendNumber"></param>
-        /// <param name="groupNumber"></param>
-        /// <returns></returns>
-        public bool InviteFriend(int friendNumber, int groupNumber)
-        {
-            CheckDisposed();
-            return ToxFunctions.InviteFriend(_tox, friendNumber, groupNumber) == 0;
-        }
-
-        /// <summary>
-        /// Sends a message to a group.
-        /// </summary>
-        /// <param name="groupNumber"></param>
-        /// <param name="message"></param>
-        /// <returns></returns>
-        public bool SendGroupMessage(int groupNumber, string message)
-        {
-            CheckDisposed();
-
-            byte[] msg = Encoding.UTF8.GetBytes(message);
-            return ToxFunctions.GroupMessageSend(_tox, groupNumber, msg, (ushort)msg.Length) == 0;
-        }
-
-        /// <summary>
-        /// Sends an action to a group.
-        /// </summary>
-        /// <param name="groupNumber"></param>
-        /// <param name="action"></param>
-        /// <returns></returns>
-        public bool SendGroupAction(int groupNumber, string action)
-        {
-            CheckDisposed();
-
-            byte[] act = Encoding.UTF8.GetBytes(action);
-            return ToxFunctions.GroupActionSend(_tox, groupNumber, act, (ushort)act.Length) == 0;
-        }
-
-        /// <summary>
-        /// Creates a new group and retrieves the group number.
-        /// </summary>
-        /// <returns></returns>
-        public int NewGroup()
-        {
-            CheckDisposed();
-
-            return ToxFunctions.AddGroupchat(_tox);
-        }
-
-        /// <summary>
-        /// Check if the given peernumber corresponds to ours.
-        /// </summary>
-        /// <param name="groupNumber"></param>
-        /// <param name="peerNumber"></param>
-        /// <returns></returns>
-        public bool PeerNumberIsOurs(int groupNumber, int peerNumber)
-        {
-            CheckDisposed();
-
-            return ToxFunctions.GroupPeerNumberIsOurs(_tox, groupNumber, peerNumber) == 1;
+            return new ToxGroup(this, type);
         }
 
         /// <summary>
@@ -746,7 +554,6 @@ namespace SharpTox.Core
         public uint GetNospam()
         {
             CheckDisposed();
-
             return ToxFunctions.GetNospam(_tox);
         }
 
@@ -757,7 +564,6 @@ namespace SharpTox.Core
         public void SetNospam(uint nospam)
         {
             CheckDisposed();
-
             ToxFunctions.SetNospam(_tox, nospam);
         }
 
@@ -909,8 +715,6 @@ namespace SharpTox.Core
         /// <returns></returns>
         public byte[] GetHash(byte[] data)
         {
-            CheckDisposed();
-
             byte[] hash = new byte[ToxConstants.ToxHashLength];
 
             if (ToxFunctions.Hash(hash, data, (uint)data.Length) != 0)
@@ -929,73 +733,7 @@ namespace SharpTox.Core
             return ToxFunctions.UnsetAvatar(_tox) == 0;
         }
 
-        /// <summary>
-        /// Changes the title of a group.
-        /// </summary>
-        /// <param name="groupNumber"></param>
-        /// <param name="title"></param>
-        /// <returns></returns>
-        public bool SetGroupTitle(int groupNumber, string title)
-        {
-            CheckDisposed();
-
-            if (Encoding.UTF8.GetByteCount(title) > ToxConstants.MaxNameLength)
-                throw new ArgumentException("The specified group title is longer than 256 bytes");
-
-            byte[] bytes = Encoding.UTF8.GetBytes(title);
-
-            return ToxFunctions.GroupSetTitle(_tox, groupNumber, bytes, (byte)bytes.Length) == 0;
-        }
-
-        /// <summary>
-        /// Retrieves the type of a group.
-        /// </summary>
-        /// <param name="groupNumber"></param>
-        /// <returns></returns>
-        public ToxGroupType GetGroupType(int groupNumber)
-        {
-            CheckDisposed();
-            return (ToxGroupType)ToxFunctions.GroupGetType(_tox, groupNumber);
-        }
-
-        /// <summary>
-        /// Retrieves the title of a group.
-        /// </summary>
-        /// <param name="groupNumber"></param>
-        /// <returns></returns>
-        public string GetGroupTitle(int groupNumber)
-        {
-            CheckDisposed();
-
-            byte[] title = new byte[ToxConstants.MaxNameLength];
-            int length = ToxFunctions.GroupGetTitle(_tox, groupNumber, title, (uint)title.Length);
-
-            if (length == -1)
-                return string.Empty;
-
-            return ToxTools.GetString(title);
-        }
-
-        /// <summary>
-        /// Retrieves the public key of a peer.
-        /// </summary>
-        /// <param name="groupNumber"></param>
-        /// <param name="peerNumber"></param>
-        /// <returns></returns>
-        public ToxKey GetGroupPeerPublicKey(int groupNumber, int peerNumber)
-        {
-            CheckDisposed();
-
-            byte[] key = new byte[ToxConstants.ClientIdSize];
-            int result = ToxFunctions.GroupPeerPubkey(_tox, groupNumber, peerNumber, key);
-
-            if (result != 0)
-                return null;
-
-            return new ToxKey(ToxKeyType.Public, key);
-        }
-
-        private ToxFriend FriendFromFriendNumber(int friendNumber)
+        internal ToxFriend FriendFromFriendNumber(int friendNumber)
         {
             ToxFriend friend;
             if (_friends.TryGetValue(friendNumber, out friend))
@@ -1019,6 +757,26 @@ namespace SharpTox.Core
         {
             if (_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
+        }
+
+        internal ToxGroup GroupFromGroupNumber(int groupNumber)
+        {
+            ToxGroup group;
+            if (_groups.TryGetValue(groupNumber, out group))
+            {
+                return group;
+            }
+
+            group = new ToxGroup(this, groupNumber);
+
+            _groups[groupNumber] = group;
+
+            return group;
+        }
+
+        internal void DeleteGroup(ToxGroup group)
+        {
+            _groups.Remove(group.Number);
         }
 
         #region Events
@@ -1309,7 +1067,10 @@ namespace SharpTox.Core
                 {
                     _onGroupActionCallback = (IntPtr tox, int groupNumber, int peerNumber, byte[] action, ushort length, IntPtr userData) =>
                     {
-                        var e = new ToxEventArgs.GroupActionEventArgs(groupNumber, peerNumber, ToxTools.GetString(action));
+                        var group = GroupFromGroupNumber(groupNumber);
+                        var peer = group.PeerFromPublicKey(ToxGroupPeer.GetPublicKey(group, peerNumber));
+                        var e = new ToxEventArgs.GroupActionEventArgs(group, peer, ToxTools.GetString(action));
+
                         _onGroupAction(this, e);
                     };
 
@@ -1343,7 +1104,10 @@ namespace SharpTox.Core
                 {
                     _onGroupMessageCallback = (IntPtr tox, int groupNumber, int peerNumber, byte[] message, ushort length, IntPtr userData) =>
                     {
-                        var e = new ToxEventArgs.GroupMessageEventArgs(groupNumber, peerNumber, ToxTools.GetString(message));
+                        var group = GroupFromGroupNumber(groupNumber);
+                        var peer = group.PeerFromPublicKey(ToxGroupPeer.GetPublicKey(group, peerNumber));
+                        var e = new ToxEventArgs.GroupMessageEventArgs(group, peer, ToxTools.GetString(message));
+
                         _onGroupMessage(this, e);
                     };
 
@@ -1377,7 +1141,7 @@ namespace SharpTox.Core
                 {
                     _onGroupInviteCallback = (IntPtr tox, int friendNumber, byte type, byte[] data, ushort length, IntPtr userData) =>
                     {
-                        var e = new ToxEventArgs.GroupInviteEventArgs(FriendFromFriendNumber(friendNumber), (ToxGroupType)type, data);
+                        var e = new ToxEventArgs.GroupInviteEventArgs(new ToxGroupInvite(FriendFromFriendNumber(friendNumber), (ToxGroupType)type, data));
                         _onGroupInvite(this, e);
                     };
 
@@ -1411,7 +1175,12 @@ namespace SharpTox.Core
                 {
                     _onGroupNamelistChangeCallback = (IntPtr tox, int groupNumber, int peerNumber, ToxChatChange change, IntPtr userData) =>
                     {
-                        var e = new ToxEventArgs.GroupNamelistChangeEventArgs(groupNumber, peerNumber, change);
+                        var group = GroupFromGroupNumber(groupNumber);
+                        var peer = group.PeerFromPublicKey(ToxGroupPeer.GetPublicKey(group, peerNumber));
+                        group.Change(peer, change);
+
+                        var e = new ToxEventArgs.GroupNamelistChangeEventArgs(group, peer, change);
+
                         _onGroupNamelistChange(this, e);
                     };
 
@@ -1445,7 +1214,9 @@ namespace SharpTox.Core
                 {
                     _onFileControlCallback = (IntPtr tox, int friendNumber, byte receiveSend, byte fileNumber, byte controlYype, byte[] data, ushort length, IntPtr userData) =>
                     {
-                        var e = new ToxEventArgs.FileControlEventArgs(FriendFromFriendNumber(friendNumber), fileNumber, receiveSend == 1, (ToxFileControl)controlYype, data);
+                        var friend = FriendFromFriendNumber(friendNumber);
+                        var toxFileSender = friend.FileSenderFromFileNumber(fileNumber, null);
+                        var e = new ToxEventArgs.FileControlEventArgs(friend, toxFileSender, receiveSend == 1, (ToxFileControl)controlYype, data);
                         _onFileControl(this, e);
                     };
 
@@ -1479,7 +1250,9 @@ namespace SharpTox.Core
                 {
                     _onFileDataCallback = (IntPtr tox, int friendNumber, byte fileNumber, byte[] data, ushort length, IntPtr userData) =>
                     {
-                        var e = new ToxEventArgs.FileDataEventArgs(FriendFromFriendNumber(friendNumber), fileNumber, data);
+                        var friend = FriendFromFriendNumber(friendNumber);
+                        var fileSender = friend.FileSenderFromFileNumber(fileNumber, null);
+                        var e = new ToxEventArgs.FileDataEventArgs(friend, fileSender, data);
                         _onFileData(this, e);
                     };
 
@@ -1513,7 +1286,9 @@ namespace SharpTox.Core
                 {
                     _onFileSendRequestCallback = (IntPtr tox, int friendNumber, byte fileNumber, ulong fileSize, byte[] filename, ushort filenameLength, IntPtr userData) =>
                     {
-                        var e = new ToxEventArgs.FileSendRequestEventArgs(FriendFromFriendNumber(friendNumber), fileNumber, fileSize, ToxTools.GetString(filename));
+                        var friend = FriendFromFriendNumber(friendNumber);
+                        var fileSender = friend.FileSenderFromFileNumber(fileNumber, () =>  new ToxFileSender(friend, fileNumber, ToxTools.GetString(filename), fileSize));
+                        var e = new ToxEventArgs.FileSendRequestEventArgs(friend, fileSender);
                         _onFileSendRequest(this, e);
                     };
 
@@ -1649,7 +1424,10 @@ namespace SharpTox.Core
                 {
                     _onGroupTitleCallback = (IntPtr tox, int groupNumber, int peerNumber, byte[] title, byte length, IntPtr userData) =>
                     {
-                        var e = new ToxEventArgs.GroupTitleEventArgs(groupNumber, peerNumber, Encoding.UTF8.GetString(title, 0, length));
+                        var group = GroupFromGroupNumber(groupNumber);
+                        var peer = group.PeerFromPublicKey(ToxGroupPeer.GetPublicKey(group, peerNumber));
+                        var e = new ToxEventArgs.GroupTitleEventArgs(group, peer, Encoding.UTF8.GetString(title, 0, length));
+
                         _onGroupTitleChanged(this, e);
                     };
 
