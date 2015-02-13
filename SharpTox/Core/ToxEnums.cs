@@ -183,4 +183,11 @@
         Send = 0,
         Receive = 1
     }
+
+    public enum ToxProxyType : byte
+    {
+        None,
+        Socks5,
+        Http
+    }
 }

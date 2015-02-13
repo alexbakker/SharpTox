@@ -1,9 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.30723.0
+VisualStudioVersion = 12.0.31101.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharpTox", "SharpTox\SharpTox.csproj", "{B3AB7D92-3D7A-41B2-86D1-D1B256B07663}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharpTox.Examples", "SharpTox.Examples\SharpTox.Examples.csproj", "{13B48E64-FF94-4E57-BF0F-DD1EDC66EF2D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -45,6 +47,22 @@ Global
 		{B3AB7D92-3D7A-41B2-86D1-D1B256B07663}.Release|x64.Build.0 = Release|x64
 		{B3AB7D92-3D7A-41B2-86D1-D1B256B07663}.Release|x86.ActiveCfg = Release|x86
 		{B3AB7D92-3D7A-41B2-86D1-D1B256B07663}.Release|x86.Build.0 = Release|x86
+		{13B48E64-FF94-4E57-BF0F-DD1EDC66EF2D}.Debug POSIX|Any CPU.ActiveCfg = Debug|Any CPU
+		{13B48E64-FF94-4E57-BF0F-DD1EDC66EF2D}.Debug POSIX|Any CPU.Build.0 = Debug|Any CPU
+		{13B48E64-FF94-4E57-BF0F-DD1EDC66EF2D}.Debug POSIX|x64.ActiveCfg = Debug|Any CPU
+		{13B48E64-FF94-4E57-BF0F-DD1EDC66EF2D}.Debug POSIX|x86.ActiveCfg = Debug|Any CPU
+		{13B48E64-FF94-4E57-BF0F-DD1EDC66EF2D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{13B48E64-FF94-4E57-BF0F-DD1EDC66EF2D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{13B48E64-FF94-4E57-BF0F-DD1EDC66EF2D}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{13B48E64-FF94-4E57-BF0F-DD1EDC66EF2D}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{13B48E64-FF94-4E57-BF0F-DD1EDC66EF2D}.Release POSIX|Any CPU.ActiveCfg = Release|Any CPU
+		{13B48E64-FF94-4E57-BF0F-DD1EDC66EF2D}.Release POSIX|Any CPU.Build.0 = Release|Any CPU
+		{13B48E64-FF94-4E57-BF0F-DD1EDC66EF2D}.Release POSIX|x64.ActiveCfg = Release|Any CPU
+		{13B48E64-FF94-4E57-BF0F-DD1EDC66EF2D}.Release POSIX|x86.ActiveCfg = Release|Any CPU
+		{13B48E64-FF94-4E57-BF0F-DD1EDC66EF2D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{13B48E64-FF94-4E57-BF0F-DD1EDC66EF2D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{13B48E64-FF94-4E57-BF0F-DD1EDC66EF2D}.Release|x64.ActiveCfg = Release|Any CPU
+		{13B48E64-FF94-4E57-BF0F-DD1EDC66EF2D}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

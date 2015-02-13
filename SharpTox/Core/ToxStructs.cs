@@ -22,10 +22,9 @@ namespace SharpTox.Core
         public readonly bool UdpDisabled;
 
         /// <summary>
-        /// Whether or not proxy support should be enabled.
+        /// Proxy type.
         /// </summary>
-        [MarshalAs(UnmanagedType.U1)]
-        public readonly bool ProxyEnabled;
+        public readonly ToxProxyType ProxyType;
 
         /// <summary>
         /// Proxy ip or domain.
@@ -47,7 +46,7 @@ namespace SharpTox.Core
         {
             Ipv6Enabled = ipv6Enabled;
             UdpDisabled = udpDisabled;
-            ProxyEnabled = false;
+            ProxyType = ToxProxyType.None;
             ProxyAddress = null;
             ProxyPort = 0;
         }
@@ -56,13 +55,14 @@ namespace SharpTox.Core
         /// Initializes a new instance of the <see cref="ToxOptions"/> struct.
         /// </summary>
         /// <param name="ipv6Enabled"></param>
+        /// <param name="type"></param>
         /// <param name="proxyAddress"></param>
         /// <param name="proxyPort"></param>
-        public ToxOptions(bool ipv6Enabled, string proxyAddress, int proxyPort)
+        public ToxOptions(bool ipv6Enabled, ToxProxyType type, string proxyAddress, int proxyPort)
         {
             Ipv6Enabled = ipv6Enabled;
             UdpDisabled = true;
-            ProxyEnabled = true;
+            ProxyType = type;
 
             char[] dest = new char[256];
             char[] sourceArray = proxyAddress.ToCharArray();
