@@ -172,7 +172,7 @@ namespace SharpTox.Av
         {
             get
             {
-                return ToxAv.Tox.FriendFromFriendNumber(GetPeerID(0));
+                return ToxAv.Tox.GetFriend(GetPeerID(0));
             }
         }
 

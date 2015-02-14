@@ -31,7 +31,7 @@ namespace SharpTox.Av
 
             int index;
             ToxAvException.Check(ToxAvFunctions.Call(friend.Tox.ToxAv.Handle, out index, friend.Number, ref settings, ringingSeconds));
-            return friend.Tox.ToxAv.CallFromCallIndex(index);
+            return friend.Tox.ToxAv.GetCall(index);
         }
         /// <summary>
         /// Creates a new call with defaul av codec settings.

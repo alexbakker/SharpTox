@@ -29,9 +29,9 @@ namespace SharpTox.Core
             if (_group == null)
             {
                 if (GroupType == ToxGroupType.Text)
-                    _group = Friend.Tox.GroupFromGroupNumber(ToxFunctions.JoinGroupchat(Friend.Tox.Handle, Friend.Number, Data, (ushort)Data.Length));
+                    _group = Friend.Tox.GetGroup(ToxFunctions.JoinGroupchat(Friend.Tox.Handle, Friend.Number, Data, (ushort)Data.Length));
                 else
-                    _group = Friend.Tox.GroupFromGroupNumber(Friend.Tox.ToxAv.JoinAvGroupchat(Friend.Number, Data));
+                    _group = Friend.Tox.GetGroup(Friend.Tox.ToxAv.JoinAvGroupchat(Friend.Number, Data));
             }
 
             return _group;

@@ -35,12 +35,14 @@ namespace SharpTox.Av
         private CancellationTokenSource _cancelTokenSource;
 
         private Dictionary<int, ToxAvCall> _calls = new Dictionary<int, ToxAvCall>();
+        private object _callLocker = new object();
 
         public ToxAvCall[] Calls
         {
             get
             {
-                return _calls.Values.ToArray();
+                lock (_calls)
+                    return _calls.Values.ToArray();
             }
         }
 
@@ -309,14 +311,18 @@ namespace SharpTox.Av
             return result;
         }
 
-        internal ToxAvCall CallFromCallIndex(int callIndex)
+        internal ToxAvCall GetCall(int callIndex)
         {
             ToxAvCall call;
-            if (_calls.TryGetValue(callIndex, out call))
-                return call;
 
-            call = new ToxAvCall(this, callIndex);
-            _calls[callIndex] = call;
+            lock (_callLocker)
+            {
+                if (_calls.TryGetValue(callIndex, out call))
+                    return call;
+
+                call = new ToxAvCall(this, callIndex);
+                _calls[callIndex] = call;
+            }
 
             return call;
         }
@@ -335,7 +341,7 @@ namespace SharpTox.Av
                 {
                     _onCancelCallback = (IntPtr agent, int callIndex, IntPtr args) =>
                     {
-                        var call = CallFromCallIndex(callIndex);
+                        var call = GetCall(callIndex);
                         _onCancel(this, new ToxAvEventArgs.CallStateEventArgs(call, ToxAvCallbackID.OnCancel));
                     };
 
@@ -369,7 +375,7 @@ namespace SharpTox.Av
                 {
                     _onEndCallback = (IntPtr agent, int callIndex, IntPtr args) =>
                     {
-                        var call = CallFromCallIndex(callIndex);
+                        var call = GetCall(callIndex);
                         _onEnd(this, new ToxAvEventArgs.CallStateEventArgs(call, ToxAvCallbackID.OnEnd));
                     };
 
@@ -403,7 +409,7 @@ namespace SharpTox.Av
                 {
                     _onInviteCallback = (IntPtr agent, int callIndex, IntPtr args) =>
                     {
-                        var call = CallFromCallIndex(callIndex);
+                        var call = GetCall(callIndex);
                         _onInvite(this, new ToxAvEventArgs.CallStateEventArgs(call, ToxAvCallbackID.OnInvite));
                     };
 
@@ -437,7 +443,7 @@ namespace SharpTox.Av
                 {
                     _onPeerTimeoutCallback = (IntPtr agent, int callIndex, IntPtr args) =>
                     {
-                        var call = CallFromCallIndex(callIndex);
+                        var call = GetCall(callIndex);
                         _onPeerTimeout(this, new ToxAvEventArgs.CallStateEventArgs(call, ToxAvCallbackID.OnPeerTimeout));
                     };
 
@@ -471,7 +477,7 @@ namespace SharpTox.Av
                 {
                     _onRejectCallback = (IntPtr agent, int callIndex, IntPtr args) =>
                     {
-                        var call = CallFromCallIndex(callIndex);
+                        var call = GetCall(callIndex);
                         _onReject(this, new ToxAvEventArgs.CallStateEventArgs(call, ToxAvCallbackID.OnReject));
                     };
 
@@ -505,7 +511,7 @@ namespace SharpTox.Av
                 {
                     _onRequestTimeoutCallback = (IntPtr agent, int callIndex, IntPtr args) =>
                     {
-                        var call = CallFromCallIndex(callIndex);
+                        var call = GetCall(callIndex);
                         _onRequestTimeout(this, new ToxAvEventArgs.CallStateEventArgs(call, ToxAvCallbackID.OnRequestTimeout));
                     };
 
@@ -539,7 +545,7 @@ namespace SharpTox.Av
                 {
                     _onRingingCallback = (IntPtr agent, int callIndex, IntPtr args) =>
                     {
-                        var call = CallFromCallIndex(callIndex);
+                        var call = GetCall(callIndex);
                         _onRinging(this, new ToxAvEventArgs.CallStateEventArgs(call, ToxAvCallbackID.OnRinging));
                     };
 
@@ -573,7 +579,7 @@ namespace SharpTox.Av
                 {
                     _onStartCallback = (IntPtr agent, int callIndex, IntPtr args) =>
                     {
-                        var call = CallFromCallIndex(callIndex);
+                        var call = GetCall(callIndex);
                         _onStart(this, new ToxAvEventArgs.CallStateEventArgs(call, ToxAvCallbackID.OnStart));
                     };
 
@@ -607,7 +613,7 @@ namespace SharpTox.Av
                 {
                     _onPeerCSChangeCallback = (IntPtr agent, int callIndex, IntPtr args) =>
                     {
-                        var call = CallFromCallIndex(callIndex);
+                        var call = GetCall(callIndex);
                         _onPeerCSChange(this, new ToxAvEventArgs.CallStateEventArgs(call, ToxAvCallbackID.OnPeerCSChange));
                     };
 
@@ -641,7 +647,7 @@ namespace SharpTox.Av
                 {
                     _onSelfCSChangeCallback = (IntPtr agent, int callIndex, IntPtr args) =>
                     {
-                        var call = CallFromCallIndex(callIndex);
+                        var call = GetCall(callIndex);
                         _onSelfCSChange(this, new ToxAvEventArgs.CallStateEventArgs(call, ToxAvCallbackID.OnSelfCSChange));
                     };
 
@@ -675,7 +681,7 @@ namespace SharpTox.Av
                 {
                     _onReceivedAudioCallback = (IntPtr ptr, int callIndex, IntPtr frame, int frameSize, IntPtr userData) =>
                     {
-                        var call = CallFromCallIndex(callIndex);
+                        var call = GetCall(callIndex);
                         int channels = (int)call.GetPeerCodecSettings().AudioChannels;
                         short[] samples = new short[frameSize * channels];
 
@@ -714,7 +720,7 @@ namespace SharpTox.Av
                 {
                     _onReceivedVideoCallback = (IntPtr ptr, int callIndex, IntPtr frame, IntPtr userData) =>
                     {
-                        var call = CallFromCallIndex(callIndex);
+                        var call = GetCall(callIndex);
                         _onReceivedVideo(this, new ToxAvEventArgs.VideoDataEventArgs(call, frame));
                     };
 
