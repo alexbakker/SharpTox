@@ -23,6 +23,15 @@ namespace SharpTox.Core
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_new")]
         public static extern ToxHandle New(ref ToxOptions options, byte[] data, uint length, ref ToxErrorNew error);
 
+        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_options_default")]
+        public static extern void OptionsDefault(ref ToxOptions options);
+
+        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_options_new")]
+        public static extern IntPtr OptionsNew(ref ToxErrorOptionsNew error);
+
+        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_options_new")]
+        public static extern void OptionsNew(ref ToxOptions options);
+
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_bootstrap")]
         public static extern bool Bootstrap(ToxHandle tox, string address, ushort port, byte[] publicKey, ref ToxErrorBootstrap error);
 

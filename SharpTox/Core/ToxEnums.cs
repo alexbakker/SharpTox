@@ -120,6 +120,12 @@
         TooLong
     }
 
+    public enum ToxErrorOptionsNew
+    {
+        Ok,
+        Malloc
+    }
+
     /// <summary>
     /// Tox key type.
     /// </summary>
@@ -139,8 +145,8 @@
     public enum ToxProxyType : byte
     {
         None,
-        Socks5,
-        Http
+        Http,
+        Socks5
     }
 
     public enum ToxFileControl
