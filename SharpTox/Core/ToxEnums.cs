@@ -1,55 +1,66 @@
 ﻿namespace SharpTox.Core
 {
-    /// <summary>
-    /// Errors while adding a friend.
-    /// </summary>
-    public enum ToxAFError
+    public enum ToxErrorNew
     {
-        /// <summary>
-        /// Message length is too long.
-        /// </summary>
-        TooLong = -1,
+        Ok,
+        Null,
+        Malloc,
+        PortAlloc,
+        ProxyType,
+        ProxyBadHost,
+        ProxyBadPort,
+        ProxyNotFound,
+        LoadEncrypted,
+        LoadDecryptionFailed,
+        LoadBadFormat
+    }
 
-        /// <summary>
-        /// No message.
-        /// </summary>
-        NoMessage = -2,
+    public enum ToxErrorBootstrap
+    {
+        Ok,
+        Null,
+        BadAddress,
+        BadPort
+    }
 
-        /// <summary>
-        /// Trying to add our own key.
-        /// </summary>
-        OwnKey = -3,
+    public enum ToxConnectionStatus
+    {
+        None,
+        Tcp,
+        Udp
+    }
 
-        /// <summary>
-        /// Friend already added or friend request already sent.
-        /// </summary>
-        AlreadySent = -4,
+    public enum ToxErrorFriendGetPublicKey
+    {
+        Ok,
+        Null,
+        NotFound
+    }
 
-        /// <summary>
-        /// Unknown error.
-        /// </summary>
-        Unknown = -5,
+    public enum ToxErrorFriendByPublicKey
+    {
+        Ok,
+        Null,
+        NotFound
+    }
 
-        /// <summary>
-        /// Bad checksum in the address.
-        /// </summary>
-        BadChecksum = -6,
+    public enum ToxErrorFriendQuery
+    {
+        Ok,
+        Null,
+        NotFound
+    }
 
-        /// <summary>
-        /// Friend was already added but the nospam was different.
-        /// </summary>
-        SetNewNospam = -7,
-
-        /// <summary>
-        /// Increasing the friend list size failed.
-        /// </summary>
-        NoMem = -8
+    public enum ToxErrorFriendDelete
+    {
+        Ok,
+        NotFound
     }
 
     /// <summary>
     /// UserStatus of a tox friend.
     /// </summary>
-    public enum ToxUserStatus
+    public enum ToxStatus
     {
         /// <summary>
         /// No status.
@@ -72,72 +83,41 @@
         Invalid
     }
 
-    /// <summary>
-    /// Connection status of a friend.
-    /// </summary>
-    public enum ToxFriendConnectionStatus
+    public enum ToxErrorSendMessage
     {
-        /// <summary>
-        /// Not connected.
-        /// </summary>
-        Offline,
-
-        /// <summary>
-        /// Connected.
-        /// </summary>
-        Online
+        Ok,
+        Null,
+        FriendNotFound,
+        FriendNotConnected,
+        SendQ,
+        TooLong,
+        Empty
     }
 
-    /// <summary>
-    /// Controls to be used for file transfers.
-    /// </summary>
-    public enum ToxFileControl
+    public enum ToxErrorFriendAdd
     {
-        /// <summary>
-        /// Accept a file send request.
-        /// </summary>
-        Accept,
-
-        /// <summary>
-        /// Pause a file transfer.
-        /// </summary>
-        Pause,
-
-        /// <summary>
-        /// Kill a file transfer.
-        /// </summary>
-        Kill,
-
-        /// <summary>
-        /// Fully received/sent a file.
-        /// </summary>
-        Finished,
-
-        /// <summary>
-        /// Resume a paused file transfer.
-        /// </summary>
-        ResumeBroken
+        Ok,
+        Null,
+        TooLong,
+        NoMessage,
+        OwnKey,
+        AlreadySent,
+        BadChecksum,
+        SetNewNospam,
+        Malloc
     }
 
-    /// <summary>
-    /// Changes that can occur in a group chat.
-    /// </summary>
-    public enum ToxChatChange
+    public enum ToxErrorSetTyping
     {
-        /// <summary>
-        /// A new peer joined the group.
-        /// </summary>
-        PeerAdd,
+        Ok,
+        NotFound
+    }
 
-        /// <summary>
-        /// A peer left the group.
-        /// </summary>
-        PeerDel,
-
-        /// <summary>
-        /// A peer changed its name.
-        /// </summary>
-        PeerName
+    public enum ToxErrorSetInfo
+    {
+        Ok,
+        Null,
+        TooLong
     }
 
     /// <summary>
@@ -156,32 +136,17 @@
         Secret
     }
 
-    /// <summary>
-    /// Avatar formats.
-    /// </summary>
-    public enum ToxAvatarFormat
-    {
-        /// <summary>
-        /// No avatar.
-        /// </summary>
-        None,
-
-        /// <summary>
-        /// PNG format.
-        /// </summary>
-        Png,
-    }
-
-    public enum ToxGroupType
-    {
-        Text,
-        Av
-    }
-
     public enum ToxProxyType : byte
     {
         None,
         Socks5,
         Http
+    }
+
+    public enum ToxFileControl
+    {
+        Resume,
+        Pause,
+        Cancel
     }
 }

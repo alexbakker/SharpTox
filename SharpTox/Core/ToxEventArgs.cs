@@ -56,9 +56,9 @@ namespace SharpTox.Core
 
         public class ConnectionStatusEventArgs : FriendBaseEventArgs
         {
-            public ToxFriendConnectionStatus Status { get; private set; }
+            public ToxConnectionStatus Status { get; private set; }
 
-            public ConnectionStatusEventArgs(int friendNumber, ToxFriendConnectionStatus status)
+            public ConnectionStatusEventArgs(int friendNumber, ToxConnectionStatus status)
                 : base(friendNumber)
             {
                 Status = status;
@@ -111,9 +111,9 @@ namespace SharpTox.Core
 
         public class UserStatusEventArgs : FriendBaseEventArgs
         {
-            public ToxUserStatus UserStatus { get; private set; }
+            public ToxStatus UserStatus { get; private set; }
 
-            public UserStatusEventArgs(int friendNumber, ToxUserStatus userStatus)
+            public UserStatusEventArgs(int friendNumber, ToxStatus userStatus)
                 : base(friendNumber)
             {
                 UserStatus = userStatus;
@@ -128,20 +128,6 @@ namespace SharpTox.Core
                 : base(friendNumber)
             {
                 IsTyping = isTyping;
-            }
-        }
-
-        public class GroupInviteEventArgs : FriendBaseEventArgs
-        {
-            public byte[] Data { get; private set; }
-
-            public ToxGroupType GroupType { get; private set; }
-
-            public GroupInviteEventArgs(int friendNumber, ToxGroupType type, byte[] data)
-                : base(friendNumber)
-            {
-                Data = (byte[])data.Clone();
-                GroupType = type; 
             }
         }
 
@@ -164,17 +150,6 @@ namespace SharpTox.Core
                 : base(groupNumber, peerNumber)
             {
                 Action = action;
-            }
-        }
-
-        public class GroupNamelistChangeEventArgs : GroupBaseEventArgs
-        {
-            public ToxChatChange Change { get; private set; }
-
-            public GroupNamelistChangeEventArgs(int groupNumber, int peerNumber, ToxChatChange change)
-                : base(groupNumber, peerNumber)
-            {
-                Change = change;
             }
         }
 
@@ -249,31 +224,6 @@ namespace SharpTox.Core
             public ConnectionEventArgs(bool isConnected)
             {
                 IsConnected = isConnected;
-            }
-        }
-
-        public class AvatarInfoEventArgs : FriendBaseEventArgs
-        {
-            public ToxAvatarFormat Format { get; private set; }
-
-            public byte[] Hash { get; private set; }
-
-            public AvatarInfoEventArgs(int friendNumber, ToxAvatarFormat format, byte[] hash)
-                : base(friendNumber)
-            {
-                Format = format;
-                Hash = (byte[])hash.Clone();
-            }
-        }
-
-        public class AvatarDataEventArgs : FriendBaseEventArgs
-        {
-            public ToxAvatar Avatar { get; private set; }
-
-            public AvatarDataEventArgs(int friendNumber, ToxAvatar avatar)
-                : base(friendNumber)
-            {
-                Avatar = avatar;
             }
         }
 
