@@ -537,7 +537,7 @@ namespace SharpTox.Core
             _cancelTokenSource = new CancellationTokenSource();
             _running = true;
 
-            Task.Factory.StartNew(() =>
+            Task.Factory.StartNew(async() =>
             {
                 while (_running)
                 {
@@ -560,12 +560,7 @@ namespace SharpTox.Core
                     }
 
                     int delay = DoIterate();
-
-#if IS_PORTABLE
-                    Task.Delay(delay);
-#else
-                    Thread.Sleep(delay);
-#endif
+                    await Task.Delay(delay);
                 }
             }, _cancelTokenSource.Token, TaskCreationOptions.LongRunning, TaskScheduler.Default);
         }
