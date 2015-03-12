@@ -41,6 +41,9 @@ namespace SharpTox.Core
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_version_patch")]
         public static extern uint VersionPatch();
 
+        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_version_is_compatible")]
+        public static extern bool VersionIsCompatible(uint major, uint minor, uint patch);
+
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_bootstrap")]
         public static extern bool Bootstrap(ToxHandle tox, string address, ushort port, byte[] publicKey, ref ToxErrorBootstrap error);
 

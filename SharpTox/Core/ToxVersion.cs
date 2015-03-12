@@ -23,6 +23,10 @@ namespace SharpTox.Core
             }
         }
 
+        public bool IsCompatible() {
+            return ToxFunctions.VersionIsCompatible((uint)Major, (uint)Minor, (uint)Patch);
+        }
+
         public ToxVersion(int major, int minor, int patch)
         {
             Major = major;
