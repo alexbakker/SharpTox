@@ -48,16 +48,17 @@ namespace SharpTox.Core
         }
 
         /// <summary>
-        /// The number of friends in this Tox instance.
+        /// An array of friendnumbers of this Tox instance.
         /// </summary>
-        public int FriendCount
+        public int[] Friends
         {
             get
             {
-                if (_disposed)
-                    throw new ObjectDisposedException(GetType().FullName);
+                uint size = ToxFunctions.FriendListSize(_tox);
+                uint[] friends = new uint[size];
+                ToxFunctions.FriendList(_tox, friends);
 
-                return (int)ToxFunctions.FriendListSize(_tox);
+                return (int[])(object)friends;
             }
         }
 
@@ -71,7 +72,7 @@ namespace SharpTox.Core
                 if (_disposed)
                     throw new ObjectDisposedException(GetType().FullName);
 
-                byte[] bytes = new byte[ToxConstants.MaxNameLength];
+                byte[] bytes = new byte[ToxFunctions.SelfGetNameSize(_tox)];
                 ToxFunctions.SelfGetName(_tox, bytes);
 
                 return ToxTools.RemoveNull(Encoding.UTF8.GetString(bytes, 0, bytes.Length));
@@ -85,6 +86,31 @@ namespace SharpTox.Core
                 var error = ToxErrorSetInfo.Ok;
 
                 ToxFunctions.SelfSetName(_tox, bytes, (ushort)bytes.Length, ref error);
+            }
+        }
+
+        public string StatusMessage
+        {
+            get
+            {
+                if (_disposed)
+                    throw new ObjectDisposedException(GetType().FullName);
+
+                uint size = ToxFunctions.SelfGetStatusMessageSize(_tox);
+                byte[] status = new byte[size];
+
+                ToxFunctions.SelfGetStatusMessage(_tox, status);
+
+                return ToxTools.RemoveNull(Encoding.UTF8.GetString(status, 0, status.Length));
+            }
+            set
+            {
+                if (_disposed)
+                    throw new ObjectDisposedException(GetType().FullName);
+
+                byte[] msg = Encoding.UTF8.GetBytes(value);
+                var error = ToxErrorSetInfo.Ok;
+                ToxFunctions.SelfSetStatusMessage(_tox, msg, (uint)msg.Length, ref error);
             }
         }
 
@@ -116,6 +142,13 @@ namespace SharpTox.Core
                     throw new ObjectDisposedException(GetType().FullName);
 
                 return ToxFunctions.SelfGetStatus(_tox);
+            }
+            set
+            {
+                if (_disposed)
+                    throw new ObjectDisposedException(GetType().FullName);
+
+                ToxFunctions.SelfSetStatus(_tox, value);
             }
         }
 
@@ -331,6 +364,21 @@ namespace SharpTox.Core
             return AddFriendNoRequest(publicKey, out error);
         }
 
+        public bool AddTcpRelay(ToxNode node, out ToxErrorBootstrap error)
+        {
+            if (_disposed)
+                throw new ObjectDisposedException(GetType().FullName);
+
+            error = ToxErrorBootstrap.Ok;
+            return ToxFunctions.Bootstrap(_tox, node.Address, (ushort)node.Port, node.PublicKey.GetBytes(), ref error);
+        }
+
+        public bool AddTcpRelay(ToxNode node)
+        {
+            var error = ToxErrorBootstrap.Ok;
+            return AddTcpRelay(node, out error);
+        }
+
         /// <summary>
         /// Bootstraps this Tox instance with a ToxNode.
         /// </summary>
@@ -459,7 +507,7 @@ namespace SharpTox.Core
             if (_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
-            byte[] address = new byte[ToxConstants.ClientIdSize];
+            byte[] address = new byte[ToxConstants.PublicKeySize];
             error = ToxErrorFriendGetPublicKey.Ok;
             ToxFunctions.FriendGetPublicKey(_tox, (uint)friendNumber, address, ref error);
 
@@ -648,6 +696,85 @@ namespace SharpTox.Core
             ToxFunctions.Save(_tox, bytes);
 
             return new ToxData(bytes);
+        }
+
+        public ToxKey GetPrivateKey()
+        {
+            if (_disposed)
+                throw new ObjectDisposedException(GetType().FullName);
+
+            byte[] key = new byte[ToxConstants.PublicKeySize];
+            ToxFunctions.SelfGetPrivateKey(_tox, key);
+
+            return new ToxKey(ToxKeyType.Secret, key);
+        }
+
+        /// <summary>
+        /// Retrieves the name of a friend.
+        /// </summary>
+        /// <param name="friendNumber"></param>
+        /// <param name="error"></param>
+        /// <returns></returns>
+        public string GetFriendName(int friendNumber, out ToxErrorFriendQuery error)
+        {
+            if (_disposed)
+                throw new ObjectDisposedException(GetType().FullName);
+
+            error = ToxErrorFriendQuery.Ok;
+            uint size = ToxFunctions.FriendGetNameSize(_tox, (uint)friendNumber, ref error);
+
+            if (error != ToxErrorFriendQuery.Ok)
+                return string.Empty;
+
+            byte[] name = new byte[size];
+            ToxFunctions.FriendGetName(_tox, (uint)friendNumber, name, ref error);
+
+            return Encoding.UTF8.GetString(name);
+        }
+
+        /// <summary>
+        /// Retrieves the name of a friend.
+        /// </summary>
+        /// <param name="friendNumber"></param>
+        /// <returns></returns>
+        public string GetFriendName(int friendNumber)
+        {
+            var error = ToxErrorFriendQuery.Ok;
+            return GetFriendName(friendNumber, out error);
+        }
+
+        /// <summary>
+        /// Retrieves the status message of a friend.
+        /// </summary>
+        /// <param name="friendNumber"></param>
+        /// <param name="error"></param>
+        /// <returns></returns>
+        public string GetFriendStatusMessage(int friendNumber, out ToxErrorFriendQuery error)
+        {
+            if (_disposed)
+                throw new ObjectDisposedException(GetType().FullName);
+
+            error = ToxErrorFriendQuery.Ok;
+            uint size = ToxFunctions.FriendGetNameSize(_tox, (uint)friendNumber, ref error);
+
+            if (error != ToxErrorFriendQuery.Ok)
+                return string.Empty;
+
+            byte[] message = new byte[size];
+            ToxFunctions.FriendGetName(_tox, (uint)friendNumber, message, ref error);
+
+            return Encoding.UTF8.GetString(message);
+        }
+
+        /// <summary>
+        /// Retrieves the status message of a friend.
+        /// </summary>
+        /// <param name="friendNumber"></param>
+        /// <returns></returns>
+        public string GetFriendStatusMessage(int friendNumber)
+        {
+            var error = ToxErrorFriendQuery.Ok;
+            return GetFriendStatusMessage(friendNumber, out error);
         }
 
         #region Events
