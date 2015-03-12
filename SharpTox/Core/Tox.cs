@@ -7,8 +7,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 
-using SharpTox.Encryption;
-
 namespace SharpTox.Core
 {
     public delegate object InvokeDelegate(Delegate method, params object[] p);
@@ -277,20 +275,44 @@ namespace SharpTox.Core
         /// </summary>
         /// <param name="id"></param>
         /// <param name="message"></param>
+        /// <param name="error"></param>
         /// <returns>friendNumber</returns>
-        public int AddFriend(ToxId id, string message)
+        public int AddFriend(ToxId id, string message, out ToxErrorFriendAdd error)
         {
             if (_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
             byte[] msg = Encoding.UTF8.GetBytes(message);
+            error = ToxErrorFriendAdd.Ok;
+
+            return (int)ToxFunctions.FriendAdd(_tox, id.Bytes, msg, (uint)msg.Length, ref error);
+        }
+
+        /// <summary>
+        /// Adds a friend.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="message"></param>
+        /// <returns>friendNumber</returns>
+        public int AddFriend(ToxId id, string message)
+        {
             var error = ToxErrorFriendAdd.Ok;
-            int result = (int)ToxFunctions.FriendAdd(_tox, id.Bytes, msg, (uint)msg.Length, ref error);
+            return AddFriend(id, message, out error);
+        }
 
-            //if (result < 0)
-            //    throw new ToxAFException((ToxAFError)result);
+        /// <summary>
+        /// Adds a friend without sending a request.
+        /// </summary>
+        /// <param name="publicKey"></param>
+        /// <param name="error"></param>
+        /// <returns>friendNumber</returns>
+        public int AddFriendNoRequest(ToxKey publicKey, out ToxErrorFriendAdd error)
+        {
+            if (_disposed)
+                throw new ObjectDisposedException(GetType().FullName);
 
-            return result;
+            error = ToxErrorFriendAdd.Ok;
+            return (int)ToxFunctions.FriendAddNoRequest(_tox, publicKey.GetBytes(), ref error);
         }
 
         /// <summary>
@@ -300,11 +322,23 @@ namespace SharpTox.Core
         /// <returns>friendNumber</returns>
         public int AddFriendNoRequest(ToxKey publicKey)
         {
+            var error = ToxErrorFriendAdd.Ok;
+            return AddFriendNoRequest(publicKey, out error);
+        }
+
+        /// <summary>
+        /// Bootstraps this Tox instance with a ToxNode.
+        /// </summary>
+        /// <param name="node"></param>
+        /// <param name="error"></param>
+        /// <returns></returns>
+        public bool Bootstrap(ToxNode node, out ToxErrorBootstrap error)
+        {
             if (_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
-            var error = ToxErrorFriendAdd.Ok;
-            return (int)ToxFunctions.FriendAddNoRequest(_tox, publicKey.GetBytes(), ref error);
+            error = ToxErrorBootstrap.Ok;
+            return ToxFunctions.Bootstrap(_tox, node.Address, (ushort)node.Port, node.PublicKey.GetBytes(), ref error);
         }
 
         /// <summary>
@@ -314,11 +348,8 @@ namespace SharpTox.Core
         /// <returns></returns>
         public bool Bootstrap(ToxNode node)
         {
-            if (_disposed)
-                throw new ObjectDisposedException(GetType().FullName);
-
             var error = ToxErrorBootstrap.Ok;
-            return ToxFunctions.Bootstrap(_tox, node.Address, (ushort)node.Port, node.PublicKey.GetBytes(), ref error);
+            return Bootstrap(node, out error);
         }
 
         /// <summary>
@@ -338,28 +369,67 @@ namespace SharpTox.Core
         /// Retrieves the typing status of a friend.
         /// </summary>
         /// <param name="friendNumber"></param>
+        /// <param name="error"></param>
         /// <returns></returns>
-        public bool GetIsTyping(int friendNumber)
+        public bool GetIsTyping(int friendNumber, out ToxErrorFriendQuery error)
         {
             if (_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
-            var error = ToxErrorFriendQuery.Ok;
+            error = ToxErrorFriendQuery.Ok;
             return ToxFunctions.FriendGetTyping(_tox, (uint)friendNumber, ref error);
+        }
+
+        /// <summary>
+        /// Retrieves the typing status of a friend.
+        /// </summary>
+        /// <param name="friendNumber"></param>
+        /// <returns></returns>
+        public bool GetIsTyping(int friendNumber)
+        {
+            var error = ToxErrorFriendQuery.Ok;
+            return GetIsTyping(friendNumber, out error);
         }
 
         /// <summary>
         /// Retrieves the friendNumber associated to the specified public address/id.
         /// </summary>
-        /// <param name="id"></param>
+        /// <param name="publicKey"></param>
+        /// <param name="error"></param>
         /// <returns></returns>
-        public int GetFriendByPublicKey(string publicKey)
+        public int GetFriendByPublicKey(string publicKey, out ToxErrorFriendByPublicKey error)
         {
             if (_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
-            var error = ToxErrorFriendByPublicKey.Ok;
+            error = ToxErrorFriendByPublicKey.Ok;
             return (int)ToxFunctions.FriendByPublicKey(_tox, ToxTools.StringToHexBin(publicKey), ref error);
+        }
+
+        /// <summary>
+        /// Retrieves the friendNumber associated to the specified public address/id.
+        /// </summary>
+        /// <param name="publicKey"></param>
+        /// <returns></returns>
+        public int GetFriendByPublicKey(string publicKey)
+        {
+            var error = ToxErrorFriendByPublicKey.Ok;
+            return GetFriendByPublicKey(publicKey, out error);
+        }
+
+        /// <summary>
+        /// Retrieves a friend's connection status.
+        /// </summary>
+        /// <param name="friendNumber"></param>
+        /// <param name="error"></param>
+        /// <returns></returns>
+        public ToxConnectionStatus GetFriendConnectionStatus(int friendNumber, out ToxErrorFriendQuery error)
+        {
+            if (_disposed)
+                throw new ObjectDisposedException(GetType().FullName);
+
+            error = ToxErrorFriendQuery.Ok;
+            return ToxFunctions.FriendGetConnectionStatus(_tox, (uint)friendNumber, ref error);
         }
 
         /// <summary>
@@ -369,11 +439,26 @@ namespace SharpTox.Core
         /// <returns></returns>
         public ToxConnectionStatus GetFriendConnectionStatus(int friendNumber)
         {
+            var error = ToxErrorFriendQuery.Ok;
+            return GetFriendConnectionStatus(friendNumber, out error);
+        }
+
+        /// <summary>
+        /// Retrieves a friend's public id/address.
+        /// </summary>
+        /// <param name="friendNumber"></param>
+        /// <param name="error"></param>
+        /// <returns></returns>
+        public ToxKey GetPublicKey(int friendNumber, out ToxErrorFriendGetPublicKey error)
+        {
             if (_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
-            var error = ToxErrorFriendQuery.Ok;
-            return ToxFunctions.FriendGetConnectionStatus(_tox, (uint)friendNumber, ref error);
+            byte[] address = new byte[ToxConstants.ClientIdSize];
+            error = ToxErrorFriendGetPublicKey.Ok;
+            ToxFunctions.FriendGetPublicKey(_tox, (uint)friendNumber, address, ref error);
+
+            return new ToxKey(ToxKeyType.Public, address);
         }
 
         /// <summary>
@@ -383,14 +468,23 @@ namespace SharpTox.Core
         /// <returns></returns>
         public ToxKey GetPublicKey(int friendNumber)
         {
+            var error = ToxErrorFriendGetPublicKey.Ok;
+            return GetPublicKey(friendNumber, out error);
+        }
+
+        /// <summary>
+        /// Retrieves a friend's current user status.
+        /// </summary>
+        /// <param name="friendNumber"></param>
+        /// <param name="error"></param>
+        /// <returns></returns>
+        public ToxStatus GetStatus(int friendNumber, out ToxErrorFriendQuery error)
+        {
             if (_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
-            byte[] address = new byte[ToxConstants.ClientIdSize];
-            var error = ToxErrorFriendGetPublicKey.Ok;
-            ToxFunctions.FriendGetPublicKey(_tox, (uint)friendNumber, address, ref error);
-
-            return new ToxKey(ToxKeyType.Public, address);
+            error = ToxErrorFriendQuery.Ok;
+            return ToxFunctions.FriendGetStatus(_tox, (uint)friendNumber, ref error);
         }
 
         /// <summary>
@@ -398,13 +492,26 @@ namespace SharpTox.Core
         /// </summary>
         /// <param name="friendNumber"></param>
         /// <returns></returns>
-        public ToxStatus GetUserStatus(int friendNumber)
+        public ToxStatus GetStatus(int friendNumber)
+        {
+            var error = ToxErrorFriendQuery.Ok;
+            return GetStatus(friendNumber, out error);
+        }
+
+        /// <summary>
+        /// Sets the typing status of this Tox instance.
+        /// </summary>
+        /// <param name="friendNumber"></param>
+        /// <param name="isTyping"></param>
+        /// <param name="error"></param>
+        /// <returns></returns>
+        public bool SetSelfTyping(int friendNumber, bool isTyping, out ToxErrorSetTyping error)
         {
             if (_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
-            var error = ToxErrorFriendQuery.Ok;
-            return ToxFunctions.FriendGetStatus(_tox, (uint)friendNumber, ref error);
+            error = ToxErrorSetTyping.Ok;
+            return ToxFunctions.SelfSetTyping(_tox, (uint)friendNumber, isTyping, ref error);
         }
 
         /// <summary>
@@ -415,11 +522,26 @@ namespace SharpTox.Core
         /// <returns></returns>
         public bool SetSelfTyping(int friendNumber, bool isTyping)
         {
+            var error = ToxErrorSetTyping.Ok;
+            return SetSelfTyping(friendNumber, isTyping, out error);
+        }
+
+        /// <summary>
+        /// Send a message to a friend.
+        /// </summary>
+        /// <param name="friendNumber"></param>
+        /// <param name="message"></param>
+        /// <param name="error"></param>
+        /// <returns></returns>
+        public int SendMessage(int friendNumber, string message, out ToxErrorSendMessage error)
+        {
             if (_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
-            var error = ToxErrorSetTyping.Ok;
-            return ToxFunctions.SelfSetTyping(_tox, (uint)friendNumber, isTyping, ref error);
+            byte[] bytes = Encoding.UTF8.GetBytes(message);
+            error = ToxErrorSendMessage.Ok;
+
+            return (int)ToxFunctions.SendMessage(_tox, (uint)friendNumber, bytes, (uint)bytes.Length, ref error);
         }
 
         /// <summary>
@@ -430,13 +552,26 @@ namespace SharpTox.Core
         /// <returns></returns>
         public int SendMessage(int friendNumber, string message)
         {
+            var error = ToxErrorSendMessage.Ok;
+            return SendMessage(friendNumber, message, out error);
+        }
+
+        /// <summary>
+        /// Sends an action to a friend.
+        /// </summary>
+        /// <param name="friendNumber"></param>
+        /// <param name="action"></param>
+        /// <param name="error"></param>
+        /// <returns></returns>
+        public int SendAction(int friendNumber, string action, out ToxErrorSendMessage error)
+        {
             if (_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
-            byte[] bytes = Encoding.UTF8.GetBytes(message);
-            var error = ToxErrorSendMessage.Ok;
+            byte[] bytes = Encoding.UTF8.GetBytes(action);
+            error = ToxErrorSendMessage.Ok;
 
-            return (int)ToxFunctions.SendMessage(_tox, (uint)friendNumber, bytes, (uint)bytes.Length, ref error);
+            return (int)ToxFunctions.SendAction(_tox, (uint)friendNumber, bytes, (uint)bytes.Length, ref error);
         }
 
         /// <summary>
@@ -447,13 +582,8 @@ namespace SharpTox.Core
         /// <returns></returns>
         public int SendAction(int friendNumber, string action)
         {
-            if (_disposed)
-                throw new ObjectDisposedException(GetType().FullName);
-
-            byte[] bytes = Encoding.UTF8.GetBytes(action);
             var error = ToxErrorSendMessage.Ok;
-
-            return (int)ToxFunctions.SendAction(_tox, (uint)friendNumber, bytes, (uint)bytes.Length, ref error);
+            return SendAction(friendNumber, action, out error);
         }
 
         /// <summary>
@@ -478,14 +608,26 @@ namespace SharpTox.Core
         /// Deletes a friend.
         /// </summary>
         /// <param name="friendNumber"></param>
+        /// <param name="error"></param>
         /// <returns></returns>
-        public bool DeleteFriend(int friendNumber)
+        public bool DeleteFriend(int friendNumber, out ToxErrorFriendDelete error)
         {
             if (_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
-            var error = ToxErrorFriendDelete.Ok;
+            error = ToxErrorFriendDelete.Ok;
             return ToxFunctions.FriendDelete(_tox, (uint)friendNumber, ref error);
+        }
+
+        /// <summary>
+        /// Deletes a friend.
+        /// </summary>
+        /// <param name="friendNumber"></param>
+        /// <returns></returns>
+        public bool DeleteFriend(int friendNumber)
+        {
+            var error = ToxErrorFriendDelete.Ok;
+            return DeleteFriend(friendNumber, out error);
         }
 
         /// <summary>
