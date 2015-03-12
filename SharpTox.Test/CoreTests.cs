@@ -16,12 +16,15 @@ namespace SharpTox.Test
         {
             var tox = new Tox(_options);
             var error = ToxErrorBootstrap.Ok;
-            bool result = tox.Bootstrap(new ToxNode("impy.me", 33445, new ToxKey(ToxKeyType.Public, "788236D34978D1D5BD822F0A5BEBD2C53C64CC31CD3149350EE27D4D9A2F9B6B")), out error);
-            if (!result || error != ToxErrorBootstrap.Ok)
-                Assert.Fail("Failed to bootstrap error: {0}, result: {1}", error, result);
+
+            foreach (var node in _nodes)
+            {
+                bool result = tox.Bootstrap(node, out error);
+                if (!result || error != ToxErrorBootstrap.Ok)
+                    Assert.Fail("Failed to bootstrap error: {0}, result: {1}", error, result);
+            }
 
             tox.Start();
-
             while (!tox.IsConnected) { }
 
             Console.WriteLine("Tox connected!");
@@ -55,7 +58,6 @@ namespace SharpTox.Test
             tox1.OnFriendRequest += (object sender, ToxEventArgs.FriendRequestEventArgs args) =>
             {
                 tox1.AddFriendNoRequest(args.PublicKey, out addError);
-                Assert.AreEqual(addError, ToxErrorFriendAdd.Ok);
                 if (addError != ToxErrorFriendAdd.Ok)
                     Assert.Fail("Failed to add friend (no request): {0}", addError);
             };
@@ -74,5 +76,13 @@ namespace SharpTox.Test
             tox2.Dispose();
             testFinished = true;
         }
+
+        private static ToxNode[] _nodes = new ToxNode[]
+        {
+            new ToxNode("178.62.250.138", 33445, new ToxKey(ToxKeyType.Public, "788236D34978D1D5BD822F0A5BEBD2C53C64CC31CD3149350EE27D4D9A2F9B6B")),
+            new ToxNode("192.210.149.121", 33445, new ToxKey(ToxKeyType.Public, "F404ABAA1C99A9D37D61AB54898F56793E1DEF8BD46B1038B9D822E8460FAB67")),
+            new ToxNode("178.62.125.224", 33445, new ToxKey(ToxKeyType.Public, "10B20C49ACBD968D7C80F2E8438F92EA51F189F4E70CFBBB2C2C8C799E97F03E")),
+            new ToxNode("76.191.23.96", 33445, new ToxKey(ToxKeyType.Public, "93574A3FAB7D612FEA29FD8D67D3DD10DFD07A075A5D62E8AF3DD9F5D0932E11")),
+        };
     }
 }
