@@ -23,6 +23,11 @@ namespace SharpTox.Core
         private bool _disposed = false;
         private bool _connected = false;
 
+        #region Callback delegates
+        private ToxDelegates.CallbackFriendRequestDelegate _onFriendRequestCallback;
+        private ToxDelegates.CallbackFriendMessageDelegate _onFriendMessageCallback;
+        #endregion
+
         /// <summary>
         /// Options used for this instance of Tox.
         /// </summary>
@@ -644,6 +649,76 @@ namespace SharpTox.Core
 
             return new ToxData(bytes);
         }
+
+        #region Events
+        private EventHandler<ToxEventArgs.FriendRequestEventArgs> _onFriendRequest;
+
+        /// <summary>
+        /// Occurs when a friend request is received.
+        /// </summary>
+        public event EventHandler<ToxEventArgs.FriendRequestEventArgs> OnFriendRequest
+        {
+            add
+            {
+                if (_onFriendRequestCallback == null)
+                {
+                    _onFriendRequestCallback = (IntPtr tox, byte[] publicKey, byte[] message, uint length, IntPtr userData) =>
+                    {
+                        if (_onFriendRequest != null)
+                            _onFriendRequest(this, new ToxEventArgs.FriendRequestEventArgs(new ToxKey(ToxKeyType.Public, ToxTools.HexBinToString(publicKey)), Encoding.UTF8.GetString(message, 0, (int)length)));
+                    };
+
+                    ToxFunctions.RegisterFriendRequestCallback(_tox, _onFriendRequestCallback, IntPtr.Zero);
+                }
+
+                _onFriendRequest += value;
+            }
+            remove
+            {
+                if (_onFriendRequest.GetInvocationList().Length == 1)
+                {
+                    ToxFunctions.RegisterFriendRequestCallback(_tox, null, IntPtr.Zero);
+                    _onFriendRequestCallback = null;
+                }
+
+                _onFriendRequest -= value;
+            }
+        }
+
+        private EventHandler<ToxEventArgs.FriendMessageEventArgs> _onFriendMessage;
+
+        /// <summary>
+        /// Occurs when a message is received from a friend.
+        /// </summary>
+        public event EventHandler<ToxEventArgs.FriendMessageEventArgs> OnFriendMessage
+        {
+            add
+            {
+                if (_onFriendMessageCallback == null)
+                {
+                    _onFriendMessageCallback = (IntPtr tox, int friendNumber, byte[] message, uint length, IntPtr userData) =>
+                    {
+                        if (_onFriendMessage != null)
+                            _onFriendMessage(this, new ToxEventArgs.FriendMessageEventArgs(friendNumber, ToxTools.RemoveNull(Encoding.UTF8.GetString(message, 0, (int)length))));
+                    };
+
+                    ToxFunctions.RegisterFriendMessageCallback(_tox, _onFriendMessageCallback, IntPtr.Zero);
+                }
+
+                _onFriendMessage += value;
+            }
+            remove
+            {
+                if (_onFriendMessage.GetInvocationList().Length == 1)
+                {
+                    ToxFunctions.RegisterFriendMessageCallback(_tox, null, IntPtr.Zero);
+                    _onFriendMessageCallback = null;
+                }
+
+                _onFriendMessage -= value;
+            }
+        }
+        #endregion
     }
 }
 
