@@ -29,8 +29,8 @@ namespace SharpTox.Core
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_options_new")]
         public static extern IntPtr OptionsNew(ref ToxErrorOptionsNew error);
 
-        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_options_new")]
-        public static extern void OptionsNew(ref ToxOptions options);
+        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_options_free")]
+        public static extern void OptionsFree(ref ToxOptions options);
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_version_major")]
         public static extern uint VersionMajor();
