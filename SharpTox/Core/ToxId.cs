@@ -12,8 +12,8 @@ namespace SharpTox.Core
         {
             get
             {
-                byte[] key = new byte[ToxConstants.ClientIdSize];
-                Array.Copy(_id, 0, key, 0, ToxConstants.ClientIdSize);
+                byte[] key = new byte[ToxConstants.PublicKeySize];
+                Array.Copy(_id, 0, key, 0, ToxConstants.PublicKeySize);
 
                 return new ToxKey(ToxKeyType.Public, key);
             }

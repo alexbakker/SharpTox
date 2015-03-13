@@ -38,6 +38,6 @@
         /// <summary>
         /// The size of a public key.
         /// </summary>
-        public const int ClientIdSize = 32;
+        public const int PublicKeySize = 32;
     }
 }
