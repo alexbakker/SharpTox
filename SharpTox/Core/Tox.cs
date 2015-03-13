@@ -137,6 +137,23 @@ namespace SharpTox.Core
         }
 
         /// <summary>
+        /// Retrieves the temporary DHT public key of this Tox instance.
+        /// </summary>
+        public ToxKey DhtId
+        {
+            get
+            {
+                if (_disposed)
+                    throw new ObjectDisposedException(GetType().FullName);
+
+                byte[] publicKey = new byte[ToxConstants.PublicKeySize];
+                ToxFunctions.GetDhtId(_tox, publicKey);
+
+                return new ToxKey(ToxKeyType.Public, publicKey);
+            }
+        }
+
+        /// <summary>
         /// Current user status of this Tox instance.
         /// </summary>
         public ToxStatus Status
@@ -780,6 +797,54 @@ namespace SharpTox.Core
         {
             var error = ToxErrorFriendQuery.Ok;
             return GetFriendStatusMessage(friendNumber, out error);
+        }
+
+        /// <summary>
+        /// Retrieves the UDP port this instance of Tox is bound to.
+        /// </summary>
+        /// <param name="error"></param>
+        /// <returns></returns>
+        public int GetUdpPort(out ToxErrorGetPort error)
+        {
+            if (_disposed)
+                throw new ObjectDisposedException(GetType().FullName);
+
+            error = ToxErrorGetPort.Ok;
+            return ToxFunctions.GetUdpPort(_tox, ref error);
+        }
+
+        /// <summary>
+        /// Retrieves the UDP port this instance of Tox is bound to.
+        /// </summary>
+        /// <returns></returns>
+        public int GetUdpPort()
+        {
+            var error = ToxErrorGetPort.Ok;
+            return GetUdpPort(out error);
+        }
+
+        /// <summary>
+        /// Retrieves the TCP port this instance of Tox is bound to.
+        /// </summary>
+        /// <param name="error"></param>
+        /// <returns></returns>
+        public int GetTcpPort(out ToxErrorGetPort error)
+        {
+            if (_disposed)
+                throw new ObjectDisposedException(GetType().FullName);
+
+            error = ToxErrorGetPort.Ok;
+            return ToxFunctions.GetTcpPort(_tox, ref error);
+        }
+
+        /// <summary>
+        /// Retrieves the TCP port this instance of Tox is bound to.
+        /// </summary>
+        /// <returns></returns>
+        public int GetTcpPort()
+        {
+            var error = ToxErrorGetPort.Ok;
+            return GetTcpPort(out error);
         }
 
         #region Events
