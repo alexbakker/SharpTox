@@ -198,7 +198,7 @@
         FriendNotConnected,
         NotFound,
         NotTransferring,
-        TooLarge,
+        InvalidLength,
         QueueFull
     }
 }
