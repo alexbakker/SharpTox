@@ -29,8 +29,8 @@ namespace SharpTox.Core
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_options_new")]
         public static extern IntPtr OptionsNew(ref ToxErrorOptionsNew error);
 
-        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_options_new")]
-        public static extern void OptionsNew(ref ToxOptions options);
+        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_options_free")]
+        public static extern void OptionsFree(ref ToxOptions options);
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_version_major")]
         public static extern uint VersionMajor();
@@ -40,6 +40,9 @@ namespace SharpTox.Core
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_version_patch")]
         public static extern uint VersionPatch();
+
+        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_version_is_compatible")]
+        public static extern bool VersionIsCompatible(uint major, uint minor, uint patch);
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_bootstrap")]
         public static extern bool Bootstrap(ToxHandle tox, string address, ushort port, byte[] publicKey, ref ToxErrorBootstrap error);
@@ -137,7 +140,7 @@ namespace SharpTox.Core
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_self_get_status_message")]
         public static extern void SelfGetStatusMessage(ToxHandle tox, byte[] status);
 
-        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_self_get_status_message")]
+        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_self_get_status_message_size")]
         public static extern uint SelfGetStatusMessageSize(ToxHandle tox);
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_self_set_status_message")]
@@ -166,6 +169,18 @@ namespace SharpTox.Core
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_get_dht_id")]
         public static extern void GetDhtId(ToxHandle tox, byte[] dhtId);
+
+        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_hash")]
+        public static extern bool Hash(byte[] hash, byte[] data, uint length);
+
+        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_file_control")]
+        public static extern bool FileControl(ToxHandle tox, uint friendNumber, uint fileNumber, ToxFileControl control, ref ToxErrorFileControl error);
+
+        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_file_send")]
+        public static extern uint FileSend(ToxHandle tox, uint friendNumber, ToxFileKind kind, ulong fileSize, byte[] fileName, uint fileNameLength, ref ToxErrorFileSend error);
+
+        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_file_send_chunk")]
+        public static extern bool FileSendChunk(ToxHandle tox, uint friendNumber, uint fileNumber, byte[] data, uint length, ref ToxErrorFileSendChunk error);
 
         #region Register callback functions
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_callback_friend_request")]

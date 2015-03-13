@@ -856,6 +856,13 @@ namespace SharpTox.Core
             return GetTcpPort(out error);
         }
 
+        public byte[] Hash(byte[] data)
+        {
+            byte[] hash = new byte[ToxConstants.ToxHashLength];
+            ToxFunctions.Hash(hash, data, (uint)data.Length);
+            return hash;
+        }
+
         #region Events
         private EventHandler<ToxEventArgs.FriendRequestEventArgs> _onFriendRequest;
 
