@@ -37,7 +37,9 @@ namespace SharpTox.Test
             var tox1 = new Tox(_options);
             var tox2 = new Tox(_options);
             var addError = ToxErrorFriendAdd.Ok;
-            var messages = new List<string>(10);
+            string messageFormat = "Hey! This is test message number ";
+            int messageCount = 100;
+            int receivedMessageCount = 0;
             bool testFinished = false;
 
             Task.Run(async() =>
@@ -47,7 +49,7 @@ namespace SharpTox.Test
                     int time1 = tox1.Iterate();
                     int time2 = tox2.Iterate();
 
-                    await Task.Delay(Math.Max(time1, time2));
+                    await Task.Delay(Math.Min(time1, time2));
                 }
             });
 
@@ -62,15 +64,47 @@ namespace SharpTox.Test
                     Assert.Fail("Failed to add friend (no request): {0}", addError);
             };
 
+            tox2.OnFriendMessage += (object sender, ToxEventArgs.FriendMessageEventArgs args) =>
+            {
+                if (args.Message != messageFormat + receivedMessageCount.ToString())
+                    Assert.Fail("Message arrived in incorrect order or got garbled");
+
+                receivedMessageCount++;
+            };
+
+            tox2.OnFriendAction += (object sender, ToxEventArgs.FriendActionEventArgs args) =>
+            {
+                if (args.Action != messageFormat + receivedMessageCount.ToString())
+                    Assert.Fail("Action arrived in incorrect order or got garbled");
+
+                receivedMessageCount++;
+            };
+
             while (tox1.GetFriendConnectionStatus(0) == ToxConnectionStatus.None) { }
 
-            for (int i = 0; i < messages.Count; i++)
+            for (int i = 0; i < messageCount; i++)
             {
                 var sendError = ToxErrorSendMessage.Ok;
-                tox1.SendMessage(0, "Hey! This is test message number " + i.ToString());
+                tox1.SendMessage(0, messageFormat + i.ToString(), out sendError);
                 if (sendError != ToxErrorSendMessage.Ok)
-                    Assert.Fail("Failed to send message to friend: {0}", addError);
+                    Assert.Fail("Failed to send message to friend: {0}", sendError);
             }
+
+            while (receivedMessageCount != messageCount) { }
+            Console.WriteLine("Received all messages without errors");
+
+            receivedMessageCount = 0;
+
+            for (int i = 0; i < messageCount; i++)
+            {
+                var sendError = ToxErrorSendMessage.Ok;
+                tox1.SendAction(0, messageFormat + i.ToString(), out sendError);
+                if (sendError != ToxErrorSendMessage.Ok)
+                    Assert.Fail("Failed to send action to friend: {0}", sendError);
+            }
+
+            while (receivedMessageCount != messageCount) { }
+            Console.WriteLine("Received all actions without errors");
 
             tox1.Dispose();
             tox2.Dispose();
