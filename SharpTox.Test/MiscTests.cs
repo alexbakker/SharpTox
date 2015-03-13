@@ -1,5 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
+using System.Threading;
 using SharpTox.Core;
 
 namespace SharpTox.Test
@@ -23,7 +24,7 @@ namespace SharpTox.Test
             }
 
             tox.Start();
-            while (!tox.IsConnected) { }
+            while (!tox.IsConnected) { Thread.Sleep(10); }
 
             Console.WriteLine("Tox connected!");
             tox.Dispose();
@@ -40,7 +41,7 @@ namespace SharpTox.Test
                 Assert.Fail("Failed to bootstrap error: {0}, result: {1}", error, result);
 
             tox.Start();
-            while (!tox.IsConnected) { }
+            while (!tox.IsConnected) { Thread.Sleep(10); }
 
             Console.WriteLine("Tox connected!");
             tox.Dispose();

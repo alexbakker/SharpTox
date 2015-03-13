@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -25,7 +26,7 @@ namespace SharpTox.Test
             _tox1.AddFriend(_tox2.Id, "hey");
             _tox2.AddFriend(_tox1.Id, "hey");
 
-            while (_tox1.GetFriendConnectionStatus(0) == ToxConnectionStatus.None) { }
+            while (_tox1.GetFriendConnectionStatus(0) == ToxConnectionStatus.None) { Thread.Sleep(10); }
         }
 
         [ClassCleanup()]
@@ -74,7 +75,7 @@ namespace SharpTox.Test
                 receivedMessageCount++;
             };
 
-            while (receivedMessageCount != messageCount) { }
+            while (receivedMessageCount != messageCount) { Thread.Sleep(10); }
             Console.WriteLine("Received all messages without errors");
         }
 
@@ -101,7 +102,7 @@ namespace SharpTox.Test
                 receivedActionCount++;
             };
 
-            while (receivedActionCount != actionCount) { }
+            while (receivedActionCount != actionCount) { Thread.Sleep(10); }
             Console.WriteLine("Received all actions without errors");
         }
 
@@ -120,7 +121,7 @@ namespace SharpTox.Test
                 wait = false;
             };
 
-            while (wait) { }
+            while (wait) { Thread.Sleep(10); }
         }
 
         [TestMethod]
@@ -138,7 +139,7 @@ namespace SharpTox.Test
                 wait = false;
             };
 
-            while (wait) { }
+            while (wait) { Thread.Sleep(10); }
         }
 
         [TestMethod]
@@ -156,7 +157,7 @@ namespace SharpTox.Test
                 wait = false;
             };
 
-            while (wait) { }
+            while (wait) { Thread.Sleep(10); }
         }
 
         [TestMethod]
@@ -194,7 +195,7 @@ namespace SharpTox.Test
                     Assert.Fail("Failed to add friend (no request): {0}", error);
             };
 
-            while (tox1.GetFriendConnectionStatus(0) == ToxConnectionStatus.None) { }
+            while (tox1.GetFriendConnectionStatus(0) == ToxConnectionStatus.None) { Thread.Sleep(10); }
 
             testFinished = true;
             tox1.Dispose();
