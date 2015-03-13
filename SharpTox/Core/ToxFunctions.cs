@@ -171,16 +171,16 @@ namespace SharpTox.Core
         public static extern void GetDhtId(ToxHandle tox, byte[] dhtId);
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_hash")]
-        public static extern void Hash(byte[] hash, byte[] data, uint length);
+        public static extern bool Hash(byte[] hash, byte[] data, uint length);
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_file_control")]
-        public static extern void FileControl(ToxHandle tox, uint friendNumber, uint fileNumber, ToxFileControl control, ref ToxErrorFileControl error);
+        public static extern bool FileControl(ToxHandle tox, uint friendNumber, uint fileNumber, ToxFileControl control, ref ToxErrorFileControl error);
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_file_send")]
-        public static extern void FileSend(ToxHandle tox, uint friendNumber, ToxFileKind kind, ulong fileSize, byte[] fileName, uint fileNameLength, ref ToxErrorFileSend error);
+        public static extern uint FileSend(ToxHandle tox, uint friendNumber, ToxFileKind kind, ulong fileSize, byte[] fileName, uint fileNameLength, ref ToxErrorFileSend error);
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_file_send_chunk")]
-        public static extern void FileSendChunk(ToxHandle tox, uint friendNumber, uint fileNumber, byte[] data, uint length, ref ToxErrorFileSendChunk error);
+        public static extern bool FileSendChunk(ToxHandle tox, uint friendNumber, uint fileNumber, byte[] data, uint length, ref ToxErrorFileSendChunk error);
 
         #region Register callback functions
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_callback_friend_request")]
