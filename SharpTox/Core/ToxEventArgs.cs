@@ -54,11 +54,21 @@ namespace SharpTox.Core
             }
         }
 
-        public class ConnectionStatusEventArgs : FriendBaseEventArgs
+        public class ConnectionStatusEventArgs : EventArgs
         {
             public ToxConnectionStatus Status { get; private set; }
 
-            public ConnectionStatusEventArgs(int friendNumber, ToxConnectionStatus status)
+            public ConnectionStatusEventArgs(ToxConnectionStatus status)
+            {
+                Status = status;
+            }
+        }
+
+        public class FriendConnectionStatusEventArgs : FriendBaseEventArgs
+        {
+            public ToxConnectionStatus Status { get; private set; }
+
+            public FriendConnectionStatusEventArgs(int friendNumber, ToxConnectionStatus status)
                 : base(friendNumber)
             {
                 Status = status;
@@ -157,27 +167,49 @@ namespace SharpTox.Core
         {
             public ToxFileControl Control{get;private set;}
 
-            public bool IsSend { get; private set; }
-
-            public byte[] Data { get; private set; }
-
-            public FileControlEventArgs(int friendNumber, int fileNumber, bool isSend, ToxFileControl control, byte[] data)
+            public FileControlEventArgs(int friendNumber, int fileNumber, ToxFileControl control)
                 : base(friendNumber, fileNumber)
             {
-                IsSend = isSend;
                 Control = control;
-                Data = (byte[])data.Clone();
             }
         }
 
-        public class FileDataEventArgs : FileBaseEventArgs
+        public class FileRequestChunkEventArgs : FileBaseEventArgs
+        {
+            public ulong Position { get; set; }
+
+            public int Length { get; set; }
+
+            public FileRequestChunkEventArgs(int friendNumber, int fileNumber, ulong position, int length)
+                : base(friendNumber, fileNumber)
+            {
+                Position = position;
+                Length = length;
+            }
+        }
+
+        public class FriendPacketEventArgs : FriendBaseEventArgs
+        {
+            public byte[] Data{get;set;}
+
+            public FriendPacketEventArgs(int friendNumber, byte[] data)
+                : base(friendNumber)
+            {
+                Data = data;
+            }
+        }
+
+        public class FileChunkEventArgs : FileBaseEventArgs
         {
             public byte[] Data { get; private set; }
 
-            public FileDataEventArgs(int friendNumber, int fileNumber, byte[] data)
+            public ulong Position { get; private set; }
+
+            public FileChunkEventArgs(int friendNumber, int fileNumber, byte[] data, ulong position)
                 : base(friendNumber, fileNumber)
             {
-                Data = (byte[])data.Clone();
+                Data = data;
+                Position = position;
             }
         }
 

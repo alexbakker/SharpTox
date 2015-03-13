@@ -67,7 +67,7 @@ namespace SharpTox.Test
                     Assert.Fail("Failed to send message to friend: {0}", sendError);
             }
 
-            _tox2.OnFriendMessage += (object sender, ToxEventArgs.FriendMessageEventArgs args) =>
+            _tox2.OnFriendMessageReceived += (object sender, ToxEventArgs.FriendMessageEventArgs args) =>
             {
                 if (args.Message != messageFormat + receivedMessageCount)
                     Assert.Fail("Message arrived got garbled");
@@ -94,7 +94,7 @@ namespace SharpTox.Test
                     Assert.Fail("Failed to send action to friend: {0}", sendError);
             }
 
-            _tox2.OnFriendAction += (object sender, ToxEventArgs.FriendActionEventArgs args) =>
+            _tox2.OnFriendActionReceived += (object sender, ToxEventArgs.FriendActionEventArgs args) =>
             {
                 if (args.Action != actionFormat + receivedActionCount)
                     Assert.Fail("Action arrived got garbled");
@@ -185,7 +185,7 @@ namespace SharpTox.Test
             if (error != ToxErrorFriendAdd.Ok)
                 Assert.Fail("Failed to add friend: {0}", error);
 
-            tox2.OnFriendRequest += (object sender, ToxEventArgs.FriendRequestEventArgs args) =>
+            tox2.OnFriendRequestReceived += (object sender, ToxEventArgs.FriendRequestEventArgs args) =>
             {
                 if (args.Message != message)
                     Assert.Fail("Message received in the friend request is not the same as the one that was sent");

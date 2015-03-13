@@ -160,4 +160,10 @@
         Pause,
         Cancel
     }
+
+    public enum ToxFileKind
+    {
+        Data,
+        Avatar
+    }
 }
