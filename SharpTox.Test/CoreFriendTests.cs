@@ -9,7 +9,7 @@ namespace SharpTox.Test
     [TestClass]
     public class CoreFriendTests
     {
-        private static bool _running;
+        private static bool _running = true;
         private static Tox _tox1;
         private static Tox _tox2;
 
