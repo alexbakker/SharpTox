@@ -166,4 +166,39 @@
         Data,
         Avatar
     }
+
+    public enum ToxErrorFileControl
+    {
+        Ok,
+        FriendNotFound,
+        FriendNotConnected,
+        NotFound,
+        NotPaused,
+        Denied,
+        AlreadyPaused,
+        SendFailed
+    }
+
+    public enum ToxErrorFileSend
+    {
+        Ok,
+        Null,
+        FriendNotFound,
+        FriendNotConnected,
+        NameEmpty,
+        NameTooLong,
+        TooMany
+    }
+
+    public enum ToxErrorFileSendChunk
+    {
+        Ok,
+        Null,
+        FriendNotFound,
+        FriendNotConnected,
+        NotFound,
+        NotTransferring,
+        TooLarge,
+        QueueFull
+    }
 }
