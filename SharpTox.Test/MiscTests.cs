@@ -32,15 +32,18 @@ namespace SharpTox.Test
         }
 
         [TestMethod]
-        [Timeout(30000)]
+        [Timeout(120000)]
         public void TestToxBootstrapAndConnectTcp()
         {
             var tox = new Tox(new ToxOptions(true, false));
             var error = ToxErrorBootstrap.Ok;
 
-            bool result = tox.AddTcpRelay(new ToxNode("104.219.184.206", 443, new ToxKey(ToxKeyType.Public, "8CD087E31C67568103E8C2A28653337E90E6B8EDA0D765D57C6B5172B4F1F04C")), out error);
-            if (!result || error != ToxErrorBootstrap.Ok)
-                Assert.Fail("Failed to bootstrap error: {0}, result: {1}", error, result);
+            foreach (var node in Globals.TcpRelays)
+            {
+                bool result = tox.AddTcpRelay(node, out error);
+                if (!result || error != ToxErrorBootstrap.Ok)
+                    Assert.Fail("Failed to bootstrap error: {0}, result: {1}", error, result);
+            }
 
             tox.Start();
             while (!tox.IsConnected) { Thread.Sleep(10); }
