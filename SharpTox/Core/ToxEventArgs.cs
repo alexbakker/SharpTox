@@ -109,14 +109,14 @@ namespace SharpTox.Core
             }
         }
 
-        public class UserStatusEventArgs : FriendBaseEventArgs
+        public class StatusEventArgs : FriendBaseEventArgs
         {
-            public ToxStatus UserStatus { get; private set; }
+            public ToxStatus Status { get; private set; }
 
-            public UserStatusEventArgs(int friendNumber, ToxStatus userStatus)
+            public StatusEventArgs(int friendNumber, ToxStatus status)
                 : base(friendNumber)
             {
-                UserStatus = userStatus;
+                Status = status;
             }
         }
 

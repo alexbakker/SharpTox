@@ -104,5 +104,101 @@ namespace SharpTox.Test
             while (receivedActionCount != actionCount) { }
             Console.WriteLine("Received all actions without errors");
         }
+
+        [TestMethod]
+        public void TestToxName()
+        {
+            string name = "Test, test and test";
+            bool wait = true;
+
+            _tox1.Name = name;
+            _tox2.OnFriendNameChanged += (object sender, ToxEventArgs.NameChangeEventArgs args) =>
+            {
+                if (args.Name != name)
+                    Assert.Fail("Name received is not equal to the name we set");
+
+                wait = false;
+            };
+
+            while (wait) { }
+        }
+
+        [TestMethod]
+        public void TestToxStatus()
+        {
+            var status = ToxStatus.Busy;
+            bool wait = true;
+
+            _tox1.Status = status;
+            _tox2.OnFriendStatusChanged += (object sender, ToxEventArgs.StatusEventArgs args) =>
+            {
+                if (args.Status != status)
+                    Assert.Fail("Status received is not equal to the status we set");
+
+                wait = false;
+            };
+
+            while (wait) { }
+        }
+
+        [TestMethod]
+        public void TestToxStatusMessage()
+        {
+            string message = "Test, test and test";
+            bool wait = true;
+
+            _tox1.StatusMessage = message;
+            _tox2.OnFriendStatusMessageChanged += (object sender, ToxEventArgs.StatusMessageEventArgs args) =>
+            {
+                if (args.StatusMessage != message)
+                    Assert.Fail("Status message received is not equal to the status message we set");
+
+                wait = false;
+            };
+
+            while (wait) { }
+        }
+
+        [TestMethod]
+        public void TestToxFriendRequest()
+        {
+            var options = new ToxOptions(true, true);
+            var tox1 = new Tox(options);
+            var tox2 = new Tox(options);
+            var error = ToxErrorFriendAdd.Ok;
+            string message = "Hey, this is a test friend request.";
+            bool testFinished = false;
+
+            Task.Run(async () =>
+            {
+                while (!testFinished)
+                {
+                    int time1 = tox1.Iterate();
+                    int time2 = tox2.Iterate();
+
+                    await Task.Delay(Math.Min(time1, time2));
+                }
+            });
+
+            tox1.AddFriend(tox2.Id, message, out error);
+            if (error != ToxErrorFriendAdd.Ok)
+                Assert.Fail("Failed to add friend: {0}", error);
+
+            tox2.OnFriendRequest += (object sender, ToxEventArgs.FriendRequestEventArgs args) =>
+            {
+                if (args.Message != message)
+                    Assert.Fail("Message received in the friend request is not the same as the one that was sent");
+
+                tox2.AddFriendNoRequest(args.PublicKey, out error);
+                if (error != ToxErrorFriendAdd.Ok)
+                    Assert.Fail("Failed to add friend (no request): {0}", error);
+            };
+
+            while (tox1.GetFriendConnectionStatus(0) == ToxConnectionStatus.None) { }
+
+            testFinished = true;
+            tox1.Dispose();
+            tox2.Dispose();
+        }
     }
 }

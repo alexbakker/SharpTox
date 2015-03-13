@@ -27,6 +27,10 @@ namespace SharpTox.Core
         private ToxDelegates.CallbackFriendRequestDelegate _onFriendRequestCallback;
         private ToxDelegates.CallbackFriendMessageDelegate _onFriendMessageCallback;
         private ToxDelegates.CallbackFriendMessageDelegate _onFriendActionCallback;
+        private ToxDelegates.CallbackNameChangeDelegate _onNameChangeCallback;
+        private ToxDelegates.CallbackStatusMessageDelegate _onStatusMessageCallback;
+        private ToxDelegates.CallbackUserStatusDelegate _onUserStatusCallback;
+        private ToxDelegates.CallbackTypingChangeDelegate _onTypingChangeCallback;
         #endregion
 
         /// <summary>
@@ -371,7 +375,7 @@ namespace SharpTox.Core
                 throw new ObjectDisposedException(GetType().FullName);
 
             error = ToxErrorBootstrap.Ok;
-            return ToxFunctions.Bootstrap(_tox, node.Address, (ushort)node.Port, node.PublicKey.GetBytes(), ref error);
+            return ToxFunctions.AddTcpRelay(_tox, node.Address, (ushort)node.Port, node.PublicKey.GetBytes(), ref error);
         }
 
         public bool AddTcpRelay(ToxNode node)
@@ -824,10 +828,10 @@ namespace SharpTox.Core
             {
                 if (_onFriendMessageCallback == null)
                 {
-                    _onFriendMessageCallback = (IntPtr tox, int friendNumber, byte[] message, uint length, IntPtr userData) =>
+                    _onFriendMessageCallback = (IntPtr tox, uint friendNumber, byte[] message, uint length, IntPtr userData) =>
                     {
                         if (_onFriendMessage != null)
-                            _onFriendMessage(this, new ToxEventArgs.FriendMessageEventArgs(friendNumber, ToxTools.RemoveNull(Encoding.UTF8.GetString(message, 0, (int)length))));
+                            _onFriendMessage(this, new ToxEventArgs.FriendMessageEventArgs((int)friendNumber, ToxTools.RemoveNull(Encoding.UTF8.GetString(message, 0, (int)length))));
                     };
 
                     ToxFunctions.RegisterFriendMessageCallback(_tox, _onFriendMessageCallback, IntPtr.Zero);
@@ -858,10 +862,10 @@ namespace SharpTox.Core
             {
                 if (_onFriendActionCallback == null)
                 {
-                    _onFriendActionCallback = (IntPtr tox, int friendNumber, byte[] action, uint length, IntPtr userData) =>
+                    _onFriendActionCallback = (IntPtr tox, uint friendNumber, byte[] action, uint length, IntPtr userData) =>
                     {
                         if (_onFriendAction != null)
-                            _onFriendAction(this, new ToxEventArgs.FriendActionEventArgs(friendNumber, ToxTools.RemoveNull(Encoding.UTF8.GetString(action, 0, (int)length))));
+                            _onFriendAction(this, new ToxEventArgs.FriendActionEventArgs((int)friendNumber, ToxTools.RemoveNull(Encoding.UTF8.GetString(action, 0, (int)length))));
                     };
 
                     ToxFunctions.RegisterFriendActionCallback(_tox, _onFriendActionCallback, IntPtr.Zero);
@@ -878,6 +882,142 @@ namespace SharpTox.Core
                 }
 
                 _onFriendAction -= value;
+            }
+        }
+
+        private EventHandler<ToxEventArgs.NameChangeEventArgs> _onNameChange;
+
+        /// <summary>
+        /// Occurs when a friend has changed his/her name.
+        /// </summary>
+        public event EventHandler<ToxEventArgs.NameChangeEventArgs> OnFriendNameChanged
+        {
+            add
+            {
+                if (_onNameChangeCallback == null)
+                {
+                    _onNameChangeCallback = (IntPtr tox, uint friendNumber, byte[] newName, uint length, IntPtr userData) =>
+                    {
+                        if (_onNameChange != null)
+                            _onNameChange(this, new ToxEventArgs.NameChangeEventArgs((int)friendNumber, ToxTools.RemoveNull(Encoding.UTF8.GetString(newName, 0, (int)length))));
+                    };
+
+                    ToxFunctions.RegisterNameChangeCallback(_tox, _onNameChangeCallback, IntPtr.Zero);
+                }
+
+                _onNameChange += value;
+            }
+            remove
+            {
+                if (_onNameChange.GetInvocationList().Length == 1)
+                {
+                    ToxFunctions.RegisterNameChangeCallback(_tox, null, IntPtr.Zero);
+                    _onNameChangeCallback = null;
+                }
+
+                _onNameChange -= value;
+            }
+        }
+
+        private EventHandler<ToxEventArgs.StatusMessageEventArgs> _onStatusMessage;
+
+        /// <summary>
+        /// Occurs when a friend has changed their status message.
+        /// </summary>
+        public event EventHandler<ToxEventArgs.StatusMessageEventArgs> OnFriendStatusMessageChanged
+        {
+            add
+            {
+                if (_onStatusMessageCallback == null)
+                {
+                    _onStatusMessageCallback = (IntPtr tox, uint friendNumber, byte[] newStatus, uint length, IntPtr userData) =>
+                    {
+                        if (_onStatusMessage != null)
+                            _onStatusMessage(this, new ToxEventArgs.StatusMessageEventArgs((int)friendNumber, ToxTools.RemoveNull(Encoding.UTF8.GetString(newStatus, 0, (int)length))));
+                    };
+
+                    ToxFunctions.RegisterStatusMessageCallback(_tox, _onStatusMessageCallback, IntPtr.Zero);
+                }
+
+                _onStatusMessage += value;
+            }
+            remove
+            {
+                if (_onStatusMessage.GetInvocationList().Length == 1)
+                {
+                    ToxFunctions.RegisterStatusMessageCallback(_tox, null, IntPtr.Zero);
+                    _onStatusMessageCallback = null;
+                }
+
+                _onStatusMessage -= value;
+            }
+        }
+
+        private EventHandler<ToxEventArgs.StatusEventArgs> _onFriendStatusChanged;
+
+        /// <summary>
+        /// Occurs when a friend has changed their user status.
+        /// </summary>
+        public event EventHandler<ToxEventArgs.StatusEventArgs> OnFriendStatusChanged
+        {
+            add
+            {
+                if (_onUserStatusCallback == null)
+                {
+                    _onUserStatusCallback = (IntPtr tox, uint friendNumber, ToxStatus status, IntPtr userData) =>
+                    {
+                        if (_onFriendStatusChanged != null)
+                            _onFriendStatusChanged(this, new ToxEventArgs.StatusEventArgs((int)friendNumber, status));
+                    };
+
+                    ToxFunctions.RegisterUserStatusCallback(_tox, _onUserStatusCallback, IntPtr.Zero);
+                }
+
+                _onFriendStatusChanged += value;
+            }
+            remove
+            {
+                if (_onFriendStatusChanged.GetInvocationList().Length == 1)
+                {
+                    ToxFunctions.RegisterUserStatusCallback(_tox, null, IntPtr.Zero);
+                    _onUserStatusCallback = null;
+                }
+
+                _onFriendStatusChanged -= value;
+            }
+        }
+
+        private EventHandler<ToxEventArgs.TypingStatusEventArgs> _onTypingChange;
+
+        /// <summary>
+        /// Occurs when a friend's typing status has changed.
+        /// </summary>
+        public event EventHandler<ToxEventArgs.TypingStatusEventArgs> OnFriendTypingChanged
+        {
+            add
+            {
+                if (_onTypingChangeCallback == null)
+                {
+                    _onTypingChangeCallback = (IntPtr tox, uint friendNumber, bool typing, IntPtr userData) =>
+                    {
+                        if (_onTypingChange != null)
+                            _onTypingChange(this, new ToxEventArgs.TypingStatusEventArgs((int)friendNumber, typing));
+                    };
+
+                    ToxFunctions.RegisterTypingChangeCallback(_tox, _onTypingChangeCallback, IntPtr.Zero);
+                }
+
+                _onTypingChange += value;
+            }
+            remove
+            {
+                if (_onTypingChange.GetInvocationList().Length == 1)
+                {
+                    ToxFunctions.RegisterTypingChangeCallback(_tox, null, IntPtr.Zero);
+                    _onTypingChangeCallback = null;
+                }
+
+                _onTypingChange -= value;
             }
         }
         #endregion
