@@ -24,6 +24,30 @@ namespace SharpTox.Core
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         public delegate void CallbackNameChangeDelegate(IntPtr tox, uint friendNumber, [In, MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 3)] byte[] newName, uint length, IntPtr userData);
+
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        public delegate void CallbackConnectionStatusDelegate(IntPtr tox, ToxConnectionStatus status, IntPtr userData);
+
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        public delegate void CallbackFriendConnectionStatusDelegate(IntPtr tox, uint friendNumber, ToxConnectionStatus status, IntPtr userData);
+
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        public delegate void CallbackReadReceiptDelegate(IntPtr tox, uint friendNumber, uint messageId, IntPtr userData);
+
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        public delegate void CallbackFileReceiveChunkDelegate(IntPtr tox, uint friendNumber, uint fileNumber, ulong position, [In, MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 5)] byte[] data, uint length, IntPtr userData);
+
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        public delegate void CallbackFileControlDelegate(IntPtr tox, uint friendNumber, uint fileNumber, ToxFileControl control, IntPtr userData);
+
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        public delegate void CallbackFileReceiveDelegate(IntPtr tox, uint friendNumber, uint fileNumber, ToxFileKind kind, ulong fizeSize, [In, MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 6)] byte[] filename, uint filenameLength, IntPtr userData);
+
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        public delegate void CallbackFileRequestChunkDelegate(IntPtr tox, uint friendNumber, uint fileNumber, ulong position, uint length, IntPtr userData);
+
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        public delegate void CallbackFriendPacketDelegate(IntPtr tox, uint friendNumber, [In, MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 3)] byte[] data, uint length, IntPtr userData);
     }
 }
 
