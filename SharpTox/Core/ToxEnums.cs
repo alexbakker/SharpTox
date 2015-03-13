@@ -33,7 +33,6 @@
     public enum ToxErrorFriendGetPublicKey
     {
         Ok,
-        Null,
         NotFound
     }
 
@@ -124,6 +123,12 @@
     {
         Ok,
         Malloc
+    }
+
+    public enum ToxErrorGetPort
+    {
+        Ok,
+        NotBound
     }
 
     /// <summary>
