@@ -89,6 +89,7 @@
     <Compile Include="CoreSelfTests.cs" />
     <Compile Include="CoreFriendTests.cs" />
     <Compile Include="Globals.cs" />
+    <Compile Include="ExtendedTestClass.cs" />
     <Compile Include="MiscTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

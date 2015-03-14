@@ -8,7 +8,7 @@ using SharpTox.Core;
 namespace SharpTox.Test
 {
     [TestClass]
-    public class CoreFriendTests
+    public class CoreFriendTests : ExtendedTestClass
     {
         private static bool _running = true;
         private static Tox _tox1;
@@ -37,7 +37,7 @@ namespace SharpTox.Test
             _tox1.Dispose();
             _tox2.Dispose();
         }
-
+       
         private static void DoLoop()
         {
             Task.Run(async () =>
@@ -70,12 +70,15 @@ namespace SharpTox.Test
             _tox2.OnFriendMessageReceived += (object sender, ToxEventArgs.FriendMessageEventArgs args) =>
             {
                 if (args.Message != messageFormat + receivedMessageCount)
-                    Assert.Fail("Message arrived got garbled");
+                {
+                    Fail("Message arrived got garbled");
+                    return;
+                }
 
                 receivedMessageCount++;
             };
 
-            while (receivedMessageCount != messageCount) { Thread.Sleep(10); }
+            while (receivedMessageCount != messageCount && _wait) { Thread.Sleep(10); }
             Console.WriteLine("Received all messages without errors");
         }
 
@@ -91,18 +94,21 @@ namespace SharpTox.Test
                 var sendError = ToxErrorSendMessage.Ok;
                 _tox1.SendAction(0, actionFormat + i.ToString(), out sendError);
                 if (sendError != ToxErrorSendMessage.Ok)
-                    Assert.Fail("Failed to send action to friend: {0}", sendError);
+                    Fail("Failed to send action to friend: {0}", sendError);
             }
 
             _tox2.OnFriendActionReceived += (object sender, ToxEventArgs.FriendActionEventArgs args) =>
             {
                 if (args.Action != actionFormat + receivedActionCount)
-                    Assert.Fail("Action arrived got garbled");
+                {
+                    Fail("Action arrived got garbled");
+                    return;
+                }
 
                 receivedActionCount++;
             };
 
-            while (receivedActionCount != actionCount) { Thread.Sleep(10); }
+            while (receivedActionCount != actionCount && _wait) { Thread.Sleep(10); }
             Console.WriteLine("Received all actions without errors");
         }
 
@@ -110,73 +116,75 @@ namespace SharpTox.Test
         public void TestToxName()
         {
             string name = "Test, test and test";
-            bool wait = true;
 
             _tox1.Name = name;
             _tox2.OnFriendNameChanged += (object sender, ToxEventArgs.NameChangeEventArgs args) =>
             {
                 if (args.Name != name)
-                    Assert.Fail("Name received is not equal to the name we set");
+                    Fail("Name received is not equal to the name we set");
 
-                wait = false;
+                _wait = false;
             };
 
-            while (wait) { Thread.Sleep(10); }
+            while (_wait) { Thread.Sleep(10); }
+            CheckFailed();
         }
 
         [TestMethod]
         public void TestToxStatus()
         {
             var status = ToxUserStatus.Busy;
-            bool wait = true;
 
             _tox1.Status = status;
             _tox2.OnFriendStatusChanged += (object sender, ToxEventArgs.StatusEventArgs args) =>
             {
                 if (args.Status != status)
-                    Assert.Fail("Status received is not equal to the status we set");
+                    Fail("Status received is not equal to the status we set");
 
-                wait = false;
+                _wait = false;
             };
 
-            while (wait) { Thread.Sleep(10); }
+            while (_wait) { Thread.Sleep(10); }
+            CheckFailed();
         }
 
         [TestMethod]
         public void TestToxStatusMessage()
         {
             string message = "Test, test and test";
-            bool wait = true;
 
             _tox1.StatusMessage = message;
             _tox2.OnFriendStatusMessageChanged += (object sender, ToxEventArgs.StatusMessageEventArgs args) =>
             {
                 if (args.StatusMessage != message)
-                    Assert.Fail("Status message received is not equal to the status message we set");
+                    Fail("Status message received is not equal to the status message we set");
 
-                wait = false;
+                _wait = false;
             };
 
-            while (wait) { Thread.Sleep(10); }
+            while (_wait) { Thread.Sleep(10); }
+            CheckFailed();
         }
 
         [TestMethod]
         public void TestToxTyping()
         {
             bool isTyping = true;
-            bool wait = true;
 
             _tox2.OnFriendTypingChanged += (object sender, ToxEventArgs.TypingStatusEventArgs args) =>
             {
                 if (args.IsTyping != isTyping)
-                    Assert.Fail("IsTyping value received does not equal the one we set");
-
+                {
+                    Fail("IsTyping value received does not equal the one we set");
+                    return;
+                }
+                
                 var error = ToxErrorFriendQuery.Ok;
                 bool result = _tox2.GetIsTyping(0, out error);
                 if (!result || error != ToxErrorFriendQuery.Ok)
-                    Assert.Fail("Failed to get typing status, error: {0}, result: {1}", error, result);
+                    Fail("Failed to get typing status, error: {0}, result: {1}", error, result);
 
-                wait = false;
+                _wait = false;
             };
             {
                 var error = ToxErrorSetTyping.Ok;
@@ -184,7 +192,8 @@ namespace SharpTox.Test
                 if (!result || error != ToxErrorSetTyping.Ok)
                     Assert.Fail("Failed to set typing status, error: {0}, result: {1}", error, result);
 
-                while (wait) { Thread.Sleep(10); }
+                while (_wait) { Thread.Sleep(10); }
+                CheckFailed();
             }
         }
 
@@ -230,21 +239,29 @@ namespace SharpTox.Test
             tox2.OnFriendRequestReceived += (object sender, ToxEventArgs.FriendRequestEventArgs args) =>
             {
                 if (args.Message != message)
-                    Assert.Fail("Message received in the friend request is not the same as the one that was sent");
+                {
+                    Fail("Message received in the friend request is not the same as the one that was sent");
+                    return;
+                }
 
                 tox2.AddFriendNoRequest(args.PublicKey, out error);
                 if (error != ToxErrorFriendAdd.Ok)
-                    Assert.Fail("Failed to add friend (no request): {0}", error);
+                {
+                    Fail("Failed to add friend (no request): {0}", error);
+                    return;
+                }
 
                 if (!tox2.FriendExists(0))
-                    Assert.Fail("Friend doesn't exist according to core");
+                    Fail("Friend doesn't exist according to core");
             };
 
-            while (tox1.GetFriendConnectionStatus(0) == ToxConnectionStatus.None) { Thread.Sleep(10); }
+            while (tox1.GetFriendConnectionStatus(0) == ToxConnectionStatus.None && _wait) { Thread.Sleep(10); }
 
             testFinished = true;
             tox1.Dispose();
             tox2.Dispose();
+
+            CheckFailed();
         }
     }
 }
