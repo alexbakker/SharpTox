@@ -21,7 +21,7 @@ namespace SharpTox.Test
             {
                 bool result = tox.Bootstrap(node, out error);
                 if (!result || error != ToxErrorBootstrap.Ok)
-                    Assert.Fail("Failed to bootstrap error: {0}, result: {1}", error, result);
+                    Assert.Fail("Failed to bootstrap, error: {0}, result: {1}", error, result);
             }
 
             tox.Start();
@@ -50,6 +50,15 @@ namespace SharpTox.Test
 
             Console.WriteLine("Tox connected!");
             tox.Dispose();
+        }
+
+        [TestMethod]
+        public void TestToxHash()
+        {
+            byte[] data = new byte[0xBEEF];
+            new Random().NextBytes(data);
+
+            byte[] hash = ToxTools.Hash(data);
         }
     }
 }

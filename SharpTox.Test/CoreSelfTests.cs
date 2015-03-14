@@ -87,5 +87,21 @@ namespace SharpTox.Test
 
             tox.Dispose();
         }
+
+        [TestMethod]
+        public void TestToxNospam()
+        {
+            var tox = new Tox(ToxOptions.Default);
+            byte[] randomBytes = new byte[sizeof(uint)];
+            new Random().NextBytes(randomBytes);
+
+            uint nospam = BitConverter.ToUInt32(randomBytes, 0);
+            tox.SetNospam(nospam);
+
+            if (nospam != tox.GetNospam())
+                Assert.Fail("Failed to set/get nospam correctly, values don't match");
+
+            tox.Dispose();
+        }
     }
 }

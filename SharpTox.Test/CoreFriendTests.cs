@@ -161,6 +161,48 @@ namespace SharpTox.Test
         }
 
         [TestMethod]
+        public void TestToxTyping()
+        {
+            bool isTyping = true;
+            bool wait = true;
+
+            _tox2.OnFriendTypingChanged += (object sender, ToxEventArgs.TypingStatusEventArgs args) =>
+            {
+                if (args.IsTyping != isTyping)
+                    Assert.Fail("IsTyping value received does not equal the one we set");
+
+                var error = ToxErrorFriendQuery.Ok;
+                bool result = _tox2.GetIsTyping(0, out error);
+                if (!result || error != ToxErrorFriendQuery.Ok)
+                    Assert.Fail("Failed to get typing status, error: {0}, result: {1}", error, result);
+
+                wait = false;
+            };
+            {
+                var error = ToxErrorSetTyping.Ok;
+                bool result = _tox1.SetSelfTyping(0, isTyping, out error);
+                if (!result || error != ToxErrorSetTyping.Ok)
+                    Assert.Fail("Failed to set typing status, error: {0}, result: {1}", error, result);
+
+                while (wait) { Thread.Sleep(10); }
+            }
+        }
+
+        [TestMethod]
+        public void TestToxFriendPublicKey()
+        {
+            var error = ToxErrorFriendGetPublicKey.Ok;
+            var publicKey = _tox2.GetFriendPublicKey(0, out error);
+            if (error != ToxErrorFriendGetPublicKey.Ok)
+                Assert.Fail("Could not get friend public key, error: {0}", error);
+
+            var error2 = ToxErrorFriendByPublicKey.Ok;
+            int friend = _tox2.GetFriendByPublicKey(publicKey, out error2);
+            if (friend != 0 || error2 != ToxErrorFriendByPublicKey.Ok)
+                Assert.Fail("Could not get friend by public key, error: {0}, friend: {1}", error2, friend);
+        }
+
+        [TestMethod]
         public void TestToxFriendRequest()
         {
             var options = new ToxOptions(true, true);
@@ -193,6 +235,9 @@ namespace SharpTox.Test
                 tox2.AddFriendNoRequest(args.PublicKey, out error);
                 if (error != ToxErrorFriendAdd.Ok)
                     Assert.Fail("Failed to add friend (no request): {0}", error);
+
+                if (!tox2.FriendExists(0))
+                    Assert.Fail("Friend doesn't exist according to core");
             };
 
             while (tox1.GetFriendConnectionStatus(0) == ToxConnectionStatus.None) { Thread.Sleep(10); }
