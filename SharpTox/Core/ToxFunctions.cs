@@ -87,11 +87,11 @@ namespace SharpTox.Core
         public static extern uint FriendListSize(ToxHandle tox);
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_friend_get_list")]
-        public static extern void FriendList(ToxHandle tox, uint[] list);
+        public static extern void FriendGetList(ToxHandle tox, uint[] list);
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_save_size")]
         public static extern uint SaveSize(ToxHandle tox);
-
+        
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_save")]
         public static extern void Save(ToxHandle tox, byte[] bytes);
 
@@ -174,7 +174,7 @@ namespace SharpTox.Core
         public static extern bool Hash(byte[] hash, byte[] data, uint length);
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_file_send_control")]
-        public static extern bool FileControl(ToxHandle tox, uint friendNumber, uint fileNumber, ToxFileControl control, ref ToxErrorFileControl error);
+        public static extern bool FileSendControl(ToxHandle tox, uint friendNumber, uint fileNumber, ToxFileControl control, ref ToxErrorFileControl error);
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_file_send")]
         public static extern uint FileSend(ToxHandle tox, uint friendNumber, ToxFileKind kind, ulong fileSize, byte[] fileName, uint fileNameLength, ref ToxErrorFileSend error);

@@ -70,7 +70,7 @@ namespace SharpTox.Core
             {
                 uint size = ToxFunctions.FriendListSize(_tox);
                 uint[] friends = new uint[size];
-                ToxFunctions.FriendList(_tox, friends);
+                ToxFunctions.FriendGetList(_tox, friends);
 
                 return (int[])(object)friends;
             }
@@ -318,21 +318,6 @@ namespace SharpTox.Core
                     if (_cancelTokenSource.IsCancellationRequested)
                         break;
 
-                    if (IsConnected && !_connected)
-                    {
-                        //if (OnConnected != null)
-                        //    Invoker(OnConnected, this, new ToxEventArgs.ConnectionEventArgs(true));
-
-                        _connected = true;
-                    }
-                    else if (!IsConnected && _connected)
-                    {
-                        //if (OnDisconnected != null)
-                        //    Invoker(OnDisconnected, this, new ToxEventArgs.ConnectionEventArgs(false));
-
-                        _connected = false;
-                    }
-
                     int delay = DoIterate();
                     await Task.Delay(delay);
                 }
@@ -481,13 +466,13 @@ namespace SharpTox.Core
         /// <param name="publicKey"></param>
         /// <param name="error"></param>
         /// <returns></returns>
-        public int GetFriendByPublicKey(string publicKey, out ToxErrorFriendByPublicKey error)
+        public int GetFriendByPublicKey(ToxKey publicKey, out ToxErrorFriendByPublicKey error)
         {
             if (_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
             error = ToxErrorFriendByPublicKey.Ok;
-            return (int)ToxFunctions.FriendByPublicKey(_tox, ToxTools.StringToHexBin(publicKey), ref error);
+            return (int)ToxFunctions.FriendByPublicKey(_tox, publicKey.GetBytes(), ref error);
         }
 
         /// <summary>
@@ -495,7 +480,7 @@ namespace SharpTox.Core
         /// </summary>
         /// <param name="publicKey"></param>
         /// <returns></returns>
-        public int GetFriendByPublicKey(string publicKey)
+        public int GetFriendByPublicKey(ToxKey publicKey)
         {
             var error = ToxErrorFriendByPublicKey.Ok;
             return GetFriendByPublicKey(publicKey, out error);
@@ -533,7 +518,7 @@ namespace SharpTox.Core
         /// <param name="friendNumber"></param>
         /// <param name="error"></param>
         /// <returns></returns>
-        public ToxKey GetPublicKey(int friendNumber, out ToxErrorFriendGetPublicKey error)
+        public ToxKey GetFriendPublicKey(int friendNumber, out ToxErrorFriendGetPublicKey error)
         {
             if (_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
@@ -550,10 +535,10 @@ namespace SharpTox.Core
         /// </summary>
         /// <param name="friendNumber"></param>
         /// <returns></returns>
-        public ToxKey GetPublicKey(int friendNumber)
+        public ToxKey GetFriendPublicKey(int friendNumber)
         {
             var error = ToxErrorFriendGetPublicKey.Ok;
-            return GetPublicKey(friendNumber, out error);
+            return GetFriendPublicKey(friendNumber, out error);
         }
 
         /// <summary>
@@ -562,7 +547,7 @@ namespace SharpTox.Core
         /// <param name="friendNumber"></param>
         /// <param name="error"></param>
         /// <returns></returns>
-        public ToxUserStatus GetStatus(int friendNumber, out ToxErrorFriendQuery error)
+        public ToxUserStatus GetFriendStatus(int friendNumber, out ToxErrorFriendQuery error)
         {
             if (_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
@@ -576,10 +561,10 @@ namespace SharpTox.Core
         /// </summary>
         /// <param name="friendNumber"></param>
         /// <returns></returns>
-        public ToxUserStatus GetStatus(int friendNumber)
+        public ToxUserStatus GetFriendStatus(int friendNumber)
         {
             var error = ToxErrorFriendQuery.Ok;
-            return GetStatus(friendNumber, out error);
+            return GetFriendStatus(friendNumber, out error);
         }
 
         /// <summary>
