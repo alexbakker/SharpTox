@@ -245,7 +245,7 @@ namespace SharpTox.Core
             public CustomPacketEventArgs(int friendNumber, byte[] packet)
                 : base(friendNumber)
             {
-                Packet = (byte[])packet.Clone();
+                Packet = packet;
             }
         }
 

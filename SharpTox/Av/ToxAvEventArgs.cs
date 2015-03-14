@@ -33,7 +33,7 @@ namespace SharpTox.Av
             public AudioDataEventArgs(int callIndex, short[] data)
                 : base(callIndex)
             {
-                Data = (short[])data.Clone();
+                Data = data;
             }
         }
 
@@ -62,7 +62,7 @@ namespace SharpTox.Av
             {
                 GroupNumber = groupNumber;
                 PeerNumber = peerNumber;
-                Data = (short[])data.Clone();
+                Data = data;
                 Channels = channels;
                 SampleRate = sampleRate;
             }

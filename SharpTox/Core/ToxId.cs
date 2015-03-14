@@ -56,7 +56,7 @@ namespace SharpTox.Core
 
         public ToxId(byte[] id)
         {
-            _id = (byte[])id.Clone();
+            _id = id;
 
             if (CalcChecksum(_id, 36) != Checksum)
                 throw new Exception("This Tox ID is invalid");
