@@ -863,6 +863,22 @@ namespace SharpTox.Core
             return hash;
         }
 
+        public void SetNospam(uint nospam)
+        {
+            if (_disposed)
+                throw new ObjectDisposedException(GetType().FullName);
+
+            ToxFunctions.SelfSetNospam(_tox, nospam);
+        }
+
+        public uint GetNospam()
+        {
+            if (_disposed)
+                throw new ObjectDisposedException(GetType().FullName);
+
+            return ToxFunctions.SelfGetNospam(_tox);
+        }
+
         #region Events
         private EventHandler<ToxEventArgs.FriendRequestEventArgs> _onFriendRequest;
 
