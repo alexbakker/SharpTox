@@ -17,7 +17,7 @@ namespace SharpTox.Core
         public delegate void CallbackTypingChangeDelegate(IntPtr tox, uint friendNumber, bool isTyping, IntPtr userData);
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        public delegate void CallbackUserStatusDelegate(IntPtr tox, uint friendNumber, ToxStatus status, IntPtr userData);
+        public delegate void CallbackUserStatusDelegate(IntPtr tox, uint friendNumber, ToxUserStatus status, IntPtr userData);
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         public delegate void CallbackStatusMessageDelegate(IntPtr tox, uint friendNumber, [In, MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 3)] byte[] newStatus, uint length, IntPtr userData);

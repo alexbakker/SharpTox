@@ -127,7 +127,7 @@ namespace SharpTox.Test
         [TestMethod]
         public void TestToxStatus()
         {
-            var status = ToxStatus.Busy;
+            var status = ToxUserStatus.Busy;
             bool wait = true;
 
             _tox1.Status = status;

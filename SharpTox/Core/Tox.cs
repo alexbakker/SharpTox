@@ -156,7 +156,7 @@ namespace SharpTox.Core
                     throw new ObjectDisposedException(GetType().FullName);
 
                 byte[] publicKey = new byte[ToxConstants.PublicKeySize];
-                ToxFunctions.GetDhtId(_tox, publicKey);
+                ToxFunctions.SelfGetDhtId(_tox, publicKey);
 
                 return new ToxKey(ToxKeyType.Public, publicKey);
             }
@@ -165,7 +165,7 @@ namespace SharpTox.Core
         /// <summary>
         /// Current user status of this Tox instance.
         /// </summary>
-        public ToxStatus Status
+        public ToxUserStatus Status
         {
             get
             {
@@ -302,7 +302,7 @@ namespace SharpTox.Core
 
         private int DoIterate()
         {
-            ToxFunctions.Iteration(_tox);
+            ToxFunctions.Iterate(_tox);
             return (int)ToxFunctions.IterationInterval(_tox);
         }
 
@@ -562,7 +562,7 @@ namespace SharpTox.Core
         /// <param name="friendNumber"></param>
         /// <param name="error"></param>
         /// <returns></returns>
-        public ToxStatus GetStatus(int friendNumber, out ToxErrorFriendQuery error)
+        public ToxUserStatus GetStatus(int friendNumber, out ToxErrorFriendQuery error)
         {
             if (_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
@@ -576,7 +576,7 @@ namespace SharpTox.Core
         /// </summary>
         /// <param name="friendNumber"></param>
         /// <returns></returns>
-        public ToxStatus GetStatus(int friendNumber)
+        public ToxUserStatus GetStatus(int friendNumber)
         {
             var error = ToxErrorFriendQuery.Ok;
             return GetStatus(friendNumber, out error);
@@ -625,7 +625,7 @@ namespace SharpTox.Core
             byte[] bytes = Encoding.UTF8.GetBytes(message);
             error = ToxErrorSendMessage.Ok;
 
-            return (int)ToxFunctions.SendMessage(_tox, (uint)friendNumber, bytes, (uint)bytes.Length, ref error);
+            return (int)ToxFunctions.FriendSendMessage(_tox, (uint)friendNumber, bytes, (uint)bytes.Length, ref error);
         }
 
         /// <summary>
@@ -655,7 +655,7 @@ namespace SharpTox.Core
             byte[] bytes = Encoding.UTF8.GetBytes(action);
             error = ToxErrorSendMessage.Ok;
 
-            return (int)ToxFunctions.SendAction(_tox, (uint)friendNumber, bytes, (uint)bytes.Length, ref error);
+            return (int)ToxFunctions.FriendSendAction(_tox, (uint)friendNumber, bytes, (uint)bytes.Length, ref error);
         }
 
         /// <summary>
@@ -735,7 +735,7 @@ namespace SharpTox.Core
                 throw new ObjectDisposedException(GetType().FullName);
 
             byte[] key = new byte[ToxConstants.PublicKeySize];
-            ToxFunctions.SelfGetPrivateKey(_tox, key);
+            ToxFunctions.SelfGetSecretKey(_tox, key);
 
             return new ToxKey(ToxKeyType.Secret, key);
         }
@@ -819,7 +819,7 @@ namespace SharpTox.Core
                 throw new ObjectDisposedException(GetType().FullName);
 
             error = ToxErrorGetPort.Ok;
-            return ToxFunctions.GetUdpPort(_tox, ref error);
+            return ToxFunctions.SelfGetUdpPort(_tox, ref error);
         }
 
         /// <summary>
@@ -843,7 +843,7 @@ namespace SharpTox.Core
                 throw new ObjectDisposedException(GetType().FullName);
 
             error = ToxErrorGetPort.Ok;
-            return ToxFunctions.GetTcpPort(_tox, ref error);
+            return ToxFunctions.SelfGetTcpPort(_tox, ref error);
         }
 
         /// <summary>
@@ -1045,7 +1045,7 @@ namespace SharpTox.Core
             {
                 if (_onUserStatusCallback == null)
                 {
-                    _onUserStatusCallback = (IntPtr tox, uint friendNumber, ToxStatus status, IntPtr userData) =>
+                    _onUserStatusCallback = (IntPtr tox, uint friendNumber, ToxUserStatus status, IntPtr userData) =>
                     {
                         if (_onFriendStatusChanged != null)
                             _onFriendStatusChanged(this, new ToxEventArgs.StatusEventArgs((int)friendNumber, status));
@@ -1187,7 +1187,7 @@ namespace SharpTox.Core
                             _onReadReceipt(this, new ToxEventArgs.ReadReceiptEventArgs((int)friendNumber, (int)receipt));
                     };
 
-                    ToxFunctions.RegisterReadReceiptCallback(_tox, _onReadReceiptCallback, IntPtr.Zero);
+                    ToxFunctions.RegisterFriendReadReceiptCallback(_tox, _onReadReceiptCallback, IntPtr.Zero);
                 }
 
                 _onReadReceipt += value;
@@ -1196,7 +1196,7 @@ namespace SharpTox.Core
             {
                 if (_onReadReceipt.GetInvocationList().Length == 1)
                 {
-                    ToxFunctions.RegisterReadReceiptCallback(_tox, null, IntPtr.Zero);
+                    ToxFunctions.RegisterFriendReadReceiptCallback(_tox, null, IntPtr.Zero);
                     _onReadReceiptCallback = null;
                 }
 
@@ -1221,7 +1221,7 @@ namespace SharpTox.Core
                             _onFileControl(this, new ToxEventArgs.FileControlEventArgs((int)friendNumber, (int)fileNumber, control));
                     };
 
-                    ToxFunctions.RegisterFileControlCallback(_tox, _onFileControlCallback, IntPtr.Zero);
+                    ToxFunctions.RegisterFileControlRecvCallback(_tox, _onFileControlCallback, IntPtr.Zero);
                 }
 
                 _onFileControl += value;
@@ -1230,7 +1230,7 @@ namespace SharpTox.Core
             {
                 if (_onFileControl.GetInvocationList().Length == 1)
                 {
-                    ToxFunctions.RegisterFileControlCallback(_tox, null, IntPtr.Zero);
+                    ToxFunctions.RegisterFileControlRecvCallback(_tox, null, IntPtr.Zero);
                     _onFileControlCallback = null;
                 }
 

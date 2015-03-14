@@ -59,7 +59,7 @@
     /// <summary>
     /// UserStatus of a tox friend.
     /// </summary>
-    public enum ToxStatus
+    public enum ToxUserStatus
     {
         /// <summary>
         /// No status.

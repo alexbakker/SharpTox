@@ -59,8 +59,8 @@ namespace SharpTox.Core
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_friend_get_public_key")]
         public static extern bool FriendGetPublicKey(ToxHandle tox, uint friendNumber, byte[] publicKey, ref ToxErrorFriendGetPublicKey error);
 
-        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_iteration")]
-        public static extern void Iteration(ToxHandle tox);
+        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_iterate")]
+        public static extern void Iterate(ToxHandle tox);
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_iteration_interval")]
         public static extern uint IterationInterval(ToxHandle tox);
@@ -75,10 +75,10 @@ namespace SharpTox.Core
         public static extern ToxConnectionStatus FriendGetConnectionStatus(ToxHandle tox, uint friendNumber, ref ToxErrorFriendQuery error);
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_friend_get_status")]
-        public static extern ToxStatus FriendGetStatus(ToxHandle tox, uint friendNumber, ref ToxErrorFriendQuery error);
+        public static extern ToxUserStatus FriendGetStatus(ToxHandle tox, uint friendNumber, ref ToxErrorFriendQuery error);
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_self_get_status")]
-        public static extern ToxStatus SelfGetStatus(ToxHandle tox);
+        public static extern ToxUserStatus SelfGetStatus(ToxHandle tox);
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_friend_exists")]
         public static extern bool FriendExists(ToxHandle tox, uint friendNumber);
@@ -95,11 +95,11 @@ namespace SharpTox.Core
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_save")]
         public static extern void Save(ToxHandle tox, byte[] bytes);
 
-        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_send_message")]
-        public static extern uint SendMessage(ToxHandle tox, uint friendNumber, byte[] message, uint length, ref ToxErrorSendMessage error);
+        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_friend_send_message")]
+        public static extern uint FriendSendMessage(ToxHandle tox, uint friendNumber, byte[] message, uint length, ref ToxErrorSendMessage error);
 
-        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_send_action")]
-        public static extern uint SendAction(ToxHandle tox, uint friendNumber, byte[] action, uint length, ref ToxErrorSendMessage error);
+        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_friend_send_action")]
+        public static extern uint FriendSendAction(ToxHandle tox, uint friendNumber, byte[] action, uint length, ref ToxErrorSendMessage error);
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_friend_add")]
         public static extern uint FriendAdd(ToxHandle tox, byte[] address, byte[] message, uint length, ref ToxErrorFriendAdd error);
@@ -134,8 +134,8 @@ namespace SharpTox.Core
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_self_get_public_key")]
         public static extern void SelfGetPublicKey(ToxHandle tox, byte[] publicKey);
 
-        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_self_get_private_key")]
-        public static extern void SelfGetPrivateKey(ToxHandle tox, byte[] privateKey);
+        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_self_get_secret_key")]
+        public static extern void SelfGetSecretKey(ToxHandle tox, byte[] secretKey);
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_self_get_status_message")]
         public static extern void SelfGetStatusMessage(ToxHandle tox, byte[] status);
@@ -147,7 +147,7 @@ namespace SharpTox.Core
         public static extern void SelfSetStatusMessage(ToxHandle tox, byte[] status, uint length, ref ToxErrorSetInfo error);
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_self_set_status")]
-        public static extern void SelfSetStatus(ToxHandle tox, ToxStatus status);
+        public static extern void SelfSetStatus(ToxHandle tox, ToxUserStatus status);
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_friend_get_name_size")]
         public static extern uint FriendGetNameSize(ToxHandle tox, uint friendNumber, ref ToxErrorFriendQuery error);
@@ -161,14 +161,14 @@ namespace SharpTox.Core
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_friend_get_status_message")]
         public static extern bool FriendGetStatusMessage(ToxHandle tox, uint friendNumber, byte[] message, ref ToxErrorFriendQuery error);
 
-        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_get_udp_port")]
-        public static extern ushort GetUdpPort(ToxHandle tox, ref ToxErrorGetPort error);
+        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_self_get_udp_port")]
+        public static extern ushort SelfGetUdpPort(ToxHandle tox, ref ToxErrorGetPort error);
 
-        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_get_tcp_port")]
-        public static extern ushort GetTcpPort(ToxHandle tox, ref ToxErrorGetPort error);
+        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_self_get_tcp_port")]
+        public static extern ushort SelfGetTcpPort(ToxHandle tox, ref ToxErrorGetPort error);
 
-        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_get_dht_id")]
-        public static extern void GetDhtId(ToxHandle tox, byte[] dhtId);
+        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_self_get_dht_id")]
+        public static extern void SelfGetDhtId(ToxHandle tox, byte[] dhtId);
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_hash")]
         public static extern bool Hash(byte[] hash, byte[] data, uint length);
@@ -210,14 +210,14 @@ namespace SharpTox.Core
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_callback_friend_connection_status")]
         public static extern void RegisterFriendConnectionStatusCallback(ToxHandle tox, ToxDelegates.CallbackFriendConnectionStatusDelegate callback, IntPtr userdata);
 
-        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_callback_read_receipt")]
-        public static extern void RegisterReadReceiptCallback(ToxHandle tox, ToxDelegates.CallbackReadReceiptDelegate callback, IntPtr userdata);
+        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_callback_friend_read_receipt")]
+        public static extern void RegisterFriendReadReceiptCallback(ToxHandle tox, ToxDelegates.CallbackReadReceiptDelegate callback, IntPtr userdata);
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_callback_file_receive")]
         public static extern void RegisterFileReceiveCallback(ToxHandle tox, ToxDelegates.CallbackFileReceiveDelegate callback, IntPtr userdata);
 
-        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_callback_file_control")]
-        public static extern void RegisterFileControlCallback(ToxHandle tox, ToxDelegates.CallbackFileControlDelegate callback, IntPtr userdata);
+        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_callback_file_recv_control")]
+        public static extern void RegisterFileControlRecvCallback(ToxHandle tox, ToxDelegates.CallbackFileControlDelegate callback, IntPtr userdata);
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_callback_file_receive_chunk")]
         public static extern void RegisterFileReceiveChunkCallback(ToxHandle tox, ToxDelegates.CallbackFileReceiveChunkDelegate callback, IntPtr userdata);

@@ -79,7 +79,7 @@ namespace SharpTox.Test
         public void TestToxSelfStatus()
         {
             var tox = new Tox(ToxOptions.Default);
-            var status = ToxStatus.Away;
+            var status = ToxUserStatus.Away;
             tox.Status = status;
 
             if (tox.Status != status)
