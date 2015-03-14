@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Text;
 
-namespace SharpTox
+namespace SharpTox.Core
 {
-    internal static class ToxTools
+    public static class ToxTools
     {
         internal static string HexBinToString(byte[] b)
         {
@@ -28,6 +28,13 @@ namespace SharpTox
         internal static DateTime EpochToDateTime(long epoch)
         {
             return new DateTime(1970, 1, 1, 0, 0, 0).AddSeconds(Convert.ToDouble(epoch));
+        }
+
+        public static byte[] Hash(byte[] data)
+        {
+            byte[] hash = new byte[ToxConstants.ToxHashLength];
+            ToxFunctions.Hash(hash, data, (uint)data.Length);
+            return hash;
         }
     }
 }

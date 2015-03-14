@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Text;
+using SharpTox.Core;
 
 namespace SharpTox.Dns
 {
