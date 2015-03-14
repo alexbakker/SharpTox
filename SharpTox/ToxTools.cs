@@ -25,21 +25,6 @@ namespace SharpTox
             return bin;
         }
 
-        //getting rid of string null terminations
-        internal static string RemoveNull(string s)
-        {
-            if (s.Length != 0)
-            {
-                int index = s.IndexOf(Char.MinValue);
-                if (!(index >= 0))
-                    return s;
-                else
-                    return s.Substring(0, index);
-            }
-
-            return s;
-        }
-
         internal static DateTime EpochToDateTime(long epoch)
         {
             return new DateTime(1970, 1, 1, 0, 0, 0).AddSeconds(Convert.ToDouble(epoch));
