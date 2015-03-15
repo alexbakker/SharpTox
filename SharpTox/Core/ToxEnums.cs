@@ -147,7 +147,7 @@
         Secret
     }
 
-    public enum ToxProxyType : byte
+    public enum ToxProxyType
     {
         None,
         Http,
