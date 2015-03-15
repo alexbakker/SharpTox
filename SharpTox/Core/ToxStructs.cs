@@ -24,18 +24,18 @@ namespace SharpTox.Core
         /// Whether or not IPv6 should be enabled.
         /// </summary>
         [MarshalAs(UnmanagedType.U1)]
-        public readonly bool Ipv6Enabled;
+        public bool Ipv6Enabled;
 
         /// <summary>
-        /// Whether or not UDP should be disabled.
+        /// Whether or not UDP should be enabled.
         /// </summary>
         [MarshalAs(UnmanagedType.U1)]
-        public readonly bool UdpEnabled;
+        public bool UdpEnabled;
 
         /// <summary>
         /// Proxy type.
         /// </summary>
-        public readonly ToxProxyType ProxyType;
+        public ToxProxyType ProxyType;
 
         /// <summary>
         /// Proxy ip or domain.
@@ -62,8 +62,6 @@ namespace SharpTox.Core
         /// </summary>
         /// <param name="ipv6Enabled"></param>
         /// <param name="udpEnabled"></param>
-        /// <param name="startPort"></param>
-        /// <param name="endPort"></param>
         public ToxOptions(bool ipv6Enabled, bool udpEnabled)
         {
             Ipv6Enabled = ipv6Enabled;
@@ -95,6 +93,16 @@ namespace SharpTox.Core
             ProxyPort = (ushort)proxyPort;
             StartPort = 0;
             EndPort = 0;
+        }
+
+        public static bool operator ==(ToxOptions options1, ToxOptions options2)
+        {
+            return options1.Equals(options2);
+        }
+
+        public static bool operator !=(ToxOptions options1, ToxOptions options2)
+        {
+            return !(options1 == options2);
         }
     }
 }

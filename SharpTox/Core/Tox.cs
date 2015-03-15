@@ -204,7 +204,7 @@ namespace SharpTox.Core
             _tox = ToxFunctions.New(ref options, null, 0, ref error);
 
             if (_tox == null || _tox.IsInvalid || error != ToxErrorNew.Ok)
-                throw new Exception("Could not create a new instance of tox");
+                throw new Exception("Could not create a new instance of tox, error: " + error.ToString());
 
             Options = options;
         }
