@@ -40,7 +40,7 @@ namespace SharpTox.Core
         /// <summary>
         /// Proxy ip or domain.
         /// </summary>
-        public string ProxyAddress;
+        public IntPtr ProxyAddress;
 
         /// <summary>
         /// Proxy port, in host byte order.
@@ -67,7 +67,7 @@ namespace SharpTox.Core
             Ipv6Enabled = ipv6Enabled;
             UdpEnabled = udpEnabled;
             ProxyType = ToxProxyType.None;
-            ProxyAddress = null;
+            ProxyAddress = IntPtr.Zero;
             ProxyPort = 0;
             StartPort = 0;
             EndPort = 0;
@@ -89,7 +89,11 @@ namespace SharpTox.Core
             if (proxyAddress.Length > 255)
                 throw new Exception("Parameter proxyAddress is too long.");
 
-            ProxyAddress = proxyAddress + Char.MinValue; //is this needed?
+            char[] dest = new char[256];
+            char[] sourceArray = proxyAddress.ToCharArray();
+            Array.Copy(sourceArray, 0, dest, 0, sourceArray.Length);
+
+            ProxyAddress = GCHandle.Alloc(dest, GCHandleType.Pinned).AddrOfPinnedObject();
             ProxyPort = (ushort)proxyPort;
             StartPort = 0;
             EndPort = 0;
