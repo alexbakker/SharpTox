@@ -48,7 +48,7 @@ namespace SharpTox.Core
         public static extern bool VersionIsCompatible(uint major, uint minor, uint patch);
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_bootstrap")]
-        public static extern bool Bootstrap(ToxHandle tox, string address, ushort port, byte[] publicKey, ref ToxErrorBootstrap error);
+        public static extern bool Bootstrap(ToxHandle tox, string host, ushort port, byte[] publicKey, ref ToxErrorBootstrap error);
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_get_connection_status")]
         public static extern ToxConnectionStatus GetConnectionStatus(ToxHandle tox);
@@ -86,11 +86,11 @@ namespace SharpTox.Core
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_friend_exists")]
         public static extern bool FriendExists(ToxHandle tox, uint friendNumber);
 
-        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_friend_list_size")]
-        public static extern uint FriendListSize(ToxHandle tox);
+        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_self_get_friend_list_size")]
+        public static extern uint SelfGetFriendListSize(ToxHandle tox);
 
-        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_friend_get_list")]
-        public static extern void FriendGetList(ToxHandle tox, uint[] list);
+        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_self_get_friend_list")]
+        public static extern void SelfGetFriendList(ToxHandle tox, uint[] list);
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_save_size")]
         public static extern uint SaveSize(ToxHandle tox);
@@ -126,7 +126,7 @@ namespace SharpTox.Core
         public static extern bool FriendGetTyping(ToxHandle tox, uint friendNumber, ref ToxErrorFriendQuery error);
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_add_tcp_relay")]
-        public static extern bool AddTcpRelay(ToxHandle tox, string address, ushort port, byte[] publicKey, ref ToxErrorBootstrap error);
+        public static extern bool AddTcpRelay(ToxHandle tox, string host, ushort port, byte[] publicKey, ref ToxErrorBootstrap error);
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_self_set_nospam")]
         public static extern void SelfSetNospam(ToxHandle tox, uint nospam);

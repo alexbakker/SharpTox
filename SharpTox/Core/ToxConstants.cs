@@ -46,6 +46,11 @@
         public const int PublicKeySize = 32;
 
         /// <summary>
+        /// The size of a secret key.
+        /// </summary>
+        public const int SecretKeySize = 32;
+
+        /// <summary>
         /// The size of an address.
         /// </summary>
         public const int AddressSize = PublicKeySize + sizeof(uint) + sizeof(ushort);

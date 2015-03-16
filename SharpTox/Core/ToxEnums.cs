@@ -6,7 +6,7 @@
         Null,
         Malloc,
         PortAlloc,
-        ProxyType,
+        ProxyBadType,
         ProxyBadHost,
         ProxyBadPort,
         ProxyNotFound,

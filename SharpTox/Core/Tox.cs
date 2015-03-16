@@ -68,9 +68,9 @@ namespace SharpTox.Core
         {
             get
             {
-                uint size = ToxFunctions.FriendListSize(_tox);
+                uint size = ToxFunctions.SelfGetFriendListSize(_tox);
                 uint[] friends = new uint[size];
-                ToxFunctions.FriendGetList(_tox, friends);
+                ToxFunctions.SelfGetFriendList(_tox, friends);
 
                 return (int[])(object)friends;
             }
