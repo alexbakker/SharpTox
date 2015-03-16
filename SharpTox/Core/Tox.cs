@@ -959,6 +959,39 @@ namespace SharpTox.Core
             return FileSend(friendNumber, kind, fileSize, fileName, out error);
         }
 
+        /// <summary>
+        /// Send a chunk of file data to a friend.
+        /// </summary>
+        /// <param name="friendNumber"></param>
+        /// <param name="fileNumber"></param>
+        /// <param name="position"></param>
+        /// <param name="data"></param>
+        /// <param name="error"></param>
+        /// <returns></returns>
+        public bool FileSendChunk(int friendNumber, int fileNumber, long position, byte[] data, out ToxErrorFileSendChunk error)
+        {
+            if (_disposed)
+                throw new ObjectDisposedException(GetType().FullName);
+
+            error = ToxErrorFileSendChunk.Ok;
+
+            return ToxFunctions.FileSendChunk(_tox, (uint)friendNumber, (uint)fileNumber, (ulong)position, data, (uint)data.Length, ref error);
+        }
+
+        /// <summary>
+        /// Send a chunk of file data to a friend.
+        /// </summary>
+        /// <param name="friendNumber"></param>
+        /// <param name="fileNumber"></param>
+        /// <param name="position"></param>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        public bool FileSendChunk(int friendNumber, int fileNumber, long position, byte[] data)
+        {
+            var error = ToxErrorFileSendChunk.Ok;
+            return FileSendChunk(friendNumber, fileNumber, position, data, out error);
+        }
+
         #region Events
         private EventHandler<ToxEventArgs.FriendRequestEventArgs> _onFriendRequest;
 
