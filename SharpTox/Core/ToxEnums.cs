@@ -201,4 +201,16 @@
         InvalidLength,
         QueueFull
     }
+
+    public enum ToxErrorFriendCustomPacket
+    {
+        Ok,
+        Null,
+        FriendNotNull,
+        FriendNotConnected,
+        Invalid,
+        Empty,
+        TooLong,
+        SendQ
+    }
 }
