@@ -888,6 +888,76 @@ namespace SharpTox.Core
             return FileSendControl(friendNumber, fileNumber, control, out error);
         }
 
+        /// <summary>
+        /// Send a file transmission request.
+        /// </summary>
+        /// <param name="friendNumber"></param>
+        /// <param name="kind"></param>
+        /// <param name="fileSize"></param>
+        /// <param name="fileName"></param>
+        /// <param name="fileNameLength"></param>
+        /// <param name="error"></param>
+        /// <returns></returns>
+        public int FileSend(int friendNumber, ToxFileKind kind, long fileSize, byte[] fileName, int fileNameLength, out ToxErrorFileSend error)
+        {
+            if (_disposed)
+                throw new ObjectDisposedException(GetType().FullName);
+
+            error = ToxErrorFileSend.Ok;
+
+            return (int)ToxFunctions.FileSend(_tox, (uint)friendNumber, kind, (ulong)fileSize, fileName, (uint)fileNameLength, ref error);
+        }
+
+        /// <summary>
+        /// Send a file transmission request.
+        /// </summary>
+        /// <param name="friendNumber"></param>
+        /// <param name="kind"></param>
+        /// <param name="fileSize"></param>
+        /// <param name="fileName"></param>
+        /// <param name="fileNameLength"></param>
+        /// <returns></returns>
+        public int FileSend(int friendNumber, ToxFileKind kind, long fileSize, byte[] fileName, int fileNameLength)
+        {
+            var error = ToxErrorFileSend.Ok;
+            return FileSend(friendNumber, kind, fileSize, fileName, fileNameLength, out error);
+        }
+
+        /// <summary>
+        /// Send a file transmission request.
+        /// </summary>
+        /// <param name="friendNumber"></param>
+        /// <param name="kind"></param>
+        /// <param name="fileSize"></param>
+        /// <param name="fileName"></param>
+        /// <param name="fileNameLength"></param>
+        /// <param name="error"></param>
+        /// <returns></returns>
+        public int FileSend(int friendNumber, ToxFileKind kind, long fileSize, string fileName, int fileNameLength, out ToxErrorFileSend error) {
+            if (_disposed)
+                throw new ObjectDisposedException(GetType().FullName);
+
+            byte[] fileNameBytes = Encoding.UTF8.GetBytes(fileName);
+            error = ToxErrorFileSend.Ok;
+
+            return (int)ToxFunctions.FileSend(_tox, (uint)friendNumber, kind, (ulong)fileSize, fileNameBytes, (uint)fileNameLength, ref error);
+        }
+
+        /// <summary>
+        /// Send a file transmission request.
+        /// </summary>
+        /// <param name="friendNumber"></param>
+        /// <param name="kind"></param>
+        /// <param name="fileSize"></param>
+        /// <param name="fileName"></param>
+        /// <param name="fileNameLength"></param>
+        /// <returns></returns>
+        public int FileSend(int friendNumber, ToxFileKind kind, long fileSize, string fileName, int fileNameLength) {
+            var error = ToxErrorFileSend.Ok;
+            return FileSend(friendNumber, kind, fileSize, fileName, fileNameLength, out error);
+        }
+
+
         #region Events
         private EventHandler<ToxEventArgs.FriendRequestEventArgs> _onFriendRequest;
 
