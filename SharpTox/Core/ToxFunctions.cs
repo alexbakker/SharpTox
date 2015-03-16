@@ -183,7 +183,13 @@ namespace SharpTox.Core
         public static extern uint FileSend(ToxHandle tox, uint friendNumber, ToxFileKind kind, ulong fileSize, byte[] fileName, uint fileNameLength, ref ToxErrorFileSend error);
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_file_send_chunk")]
-        public static extern bool FileSendChunk(ToxHandle tox, uint friendNumber, uint fileNumber, byte[] data, uint length, ref ToxErrorFileSendChunk error);
+        public static extern bool FileSendChunk(ToxHandle tox, uint friendNumber, uint fileNumber, ulong position, byte[] data, uint length, ref ToxErrorFileSendChunk error);
+
+        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_friend_send_lossy_packet")]
+        public static extern bool FriendSendLossyPacket(ToxHandle tox, uint friendNumber, byte[] data, uint length, ref ToxErrorFriendCustomPacket error);
+
+        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_friend_send_lossless_packet")]
+        public static extern bool FriendSendLosslessPacket(ToxHandle tox, uint friendNumber, byte[] data, uint length, ref ToxErrorFriendCustomPacket error);
 
         #region Register callback functions
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_callback_friend_request")]

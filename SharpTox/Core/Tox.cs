@@ -857,6 +857,199 @@ namespace SharpTox.Core
             return ToxFunctions.SelfGetNospam(_tox);
         }
 
+        /// <summary>
+        /// Sends a file control command to a friend for a given file transfer.
+        /// </summary>
+        /// <param name="friendNumber"></param>
+        /// <param name="fileNumber"></param>
+        /// <param name="control"></param>
+        /// <param name="error"></param>
+        /// <returns></returns>
+        public bool FileSendControl(int friendNumber, int fileNumber, ToxFileControl control, out ToxErrorFileControl error)
+        {
+            if (_disposed)
+                throw new ObjectDisposedException(GetType().FullName);
+
+            error = ToxErrorFileControl.Ok;
+
+            return ToxFunctions.FileSendControl(_tox, (uint)friendNumber, (uint)fileNumber, control, ref error);
+        }
+
+        /// <summary>
+        /// Sends a file control command to a friend for a given file transfer.
+        /// </summary>
+        /// <param name="friendNumber"></param>
+        /// <param name="fileNumber"></param>
+        /// <param name="control"></param>
+        /// <returns></returns>
+        public bool FileSendControl(int friendNumber, int fileNumber, ToxFileControl control)
+        {
+            var error = ToxErrorFileControl.Ok;
+            return FileSendControl(friendNumber, fileNumber, control, out error);
+        }
+
+        /// <summary>
+        /// Send a file transmission request.
+        /// </summary>
+        /// <param name="friendNumber"></param>
+        /// <param name="kind"></param>
+        /// <param name="fileSize"></param>
+        /// <param name="fileName"></param>
+        /// <param name="fileNameLength"></param>
+        /// <param name="error"></param>
+        /// <returns></returns>
+        public int FileSend(int friendNumber, ToxFileKind kind, long fileSize, byte[] fileName, out ToxErrorFileSend error)
+        {
+            if (_disposed)
+                throw new ObjectDisposedException(GetType().FullName);
+
+            error = ToxErrorFileSend.Ok;
+
+            return (int)ToxFunctions.FileSend(_tox, (uint)friendNumber, kind, (ulong)fileSize, fileName, (uint)fileName.Length, ref error);
+        }
+
+        /// <summary>
+        /// Send a file transmission request.
+        /// </summary>
+        /// <param name="friendNumber"></param>
+        /// <param name="kind"></param>
+        /// <param name="fileSize"></param>
+        /// <param name="fileName"></param>
+        /// <param name="fileNameLength"></param>
+        /// <returns></returns>
+        public int FileSend(int friendNumber, ToxFileKind kind, long fileSize, byte[] fileName)
+        {
+            var error = ToxErrorFileSend.Ok;
+            return FileSend(friendNumber, kind, fileSize, fileName, out error);
+        }
+
+        /// <summary>
+        /// Send a file transmission request.
+        /// </summary>
+        /// <param name="friendNumber"></param>
+        /// <param name="kind"></param>
+        /// <param name="fileSize"></param>
+        /// <param name="fileName"></param>
+        /// <param name="fileNameLength"></param>
+        /// <param name="error"></param>
+        /// <returns></returns>
+        public int FileSend(int friendNumber, ToxFileKind kind, long fileSize, string fileName, out ToxErrorFileSend error)
+        {
+            if (_disposed)
+                throw new ObjectDisposedException(GetType().FullName);
+
+            byte[] fileNameBytes = Encoding.UTF8.GetBytes(fileName);
+            error = ToxErrorFileSend.Ok;
+
+            return (int)ToxFunctions.FileSend(_tox, (uint)friendNumber, kind, (ulong)fileSize, fileNameBytes, (uint)fileNameBytes.Length, ref error);
+        }
+
+        /// <summary>
+        /// Send a file transmission request.
+        /// </summary>
+        /// <param name="friendNumber"></param>
+        /// <param name="kind"></param>
+        /// <param name="fileSize"></param>
+        /// <param name="fileName"></param>
+        /// <param name="fileNameLength"></param>
+        /// <returns></returns>
+        public int FileSend(int friendNumber, ToxFileKind kind, long fileSize, string fileName)
+        {
+            var error = ToxErrorFileSend.Ok;
+            return FileSend(friendNumber, kind, fileSize, fileName, out error);
+        }
+
+        /// <summary>
+        /// Send a chunk of file data to a friend.
+        /// </summary>
+        /// <param name="friendNumber"></param>
+        /// <param name="fileNumber"></param>
+        /// <param name="position"></param>
+        /// <param name="data"></param>
+        /// <param name="error"></param>
+        /// <returns></returns>
+        public bool FileSendChunk(int friendNumber, int fileNumber, long position, byte[] data, out ToxErrorFileSendChunk error)
+        {
+            if (_disposed)
+                throw new ObjectDisposedException(GetType().FullName);
+
+            error = ToxErrorFileSendChunk.Ok;
+
+            return ToxFunctions.FileSendChunk(_tox, (uint)friendNumber, (uint)fileNumber, (ulong)position, data, (uint)data.Length, ref error);
+        }
+
+        /// <summary>
+        /// Send a chunk of file data to a friend.
+        /// </summary>
+        /// <param name="friendNumber"></param>
+        /// <param name="fileNumber"></param>
+        /// <param name="position"></param>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        public bool FileSendChunk(int friendNumber, int fileNumber, long position, byte[] data)
+        {
+            var error = ToxErrorFileSendChunk.Ok;
+            return FileSendChunk(friendNumber, fileNumber, position, data, out error);
+        }
+
+        /// <summary>
+        /// Send a custom lossy packet to a friend.
+        /// </summary>
+        /// <param name="friendNumber"></param>
+        /// <param name="data"></param>
+        /// <param name="error"></param>
+        /// <returns></returns>
+        public bool FriendSendLossyPacket(int friendNumber, byte[] data, out ToxErrorFriendCustomPacket error)
+        {
+            if (_disposed)
+                throw new ObjectDisposedException(GetType().FullName);
+
+            error = ToxErrorFriendCustomPacket.Ok;
+
+            return ToxFunctions.FriendSendLossyPacket(_tox, (uint)friendNumber, data, (uint)data.Length, ref error);
+        }
+
+        /// <summary>
+        /// Send a custom lossy packet to a friend.
+        /// </summary>
+        /// <param name="friendNumber"></param>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        public bool FriendSendLossyPacket(int friendNumber, byte[] data)
+        {
+            var error = ToxErrorFriendCustomPacket.Ok;
+            return FriendSendLossyPacket(friendNumber, data, out error);
+        }
+
+        /// <summary>
+        /// Send a custom lossless packet to a friend.
+        /// </summary>
+        /// <param name="friendNumber"></param>
+        /// <param name="data"></param>
+        /// <param name="error"></param>
+        /// <returns></returns>
+        public bool FriendSendLosslessPacket(int friendNumber, byte[] data, out ToxErrorFriendCustomPacket error)
+        {
+            if (_disposed)
+                throw new ObjectDisposedException(GetType().FullName);
+
+            error = ToxErrorFriendCustomPacket.Ok;
+
+            return ToxFunctions.FriendSendLosslessPacket(_tox, (uint)friendNumber, data, (uint)data.Length, ref error);
+        }
+
+        /// <summary>
+        /// Send a custom lossless packet to a friend.
+        /// </summary>
+        /// <param name="friendNumber"></param>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        public bool FriendSendLosslessPacket(int friendNumber, byte[] data)
+        {
+            var error = ToxErrorFriendCustomPacket.Ok;
+            return FriendSendLosslessPacket(friendNumber, data, out error);
+        }
+
         #region Events
         private EventHandler<ToxEventArgs.FriendRequestEventArgs> _onFriendRequest;
 
