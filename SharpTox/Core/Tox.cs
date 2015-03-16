@@ -898,14 +898,14 @@ namespace SharpTox.Core
         /// <param name="fileNameLength"></param>
         /// <param name="error"></param>
         /// <returns></returns>
-        public int FileSend(int friendNumber, ToxFileKind kind, long fileSize, byte[] fileName, int fileNameLength, out ToxErrorFileSend error)
+        public int FileSend(int friendNumber, ToxFileKind kind, long fileSize, byte[] fileName, out ToxErrorFileSend error)
         {
             if (_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
             error = ToxErrorFileSend.Ok;
 
-            return (int)ToxFunctions.FileSend(_tox, (uint)friendNumber, kind, (ulong)fileSize, fileName, (uint)fileNameLength, ref error);
+            return (int)ToxFunctions.FileSend(_tox, (uint)friendNumber, kind, (ulong)fileSize, fileName, (uint)fileName.Length, ref error);
         }
 
         /// <summary>
@@ -917,10 +917,10 @@ namespace SharpTox.Core
         /// <param name="fileName"></param>
         /// <param name="fileNameLength"></param>
         /// <returns></returns>
-        public int FileSend(int friendNumber, ToxFileKind kind, long fileSize, byte[] fileName, int fileNameLength)
+        public int FileSend(int friendNumber, ToxFileKind kind, long fileSize, byte[] fileName)
         {
             var error = ToxErrorFileSend.Ok;
-            return FileSend(friendNumber, kind, fileSize, fileName, fileNameLength, out error);
+            return FileSend(friendNumber, kind, fileSize, fileName, out error);
         }
 
         /// <summary>
@@ -933,7 +933,7 @@ namespace SharpTox.Core
         /// <param name="fileNameLength"></param>
         /// <param name="error"></param>
         /// <returns></returns>
-        public int FileSend(int friendNumber, ToxFileKind kind, long fileSize, string fileName, int fileNameLength, out ToxErrorFileSend error)
+        public int FileSend(int friendNumber, ToxFileKind kind, long fileSize, string fileName, out ToxErrorFileSend error)
         {
             if (_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
@@ -941,7 +941,7 @@ namespace SharpTox.Core
             byte[] fileNameBytes = Encoding.UTF8.GetBytes(fileName);
             error = ToxErrorFileSend.Ok;
 
-            return (int)ToxFunctions.FileSend(_tox, (uint)friendNumber, kind, (ulong)fileSize, fileNameBytes, (uint)fileNameLength, ref error);
+            return (int)ToxFunctions.FileSend(_tox, (uint)friendNumber, kind, (ulong)fileSize, fileNameBytes, (uint)fileNameBytes.Length, ref error);
         }
 
         /// <summary>
@@ -953,10 +953,10 @@ namespace SharpTox.Core
         /// <param name="fileName"></param>
         /// <param name="fileNameLength"></param>
         /// <returns></returns>
-        public int FileSend(int friendNumber, ToxFileKind kind, long fileSize, string fileName, int fileNameLength)
+        public int FileSend(int friendNumber, ToxFileKind kind, long fileSize, string fileName)
         {
             var error = ToxErrorFileSend.Ok;
-            return FileSend(friendNumber, kind, fileSize, fileName, fileNameLength, out error);
+            return FileSend(friendNumber, kind, fileSize, fileName, out error);
         }
 
         #region Events
