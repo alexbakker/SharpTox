@@ -865,14 +865,14 @@ namespace SharpTox.Core
         /// <param name="control"></param>
         /// <param name="error"></param>
         /// <returns></returns>
-        public bool FileSendControl(uint friendNumber, uint fileNumber, ToxFileControl control, out ToxErrorFileControl error)
+        public bool FileSendControl(int friendNumber, int fileNumber, ToxFileControl control, out ToxErrorFileControl error)
         {
             if (_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
             error = ToxErrorFileControl.Ok;
 
-            return ToxFunctions.FileSendControl(_tox, friendNumber, fileNumber, control, ref error);
+            return ToxFunctions.FileSendControl(_tox, (uint)friendNumber, (uint)fileNumber, control, ref error);
         }
 
         /// <summary>
@@ -882,7 +882,7 @@ namespace SharpTox.Core
         /// <param name="fileNumber"></param>
         /// <param name="control"></param>
         /// <returns></returns>
-        public bool FileSendControl(uint friendNumber, uint fileNumber, ToxFileControl control)
+        public bool FileSendControl(int friendNumber, int fileNumber, ToxFileControl control)
         {
             var error = ToxErrorFileControl.Ok;
             return FileSendControl(friendNumber, fileNumber, control, out error);
