@@ -992,6 +992,64 @@ namespace SharpTox.Core
             return FileSendChunk(friendNumber, fileNumber, position, data, out error);
         }
 
+        /// <summary>
+        /// Send a custom lossy packet to a friend.
+        /// </summary>
+        /// <param name="friendNumber"></param>
+        /// <param name="data"></param>
+        /// <param name="error"></param>
+        /// <returns></returns>
+        public bool FriendSendLossyPacket(int friendNumber, byte[] data, out ToxErrorFriendCustomPacket error)
+        {
+            if (_disposed)
+                throw new ObjectDisposedException(GetType().FullName);
+
+            error = ToxErrorFriendCustomPacket.Ok;
+
+            return ToxFunctions.FriendSendLossyPacket(_tox, (uint)friendNumber, data, (uint)data.Length, ref error);
+        }
+
+        /// <summary>
+        /// Send a custom lossy packet to a friend.
+        /// </summary>
+        /// <param name="friendNumber"></param>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        public bool FriendSendLossyPacket(int friendNumber, byte[] data)
+        {
+            var error = ToxErrorFriendCustomPacket.Ok;
+            return FriendSendLossyPacket(friendNumber, data, out error);
+        }
+
+        /// <summary>
+        /// Send a custom lossless packet to a friend.
+        /// </summary>
+        /// <param name="friendNumber"></param>
+        /// <param name="data"></param>
+        /// <param name="error"></param>
+        /// <returns></returns>
+        public bool FriendSendLosslessPacket(int friendNumber, byte[] data, out ToxErrorFriendCustomPacket error)
+        {
+            if (_disposed)
+                throw new ObjectDisposedException(GetType().FullName);
+
+            error = ToxErrorFriendCustomPacket.Ok;
+
+            return ToxFunctions.FriendSendLosslessPacket(_tox, (uint)friendNumber, data, (uint)data.Length, ref error);
+        }
+
+        /// <summary>
+        /// Send a custom lossless packet to a friend.
+        /// </summary>
+        /// <param name="friendNumber"></param>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        public bool FriendSendLosslessPacket(int friendNumber, byte[] data)
+        {
+            var error = ToxErrorFriendCustomPacket.Ok;
+            return FriendSendLosslessPacket(friendNumber, data, out error);
+        }
+
         #region Events
         private EventHandler<ToxEventArgs.FriendRequestEventArgs> _onFriendRequest;
 
