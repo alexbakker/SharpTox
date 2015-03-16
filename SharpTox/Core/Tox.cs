@@ -857,6 +857,37 @@ namespace SharpTox.Core
             return ToxFunctions.SelfGetNospam(_tox);
         }
 
+        /// <summary>
+        /// Sends a file control command to a friend for a given file transfer.
+        /// </summary>
+        /// <param name="friendNumber"></param>
+        /// <param name="fileNumber"></param>
+        /// <param name="control"></param>
+        /// <param name="error"></param>
+        /// <returns></returns>
+        public bool FileSendControl(uint friendNumber, uint fileNumber, ToxFileControl control, out ToxErrorFileControl error)
+        {
+            if (_disposed)
+                throw new ObjectDisposedException(GetType().FullName);
+
+            error = ToxErrorFileControl.Ok;
+
+            return ToxFunctions.FileSendControl(_tox, friendNumber, fileNumber, control, ref error);
+        }
+
+        /// <summary>
+        /// Sends a file control command to a friend for a given file transfer.
+        /// </summary>
+        /// <param name="friendNumber"></param>
+        /// <param name="fileNumber"></param>
+        /// <param name="control"></param>
+        /// <returns></returns>
+        public bool FileSendControl(uint friendNumber, uint fileNumber, ToxFileControl control)
+        {
+            var error = ToxErrorFileControl.Ok;
+            return FileSendControl(friendNumber, fileNumber, control, out error);
+        }
+
         #region Events
         private EventHandler<ToxEventArgs.FriendRequestEventArgs> _onFriendRequest;
 
