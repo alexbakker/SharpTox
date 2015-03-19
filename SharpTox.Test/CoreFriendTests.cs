@@ -63,14 +63,14 @@ namespace SharpTox.Test
             for (int i = 0; i < messageCount; i++)
             {
                 var sendError = ToxErrorSendMessage.Ok;
-                _tox1.SendMessage(0, messageFormat + i.ToString(), out sendError);
+                _tox1.SendMessage(0, messageFormat + i.ToString(), ToxMessageType.Message, out sendError);
                 if (sendError != ToxErrorSendMessage.Ok)
                     Assert.Fail("Failed to send message to friend: {0}", sendError);
             }
 
             _tox2.OnFriendMessageReceived += (object sender, ToxEventArgs.FriendMessageEventArgs args) =>
             {
-                if (args.Message != messageFormat + receivedMessageCount)
+                if (args.MessageType != ToxMessageType.Message || args.Message != messageFormat + receivedMessageCount)
                 {
                     Fail("Message arrived got garbled");
                     return;
@@ -93,14 +93,14 @@ namespace SharpTox.Test
             for (int i = 0; i < actionCount; i++)
             {
                 var sendError = ToxErrorSendMessage.Ok;
-                _tox1.SendAction(0, actionFormat + i.ToString(), out sendError);
+                _tox1.SendMessage(0, actionFormat + i.ToString(), ToxMessageType.Action, out sendError);
                 if (sendError != ToxErrorSendMessage.Ok)
                     Fail("Failed to send action to friend: {0}", sendError);
             }
 
-            _tox2.OnFriendActionReceived += (object sender, ToxEventArgs.FriendActionEventArgs args) =>
+            _tox2.OnFriendMessageReceived += (object sender, ToxEventArgs.FriendMessageEventArgs args) =>
             {
-                if (args.Action != actionFormat + receivedActionCount)
+                if (args.MessageType != ToxMessageType.Action || args.Message != actionFormat + receivedActionCount)
                 {
                     Fail("Action arrived got garbled");
                     return;
@@ -289,7 +289,7 @@ namespace SharpTox.Test
             bool fileReceived = false;
 
             var error = ToxErrorFileSend.Ok;
-            int fileNumber = _tox1.FileSend(0, ToxFileKind.Data, fileData.Length, fileName, out error);
+            var fileInfo = _tox1.FileSend(0, ToxFileKind.Data, fileData.Length, fileName, out error);
             if (error != ToxErrorFileSend.Ok)
                 Assert.Fail("Failed to send a file send request, error: {0}", error);
 

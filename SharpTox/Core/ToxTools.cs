@@ -32,7 +32,7 @@ namespace SharpTox.Core
 
         public static byte[] Hash(byte[] data)
         {
-            byte[] hash = new byte[ToxConstants.ToxHashLength];
+            byte[] hash = new byte[ToxConstants.HashLength];
             ToxFunctions.Hash(hash, data, (uint)data.Length);
             return hash;
         }

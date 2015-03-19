@@ -79,21 +79,13 @@ namespace SharpTox.Core
         {
             public string Message { get; private set; }
 
-            public FriendMessageEventArgs(int friendNumber, string message)
+            public ToxMessageType MessageType { get; private set; }
+
+            public FriendMessageEventArgs(int friendNumber, string message, ToxMessageType type)
                 : base(friendNumber)
             {
                 Message = message;
-            }
-        }
-
-        public class FriendActionEventArgs : FriendBaseEventArgs
-        {
-            public string Action { get; private set; }
-
-            public FriendActionEventArgs(int friendNumber, string action)
-                : base(friendNumber)
-            {
-                Action = action;
+                MessageType = type;
             }
         }
 

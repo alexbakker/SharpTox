@@ -33,7 +33,7 @@
         /// <summary>
         /// The exact length of the hash of an avatar in bytes.
         /// </summary>
-        public const int ToxHashLength = 32;
+        public const int HashLength = 32;
 
         /// <summary>
         /// The maximum size of an avatar in bytes.
@@ -54,5 +54,15 @@
         /// The size of an address.
         /// </summary>
         public const int AddressSize = PublicKeySize + sizeof(uint) + sizeof(ushort);
+
+        /// <summary>
+        /// Length of a file identifier.
+        /// </summary>
+        public const int FileIdLength = 32;
+
+        /// <summary>
+        /// The maximum length of a filename.
+        /// </summary>
+        public const int MaxFileNameLength = 255;
     }
 }

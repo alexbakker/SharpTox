@@ -19,7 +19,7 @@
     {
         Ok,
         Null,
-        BadAddress,
+        BadHost,
         BadPort
     }
 
@@ -75,11 +75,6 @@
         /// Busy.
         /// </summary>
         Busy,
-
-        /// <summary>
-        /// Invalid status.
-        /// </summary>
-        Invalid
     }
 
     public enum ToxErrorSendMessage
@@ -167,6 +162,12 @@
         Avatar
     }
 
+    public enum ToxMessageType
+    {
+        Message,
+        Action
+    }
+
     public enum ToxErrorFileControl
     {
         Ok,
@@ -176,7 +177,7 @@
         NotPaused,
         Denied,
         AlreadyPaused,
-        SendFailed
+        SendQ
     }
 
     public enum ToxErrorFileSend
@@ -185,7 +186,6 @@
         Null,
         FriendNotFound,
         FriendNotConnected,
-        NameEmpty,
         NameTooLong,
         TooMany
     }
@@ -199,7 +199,25 @@
         NotFound,
         NotTransferring,
         InvalidLength,
-        QueueFull
+        SendQ
+    }
+
+    public enum ToxErrorFileGet
+    {
+        Ok,
+        FriendNotFound,
+        NotFound
+    }
+
+    public enum ToxErrorFileSeek
+    {
+        Ok,
+        FriendNotFound,
+        FriendNotConnected,
+        NotFound,
+        SeekDenied,
+        InvalidPosition,
+        SendQ
     }
 
     public enum ToxErrorFriendCustomPacket
