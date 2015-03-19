@@ -1,6 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using SharpTox.Core;
+using System.Threading;
 
 namespace SharpTox.Test
 {
@@ -101,6 +102,29 @@ namespace SharpTox.Test
             if (nospam != tox.GetNospam())
                 Assert.Fail("Failed to set/get nospam correctly, values don't match");
 
+            tox.Dispose();
+        }
+
+        [TestMethod]
+        [Timeout(120000)]
+        [Ignore]
+        public void TestToxProxySocks5()
+        {
+            var options = new ToxOptions(true, ToxProxyType.Socks5, "127.0.0.1", 9050);
+            var tox = new Tox(options);
+            var error = ToxErrorBootstrap.Ok;
+
+            foreach (var node in Globals.TcpRelays)
+            {
+                bool result = tox.AddTcpRelay(node, out error);
+                if (!result || error != ToxErrorBootstrap.Ok)
+                    Assert.Fail("Failed to bootstrap, error: {0}, result: {1}", error, result);
+            }
+
+            tox.Start();
+            while (!tox.IsConnected) { Thread.Sleep(10); }
+
+            Console.WriteLine("Tox connected!");
             tox.Dispose();
         }
     }
