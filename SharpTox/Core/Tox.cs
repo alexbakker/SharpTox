@@ -951,7 +951,6 @@ namespace SharpTox.Core
         /// <param name="kind"></param>
         /// <param name="fileSize"></param>
         /// <param name="fileName"></param>
-        /// <param name="fileNameLength"></param>
         /// <returns></returns>
         public int FileSend(int friendNumber, ToxFileKind kind, long fileSize, string fileName)
         {
@@ -1439,7 +1438,7 @@ namespace SharpTox.Core
                     _onFileReceiveChunkCallback = (IntPtr tox, uint friendNumber, uint fileNumber, ulong position, byte[] data, uint length, IntPtr userData) =>
                     {
                         if (_onFileChunk != null)
-                            _onFileChunk(this, new ToxEventArgs.FileChunkEventArgs((int)friendNumber, (int)fileNumber, data, position));
+                            _onFileChunk(this, new ToxEventArgs.FileChunkEventArgs((int)friendNumber, (int)fileNumber, data, (long)position));
                     };
 
                     ToxFunctions.RegisterFileReceiveChunkCallback(_tox, _onFileReceiveChunkCallback, IntPtr.Zero);
@@ -1473,7 +1472,7 @@ namespace SharpTox.Core
                     _onFileReceiveCallback = (IntPtr tox, uint friendNumber, uint fileNumber, ToxFileKind kind, ulong fileSize, byte[] filename, uint filenameLength, IntPtr userData) =>
                     {
                         if (_onFileReceive != null)
-                            _onFileReceive(this, new ToxEventArgs.FileSendRequestEventArgs((int)friendNumber, (int)fileNumber, fileSize, Encoding.UTF8.GetString(filename)));
+                            _onFileReceive(this, new ToxEventArgs.FileSendRequestEventArgs((int)friendNumber, (int)fileNumber, (long)fileSize, Encoding.UTF8.GetString(filename)));
                     };
 
                     ToxFunctions.RegisterFileReceiveCallback(_tox, _onFileReceiveCallback, IntPtr.Zero);
@@ -1507,7 +1506,7 @@ namespace SharpTox.Core
                     _onFileRequestChunkCallback = (IntPtr tox, uint friendNumber, uint fileNumber, ulong position, uint length, IntPtr userData) =>
                     {
                         if (_onFileChunkRequested != null)
-                            _onFileChunkRequested(this, new ToxEventArgs.FileRequestChunkEventArgs((int)friendNumber, (int)fileNumber, position, (int)length));
+                            _onFileChunkRequested(this, new ToxEventArgs.FileRequestChunkEventArgs((int)friendNumber, (int)fileNumber, (long)position, (int)length));
                     };
 
                     ToxFunctions.RegisterFileRequestChunkCallback(_tox, _onFileRequestChunkCallback, IntPtr.Zero);

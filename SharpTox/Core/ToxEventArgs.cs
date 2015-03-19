@@ -176,11 +176,11 @@ namespace SharpTox.Core
 
         public class FileRequestChunkEventArgs : FileBaseEventArgs
         {
-            public ulong Position { get; set; }
+            public long Position { get; set; }
 
             public int Length { get; set; }
 
-            public FileRequestChunkEventArgs(int friendNumber, int fileNumber, ulong position, int length)
+            public FileRequestChunkEventArgs(int friendNumber, int fileNumber, long position, int length)
                 : base(friendNumber, fileNumber)
             {
                 Position = position;
@@ -203,9 +203,9 @@ namespace SharpTox.Core
         {
             public byte[] Data { get; private set; }
 
-            public ulong Position { get; private set; }
+            public long Position { get; private set; }
 
-            public FileChunkEventArgs(int friendNumber, int fileNumber, byte[] data, ulong position)
+            public FileChunkEventArgs(int friendNumber, int fileNumber, byte[] data, long position)
                 : base(friendNumber, fileNumber)
             {
                 Data = data;
@@ -215,11 +215,11 @@ namespace SharpTox.Core
 
         public class FileSendRequestEventArgs : FileBaseEventArgs
         {
-            public ulong FileSize { get; private set; }
+            public long FileSize { get; private set; }
 
             public string FileName { get; private set; }
 
-            public FileSendRequestEventArgs(int friendNumber, int fileNumber, ulong fileSize, string fileName)
+            public FileSendRequestEventArgs(int friendNumber, int fileNumber, long fileSize, string fileName)
                 : base(friendNumber, fileNumber)
             {
                 FileSize = fileSize;

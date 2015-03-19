@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SharpTox.Core;
 
@@ -209,6 +210,139 @@ namespace SharpTox.Test
             int friend = _tox2.GetFriendByPublicKey(publicKey, out error2);
             if (friend != 0 || error2 != ToxErrorFriendByPublicKey.Ok)
                 Assert.Fail("Could not get friend by public key, error: {0}, friend: {1}", error2, friend);
+        }
+
+        [TestMethod]
+        public void TestToxLossyPacket()
+        {
+            int receivedPackets = 0;
+            byte[] data = new byte[ToxConstants.MaxCustomPacketSize];
+            new Random().NextBytes(data);
+            data[0] = 210;
+
+            var error = ToxErrorFriendCustomPacket.Ok;
+            bool result = _tox1.FriendSendLossyPacket(0, data, out error);
+            if (!result || error != ToxErrorFriendCustomPacket.Ok)
+                Assert.Fail("Failed to send lossy packet to friend, error: {0}, result: {1}", error, result);
+
+            _tox2.OnFriendLossyPacketReceived += (object sender, ToxEventArgs.FriendPacketEventArgs args) =>
+            {
+                if (args.Data.Length != data.Length || data[0] != args.Data[0])
+                {
+                    Fail("Packets don't have the same length/identifier");
+                    return;
+                }
+                else if (!data.SequenceEqual(args.Data))
+                {
+                    Fail("Packet contents don't match");
+                    return;
+                }
+
+                receivedPackets++;
+            };
+
+            while (receivedPackets != 1 && _wait) { Thread.Sleep(10); }
+            CheckFailed();
+        }
+
+        [TestMethod]
+        public void TestToxLosslessPacket()
+        {
+            int receivedPackets = 0;
+            byte[] data = new byte[ToxConstants.MaxCustomPacketSize];
+            new Random().NextBytes(data);
+            data[0] = 170;
+
+            var error = ToxErrorFriendCustomPacket.Ok;
+            bool result = _tox1.FriendSendLosslessPacket(0, data, out error);
+            if (!result || error != ToxErrorFriendCustomPacket.Ok)
+                Assert.Fail("Failed to send lossless packet to friend, error: {0}, result: {1}", error, result);
+
+            _tox2.OnFriendLosslessPacketReceived += (object sender, ToxEventArgs.FriendPacketEventArgs args) =>
+            {
+                if (args.Data.Length != data.Length || data[0] != args.Data[0])
+                {
+                    Fail("Packets don't have the same length/identifier");
+                    return;
+                }
+                else if (!data.SequenceEqual(args.Data))
+                {
+                    Fail("Packet contents don't match");
+                    return;
+                }
+
+                receivedPackets++;
+            };
+
+            while (receivedPackets != 1 && _wait) { Thread.Sleep(10); }
+            CheckFailed();
+        }
+
+        [TestMethod]
+        public void TestToxFileTransfer()
+        {
+            byte[] fileData = new byte[0xBEEEF];
+            byte[] receivedData = new byte[0xBEEEF];
+            new Random().NextBytes(fileData);
+
+            string fileName = "testing.dat";
+            bool fileReceived = false;
+
+            var error = ToxErrorFileSend.Ok;
+            int fileNumber = _tox1.FileSend(0, ToxFileKind.Data, fileData.Length, fileName, out error);
+            if (error != ToxErrorFileSend.Ok)
+                Assert.Fail("Failed to send a file send request, error: {0}", error);
+
+            _tox1.OnFileChunkRequested += (object sender, ToxEventArgs.FileRequestChunkEventArgs args) =>
+            {
+                byte[] data = new byte[args.Length];
+                Array.Copy(fileData, args.Position, data, 0, args.Length);
+
+                var error2 = ToxErrorFileSendChunk.Ok;
+                bool result = _tox1.FileSendChunk(args.FriendNumber, args.FileNumber, args.Position, data, out error2);
+                if (!result || error2 != ToxErrorFileSendChunk.Ok)
+                {
+                    Fail("Failed to send chunk, error: {0}, result: {1}", error2, result);
+                    return;
+                }
+            };
+
+            _tox2.OnFileSendRequestReceived += (object sender, ToxEventArgs.FileSendRequestEventArgs args) => 
+            {
+                if (fileName != args.FileName)
+                {
+                    Fail("Filenames do not match");
+                    return;
+                }
+
+                if (args.FileSize != fileData.Length)
+                {
+                    Fail("File lengths do not match");
+                    return;
+                }
+
+                var error2 = ToxErrorFileControl.Ok;
+                bool result = _tox2.FileSendControl(args.FriendNumber, args.FileNumber, ToxFileControl.Resume);
+                if (!result || error2 != ToxErrorFileControl.Ok)
+                {
+                    Fail("Failed to send file control, error: {0}, result: {1}", error2, result);
+                    return;
+                }
+            };
+
+            _tox2.OnFileChunkReceived += (object sender, ToxEventArgs.FileChunkEventArgs args) =>
+            {
+                if (args.Position == fileData.Length)
+                    fileReceived = true;
+                else
+                    Array.Copy(args.Data, 0, receivedData, args.Position, args.Data.Length);
+            };
+
+            while (!fileReceived && _wait) { Thread.Sleep(10); }
+            CheckFailed();
+
+            if (!fileData.SequenceEqual(receivedData))
+                Assert.Fail("Original data is not equal to the data we received");
         }
 
         [TestMethod]
