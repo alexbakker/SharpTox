@@ -1509,7 +1509,7 @@ namespace SharpTox.Core
                             _onFileChunkRequested(this, new ToxEventArgs.FileRequestChunkEventArgs((int)friendNumber, (int)fileNumber, (long)position, (int)length));
                     };
 
-                    ToxFunctions.RegisterFileRequestChunkCallback(_tox, _onFileRequestChunkCallback, IntPtr.Zero);
+                    ToxFunctions.RegisterFileChunkRequestCallback(_tox, _onFileRequestChunkCallback, IntPtr.Zero);
                 }
 
                 _onFileChunkRequested += value;
@@ -1518,7 +1518,7 @@ namespace SharpTox.Core
             {
                 if (_onFileChunkRequested.GetInvocationList().Length == 1)
                 {
-                    ToxFunctions.RegisterFileRequestChunkCallback(_tox, null, IntPtr.Zero);
+                    ToxFunctions.RegisterFileChunkRequestCallback(_tox, null, IntPtr.Zero);
                     _onFileRequestChunkCallback = null;
                 }
 

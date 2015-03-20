@@ -231,8 +231,8 @@ namespace SharpTox.Core
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_callback_file_recv_chunk")]
         public static extern void RegisterFileReceiveChunkCallback(ToxHandle tox, ToxDelegates.CallbackFileReceiveChunkDelegate callback, IntPtr userdata);
 
-        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_callback_file_request_chunk")]
-        public static extern void RegisterFileRequestChunkCallback(ToxHandle tox, ToxDelegates.CallbackFileRequestChunkDelegate callback, IntPtr userdata);
+        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_callback_file_chunk_request")]
+        public static extern void RegisterFileChunkRequestCallback(ToxHandle tox, ToxDelegates.CallbackFileRequestChunkDelegate callback, IntPtr userdata);
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_callback_friend_lossy_packet")]
         public static extern void RegisterFriendLossyPacketCallback(ToxHandle tox, ToxDelegates.CallbackFriendPacketDelegate callback, IntPtr userdata);
