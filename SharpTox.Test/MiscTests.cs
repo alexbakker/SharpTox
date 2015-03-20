@@ -62,7 +62,7 @@ namespace SharpTox.Test
             byte[] hash = ToxTools.Hash(data);
         }
 
-        [TestMethod]
+        /*[TestMethod]
         public void TestToxOptions()
         {
             var error = ToxErrorOptionsNew.Ok;
@@ -77,6 +77,6 @@ namespace SharpTox.Test
 
             Marshal.StructureToPtr(options, ptr, true);
             ToxFunctions.OptionsFree(ptr);
-        }
+        }*/
     }
 }
