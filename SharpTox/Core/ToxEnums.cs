@@ -231,4 +231,31 @@
         TooLong,
         SendQ
     }
+
+    /// <summary>
+    /// Changes that can occur in a group chat.
+    /// </summary>
+    public enum ToxChatChange
+    {
+        /// <summary>
+        /// A new peer joined the group.
+        /// </summary>
+        PeerAdd,
+
+        /// <summary>
+        /// A peer left the group.
+        /// </summary>
+        PeerDel,
+
+        /// <summary>
+        /// A peer changed its name.
+        /// </summary>
+        PeerName
+    }
+
+    public enum ToxGroupType
+    {
+        Text,
+        Av
+    }
 }

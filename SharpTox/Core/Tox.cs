@@ -37,6 +37,11 @@ namespace SharpTox.Core
         private ToxDelegates.CallbackFileRequestChunkDelegate _onFileRequestChunkCallback;
         private ToxDelegates.CallbackFriendPacketDelegate _onFriendLossyPacketCallback;
         private ToxDelegates.CallbackFriendPacketDelegate _onFriendLosslessPacketCallback;
+        private ToxDelegates.CallbackGroupInviteDelegate _onGroupInviteCallback;
+        private ToxDelegates.CallbackGroupActionDelegate _onGroupActionCallback;
+        private ToxDelegates.CallbackGroupMessageDelegate _onGroupMessageCallback;
+        private ToxDelegates.CallbackGroupNamelistChangeDelegate _onGroupNamelistChangeCallback;
+        private ToxDelegates.CallbackGroupTitleDelegate _onGroupTitleCallback;
         #endregion
 
         /// <summary>
@@ -1080,6 +1085,242 @@ namespace SharpTox.Core
             return FriendSendLosslessPacket(friendNumber, data, out error);
         }
 
+        /// <summary>
+        /// Retrieves an array of group member names.
+        /// </summary>
+        /// <param name="groupNumber"></param>
+        /// <returns></returns>
+        public string[] GetGroupNames(int groupNumber)
+        {
+            if (_disposed)
+                throw new ObjectDisposedException(GetType().FullName);
+
+            int count = ToxFunctions.GroupNumberPeers(_tox, groupNumber);
+
+            //just return an empty string array before we get an overflow exception
+            if (count <= 0)
+                return new string[0];
+
+            ushort[] lengths = new ushort[count];
+            byte[,] matrix = new byte[count, ToxConstants.MaxNameLength];
+
+            int result = ToxFunctions.GroupGetNames(_tox, groupNumber, matrix, lengths, (ushort)count);
+
+            string[] names = new string[count];
+            for (int i = 0; i < count; i++)
+            {
+                byte[] name = new byte[lengths[i]];
+
+                for (int j = 0; j < name.Length; j++)
+                    name[j] = matrix[i, j];
+
+                names[i] = Encoding.UTF8.GetString(name, 0, name.Length);
+            }
+
+            return names;
+        }
+
+        /// <summary>
+        /// Joins a group with the given public key of the group.
+        /// </summary>
+        /// <param name="friendNumber"></param>
+        /// <param name="data">Data obtained from the OnGroupInvite event.</param>
+        /// <returns></returns>
+        public int JoinGroup(int friendNumber, byte[] data)
+        {
+            if (_disposed)
+                throw new ObjectDisposedException(GetType().FullName);
+
+            return ToxFunctions.JoinGroupchat(_tox, friendNumber, data, (ushort)data.Length);
+        }
+
+        /// <summary>
+        /// Retrieves the name of a group member.
+        /// </summary>
+        /// <param name="groupNumber"></param>
+        /// <param name="peerNumber"></param>
+        /// <returns></returns>
+        public string GetGroupMemberName(int groupNumber, int peerNumber)
+        {
+            if (_disposed)
+                throw new ObjectDisposedException(GetType().FullName);
+
+            byte[] name = new byte[ToxConstants.MaxNameLength];
+            if (ToxFunctions.GroupPeername(_tox, groupNumber, peerNumber, name) == -1)
+                throw new Exception("Could not get peer name");
+
+            return Encoding.UTF8.GetString(name, 0, name.Length);
+        }
+
+        /// <summary>
+        /// Retrieves the number of group members in a group chat.
+        /// </summary>
+        /// <param name="groupNumber"></param>
+        /// <returns></returns>
+        public int GetGroupMemberCount(int groupNumber)
+        {
+            if (_disposed)
+                throw new ObjectDisposedException(GetType().FullName);
+
+            return ToxFunctions.GroupNumberPeers(_tox, groupNumber);
+        }
+
+        /// <summary>
+        /// Deletes a group chat.
+        /// </summary>
+        /// <param name="groupNumber"></param>
+        /// <returns></returns>
+        public bool DeleteGroupChat(int groupNumber)
+        {
+            if (_disposed)
+                throw new ObjectDisposedException(GetType().FullName);
+
+            return ToxFunctions.DelGroupchat(_tox, groupNumber) == 0;
+        }
+
+        /// <summary>
+        /// Invites a friend to a group chat.
+        /// </summary>
+        /// <param name="friendNumber"></param>
+        /// <param name="groupNumber"></param>
+        /// <returns></returns>
+        public bool InviteFriend(int friendNumber, int groupNumber)
+        {
+            if (_disposed)
+                throw new ObjectDisposedException(GetType().FullName);
+
+            return ToxFunctions.InviteFriend(_tox, friendNumber, groupNumber) == 0;
+        }
+
+        /// <summary>
+        /// Sends a message to a group.
+        /// </summary>
+        /// <param name="groupNumber"></param>
+        /// <param name="message"></param>
+        /// <returns></returns>
+        public bool SendGroupMessage(int groupNumber, string message)
+        {
+            if (_disposed)
+                throw new ObjectDisposedException(GetType().FullName);
+
+            byte[] msg = Encoding.UTF8.GetBytes(message);
+            return ToxFunctions.GroupMessageSend(_tox, groupNumber, msg, (ushort)msg.Length) == 0;
+        }
+
+        /// <summary>
+        /// Sends an action to a group.
+        /// </summary>
+        /// <param name="groupNumber"></param>
+        /// <param name="action"></param>
+        /// <returns></returns>
+        public bool SendGroupAction(int groupNumber, string action)
+        {
+            if (_disposed)
+                throw new ObjectDisposedException(GetType().FullName);
+
+            byte[] act = Encoding.UTF8.GetBytes(action);
+            return ToxFunctions.GroupActionSend(_tox, groupNumber, act, (ushort)act.Length) == 0;
+        }
+
+        /// <summary>
+        /// Creates a new group and retrieves the group number.
+        /// </summary>
+        /// <returns></returns>
+        public int NewGroup()
+        {
+            if (_disposed)
+                throw new ObjectDisposedException(GetType().FullName);
+
+            return ToxFunctions.AddGroupchat(_tox);
+        }
+
+        /// <summary>
+        /// Check if the given peernumber corresponds to ours.
+        /// </summary>
+        /// <param name="groupNumber"></param>
+        /// <param name="peerNumber"></param>
+        /// <returns></returns>
+        public bool PeerNumberIsOurs(int groupNumber, int peerNumber)
+        {
+            if (_disposed)
+                throw new ObjectDisposedException(GetType().FullName);
+
+            return ToxFunctions.GroupPeerNumberIsOurs(_tox, groupNumber, peerNumber) == 1;
+        }
+
+        /// <summary>
+        /// Changes the title of a group.
+        /// </summary>
+        /// <param name="groupNumber"></param>
+        /// <param name="title"></param>
+        /// <returns></returns>
+        public bool SetGroupTitle(int groupNumber, string title)
+        {
+            if (_disposed)
+                throw new ObjectDisposedException(GetType().FullName);
+
+            if (Encoding.UTF8.GetByteCount(title) > ToxConstants.MaxNameLength)
+                throw new ArgumentException("The specified group title is longer than 256 bytes");
+
+            byte[] bytes = Encoding.UTF8.GetBytes(title);
+
+            return ToxFunctions.GroupSetTitle(_tox, groupNumber, bytes, (byte)bytes.Length) == 0;
+        }
+
+        /// <summary>
+        /// Retrieves the type of a group.
+        /// </summary>
+        /// <param name="groupNumber"></param>
+        /// <returns></returns>
+        public ToxGroupType GetGroupType(int groupNumber)
+        {
+            if (_disposed)
+                throw new ObjectDisposedException(GetType().FullName);
+
+            return (ToxGroupType)ToxFunctions.GroupGetType(_tox, groupNumber);
+        }
+
+        /// <summary>
+        /// Retrieves the title of a group.
+        /// </summary>
+        /// <param name="groupNumber"></param>
+        /// <returns></returns>
+        public string GetGroupTitle(int groupNumber)
+        {
+            if (_disposed)
+                throw new ObjectDisposedException(GetType().FullName);
+
+            byte[] title = new byte[ToxConstants.MaxNameLength];
+            int length = ToxFunctions.GroupGetTitle(_tox, groupNumber, title, (uint)title.Length);
+
+            if (length == -1)
+                return string.Empty;
+
+            return Encoding.UTF8.GetString(title, 0, length);
+        }
+
+        /// <summary>
+        /// Retrieves the public key of a peer.
+        /// </summary>
+        /// <param name="groupNumber"></param>
+        /// <param name="peerNumber"></param>
+        /// <returns></returns>
+        public ToxKey GetGroupPeerPublicKey(int groupNumber, int peerNumber)
+        {
+            if (_disposed)
+                throw new ObjectDisposedException(GetType().FullName);
+
+            byte[] key = new byte[ToxConstants.PublicKeySize];
+            int result = ToxFunctions.GroupPeerPubkey(_tox, groupNumber, peerNumber, key);
+
+            if (result != 0)
+                return null;
+
+            return new ToxKey(ToxKeyType.Public, key);
+        }
+
+
+
         #region Events
         private EventHandler<ToxEventArgs.FriendRequestEventArgs> _onFriendRequest;
 
@@ -1588,6 +1829,176 @@ namespace SharpTox.Core
                 }
 
                 _onFriendLosslessPacket -= value;
+            }
+        }
+
+        private EventHandler<ToxEventArgs.GroupActionEventArgs> _onGroupAction;
+
+        /// <summary>
+        /// Occurs when an action is received from a group.
+        /// </summary>
+        public event EventHandler<ToxEventArgs.GroupActionEventArgs> OnGroupAction
+        {
+            add
+            {
+                if (_onGroupActionCallback == null)
+                {
+                    _onGroupActionCallback = (IntPtr tox, int groupNumber, int peerNumber, byte[] action, ushort length, IntPtr userData) =>
+                    {
+                        if (_onGroupAction != null)
+                            _onGroupAction(this, new ToxEventArgs.GroupActionEventArgs(groupNumber, peerNumber, Encoding.UTF8.GetString(action, 0, length)));
+                    };
+
+                    ToxFunctions.RegisterGroupActionCallback(_tox, _onGroupActionCallback, IntPtr.Zero);
+                }
+
+                _onGroupAction += value;
+            }
+            remove
+            {
+                if (_onGroupAction.GetInvocationList().Length == 1)
+                {
+                    ToxFunctions.RegisterGroupActionCallback(_tox, null, IntPtr.Zero);
+                    _onGroupActionCallback = null;
+                }
+
+                _onGroupAction -= value;
+            }
+        }
+
+        private EventHandler<ToxEventArgs.GroupMessageEventArgs> _onGroupMessage;
+
+        /// <summary>
+        /// Occurs when a message is received from a group.
+        /// </summary>
+        public event EventHandler<ToxEventArgs.GroupMessageEventArgs> OnGroupMessage
+        {
+            add
+            {
+                if (_onGroupMessageCallback == null)
+                {
+                    _onGroupMessageCallback = (IntPtr tox, int groupNumber, int peerNumber, byte[] message, ushort length, IntPtr userData) =>
+                    {
+                        if (_onGroupMessage != null)
+                            _onGroupMessage(this, new ToxEventArgs.GroupMessageEventArgs(groupNumber, peerNumber, Encoding.UTF8.GetString(message, 0, length)));
+                    };
+
+                    ToxFunctions.RegisterGroupMessageCallback(_tox, _onGroupMessageCallback, IntPtr.Zero);
+                }
+
+                _onGroupMessage += value;
+            }
+            remove
+            {
+                if (_onGroupMessage.GetInvocationList().Length == 1)
+                {
+                    ToxFunctions.RegisterGroupMessageCallback(_tox, null, IntPtr.Zero);
+                    _onGroupMessageCallback = null;
+                }
+
+                _onGroupMessage -= value;
+            }
+        }
+
+        private EventHandler<ToxEventArgs.GroupInviteEventArgs> _onGroupInvite;
+
+        /// <summary>
+        /// Occurs when a friend has sent an invite to a group.
+        /// </summary>
+        public event EventHandler<ToxEventArgs.GroupInviteEventArgs> OnGroupInvite
+        {
+            add
+            {
+                if (_onGroupInviteCallback == null)
+                {
+                    _onGroupInviteCallback = (IntPtr tox, int friendNumber, byte type, byte[] data, ushort length, IntPtr userData) =>
+                    {
+                        if (_onGroupInvite != null)
+                            _onGroupInvite(this, new ToxEventArgs.GroupInviteEventArgs(friendNumber, (ToxGroupType)type, data));
+                    };
+
+                    ToxFunctions.RegisterGroupInviteCallback(_tox, _onGroupInviteCallback, IntPtr.Zero);
+                }
+
+                _onGroupInvite += value;
+            }
+            remove
+            {
+                if (_onGroupInvite.GetInvocationList().Length == 1)
+                {
+                    ToxFunctions.RegisterGroupInviteCallback(_tox, null, IntPtr.Zero);
+                    _onGroupInviteCallback = null;
+                }
+
+                _onGroupInvite -= value;
+            }
+        }
+
+        private EventHandler<ToxEventArgs.GroupNamelistChangeEventArgs> _onGroupNamelistChange;
+
+        /// <summary>
+        /// Occurs when the name list of a group has changed.
+        /// </summary>
+        public event EventHandler<ToxEventArgs.GroupNamelistChangeEventArgs> OnGroupNamelistChange
+        {
+            add
+            {
+                if (_onGroupNamelistChangeCallback == null)
+                {
+                    _onGroupNamelistChangeCallback = (IntPtr tox, int groupNumber, int peerNumber, ToxChatChange change, IntPtr userData) =>
+                    {
+                        if (_onGroupNamelistChange != null)
+                            _onGroupNamelistChange(this, new ToxEventArgs.GroupNamelistChangeEventArgs(groupNumber, peerNumber, change));
+                    };
+
+                    ToxFunctions.RegisterGroupNamelistChangeCallback(_tox, _onGroupNamelistChangeCallback, IntPtr.Zero);
+                }
+
+                _onGroupNamelistChange += value;
+            }
+            remove
+            {
+                if (_onGroupNamelistChange.GetInvocationList().Length == 1)
+                {
+                    ToxFunctions.RegisterGroupNamelistChangeCallback(_tox, null, IntPtr.Zero);
+                    _onGroupNamelistChangeCallback = null;
+                }
+
+                _onGroupNamelistChange -= value;
+            }
+        }
+
+        private EventHandler<ToxEventArgs.GroupTitleEventArgs> _onGroupTitleChanged;
+
+        /// <summary>
+        /// Occurs when the title of a groupchat is changed.
+        /// </summary>
+        public event EventHandler<ToxEventArgs.GroupTitleEventArgs> OnGroupTitleChanged
+        {
+            add
+            {
+                if (_onGroupTitleCallback == null)
+                {
+                    _onGroupTitleCallback = (IntPtr tox, int groupNumber, int peerNumber, byte[] title, byte length, IntPtr userData) =>
+                    {
+                        if (_onGroupTitleChanged != null)
+                            _onGroupTitleChanged(this, new ToxEventArgs.GroupTitleEventArgs(groupNumber, peerNumber, Encoding.UTF8.GetString(title, 0, length)));
+                    };
+
+                    ToxFunctions.RegisterGroupTitleCallback(_tox, _onGroupTitleCallback, IntPtr.Zero);
+                }
+
+                _onGroupTitleChanged += value;
+            }
+            remove
+            {
+                if (_onGroupTitleChanged.GetInvocationList().Length == 1)
+                {
+                    ToxFunctions.RegisterGroupTitleCallback(_tox, null, IntPtr.Zero);
+                    _onGroupTitleCallback = null;
+                }
+
+                _onGroupTitleChanged -= value;
             }
         }
 

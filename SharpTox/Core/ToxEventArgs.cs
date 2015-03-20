@@ -133,28 +133,6 @@ namespace SharpTox.Core
             }
         }
 
-        public class GroupMessageEventArgs : GroupBaseEventArgs
-        {
-            public string Message { get; private set; }
-
-            public GroupMessageEventArgs(int groupNumber, int peerNumber, string message)
-                : base(groupNumber, peerNumber)
-            {
-                Message = message;
-            }
-        }
-
-        public class GroupActionEventArgs : GroupBaseEventArgs
-        {
-            public string Action { get; private set; }
-
-            public GroupActionEventArgs(int groupNumber, int peerNumber, string action)
-                : base(groupNumber, peerNumber)
-            {
-                Action = action;
-            }
-        }
-
         public class FileControlEventArgs : FileBaseEventArgs
         {
             public ToxFileControl Control{get;private set;}
@@ -248,6 +226,53 @@ namespace SharpTox.Core
             public ConnectionEventArgs(bool isConnected)
             {
                 IsConnected = isConnected;
+            }
+        }
+
+        public class GroupInviteEventArgs : FriendBaseEventArgs
+        {
+            public byte[] Data { get; private set; }
+
+            public ToxGroupType GroupType { get; private set; }
+
+            public GroupInviteEventArgs(int friendNumber, ToxGroupType type, byte[] data)
+                : base(friendNumber)
+            {
+                Data = (byte[])data.Clone();
+                GroupType = type;
+            }
+        }
+
+        public class GroupMessageEventArgs : GroupBaseEventArgs
+        {
+            public string Message { get; private set; }
+
+            public GroupMessageEventArgs(int groupNumber, int peerNumber, string message)
+                : base(groupNumber, peerNumber)
+            {
+                Message = message;
+            }
+        }
+
+        public class GroupActionEventArgs : GroupBaseEventArgs
+        {
+            public string Action { get; private set; }
+
+            public GroupActionEventArgs(int groupNumber, int peerNumber, string action)
+                : base(groupNumber, peerNumber)
+            {
+                Action = action;
+            }
+        }
+
+        public class GroupNamelistChangeEventArgs : GroupBaseEventArgs
+        {
+            public ToxChatChange Change { get; private set; }
+
+            public GroupNamelistChangeEventArgs(int groupNumber, int peerNumber, ToxChatChange change)
+                : base(groupNumber, peerNumber)
+            {
+                Change = change;
             }
         }
 
