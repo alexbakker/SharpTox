@@ -9,8 +9,6 @@ using System.Collections.Generic;
 
 namespace SharpTox.Core
 {
-    public delegate object InvokeDelegate(Delegate method, params object[] p);
-
     /// <summary>
     /// Represents an instance of Tox.
     /// </summary>
@@ -21,7 +19,6 @@ namespace SharpTox.Core
 
         private bool _running = false;
         private bool _disposed = false;
-        private bool _connected = false;
 
         #region Callback delegates
         private ToxDelegates.CallbackFriendRequestDelegate _onFriendRequestCallback;
