@@ -717,7 +717,7 @@ namespace SharpTox.Core
             byte[] name = new byte[size];
             ToxFunctions.FriendGetName(_tox, (uint)friendNumber, name, ref error);
 
-            return Encoding.UTF8.GetString(name);
+            return Encoding.UTF8.GetString(name, 0, name.Length);
         }
 
         /// <summary>
@@ -751,7 +751,7 @@ namespace SharpTox.Core
             byte[] message = new byte[size];
             ToxFunctions.FriendGetName(_tox, (uint)friendNumber, message, ref error);
 
-            return Encoding.UTF8.GetString(message);
+            return Encoding.UTF8.GetString(message, 0, message.Length);
         }
 
         /// <summary>
@@ -1472,7 +1472,7 @@ namespace SharpTox.Core
                     _onFileReceiveCallback = (IntPtr tox, uint friendNumber, uint fileNumber, ToxFileKind kind, ulong fileSize, byte[] filename, uint filenameLength, IntPtr userData) =>
                     {
                         if (_onFileReceive != null)
-                            _onFileReceive(this, new ToxEventArgs.FileSendRequestEventArgs((int)friendNumber, (int)fileNumber, (long)fileSize, Encoding.UTF8.GetString(filename)));
+                            _onFileReceive(this, new ToxEventArgs.FileSendRequestEventArgs((int)friendNumber, (int)fileNumber, (long)fileSize, Encoding.UTF8.GetString(filename, 0, filename.Length)));
                     };
 
                     ToxFunctions.RegisterFileReceiveCallback(_tox, _onFileReceiveCallback, IntPtr.Zero);
