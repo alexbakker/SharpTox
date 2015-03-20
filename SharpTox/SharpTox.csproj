@@ -183,7 +183,7 @@
     <Compile Include="Core\ToxFunctions.cs" />
     <Compile Include="Core\ToxNode.cs" />
     <Compile Include="Core\ToxTools.cs" />
-    <Compile Include="ToxFileInfo.cs" />
+    <Compile Include="Core\ToxFileInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
