@@ -181,7 +181,7 @@ namespace SharpTox.Test
                 }
                 
                 var error = ToxErrorFriendQuery.Ok;
-                bool result = _tox2.GetIsTyping(0, out error);
+                bool result = _tox2.GetFriendTypingStatus(0, out error);
                 if (!result || error != ToxErrorFriendQuery.Ok)
                     Fail("Failed to get typing status, error: {0}, result: {1}", error, result);
 
@@ -229,7 +229,7 @@ namespace SharpTox.Test
             {
                 if (args.Data.Length != data.Length || data[0] != args.Data[0])
                 {
-                    Fail("Packets don't have the same length/identifier");
+                    Fail("Packet doesn't have the same length/identifier");
                     return;
                 }
                 else if (!data.SequenceEqual(args.Data))
@@ -262,7 +262,7 @@ namespace SharpTox.Test
             {
                 if (args.Data.Length != data.Length || data[0] != args.Data[0])
                 {
-                    Fail("Packets don't have the same length/identifier");
+                    Fail("Packet doesn't have the same length/identifier");
                     return;
                 }
                 else if (!data.SequenceEqual(args.Data))
