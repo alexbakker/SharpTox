@@ -23,7 +23,6 @@ namespace SharpTox.Core
         #region Callback delegates
         private ToxDelegates.CallbackFriendRequestDelegate _onFriendRequestCallback;
         private ToxDelegates.CallbackFriendMessageDelegate _onFriendMessageCallback;
-        private ToxDelegates.CallbackFriendMessageDelegate _onFriendActionCallback;
         private ToxDelegates.CallbackNameChangeDelegate _onNameChangeCallback;
         private ToxDelegates.CallbackStatusMessageDelegate _onStatusMessageCallback;
         private ToxDelegates.CallbackUserStatusDelegate _onUserStatusCallback;
@@ -105,6 +104,9 @@ namespace SharpTox.Core
             }
         }
 
+        /// <summary>
+        /// The status message of this Tox instance.
+        /// </summary>
         public string StatusMessage
         {
             get
@@ -227,6 +229,9 @@ namespace SharpTox.Core
             Options = options;
         }
 
+        /// <summary>
+        /// Releases all resources used by this instance of Tox.
+        /// </summary>
         public void Dispose()
         {
             Dispose(true);
@@ -289,8 +294,9 @@ namespace SharpTox.Core
         }
 
         /// <summary>
-        /// Runs the loop once in the current thread and returns the next timeout.
+        /// Runs the tox_do once in the current thread.
         /// </summary>
+        /// <returns>The next timeout.</returns>
         public int Iterate()
         {
             if (_disposed)
@@ -327,12 +333,12 @@ namespace SharpTox.Core
         }
 
         /// <summary>
-        /// Adds a friend.
+        /// Adds a friend to the friend list and sends a friend request.
         /// </summary>
-        /// <param name="id"></param>
-        /// <param name="message"></param>
+        /// <param name="id">The address of the friend.</param>
+        /// <param name="message">The message that will be sent along with the friend request.</param>
         /// <param name="error"></param>
-        /// <returns>friendNumber</returns>
+        /// <returns>The friend number.</returns>
         public int AddFriend(ToxId id, string message, out ToxErrorFriendAdd error)
         {
             if (_disposed)
@@ -345,11 +351,11 @@ namespace SharpTox.Core
         }
 
         /// <summary>
-        /// Adds a friend.
+        /// Adds a friend to the friend list and sends a friend request.
         /// </summary>
-        /// <param name="id"></param>
-        /// <param name="message"></param>
-        /// <returns>friendNumber</returns>
+        /// <param name="id">The address of the friend.</param>
+        /// <param name="message">The message that will be sent along with the friend request.</param>
+        /// <returns>The friend number.</returns>
         public int AddFriend(ToxId id, string message)
         {
             var error = ToxErrorFriendAdd.Ok;
@@ -357,11 +363,11 @@ namespace SharpTox.Core
         }
 
         /// <summary>
-        /// Adds a friend without sending a request.
+        /// Adds a friend to the friend list without sending a request.
         /// </summary>
-        /// <param name="publicKey"></param>
+        /// <param name="publicKey">The public key of the friend to add.</param>
         /// <param name="error"></param>
-        /// <returns>friendNumber</returns>
+        /// <returns>The friend number.</returns>
         public int AddFriendNoRequest(ToxKey publicKey, out ToxErrorFriendAdd error)
         {
             if (_disposed)
@@ -372,16 +378,22 @@ namespace SharpTox.Core
         }
 
         /// <summary>
-        /// Adds a friend without sending a request.
+        /// Adds a friend to the friend list without sending a request.
         /// </summary>
-        /// <param name="publicKey"></param>
-        /// <returns>friendNumber</returns>
+        /// <param name="publicKey">The public key of the friend to add.</param>
+        /// <returns>The friend number.</returns>
         public int AddFriendNoRequest(ToxKey publicKey)
         {
             var error = ToxErrorFriendAdd.Ok;
             return AddFriendNoRequest(publicKey, out error);
         }
 
+        /// <summary>
+        /// Adds a node as a TCP relay.
+        /// </summary>
+        /// <param name="node">The node to add.</param>
+        /// <param name="error"></param>
+        /// <returns>True on success.</returns>
         public bool AddTcpRelay(ToxNode node, out ToxErrorBootstrap error)
         {
             if (_disposed)
@@ -391,6 +403,11 @@ namespace SharpTox.Core
             return ToxFunctions.AddTcpRelay(_tox, node.Address, (ushort)node.Port, node.PublicKey.GetBytes(), ref error);
         }
 
+        /// <summary>
+        /// Adds a node as a TCP relay.
+        /// </summary>
+        /// <param name="node">The node to add.</param>
+        /// <returns>True on success.</returns>
         public bool AddTcpRelay(ToxNode node)
         {
             var error = ToxErrorBootstrap.Ok;
@@ -398,11 +415,11 @@ namespace SharpTox.Core
         }
 
         /// <summary>
-        /// Bootstraps this Tox instance with a ToxNode.
+        /// Attempts to bootstrap this Tox instance with a ToxNode.
         /// </summary>
-        /// <param name="node"></param>
+        /// <param name="node">The node to bootstrap off of.</param>
         /// <param name="error"></param>
-        /// <returns></returns>
+        /// <returns>True on success.</returns>
         public bool Bootstrap(ToxNode node, out ToxErrorBootstrap error)
         {
             if (_disposed)
@@ -413,10 +430,10 @@ namespace SharpTox.Core
         }
 
         /// <summary>
-        /// Bootstraps this Tox instance with a ToxNode.
+        /// Attempts to bootstrap this Tox instance with a ToxNode.
         /// </summary>
-        /// <param name="node"></param>
-        /// <returns></returns>
+        /// <param name="node">The node to bootstrap off of.</param>
+        /// <returns>True on success.</returns>
         public bool Bootstrap(ToxNode node)
         {
             var error = ToxErrorBootstrap.Ok;
@@ -426,8 +443,8 @@ namespace SharpTox.Core
         /// <summary>
         /// Checks if there exists a friend with given friendNumber.
         /// </summary>
-        /// <param name="friendNumber"></param>
-        /// <returns></returns>
+        /// <param name="friendNumber">The friend number to check.</param>
+        /// <returns>True if the friend exists.</returns>
         public bool FriendExists(int friendNumber)
         {
             if (_disposed)
@@ -439,10 +456,10 @@ namespace SharpTox.Core
         /// <summary>
         /// Retrieves the typing status of a friend.
         /// </summary>
-        /// <param name="friendNumber"></param>
+        /// <param name="friendNumber">The friend number to retrieve the typing status of.</param>
         /// <param name="error"></param>
-        /// <returns></returns>
-        public bool GetIsTyping(int friendNumber, out ToxErrorFriendQuery error)
+        /// <returns>True if the friend is typing.</returns>
+        public bool GetFriendTypingStatus(int friendNumber, out ToxErrorFriendQuery error)
         {
             if (_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
@@ -454,20 +471,20 @@ namespace SharpTox.Core
         /// <summary>
         /// Retrieves the typing status of a friend.
         /// </summary>
-        /// <param name="friendNumber"></param>
-        /// <returns></returns>
-        public bool GetIsTyping(int friendNumber)
+        /// <param name="friendNumber">The friend number to retrieve the typing status of.</param>
+        /// <returns>True if the friend is typing.</returns>
+        public bool GetFriendTypingStatus(int friendNumber)
         {
             var error = ToxErrorFriendQuery.Ok;
-            return GetIsTyping(friendNumber, out error);
+            return GetFriendTypingStatus(friendNumber, out error);
         }
 
         /// <summary>
-        /// Retrieves the friendNumber associated to the specified public address/id.
+        /// Retrieves the friendNumber associated with the specified public key.
         /// </summary>
-        /// <param name="publicKey"></param>
+        /// <param name="publicKey">The public key to look for.</param>
         /// <param name="error"></param>
-        /// <returns></returns>
+        /// <returns>The friend number on success.</returns>
         public int GetFriendByPublicKey(ToxKey publicKey, out ToxErrorFriendByPublicKey error)
         {
             if (_disposed)
@@ -478,10 +495,10 @@ namespace SharpTox.Core
         }
 
         /// <summary>
-        /// Retrieves the friendNumber associated to the specified public address/id.
+        /// Retrieves the friendNumber associated with the specified public key.
         /// </summary>
-        /// <param name="publicKey"></param>
-        /// <returns></returns>
+        /// <param name="publicKey">The public key to look for.</param>
+        /// <returns>The friend number on success.</returns>
         public int GetFriendByPublicKey(ToxKey publicKey)
         {
             var error = ToxErrorFriendByPublicKey.Ok;
