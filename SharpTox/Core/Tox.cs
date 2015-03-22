@@ -856,14 +856,14 @@ namespace SharpTox.Core
         /// <param name="control"></param>
         /// <param name="error"></param>
         /// <returns></returns>
-        public bool FileSendControl(int friendNumber, int fileNumber, ToxFileControl control, out ToxErrorFileControl error)
+        public bool FileControl(int friendNumber, int fileNumber, ToxFileControl control, out ToxErrorFileControl error)
         {
             if (_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
             error = ToxErrorFileControl.Ok;
 
-            return ToxFunctions.FileSendControl(_tox, (uint)friendNumber, (uint)fileNumber, control, ref error);
+            return ToxFunctions.FileControl(_tox, (uint)friendNumber, (uint)fileNumber, control, ref error);
         }
 
         /// <summary>
@@ -873,10 +873,10 @@ namespace SharpTox.Core
         /// <param name="fileNumber"></param>
         /// <param name="control"></param>
         /// <returns></returns>
-        public bool FileSendControl(int friendNumber, int fileNumber, ToxFileControl control)
+        public bool FileControl(int friendNumber, int fileNumber, ToxFileControl control)
         {
             var error = ToxErrorFileControl.Ok;
-            return FileSendControl(friendNumber, fileNumber, control, out error);
+            return FileControl(friendNumber, fileNumber, control, out error);
         }
 
         /// <summary>
@@ -958,13 +958,13 @@ namespace SharpTox.Core
         /// <param name="position"></param>
         /// <param name="error"></param>
         /// <returns></returns>
-        public bool FileSendSeek(int friendNumber, int fileNumber, long position, out ToxErrorFileSeek error)
+        public bool FileSeek(int friendNumber, int fileNumber, long position, out ToxErrorFileSeek error)
         {
             if (_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
             error = ToxErrorFileSeek.Ok;
-            return ToxFunctions.FileSendSeek(_tox, (uint)friendNumber, (uint)fileNumber, (ulong)position, ref error);
+            return ToxFunctions.FileSeek(_tox, (uint)friendNumber, (uint)fileNumber, (ulong)position, ref error);
         }
 
         /// <summary>
@@ -974,10 +974,10 @@ namespace SharpTox.Core
         /// <param name="fileNumber"></param>
         /// <param name="position"></param>
         /// <returns></returns>
-        public bool FileSendSeek(int friendNumber, int fileNumber, long position)
+        public bool FileSeek(int friendNumber, int fileNumber, long position)
         {
             var error = ToxErrorFileSeek.Ok;
-            return FileSendSeek(friendNumber, fileNumber, position, out error);
+            return FileSeek(friendNumber, fileNumber, position, out error);
         }
 
         /// <summary>

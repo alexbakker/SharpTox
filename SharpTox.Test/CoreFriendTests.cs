@@ -322,7 +322,7 @@ namespace SharpTox.Test
                 }
 
                 var error2 = ToxErrorFileControl.Ok;
-                bool result = _tox2.FileSendControl(args.FriendNumber, args.FileNumber, ToxFileControl.Resume);
+                bool result = _tox2.FileControl(args.FriendNumber, args.FileNumber, ToxFileControl.Resume);
                 if (!result || error2 != ToxErrorFileControl.Ok)
                 {
                     Fail("Failed to send file control, error: {0}, result: {1}", error2, result);
