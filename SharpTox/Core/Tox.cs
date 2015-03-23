@@ -201,7 +201,7 @@ namespace SharpTox.Core
         /// <summary>
         /// Initializes a new instance of Tox.
         /// </summary>
-        /// <param name="options"></param>
+        /// <param name="options">The options to initialize this instance of Tox with.</param>
         public Tox(ToxOptions options)
         {
             var error = ToxErrorNew.Ok;
@@ -216,8 +216,8 @@ namespace SharpTox.Core
         /// <summary>
         /// Initializes a new instance of Tox.
         /// </summary>
-        /// <param name="options"></param>
-        /// <param name="data"></param>
+        /// <param name="options">The options to initialize this instance of Tox with.</param>
+        /// <param name="data">A byte array containing Tox save data.</param>
         public Tox(ToxOptions options, byte[] data)
         {
             var error = ToxErrorNew.Ok;
@@ -508,9 +508,9 @@ namespace SharpTox.Core
         /// <summary>
         /// Retrieves a friend's connection status.
         /// </summary>
-        /// <param name="friendNumber"></param>
+        /// <param name="friendNumber">The friend number to retrieve the connection status of.</param>
         /// <param name="error"></param>
-        /// <returns></returns>
+        /// <returns>The connection status on success.</returns>
         public ToxConnectionStatus GetFriendConnectionStatus(int friendNumber, out ToxErrorFriendQuery error)
         {
             if (_disposed)
@@ -523,8 +523,8 @@ namespace SharpTox.Core
         /// <summary>
         /// Retrieves a friend's connection status.
         /// </summary>
-        /// <param name="friendNumber"></param>
-        /// <returns></returns>
+        /// <param name="friendNumber">The friend number to retrieve the connection status of.</param>
+        /// <returns>The connection status on success.</returns>
         public ToxConnectionStatus GetFriendConnectionStatus(int friendNumber)
         {
             var error = ToxErrorFriendQuery.Ok;
@@ -532,11 +532,11 @@ namespace SharpTox.Core
         }
 
         /// <summary>
-        /// Retrieves a friend's public id/address.
+        /// Retrieves a friend's public key.
         /// </summary>
-        /// <param name="friendNumber"></param>
+        /// <param name="friendNumber">The friend number to retrieve the public key of.</param>
         /// <param name="error"></param>
-        /// <returns></returns>
+        /// <returns>The friend's public key on success.</returns>
         public ToxKey GetFriendPublicKey(int friendNumber, out ToxErrorFriendGetPublicKey error)
         {
             if (_disposed)
@@ -550,10 +550,10 @@ namespace SharpTox.Core
         }
 
         /// <summary>
-        /// Retrieves a friend's public id/address.
+        /// Retrieves a friend's public key.
         /// </summary>
-        /// <param name="friendNumber"></param>
-        /// <returns></returns>
+        /// <param name="friendNumber">The friend number to retrieve the public key of.</param>
+        /// <returns>The friend's public key on success.</returns>
         public ToxKey GetFriendPublicKey(int friendNumber)
         {
             var error = ToxErrorFriendGetPublicKey.Ok;
@@ -561,11 +561,11 @@ namespace SharpTox.Core
         }
 
         /// <summary>
-        /// Retrieves a friend's current user status.
+        /// Retrieves a friend's current status.
         /// </summary>
-        /// <param name="friendNumber"></param>
+        /// <param name="friendNumber">The friend number to retrieve the status of.</param>
         /// <param name="error"></param>
-        /// <returns></returns>
+        /// <returns>The friend's status on success.</returns>
         public ToxUserStatus GetFriendStatus(int friendNumber, out ToxErrorFriendQuery error)
         {
             if (_disposed)
@@ -576,10 +576,10 @@ namespace SharpTox.Core
         }
 
         /// <summary>
-        /// Retrieves a friend's current user status.
+        /// Retrieves a friend's current status.
         /// </summary>
-        /// <param name="friendNumber"></param>
-        /// <returns></returns>
+        /// <param name="friendNumber">The friend number to retrieve the status of.</param>
+        /// <returns>The friend's status on success.</returns>
         public ToxUserStatus GetFriendStatus(int friendNumber)
         {
             var error = ToxErrorFriendQuery.Ok;
@@ -587,12 +587,12 @@ namespace SharpTox.Core
         }
 
         /// <summary>
-        /// Sets the typing status of this Tox instance.
+        /// Sets the typing status of this Tox instance for a friend.
         /// </summary>
-        /// <param name="friendNumber"></param>
-        /// <param name="isTyping"></param>
+        /// <param name="friendNumber">The friend number to set the typing status for.</param>
+        /// <param name="isTyping">Whether or not we're typing.</param>
         /// <param name="error"></param>
-        /// <returns></returns>
+        /// <returns>True on success.</returns>
         public bool SetSelfTyping(int friendNumber, bool isTyping, out ToxErrorSetTyping error)
         {
             if (_disposed)
@@ -603,11 +603,11 @@ namespace SharpTox.Core
         }
 
         /// <summary>
-        /// Sets the typing status of this Tox instance.
+        /// Sets the typing status of this Tox instance for a friend.
         /// </summary>
-        /// <param name="friendNumber"></param>
-        /// <param name="isTyping"></param>
-        /// <returns></returns>
+        /// <param name="friendNumber">The friend number to set the typing status for.</param>
+        /// <param name="isTyping">Whether or not we're typing.</param>
+        /// <returns>True on success.</returns>
         public bool SetSelfTyping(int friendNumber, bool isTyping)
         {
             var error = ToxErrorSetTyping.Ok;
@@ -615,13 +615,13 @@ namespace SharpTox.Core
         }
 
         /// <summary>
-        /// Send a message to a friend.
+        /// Sends a message to a friend.
         /// </summary>
-        /// <param name="friendNumber"></param>
-        /// <param name="message"></param>
-        /// <param name="type"></param>
+        /// <param name="friendNumber">The friend number to send the message to.</param>
+        /// <param name="message">The message to be sent. Maximum length: <see cref="ToxConstants.MaxMessageLength"/></param>
+        /// <param name="type">The type of this message.</param>
         /// <param name="error"></param>
-        /// <returns></returns>
+        /// <returns>Message ID on success.</returns>
         public int SendMessage(int friendNumber, string message, ToxMessageType type, out ToxErrorSendMessage error)
         {
             if (_disposed)
@@ -634,12 +634,12 @@ namespace SharpTox.Core
         }
 
         /// <summary>
-        /// Send a message to a friend.
+        /// Sends a message to a friend.
         /// </summary>
-        /// <param name="friendNumber"></param>
-        /// <param name="message"></param>
-        /// <param name="type"></param>
-        /// <returns></returns>
+        /// <param name="friendNumber">The friend number to send the message to.</param>
+        /// <param name="message">The message to be sent. Maximum length: <see cref="ToxConstants.MaxMessageLength"/></param>
+        /// <param name="type">The type of this message.</param>
+        /// <returns>Message ID on success.</returns>
         public int SendMessage(int friendNumber, string message, ToxMessageType type)
         {
             var error = ToxErrorSendMessage.Ok;
@@ -647,29 +647,11 @@ namespace SharpTox.Core
         }
 
         /// <summary>
-        /// Ends the tox_do loop and kills this Tox instance.
+        /// Deletes a friend from the friend list.
         /// </summary>
-        [Obsolete("Use Dispose() instead", true)]
-        public void Kill()
-        {
-            if (_cancelTokenSource != null)
-            {
-                _cancelTokenSource.Cancel();
-                _cancelTokenSource.Dispose();
-            }
-
-            if (_tox.IsClosed || _tox.IsInvalid)
-                return;
-
-            _tox.Dispose();
-        }
-
-        /// <summary>
-        /// Deletes a friend.
-        /// </summary>
-        /// <param name="friendNumber"></param>
+        /// <param name="friendNumber">The friend number to be deleted.</param>
         /// <param name="error"></param>
-        /// <returns></returns>
+        /// <returns>True on success.</returns>
         public bool DeleteFriend(int friendNumber, out ToxErrorFriendDelete error)
         {
             if (_disposed)
@@ -680,10 +662,10 @@ namespace SharpTox.Core
         }
 
         /// <summary>
-        /// Deletes a friend.
+        /// Deletes a friend from the friend list.
         /// </summary>
-        /// <param name="friendNumber"></param>
-        /// <returns></returns>
+        /// <param name="friendNumber">The friend number to be deleted.</param>
+        /// <returns>True on success.</returns>
         public bool DeleteFriend(int friendNumber)
         {
             var error = ToxErrorFriendDelete.Ok;
@@ -705,6 +687,10 @@ namespace SharpTox.Core
             return new ToxData(bytes);
         }
 
+        /// <summary>
+        /// Retrieves the private key of this Tox instance.
+        /// </summary>
+        /// <returns>The private key of this Tox instance.</returns>
         public ToxKey GetPrivateKey()
         {
             if (_disposed)
@@ -719,9 +705,9 @@ namespace SharpTox.Core
         /// <summary>
         /// Retrieves the name of a friend.
         /// </summary>
-        /// <param name="friendNumber"></param>
+        /// <param name="friendNumber">The friend number to retrieve the name of.</param>
         /// <param name="error"></param>
-        /// <returns></returns>
+        /// <returns>The friend's name on success.</returns>
         public string GetFriendName(int friendNumber, out ToxErrorFriendQuery error)
         {
             if (_disposed)
@@ -742,8 +728,8 @@ namespace SharpTox.Core
         /// <summary>
         /// Retrieves the name of a friend.
         /// </summary>
-        /// <param name="friendNumber"></param>
-        /// <returns></returns>
+        /// <param name="friendNumber">The friend number to retrieve the name of.</param>
+        /// <returns>The friend's name on success.</returns>
         public string GetFriendName(int friendNumber)
         {
             var error = ToxErrorFriendQuery.Ok;
@@ -753,9 +739,9 @@ namespace SharpTox.Core
         /// <summary>
         /// Retrieves the status message of a friend.
         /// </summary>
-        /// <param name="friendNumber"></param>
+        /// <param name="friendNumber">The friend number to retrieve the status message of.</param>
         /// <param name="error"></param>
-        /// <returns></returns>
+        /// <returns>The friend's status message on success.</returns>
         public string GetFriendStatusMessage(int friendNumber, out ToxErrorFriendQuery error)
         {
             if (_disposed)
@@ -776,8 +762,8 @@ namespace SharpTox.Core
         /// <summary>
         /// Retrieves the status message of a friend.
         /// </summary>
-        /// <param name="friendNumber"></param>
-        /// <returns></returns>
+        /// <param name="friendNumber">The friend number to retrieve the status message of.</param>
+        /// <returns>The friend's status message on success.</returns>
         public string GetFriendStatusMessage(int friendNumber)
         {
             var error = ToxErrorFriendQuery.Ok;
@@ -788,7 +774,7 @@ namespace SharpTox.Core
         /// Retrieves the UDP port this instance of Tox is bound to.
         /// </summary>
         /// <param name="error"></param>
-        /// <returns></returns>
+        /// <returns>The UDP port on success.</returns>
         public int GetUdpPort(out ToxErrorGetPort error)
         {
             if (_disposed)
@@ -801,7 +787,8 @@ namespace SharpTox.Core
         /// <summary>
         /// Retrieves the UDP port this instance of Tox is bound to.
         /// </summary>
-        /// <returns></returns>
+        /// <param name="error"></param>
+        /// <returns>The UDP port on success.</returns>
         public int GetUdpPort()
         {
             var error = ToxErrorGetPort.Ok;
@@ -812,7 +799,7 @@ namespace SharpTox.Core
         /// Retrieves the TCP port this instance of Tox is bound to.
         /// </summary>
         /// <param name="error"></param>
-        /// <returns></returns>
+        /// <returns>The TCP port on success.</returns>
         public int GetTcpPort(out ToxErrorGetPort error)
         {
             if (_disposed)
@@ -825,13 +812,17 @@ namespace SharpTox.Core
         /// <summary>
         /// Retrieves the TCP port this instance of Tox is bound to.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>The TCP port on success.</returns>
         public int GetTcpPort()
         {
             var error = ToxErrorGetPort.Ok;
             return GetTcpPort(out error);
         }
 
+        /// <summary>
+        /// Sets the nospam value for this Tox instance.
+        /// </summary>
+        /// <param name="nospam">The nospam value to set.</param>
         public void SetNospam(uint nospam)
         {
             if (_disposed)
@@ -840,6 +831,10 @@ namespace SharpTox.Core
             ToxFunctions.SelfSetNospam(_tox, nospam);
         }
 
+        /// <summary>
+        /// Retrieves the nospam value of this Tox instance.
+        /// </summary>
+        /// <returns>The nospam value.</returns>
         public uint GetNospam()
         {
             if (_disposed)
@@ -851,11 +846,11 @@ namespace SharpTox.Core
         /// <summary>
         /// Sends a file control command to a friend for a given file transfer.
         /// </summary>
-        /// <param name="friendNumber"></param>
-        /// <param name="fileNumber"></param>
-        /// <param name="control"></param>
+        /// <param name="friendNumber">The friend to send the file control to.</param>
+        /// <param name="fileNumber">The file transfer that this control is meant for.</param>
+        /// <param name="control">The control to send.</param>
         /// <param name="error"></param>
-        /// <returns></returns>
+        /// <returns>True on success.</returns>
         public bool FileControl(int friendNumber, int fileNumber, ToxFileControl control, out ToxErrorFileControl error)
         {
             if (_disposed)
@@ -869,10 +864,10 @@ namespace SharpTox.Core
         /// <summary>
         /// Sends a file control command to a friend for a given file transfer.
         /// </summary>
-        /// <param name="friendNumber"></param>
-        /// <param name="fileNumber"></param>
-        /// <param name="control"></param>
-        /// <returns></returns>
+        /// <param name="friendNumber">The friend to send the file control to.</param>
+        /// <param name="fileNumber">The file transfer that this control is meant for.</param>
+        /// <param name="control">The control to send.</param>
+        /// <returns>True on success.</returns>
         public bool FileControl(int friendNumber, int fileNumber, ToxFileControl control)
         {
             var error = ToxErrorFileControl.Ok;
@@ -882,12 +877,12 @@ namespace SharpTox.Core
         /// <summary>
         /// Send a file transmission request.
         /// </summary>
-        /// <param name="friendNumber"></param>
-        /// <param name="kind"></param>
-        /// <param name="fileSize"></param>
-        /// <param name="fileName"></param>
+        /// <param name="friendNumber">The friend number to send the request to.</param>
+        /// <param name="kind">The kind of file that will be transfered.</param>
+        /// <param name="fileSize">The size of the file that will be transfered.</param>
+        /// <param name="fileName">The filename of the file that will be transfered.</param>
         /// <param name="error"></param>
-        /// <returns></returns>
+        /// <returns>Info about the file transfer on success.</returns>
         public ToxFileInfo FileSend(int friendNumber, ToxFileKind kind, long fileSize, byte[] fileName, out ToxErrorFileSend error)
         {
             if (_disposed)
@@ -903,11 +898,11 @@ namespace SharpTox.Core
         /// <summary>
         /// Send a file transmission request.
         /// </summary>
-        /// <param name="friendNumber"></param>
-        /// <param name="kind"></param>
-        /// <param name="fileSize"></param>
-        /// <param name="fileName"></param>
-        /// <returns></returns>
+        /// <param name="friendNumber">The friend number to send the request to.</param>
+        /// <param name="kind">The kind of file that will be transfered.</param>
+        /// <param name="fileSize">The size of the file that will be transfered.</param>
+        /// <param name="fileName">The filename of the file that will be transfered.</param>
+        /// <returns>Info about the file transfer on success.</returns>
         public ToxFileInfo FileSend(int friendNumber, ToxFileKind kind, long fileSize, byte[] fileName)
         {
             var error = ToxErrorFileSend.Ok;
@@ -917,12 +912,12 @@ namespace SharpTox.Core
         /// <summary>
         /// Send a file transmission request.
         /// </summary>
-        /// <param name="friendNumber"></param>
-        /// <param name="kind"></param>
-        /// <param name="fileSize"></param>
-        /// <param name="fileName"></param>
+        /// <param name="friendNumber">The friend number to send the request to.</param>
+        /// <param name="kind">The kind of file that will be transfered.</param>
+        /// <param name="fileSize">The size of the file that will be transfered.</param>
+        /// <param name="fileName">The filename of the file that will be transfered.</param>
         /// <param name="error"></param>
-        /// <returns></returns>
+        /// <returns>Info about the file transfer on success.</returns>
         public ToxFileInfo FileSend(int friendNumber, ToxFileKind kind, long fileSize, string fileName, out ToxErrorFileSend error)
         {
             if (_disposed)
@@ -939,11 +934,11 @@ namespace SharpTox.Core
         /// <summary>
         /// Send a file transmission request.
         /// </summary>
-        /// <param name="friendNumber"></param>
-        /// <param name="kind"></param>
-        /// <param name="fileSize"></param>
-        /// <param name="fileName"></param>
-        /// <returns></returns>
+        /// <param name="friendNumber">The friend number to send the request to.</param>
+        /// <param name="kind">The kind of file that will be transfered.</param>
+        /// <param name="fileSize">The size of the file that will be transfered.</param>
+        /// <param name="fileName">The filename of the file that will be transfered.</param>
+        /// <returns>Info about the file transfer on success.</returns>
         public ToxFileInfo FileSend(int friendNumber, ToxFileKind kind, long fileSize, string fileName)
         {
             var error = ToxErrorFileSend.Ok;
@@ -953,11 +948,11 @@ namespace SharpTox.Core
         /// <summary>
         /// Sends a file seek control command to a friend for a given file transfer.
         /// </summary>
-        /// <param name="friendNumber"></param>
-        /// <param name="fileNumber"></param>
-        /// <param name="position"></param>
+        /// <param name="friendNumber">The friend to send the seek command to.</param>
+        /// <param name="fileNumber">The file transfer that this command is meant for.</param>
+        /// <param name="position">The position that the friend should change his stream to.</param>
         /// <param name="error"></param>
-        /// <returns></returns>
+        /// <returns>True on success.</returns>
         public bool FileSeek(int friendNumber, int fileNumber, long position, out ToxErrorFileSeek error)
         {
             if (_disposed)
@@ -970,10 +965,10 @@ namespace SharpTox.Core
         /// <summary>
         /// Sends a file seek control command to a friend for a given file transfer.
         /// </summary>
-        /// <param name="friendNumber"></param>
-        /// <param name="fileNumber"></param>
-        /// <param name="position"></param>
-        /// <returns></returns>
+        /// <param name="friendNumber">The friend to send the seek command to.</param>
+        /// <param name="fileNumber">The file transfer that this command is meant for.</param>
+        /// <param name="position">The position that the friend should change his stream to.</param>
+        /// <returns>True on success.</returns>
         public bool FileSeek(int friendNumber, int fileNumber, long position)
         {
             var error = ToxErrorFileSeek.Ok;
@@ -981,7 +976,7 @@ namespace SharpTox.Core
         }
 
         /// <summary>
-        /// Send a chunk of file data to a friend.
+        /// Sends a chunk of file data to a friend.
         /// </summary>
         /// <param name="friendNumber"></param>
         /// <param name="fileNumber"></param>
@@ -1000,7 +995,7 @@ namespace SharpTox.Core
         }
 
         /// <summary>
-        /// Send a chunk of file data to a friend.
+        /// Sends a chunk of file data to a friend.
         /// </summary>
         /// <param name="friendNumber"></param>
         /// <param name="fileNumber"></param>
