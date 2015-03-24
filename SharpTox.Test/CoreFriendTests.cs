@@ -189,7 +189,7 @@ namespace SharpTox.Test
             };
             {
                 var error = ToxErrorSetTyping.Ok;
-                bool result = _tox1.SetSelfTyping(0, isTyping, out error);
+                bool result = _tox1.SetTypingStatus(0, isTyping, out error);
                 if (!result || error != ToxErrorSetTyping.Ok)
                     Assert.Fail("Failed to set typing status, error: {0}, result: {1}", error, result);
 

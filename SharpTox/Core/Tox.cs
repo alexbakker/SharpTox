@@ -603,7 +603,7 @@ namespace SharpTox.Core
         /// <param name="isTyping">Whether or not we're typing.</param>
         /// <param name="error"></param>
         /// <returns>True on success.</returns>
-        public bool SetSelfTyping(int friendNumber, bool isTyping, out ToxErrorSetTyping error)
+        public bool SetTypingStatus(int friendNumber, bool isTyping, out ToxErrorSetTyping error)
         {
             if (_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
@@ -618,10 +618,10 @@ namespace SharpTox.Core
         /// <param name="friendNumber">The friend number to set the typing status for.</param>
         /// <param name="isTyping">Whether or not we're typing.</param>
         /// <returns>True on success.</returns>
-        public bool SetSelfTyping(int friendNumber, bool isTyping)
+        public bool SetTypingStatus(int friendNumber, bool isTyping)
         {
             var error = ToxErrorSetTyping.Ok;
-            return SetSelfTyping(friendNumber, isTyping, out error);
+            return SetTypingStatus(friendNumber, isTyping, out error);
         }
 
         /// <summary>
