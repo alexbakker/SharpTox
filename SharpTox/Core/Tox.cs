@@ -758,13 +758,13 @@ namespace SharpTox.Core
                 throw new ObjectDisposedException(GetType().FullName);
 
             error = ToxErrorFriendQuery.Ok;
-            uint size = ToxFunctions.FriendGetNameSize(_tox, (uint)friendNumber, ref error);
+            uint size = ToxFunctions.FriendGetStatusMessageSize(_tox, (uint)friendNumber, ref error);
 
             if (error != ToxErrorFriendQuery.Ok)
                 return string.Empty;
 
             byte[] message = new byte[size];
-            ToxFunctions.FriendGetName(_tox, (uint)friendNumber, message, ref error);
+            ToxFunctions.FriendGetStatusMessage(_tox, (uint)friendNumber, message, ref error);
 
             return Encoding.UTF8.GetString(message, 0, message.Length);
         }
