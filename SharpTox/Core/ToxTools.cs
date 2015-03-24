@@ -36,5 +36,19 @@ namespace SharpTox.Core
             ToxFunctions.Hash(hash, data, (uint)data.Length);
             return hash;
         }
+
+        internal static string RemoveNull(string s)
+        {
+            if (s.Length != 0)
+            {
+                int index = s.IndexOf(Char.MinValue);
+                if (!(index >= 0))
+                    return s;
+                else
+                    return s.Substring(0, index);
+            }
+
+            return s;
+        }
     }
 }

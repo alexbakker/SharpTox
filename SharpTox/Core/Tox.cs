@@ -1171,7 +1171,7 @@ namespace SharpTox.Core
             if (ToxFunctions.GroupPeername(_tox, groupNumber, peerNumber, name) == -1)
                 throw new Exception("Could not get peer name");
 
-            return Encoding.UTF8.GetString(name, 0, name.Length);
+            return ToxTools.RemoveNull(Encoding.UTF8.GetString(name, 0, name.Length));
         }
 
         /// <summary>
