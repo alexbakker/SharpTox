@@ -521,6 +521,16 @@ namespace SharpTox.Core
         }
 
         /// <summary>
+        /// Check whether or not a friend is online.
+        /// </summary>
+        /// <param name="friendNumber">The friend number.</param>
+        /// <returns>True if the friend is online.</returns>
+        public bool IsFriendOnline(int friendNumber)
+        {
+            return GetFriendConnectionStatus(friendNumber) != ToxConnectionStatus.None;
+        }
+
+        /// <summary>
         /// Retrieves a friend's connection status.
         /// </summary>
         /// <param name="friendNumber">The friend number to retrieve the connection status of.</param>
