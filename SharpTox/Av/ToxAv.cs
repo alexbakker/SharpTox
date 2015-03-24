@@ -546,6 +546,22 @@ namespace SharpTox.Av
             return ToxAvFunctions.GroupSendAudio(_tox, groupNumber, pcm, (uint)perframe, (byte)channels, (uint)sampleRate) == 0;
         }
 
+        public int PrepareVideoFrame(int callIndex, byte[] dest, IntPtr img)
+        {
+            if (_disposed)
+                throw new ObjectDisposedException(GetType().FullName);
+
+            return ToxAvFunctions.PrepareVideoFrame(_toxAv, callIndex, dest, dest.Length, img);
+        }
+
+        public ToxAvError SendVideo(int callIndex, byte[] frame)
+        {
+            if (_disposed)
+                throw new ObjectDisposedException(GetType().FullName);
+
+            return ToxAvFunctions.SendVideo(_toxAv, callIndex, frame, (uint)frame.Length);
+        }
+
         #region Events
         private EventHandler<ToxAvEventArgs.CallStateEventArgs> _onCancel;
 
