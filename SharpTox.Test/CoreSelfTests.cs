@@ -1,7 +1,10 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
-using SharpTox.Core;
+using System.Linq;
 using System.Threading;
+using SharpTox.Core;
+using SharpTox.Encryption;
+using System.Runtime.InteropServices;
 
 namespace SharpTox.Test
 {
@@ -35,7 +38,7 @@ namespace SharpTox.Test
             tox1.StatusMessage = "Hey";
 
             var data = tox1.GetData();
-            var tox2 = new Tox(ToxOptions.Default, data.Bytes);
+            var tox2 = new Tox(ToxOptions.Default, ToxData.FromBytes(data.Bytes));
 
             if (tox2.Id != tox1.Id)
                 Assert.Fail("Failed to load tox data correctly, tox id's don't match");
@@ -103,6 +106,51 @@ namespace SharpTox.Test
                 Assert.Fail("Failed to set/get nospam correctly, values don't match");
 
             tox.Dispose();
+        }
+
+        [TestMethod]
+        public void TestToxEncryption()
+        {
+            var key = new ToxEncryptionKey("heythisisatest");
+            byte[] garbage = new byte[0xBEEF];
+            new Random().NextBytes(garbage);
+
+            byte[] encryptedData = ToxEncryption.EncryptData(garbage, key);
+            Assert.IsNotNull(encryptedData, "Failed to encrypt the data");
+
+            byte[] decryptedData = ToxEncryption.DecryptData(encryptedData, key);
+            Assert.IsNotNull(decryptedData, "Failed to decrypt the data");
+
+            if (!garbage.SequenceEqual(decryptedData))
+                Assert.Fail("Original data is not equal to the decrypted data");
+        }
+
+        [TestMethod]
+        public void TestToxEncryptionLoad()
+        {
+            var tox1 = new Tox(ToxOptions.Default);
+            tox1.Name = "Test";
+            tox1.StatusMessage = "Hey";
+
+            var key = new ToxEncryptionKey("heythisisatest");
+            var data = tox1.GetData(key);
+
+            Assert.IsNotNull(data, "Failed to encrypt the Tox data");
+            Assert.IsTrue(data.IsEncrypted, "We encrypted the data, but toxencryptsave thinks we didn't");
+
+            var tox2 = new Tox(ToxOptions.Default, ToxData.FromBytes(data.Bytes), key);
+
+            if (tox2.Id != tox1.Id)
+                Assert.Fail("Failed to load tox data correctly, tox id's don't match");
+
+            if (tox2.Name != tox1.Name)
+                Assert.Fail("Failed to load tox data correctly, names don't match");
+
+            if (tox2.StatusMessage != tox1.StatusMessage)
+                Assert.Fail("Failed to load tox data correctly, status messages don't match");
+
+            tox1.Dispose();
+            tox2.Dispose();
         }
 
         [TestMethod]

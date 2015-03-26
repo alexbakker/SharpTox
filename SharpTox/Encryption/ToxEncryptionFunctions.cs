@@ -49,20 +49,16 @@ namespace SharpTox.Encryption
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_pass_decrypt")]
         internal static extern int PassDecrypt(byte[] data, uint length, byte[] passphrase, uint passphraseLength, byte[] output);
 
-        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_encrypted_load")]
-        internal static extern int EncryptedLoad(ToxHandle tox, byte[] data, uint length, byte[] passphrase, uint passphraseLength);
-
-        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_is_save_encrypted")]
-        [Obsolete("Use IsDataEncrypted instead")]
-        internal static extern int IsSaveEncrypted(byte[] data);
-
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_is_data_encrypted")]
         internal static extern int IsDataEncrypted(byte[] data);
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_encrypted_key_save")]
         internal static extern int EncryptedKeySave(ToxHandle tox, byte[] data, byte[] key);
 
-        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_encrypted_key_load")]
-        internal static extern int EncryptedKeyLoad(ToxHandle tox, byte[] data, uint dataLength, byte[] key);
+        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_encrypted_new")]
+        internal static extern ToxHandle EncryptedNew(ref ToxOptions options, byte[] data, uint length, byte[] passphrase, uint passphraseLength, ref ToxErrorEncryptedNew error);
+
+        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_encrypted_key_new")]
+        internal static extern ToxHandle EncryptedKeyNew(ref ToxOptions options, byte[] data, uint length, byte[] key, ref ToxErrorEncryptedNew error);
     }
 }
