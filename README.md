@@ -27,7 +27,7 @@ class Program
 
     static void Main(string[] args)
     {
-        ToxOptions options = new ToxOptions(true, false);
+        ToxOptions options = new ToxOptions(true, true);
 
         tox = new Tox(options);
         tox.OnFriendRequestReceived += tox_OnFriendRequestReceived;
