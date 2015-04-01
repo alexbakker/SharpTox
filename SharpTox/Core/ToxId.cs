@@ -115,7 +115,7 @@ namespace SharpTox.Core
                 Array.Copy(id, 36, checksum, 0, 2);
                 check = BitConverter.ToUInt16(checksum, 0);
 
-                return CalcChecksum(id, 36) != check;
+                return CalcChecksum(id, 36) == check;
             }
             catch
             {
