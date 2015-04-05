@@ -25,7 +25,7 @@ namespace SharpTox.Core
             return bin;
         }
 
-        internal static DateTime EpochToDateTime(long epoch)
+        internal static DateTime EpochToDateTime(ulong epoch)
         {
             return new DateTime(1970, 1, 1, 0, 0, 0).AddSeconds(Convert.ToDouble(epoch));
         }

@@ -1373,7 +1373,30 @@ namespace SharpTox.Core
             return new ToxKey(ToxKeyType.Public, key);
         }
 
+        /// <summary>
+        /// Retrieves the time a friend was last seen online.
+        /// </summary>
+        /// <param name="friendNumber"></param>
+        /// <param name="error"></param>
+        /// <returns></returns>
+        public DateTime FriendGetLastOnline(int friendNumber, out ToxErrorFriendGetLastOnline error)
+        {
+            error = ToxErrorFriendGetLastOnline.Ok;
+            ulong time = ToxFunctions.FriendGetLastOnline(_tox, (uint)friendNumber, ref error);
 
+            return ToxTools.EpochToDateTime(time);
+        }
+
+        /// <summary>
+        /// Retrieves the time a friend was last seen online.
+        /// </summary>
+        /// <param name="friendNumber"></param>
+        /// <returns></returns>
+        public DateTime FriendGetLastOnline(int friendNumber)
+        {
+            var error = ToxErrorFriendGetLastOnline.Ok;
+            return FriendGetLastOnline(friendNumber, out error);
+        }
 
         #region Events
         private EventHandler<ToxEventArgs.FriendRequestEventArgs> _onFriendRequest;

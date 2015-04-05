@@ -194,6 +194,9 @@ namespace SharpTox.Core
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_friend_send_lossless_packet")]
         internal static extern bool FriendSendLosslessPacket(ToxHandle tox, uint friendNumber, byte[] data, uint length, ref ToxErrorFriendCustomPacket error);
 
+        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_friend_get_last_online")]
+        internal static extern ulong FriendGetLastOnline(ToxHandle tox, uint friendNumber, ref ToxErrorFriendGetLastOnline error);
+
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_add_groupchat")]
         internal static extern int AddGroupchat(ToxHandle tox);
 

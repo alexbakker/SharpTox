@@ -320,6 +320,12 @@
         SendQ
     }
 
+    public enum ToxErrorFriendGetLastOnline
+    {
+        Ok,
+        NotFound
+    }
+
     /// <summary>
     /// Changes that can occur in a group chat.
     /// </summary>
