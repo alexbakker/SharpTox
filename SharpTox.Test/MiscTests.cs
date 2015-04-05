@@ -34,6 +34,7 @@ namespace SharpTox.Test
 
         [TestMethod]
         [Timeout(120000)]
+        [Ignore]
         public void TestToxBootstrapAndConnectTcp()
         {
             var tox = new Tox(new ToxOptions(true, false));
