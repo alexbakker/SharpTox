@@ -50,60 +50,6 @@
     }
 
     /// <summary>
-    /// Errors that can occur when creating a new instance of Tox.
-    /// </summary>
-    public enum ToxErrorEncryptedNew
-    {
-        Ok,
-        Null,
-
-        /// <summary>
-        /// Failed to allocate enough memory.
-        /// </summary>
-        Malloc,
-
-        /// <summary>
-        /// Failed to bind to a port. This could mean that all ports have already been bound.
-        /// </summary>
-        PortAlloc,
-
-        /// <summary>
-        /// Specified proxy type is invalid.
-        /// </summary>
-        ProxyBadType,
-
-        /// <summary>
-        /// Specified host is invalid.
-        /// </summary>
-        ProxyBadHost,
-
-        /// <summary>
-        /// Specified port is invalid.
-        /// </summary>
-        ProxyBadPort,
-
-        /// <summary>
-        /// Specified host could not be resolved.
-        /// </summary>
-        ProxyNotFound,
-
-        /// <summary>
-        /// The specified byte array to be loaded contained encrypted data.
-        /// </summary>
-        LoadEncrypted,
-
-        /// <summary>
-        /// The specified byte array contains (partially) invalid data.
-        /// </summary>
-        LoadBadFormat,
-
-        /// <summary>
-        /// Failed to decrypt the specified data.
-        /// </summary>
-        LoadDecryptionFailed
-    }
-
-    /// <summary>
     /// Errors that can occur when calling Bootstrap.
     /// </summary>
     public enum ToxErrorBootstrap

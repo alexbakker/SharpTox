@@ -1,17 +1,42 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 
 namespace SharpTox.Encryption
 {
     public static class ToxEncryption
     {
+        internal const int SaltLength = 32;
+        internal const int KeyLength = 32;
+        internal const int EncryptionExtraLength = 80;
+
+        public static byte[] EncryptData(byte[] data, ToxEncryptionKey key, out ToxErrorEncryption error)
+        {
+            byte[] output = new byte[data.Length + EncryptionExtraLength];
+            var pass = key.ToPassKey();
+            error = ToxErrorEncryption.Ok;
+
+            if (!ToxEncryptionFunctions.PassKeyEncrypt(data, (uint)data.Length, ref pass, output, ref error) || error != ToxErrorEncryption.Ok)
+                return null;
+
+            return output;
+        }
+
         public static byte[] EncryptData(byte[] data, ToxEncryptionKey key)
         {
-            byte[] output = new byte[data.Length + ToxEncryptionFunctions.PassEncryptionExtraLength()];
+            var error = ToxErrorEncryption.Ok;
+            return EncryptData(data, key, out error);
+        }
 
-            if (ToxEncryptionFunctions.PassKeyEncrypt(data, (uint)data.Length, key.Bytes, output) == -1)
+        public static byte[] DecryptData(byte[] data, ToxEncryptionKey key, out ToxErrorDecryption error)
+        {
+            byte[] output = new byte[data.Length - EncryptionExtraLength];
+            var pass = key.ToPassKey();
+            error = ToxErrorDecryption.Ok;
+
+            if (!ToxEncryptionFunctions.PassKeyDecrypt(data, (uint)data.Length, ref pass, output, ref error) || error != ToxErrorDecryption.Ok)
                 return null;
 
             return output;
@@ -19,49 +44,47 @@ namespace SharpTox.Encryption
 
         public static byte[] DecryptData(byte[] data, ToxEncryptionKey key)
         {
-            byte[] output = new byte[data.Length - ToxEncryptionFunctions.PassEncryptionExtraLength()];
-
-            if (ToxEncryptionFunctions.PassKeyDecrypt(data, (uint)data.Length, key.Bytes, output) == -1)
-                return null;
-
-            return output;
+            var error = ToxErrorDecryption.Ok;
+            return DecryptData(data, key, out error);
         }
 
         public static bool IsDataEncrypted(byte[] data)
         {
-            return ToxEncryptionFunctions.IsDataEncrypted(data) == 1;
+            return ToxEncryptionFunctions.IsDataEncrypted(data);
         }
 
         public static byte[] GetSalt(byte[] data)
         {
-            byte[] salt = new byte[ToxEncryptionFunctions.PassSaltLength()];
+            byte[] salt = new byte[SaltLength];
 
-            if (ToxEncryptionFunctions.GetSalt(data, salt) == -1)
+            if (!ToxEncryptionFunctions.GetSalt(data, salt))
                 return null;
 
             return salt;
         }
 
-        internal static byte[] DeriveKey(string passphrase)
+        internal static ToxPassKey? DeriveKey(string passphrase)
         {
             byte[] pp = Encoding.UTF8.GetBytes(passphrase);
-            byte[] key = new byte[ToxEncryptionFunctions.PassKeyLength()];
+            var error = ToxErrorKeyDerivation.Ok;
+            var key = new ToxPassKey();
 
-            if (ToxEncryptionFunctions.DeriveKeyFromPass(pp, (uint)pp.Length, key) == -1)
+            if (!ToxEncryptionFunctions.DeriveKeyFromPass(pp, (uint)pp.Length, ref key, ref error) || error != ToxErrorKeyDerivation.Ok)
                 return null;
 
             return key;
         }
 
-        internal static byte[] DeriveKey(string passphrase, byte[] salt)
+        internal static ToxPassKey? DeriveKey(string passphrase, byte[] salt)
         {
-            if (salt.Length < ToxEncryptionFunctions.PassSaltLength())
+            if (salt.Length < SaltLength)
                 return null;
 
             byte[] pp = Encoding.UTF8.GetBytes(passphrase);
-            byte[] key = new byte[ToxEncryptionFunctions.PassKeyLength()];
+            var error = ToxErrorKeyDerivation.Ok;
+            var key = new ToxPassKey();
 
-            if (ToxEncryptionFunctions.DeriveKeyWithSalt(pp, (uint)pp.Length, salt, key) == -1)
+            if (!ToxEncryptionFunctions.DeriveKeyWithSalt(pp, (uint)pp.Length, salt, ref key, ref error) || error != ToxErrorKeyDerivation.Ok)
                 return null;
 
             return key;

@@ -220,9 +220,9 @@ namespace SharpTox.Core
         /// <param name="options">The options to initialize this instance of Tox with.</param>
         /// <param name="data">A byte array containing Tox save data.</param>
         /// <param name="key">The key to decrypt encrypted Tox data. This should be null if the data is not encrypted.</param>
-        public Tox(ToxOptions options, ToxData data = null, ToxEncryptionKey key = null)
+        public Tox(ToxOptions options, ToxData data, ToxEncryptionKey key = null)
         {
-            if (key == null)
+            if (key == null || !data.IsEncrypted)
             {
                 var error = ToxErrorNew.Ok;
                 _tox = ToxFunctions.New(ref options, data.Bytes, (uint)data.Bytes.Length, ref error);
@@ -232,11 +232,14 @@ namespace SharpTox.Core
             }
             else
             {
-                var error = ToxErrorEncryptedNew.Ok;
-                _tox = ToxEncryptionFunctions.EncryptedKeyNew(ref options, data.Bytes, (uint)data.Bytes.Length, key.Bytes, ref error);
+                var error = ToxErrorNew.Ok;
+                var decryptError = ToxErrorDecryption.Ok;
+                byte[] decryptedData = ToxEncryption.DecryptData(data.Bytes, key, out decryptError);
 
-                if (_tox == null || _tox.IsInvalid || error != ToxErrorEncryptedNew.Ok)
-                    throw new Exception("Could not create a new instance of tox, error: " + error.ToString());
+                _tox = ToxFunctions.New(ref options, decryptedData, (uint)decryptedData.Length, ref error);
+
+                if (_tox == null || _tox.IsInvalid || error != ToxErrorNew.Ok || decryptError != ToxErrorDecryption.Ok)
+                    throw new Exception(string.Format("Could not create a new instance of tox, error: {0}, decrypt error: {1}" + error.ToString(), decryptError.ToString()));
             }
 
             Options = options;
@@ -720,11 +723,10 @@ namespace SharpTox.Core
             if (_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
-            byte[] bytes = new byte[ToxEncryptionFunctions.EncryptedSize(_tox)];
-            if (ToxEncryptionFunctions.EncryptedKeySave(_tox, bytes, key.Bytes) == -1)
-                return null;
+            var data = GetData();
+            byte[] encrypted = ToxEncryption.EncryptData(data.Bytes, key);
 
-            return new ToxData(bytes);
+            return new ToxData(encrypted);
         }
 
         /// <summary>
