@@ -1379,7 +1379,7 @@ namespace SharpTox.Core
         /// <param name="friendNumber"></param>
         /// <param name="error"></param>
         /// <returns></returns>
-        public DateTime FriendGetLastOnline(int friendNumber, out ToxErrorFriendGetLastOnline error)
+        public DateTime GetFriendLastOnline(int friendNumber, out ToxErrorFriendGetLastOnline error)
         {
             error = ToxErrorFriendGetLastOnline.Ok;
             ulong time = ToxFunctions.FriendGetLastOnline(_tox, (uint)friendNumber, ref error);
@@ -1392,10 +1392,10 @@ namespace SharpTox.Core
         /// </summary>
         /// <param name="friendNumber"></param>
         /// <returns></returns>
-        public DateTime FriendGetLastOnline(int friendNumber)
+        public DateTime GetFriendLastOnline(int friendNumber)
         {
             var error = ToxErrorFriendGetLastOnline.Ok;
-            return FriendGetLastOnline(friendNumber, out error);
+            return GetFriendLastOnline(friendNumber, out error);
         }
 
         #region Events
