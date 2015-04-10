@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SharpTox
+namespace SharpTox.Core
 {
     public class ToxFileInfo
     {
