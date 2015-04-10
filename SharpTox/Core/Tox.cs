@@ -1786,7 +1786,6 @@ namespace SharpTox.Core
                 {
                     _onFileReceiveCallback = (IntPtr tox, uint friendNumber, uint fileNumber, ToxFileKind kind, ulong fileSize, byte[] filename, uint filenameLength, IntPtr userData) =>
                     {
-                        Console.WriteLine("File kind: {0}", kind);
                         if (_onFileReceive != null)
                             _onFileReceive(this, new ToxEventArgs.FileSendRequestEventArgs((int)friendNumber, (int)fileNumber, kind, (long)fileSize, filename == null ? string.Empty : Encoding.UTF8.GetString(filename, 0, filename.Length)));
                     };
