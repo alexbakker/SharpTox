@@ -189,11 +189,14 @@ namespace SharpTox.Core
 
             public string FileName { get; private set; }
 
-            public FileSendRequestEventArgs(int friendNumber, int fileNumber, long fileSize, string fileName)
+            public ToxFileKind FileKind { get; private set; }
+
+            public FileSendRequestEventArgs(int friendNumber, int fileNumber, ToxFileKind kind, long fileSize, string fileName)
                 : base(friendNumber, fileNumber)
             {
                 FileSize = fileSize;
                 FileName = fileName;
+                FileKind = kind;
             }
         }
 
