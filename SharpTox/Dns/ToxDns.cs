@@ -38,6 +38,9 @@ namespace SharpTox.Dns
                 throw new Exception("Could not create a new tox_dns3 instance with the provided public_key");
         }
 
+        /// <summary>
+        /// Disposes non-managed resources
+        /// </summary>
         public void Dispose()
         {
             Dispose(true);
