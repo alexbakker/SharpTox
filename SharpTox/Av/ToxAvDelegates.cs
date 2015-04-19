@@ -8,16 +8,22 @@ namespace SharpTox.Av
     internal class ToxAvDelegates
     {
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        internal delegate void CallstateCallback(IntPtr agent, int callIndex, IntPtr args);
+        internal delegate void CallCallback(IntPtr toxAv, uint friendNumber, bool audioEnabled, bool videoEnabled, IntPtr userData);
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        internal delegate void AudioReceiveCallback(IntPtr toxav, int callIndex, IntPtr frame, int frameSize, IntPtr userData);
+        internal delegate void CallStateCallback(IntPtr toxAv, uint friendNumber, ToxAvCallState state, IntPtr userData);
+
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        internal delegate void FrameRequestCallback(IntPtr toxAv, uint friendNumber, IntPtr userData);
+
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        internal delegate void ReceiveVideoFrameCallback(IntPtr toxAv, uint friendNumber, ushort width, ushort height, IntPtr y, IntPtr u, IntPtr v, int yStride, int uStride, int vStride, IntPtr userData);
+
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        internal delegate void ReceiveAudioFrameCallback(IntPtr toxAv, uint friendNumber, IntPtr pcm, uint sampleCount, byte channels, uint samplingRate, IntPtr userData);
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         internal delegate void GroupAudioReceiveCallback(IntPtr tox, int groupNumber, int peerNumber, IntPtr frame, uint sampleCount, byte channels, uint sampleRate, IntPtr userData);
-
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        internal delegate void VideoReceiveCallback(IntPtr toxav, int callIndex, IntPtr frame, IntPtr userData);
     }
 }
 
