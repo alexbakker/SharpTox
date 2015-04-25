@@ -85,17 +85,18 @@ namespace SharpTox.Core
         public static ToxNode[] GetNodes()
         {
             WebClient client = new WebClient();
-            string content = "";
+            string content = string.Empty;
 
             try
             {
-                content = client.DownloadString("https://wiki.tox.im/Nodes");
-                client.Dispose();
+                content = client.DownloadString("https://wiki.tox.im/Nodes");                
             }
             catch
+            {                
+                return new ToxNode[0];
+            }finally
             {
                 client.Dispose();
-                return new ToxNode[0];
             }
 
             var list = new List<ToxNode>();

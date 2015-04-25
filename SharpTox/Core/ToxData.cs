@@ -55,9 +55,10 @@ namespace SharpTox.Core
                 if (_data.Length == 0)
                     return false;
 
-                FileStream stream = new FileStream(filename, FileMode.Create);
-                stream.Write(_data, 0, _data.Length);
-                stream.Close();
+                using (FileStream stream = new FileStream(filename, FileMode.Create))
+                {
+                    stream.Write(_data, 0, _data.Length);
+                }
 
                 return true;
             }
@@ -75,11 +76,12 @@ namespace SharpTox.Core
             try
             {
                 FileInfo info = new FileInfo(filename);
-                FileStream stream = new FileStream(filename, FileMode.Open);
                 bytes = new byte[info.Length];
 
-                stream.Read(bytes, 0, (int)info.Length);
-                stream.Close();
+                using (FileStream stream = new FileStream(filename, FileMode.Open))
+                {
+                    stream.Read(bytes, 0, (int)info.Length);
+                }
             }
             catch { return null; }
 
