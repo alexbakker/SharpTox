@@ -1,6 +1,6 @@
-﻿using System;
+﻿using SharpTox.Core;
+using System;
 using System.Text;
-using SharpTox.Core;
 
 namespace SharpTox.Dns
 {
@@ -19,8 +19,7 @@ namespace SharpTox.Dns
         {
             get
             {
-                if (_disposed)
-                    throw new ObjectDisposedException(GetType().FullName);
+                ThrowIfDisposed();
 
                 return _toxDns3;
             }
@@ -75,8 +74,7 @@ namespace SharpTox.Dns
         /// <returns></returns>
         public string GenerateDns3String(string name, out uint requestId)
         {
-            if (_disposed)
-                throw new ObjectDisposedException(GetType().FullName);
+            ThrowIfDisposed();
 
             byte[] bytes = Encoding.UTF8.GetBytes(name);
             byte[] result = new byte[1024];
@@ -99,8 +97,7 @@ namespace SharpTox.Dns
         /// <returns></returns>
         public string DecryptDns3TXT(string dns3String, uint requestId)
         {
-            if (_disposed)
-                throw new ObjectDisposedException(GetType().FullName);
+            ThrowIfDisposed();
 
             byte[] id = new byte[32 + sizeof(uint) + sizeof(ushort)];
             byte[] idRecordBytes = Encoding.UTF8.GetBytes(dns3String);
@@ -111,6 +108,12 @@ namespace SharpTox.Dns
                 return ToxTools.HexBinToString(id);
             else
                 throw new Exception("Could not decrypt and decode id_record");
+        }
+
+        private void ThrowIfDisposed()
+        {
+            if (_disposed)
+                throw new ObjectDisposedException(GetType().FullName);
         }
     }
 }

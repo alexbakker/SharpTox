@@ -1,10 +1,9 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using SharpTox.Core;
+using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
-
-using SharpTox.Core;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace SharpTox.Av
 {
@@ -82,8 +81,7 @@ namespace SharpTox.Av
         {
             get
             {
-                if (_disposed)
-                    throw new ObjectDisposedException(GetType().FullName);
+                ThrowIfDisposed();
 
                 int count = ToxAvFunctions.GetActiveCount(_toxAv);
                 return count == -1 ? 0 : count;
@@ -186,8 +184,7 @@ namespace SharpTox.Av
         /// </summary>
         public void Start()
         {
-            if (_disposed)
-                throw new ObjectDisposedException(GetType().FullName);
+            ThrowIfDisposed();
 
             if (_running)
                 return;
@@ -200,8 +197,7 @@ namespace SharpTox.Av
         /// </summary>
         public void Stop()
         {
-            if (_disposed)
-                throw new ObjectDisposedException(GetType().FullName);
+            ThrowIfDisposed();
 
             if (!_running)
                 return;
@@ -220,7 +216,7 @@ namespace SharpTox.Av
             _cancelTokenSource = new CancellationTokenSource();
             _running = true;
 
-            Task.Factory.StartNew(async() =>
+            Task.Factory.StartNew(async () =>
             {
                 while (_running)
                 {
@@ -238,8 +234,7 @@ namespace SharpTox.Av
         /// </summary>
         public int Iterate()
         {
-            if (_disposed)
-                throw new ObjectDisposedException(GetType().FullName);
+            ThrowIfDisposed();
 
             if (_running)
                 throw new Exception("Loop already running");
@@ -262,8 +257,7 @@ namespace SharpTox.Av
         /// <returns></returns>
         public ToxAvError Cancel(int callIndex, int friendNumber, string reason)
         {
-            if (_disposed)
-                throw new ObjectDisposedException(GetType().FullName);
+            ThrowIfDisposed();
 
             return ToxAvFunctions.Cancel(_toxAv, callIndex, friendNumber, reason);
         }
@@ -276,8 +270,7 @@ namespace SharpTox.Av
         /// <returns></returns>
         public ToxAvError Answer(int callIndex, ToxAvCodecSettings settings)
         {
-            if (_disposed)
-                throw new ObjectDisposedException(GetType().FullName);
+            ThrowIfDisposed();
 
             return ToxAvFunctions.Answer(_toxAv, callIndex, ref settings);
         }
@@ -292,8 +285,7 @@ namespace SharpTox.Av
         /// <returns></returns>
         public ToxAvError Call(int friendNumber, ToxAvCodecSettings settings, int ringingSeconds, out int callIndex)
         {
-            if (_disposed)
-                throw new ObjectDisposedException(GetType().FullName);
+            ThrowIfDisposed();
 
             int index = new int();
             ToxAvError result = ToxAvFunctions.Call(_toxAv, ref index, friendNumber, ref settings, ringingSeconds);
@@ -309,8 +301,7 @@ namespace SharpTox.Av
         /// <returns></returns>
         public ToxAvError Hangup(int callIndex)
         {
-            if (_disposed)
-                throw new ObjectDisposedException(GetType().FullName);
+            ThrowIfDisposed();
 
             return ToxAvFunctions.Hangup(_toxAv, callIndex);
         }
@@ -323,8 +314,7 @@ namespace SharpTox.Av
         /// <returns></returns>
         public ToxAvError Reject(int callIndex, string reason)
         {
-            if (_disposed)
-                throw new ObjectDisposedException(GetType().FullName);
+            ThrowIfDisposed();
 
             return ToxAvFunctions.Reject(_toxAv, callIndex, reason);
         }
@@ -336,8 +326,7 @@ namespace SharpTox.Av
         /// <returns></returns>
         public ToxAvError StopCall(int callIndex)
         {
-            if (_disposed)
-                throw new ObjectDisposedException(GetType().FullName);
+            ThrowIfDisposed();
 
             return ToxAvFunctions.StopCall(_toxAv, callIndex);
         }
@@ -350,8 +339,7 @@ namespace SharpTox.Av
         /// <returns></returns>
         public ToxAvError PrepareTransmission(int callIndex, bool supportVideo)
         {
-            if (_disposed)
-                throw new ObjectDisposedException(GetType().FullName);
+            ThrowIfDisposed();
 
             return ToxAvFunctions.PrepareTransmission(_toxAv, callIndex, supportVideo ? 1 : 0);
         }
@@ -363,8 +351,7 @@ namespace SharpTox.Av
         /// <returns></returns>
         public ToxAvError KillTransmission(int callIndex)
         {
-            if (_disposed)
-                throw new ObjectDisposedException(GetType().FullName);
+            ThrowIfDisposed();
 
             return ToxAvFunctions.KillTransmission(_toxAv, callIndex);
         }
@@ -377,8 +364,7 @@ namespace SharpTox.Av
         /// <returns></returns>
         public int GetPeerID(int callIndex, int peer)
         {
-            if (_disposed)
-                throw new ObjectDisposedException(GetType().FullName);
+            ThrowIfDisposed();
 
             return ToxAvFunctions.GetPeerID(_toxAv, callIndex, peer);
         }
@@ -391,8 +377,7 @@ namespace SharpTox.Av
         /// <returns></returns>
         public bool CapabilitySupported(int callIndex, ToxAvCapabilities capability)
         {
-            if (_disposed)
-                throw new ObjectDisposedException(GetType().FullName);
+            ThrowIfDisposed();
 
             return ToxAvFunctions.CapabilitySupported(_toxAv, callIndex, capability) == 1;
         }
@@ -406,8 +391,7 @@ namespace SharpTox.Av
         /// <returns></returns>
         public ToxAvError SendAudio(int callIndex, byte[] frame, int frameSize)
         {
-            if (_disposed)
-                throw new ObjectDisposedException(GetType().FullName);
+            ThrowIfDisposed();
 
             return ToxAvFunctions.SendAudio(_toxAv, callIndex, frame, (uint)frameSize);
         }
@@ -423,8 +407,7 @@ namespace SharpTox.Av
         /// <returns></returns>
         public int PrepareAudioFrame(int callIndex, byte[] dest, int destMax, short[] frames, int perframe) //TODO: use 'out' keyword to get the encoded frame
         {
-            if (_disposed)
-                throw new ObjectDisposedException(GetType().FullName);
+            ThrowIfDisposed();
 
             return ToxAvFunctions.PrepareAudioFrame(_toxAv, callIndex, dest, destMax, frames, perframe);
         }
@@ -436,8 +419,7 @@ namespace SharpTox.Av
         /// <returns></returns>
         public ToxAvCallState GetCallState(int callIndex)
         {
-            if (_disposed)
-                throw new ObjectDisposedException(GetType().FullName);
+            ThrowIfDisposed();
 
             return ToxAvFunctions.GetCallState(_toxAv, callIndex);
         }
@@ -450,8 +432,7 @@ namespace SharpTox.Av
         /// <returns></returns>
         public ToxAvError ChangeSettings(int callIndex, ToxAvCodecSettings settings)
         {
-            if (_disposed)
-                throw new ObjectDisposedException(GetType().FullName);
+            ThrowIfDisposed();
 
             return ToxAvFunctions.ChangeSettings(_toxAv, callIndex, ref settings);
         }
@@ -464,8 +445,7 @@ namespace SharpTox.Av
         /// <returns></returns>
         public ToxAvCodecSettings GetPeerCodecSettings(int callIndex, int peer)
         {
-            if (_disposed)
-                throw new ObjectDisposedException(GetType().FullName);
+            ThrowIfDisposed();
 
             ToxAvCodecSettings settings = new ToxAvCodecSettings();
             ToxAvFunctions.GetPeerCodecSettings(_toxAv, callIndex, peer, ref settings);
@@ -479,8 +459,7 @@ namespace SharpTox.Av
         /// <returns></returns>
         public int AddAvGroupchat()
         {
-            if (_disposed)
-                throw new ObjectDisposedException(GetType().FullName);
+            ThrowIfDisposed();
 
             ToxAvDelegates.GroupAudioReceiveCallback callback = (IntPtr tox, int groupNumber, int peerNumber, IntPtr frame, uint sampleCount, byte channels, uint sampleRate, IntPtr userData) =>
             {
@@ -508,11 +487,10 @@ namespace SharpTox.Av
         /// <returns></returns>
         public int JoinAvGroupchat(int friendNumber, byte[] data)
         {
+            ThrowIfDisposed();
+
             if (data == null)
                 throw new ArgumentNullException("data");
-
-            if (_disposed)
-                throw new ObjectDisposedException(GetType().FullName);
 
             ToxAvDelegates.GroupAudioReceiveCallback callback = (IntPtr tox, int groupNumber, int peerNumber, IntPtr frame, uint sampleCount, byte channels, uint sampleRate, IntPtr userData) =>
             {
@@ -543,30 +521,27 @@ namespace SharpTox.Av
         /// <returns></returns>
         public bool GroupSendAudio(int groupNumber, short[] pcm, int perframe, int channels, int sampleRate)
         {
-            if (_disposed)
-                throw new ObjectDisposedException(GetType().FullName);
+            ThrowIfDisposed();
 
             return ToxAvFunctions.GroupSendAudio(_tox, groupNumber, pcm, (uint)perframe, (byte)channels, (uint)sampleRate) == 0;
         }
 
         public int PrepareVideoFrame(int callIndex, byte[] dest, IntPtr img)
         {
+            ThrowIfDisposed();
+
             if (dest == null)
                 throw new ArgumentNullException("dest");
-
-            if (_disposed)
-                throw new ObjectDisposedException(GetType().FullName);
 
             return ToxAvFunctions.PrepareVideoFrame(_toxAv, callIndex, dest, dest.Length, img);
         }
 
         public ToxAvError SendVideo(int callIndex, byte[] frame)
         {
+            ThrowIfDisposed();
+
             if (frame == null)
                 throw new ArgumentNullException("frame");
-
-            if (_disposed)
-                throw new ObjectDisposedException(GetType().FullName);
 
             return ToxAvFunctions.SendVideo(_toxAv, callIndex, frame, (uint)frame.Length);
         }
@@ -993,5 +968,11 @@ namespace SharpTox.Av
         public event EventHandler<ToxAvEventArgs.GroupAudioDataEventArgs> OnReceivedGroupAudio;
 
         #endregion
+
+        private void ThrowIfDisposed()
+        {
+            if (_disposed)
+                throw new ObjectDisposedException(GetType().FullName);
+        }
     }
 }
