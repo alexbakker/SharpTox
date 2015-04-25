@@ -1,11 +1,9 @@
 ﻿#pragma warning disable 1591
 
 using System;
-using System.IO;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Collections.Generic;
 using SharpTox.Encryption;
 
 namespace SharpTox.Core
@@ -829,7 +827,6 @@ namespace SharpTox.Core
         /// <summary>
         /// Retrieves the UDP port this instance of Tox is bound to.
         /// </summary>
-        /// <param name="error"></param>
         /// <returns>The UDP port on success.</returns>
         public int GetUdpPort()
         {
@@ -865,6 +862,7 @@ namespace SharpTox.Core
         /// Sets the nospam value for this Tox instance.
         /// </summary>
         /// <param name="nospam">The nospam value to set.</param>
+        [CLSCompliant(false)]
         public void SetNospam(uint nospam)
         {
             if (_disposed)
@@ -877,6 +875,7 @@ namespace SharpTox.Core
         /// Retrieves the nospam value of this Tox instance.
         /// </summary>
         /// <returns>The nospam value.</returns>
+        [CLSCompliant(false)]
         public uint GetNospam()
         {
             if (_disposed)

@@ -27,6 +27,7 @@ namespace SharpTox.Core
             }
         }
 
+        [CLSCompliant(false)]
         public uint Nospam
         {
             get
@@ -38,6 +39,7 @@ namespace SharpTox.Core
             }
         }
 
+        [CLSCompliant(false)]
         public ushort Checksum
         {
             get
