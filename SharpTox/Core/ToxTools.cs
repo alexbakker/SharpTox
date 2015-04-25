@@ -32,6 +32,9 @@ namespace SharpTox.Core
 
         public static byte[] Hash(byte[] data)
         {
+            if (data == null)
+                throw new ArgumentNullException("data");
+
             byte[] hash = new byte[ToxConstants.HashLength];
             ToxFunctions.Hash(hash, data, (uint)data.Length);
             return hash;

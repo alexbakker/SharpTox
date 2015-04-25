@@ -1,6 +1,7 @@
 ﻿using System.Net;
 using System.Linq;
 using System.Collections.Generic;
+using System;
 
 namespace SharpTox.Core
 {
@@ -39,6 +40,12 @@ namespace SharpTox.Core
 
         public static bool operator ==(ToxNode node1, ToxNode node2)
         {
+            if (node1 == null)
+                throw new ArgumentNullException("node1");
+
+            if (node2 == null)
+                throw new ArgumentNullException("node2");
+
             if (object.ReferenceEquals(node1, node2))
                 return true;
 

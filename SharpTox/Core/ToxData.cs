@@ -102,6 +102,12 @@ namespace SharpTox.Core
 
         public static bool operator ==(ToxData data1, ToxData data2)
         {
+            if (data1 == null)
+                throw new ArgumentNullException("data1");
+
+            if (data2 == null)
+                throw new ArgumentNullException("data2");
+
             if (object.ReferenceEquals(data1, data2))
                 return true;
 

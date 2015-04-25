@@ -99,6 +99,7 @@
     <DocumentationFile>bin\Debug\SharpTox.XML</DocumentationFile>
     <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
     <Prefer32Bit>false</Prefer32Bit>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release POSIX|AnyCPU' ">
     <Optimize>true</Optimize>

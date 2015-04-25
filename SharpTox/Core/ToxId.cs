@@ -64,6 +64,12 @@ namespace SharpTox.Core
 
         public static bool operator ==(ToxId id1, ToxId id2)
         {
+            if (id1 == null)
+                throw new ArgumentNullException("id1");
+
+            if (id2 == null)
+                throw new ArgumentNullException("id2");
+
             if (object.ReferenceEquals(id1, id2))
                 return true;
 
@@ -107,6 +113,9 @@ namespace SharpTox.Core
 
         public static bool IsValid(byte[] id)
         {
+            if (id == null)
+                throw new ArgumentNullException("id");
+
             try
             {
                 byte[] checksum = new byte[2];

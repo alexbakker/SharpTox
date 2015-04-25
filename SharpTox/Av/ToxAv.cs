@@ -508,6 +508,9 @@ namespace SharpTox.Av
         /// <returns></returns>
         public int JoinAvGroupchat(int friendNumber, byte[] data)
         {
+            if (data == null)
+                throw new ArgumentNullException("data");
+
             if (_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
@@ -548,6 +551,9 @@ namespace SharpTox.Av
 
         public int PrepareVideoFrame(int callIndex, byte[] dest, IntPtr img)
         {
+            if (dest == null)
+                throw new ArgumentNullException("dest");
+
             if (_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
@@ -556,6 +562,9 @@ namespace SharpTox.Av
 
         public ToxAvError SendVideo(int callIndex, byte[] frame)
         {
+            if (frame == null)
+                throw new ArgumentNullException("frame");
+
             if (_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 

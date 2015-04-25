@@ -241,6 +241,9 @@ namespace SharpTox.Core
             public GroupInviteEventArgs(int friendNumber, ToxGroupType type, byte[] data)
                 : base(friendNumber)
             {
+                if (data == null)
+                    throw new ArgumentNullException("data");
+
                 Data = (byte[])data.Clone();
                 GroupType = type;
             }

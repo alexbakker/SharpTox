@@ -82,6 +82,9 @@ namespace SharpTox.Core
         /// <param name="proxyPort"></param>
         public ToxOptions(bool ipv6Enabled, ToxProxyType type, string proxyAddress, int proxyPort)
         {
+            if (string.IsNullOrEmpty(proxyAddress))
+                throw new ArgumentNullException("proxyAddress");
+
             Ipv6Enabled = ipv6Enabled;
             UdpEnabled = false;
             ProxyType = type;

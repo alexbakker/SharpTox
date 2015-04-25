@@ -222,6 +222,9 @@ namespace SharpTox.Core
         /// <param name="key">The key to decrypt encrypted Tox data. This should be null if the data is not encrypted.</param>
         public Tox(ToxOptions options, ToxData data, ToxEncryptionKey key = null)
         {
+            if (data == null)
+                throw new ArgumentNullException("data");
+
             if (key == null || !data.IsEncrypted)
             {
                 var error = ToxErrorNew.Ok;
@@ -357,6 +360,9 @@ namespace SharpTox.Core
         /// <returns>The friend number.</returns>
         public int AddFriend(ToxId id, string message, out ToxErrorFriendAdd error)
         {
+            if (id == null)
+                throw new ArgumentNullException("id");
+
             if (_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
@@ -386,6 +392,9 @@ namespace SharpTox.Core
         /// <returns>The friend number.</returns>
         public int AddFriendNoRequest(ToxKey publicKey, out ToxErrorFriendAdd error)
         {
+            if (publicKey == null)
+                throw new ArgumentNullException("publicKey");
+
             if (_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
@@ -412,6 +421,9 @@ namespace SharpTox.Core
         /// <returns>True on success.</returns>
         public bool AddTcpRelay(ToxNode node, out ToxErrorBootstrap error)
         {
+            if (node == null)
+                throw new ArgumentNullException("node");
+
             if (_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
@@ -438,6 +450,9 @@ namespace SharpTox.Core
         /// <returns>True on success.</returns>
         public bool Bootstrap(ToxNode node, out ToxErrorBootstrap error)
         {
+            if (node == null)
+                throw new ArgumentNullException("node");
+
             if (_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
@@ -503,6 +518,9 @@ namespace SharpTox.Core
         /// <returns>The friend number on success.</returns>
         public int GetFriendByPublicKey(ToxKey publicKey, out ToxErrorFriendByPublicKey error)
         {
+            if (publicKey == null)
+                throw new ArgumentNullException("publicKey");
+
             if (_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
@@ -927,6 +945,9 @@ namespace SharpTox.Core
         /// <returns>Info about the file transfer on success.</returns>
         public ToxFileInfo FileSend(int friendNumber, ToxFileKind kind, long fileSize, byte[] fileName, out ToxErrorFileSend error)
         {
+            if (fileName == null)
+                throw new ArgumentNullException("fileName");
+
             if (_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
@@ -1028,6 +1049,9 @@ namespace SharpTox.Core
         /// <returns></returns>
         public bool FileSendChunk(int friendNumber, int fileNumber, long position, byte[] data, out ToxErrorFileSendChunk error)
         {
+            if (data == null)
+                throw new ArgumentNullException("data");
+
             if (_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
@@ -1090,6 +1114,9 @@ namespace SharpTox.Core
         /// <returns></returns>
         public bool FriendSendLossyPacket(int friendNumber, byte[] data, out ToxErrorFriendCustomPacket error)
         {
+            if (data == null)
+                throw new ArgumentNullException("data");
+
             if (_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
@@ -1119,6 +1146,9 @@ namespace SharpTox.Core
         /// <returns></returns>
         public bool FriendSendLosslessPacket(int friendNumber, byte[] data, out ToxErrorFriendCustomPacket error)
         {
+            if (data == null)
+                throw new ArgumentNullException("data");
+
             if (_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
@@ -1182,6 +1212,9 @@ namespace SharpTox.Core
         /// <returns></returns>
         public int JoinGroup(int friendNumber, byte[] data)
         {
+            if (data == null)
+                throw new ArgumentNullException("data");
+
             if (_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 

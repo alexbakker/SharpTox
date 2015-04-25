@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 
 namespace SharpTox.Core
 {
@@ -56,6 +57,12 @@ namespace SharpTox.Core
 
         public static bool operator ==(ToxKey key1, ToxKey key2)
         {
+            if (key1 == null)
+                throw new ArgumentNullException("key1");
+
+            if (key2 == null)
+                throw new ArgumentNullException("key2");
+
             if (object.ReferenceEquals(key1, key2))
                 return true;
 
