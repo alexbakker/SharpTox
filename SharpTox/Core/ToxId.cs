@@ -4,10 +4,16 @@ using System.Collections;
 
 namespace SharpTox.Core
 {
+    /// <summary>
+    /// Represents a Tox ID (38 bytes long)
+    /// </summary>
     public class ToxId
     {
         private byte[] _id;
 
+        /// <summary>
+        /// Retrieves the public key of this Tox ID.
+        /// </summary>
         public ToxKey PublicKey
         {
             get
@@ -19,6 +25,9 @@ namespace SharpTox.Core
             }
         }
 
+        /// <summary>
+        /// Retrieves the Tox ID, represented in an array of bytes.
+        /// </summary>
         public byte[] Bytes
         {
             get
@@ -27,6 +36,9 @@ namespace SharpTox.Core
             }
         }
 
+        /// <summary>
+        /// Retrieves the nospam value of this Tox ID.
+        /// </summary>
         [CLSCompliant(false)]
         public uint Nospam
         {
@@ -39,6 +51,9 @@ namespace SharpTox.Core
             }
         }
 
+        /// <summary>
+        /// Retrieves the checksum of this Tox ID.
+        /// </summary>
         [CLSCompliant(false)]
         public ushort Checksum
         {
@@ -51,11 +66,19 @@ namespace SharpTox.Core
             }
         }
 
+        /// <summary>
+        /// Initializes a new instance of the ToxId class.
+        /// </summary>
+        /// <param name="id">A (ToxConstant.AddressSize * 2) character long hexadecimal string, containing a Tox ID.</param>
         public ToxId(string id)
             : this(ToxTools.StringToHexBin(id))
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the ToxId class.
+        /// </summary>
+        /// <param name="id">A byte array with a length of ToxConstant.AddressSize, containing a Tox ID.</param>
         public ToxId(byte[] id)
         {
             _id = id;
@@ -102,11 +125,21 @@ namespace SharpTox.Core
             return ToxTools.HexBinToString(_id);
         }
 
+        /// <summary>
+        /// Checks whether or not the given Tox ID is valid.
+        /// </summary>
+        /// <param name="id">A (ToxConstant.AddressSize * 2) character long hexadecimal string, containing a Tox ID.</param>
+        /// <returns>True if the ID is valid, false if the ID is invalid.</returns>
         public static bool IsValid(string id)
         {
             return IsValid(ToxTools.StringToHexBin(id));
         }
 
+        /// <summary>
+        /// Checks whether or not the given Tox ID is valid.
+        /// </summary>
+        /// <param name="id">A byte array with a length of ToxConstant.AddressSize, containing a Tox ID.</param>
+        /// <returns>True if the ID is valid, false if the ID is invalid.</returns>
         public static bool IsValid(byte[] id)
         {
             try
