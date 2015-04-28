@@ -1,7 +1,5 @@
-﻿using System.Net;
-using System.Linq;
-using System.Collections.Generic;
-using System;
+﻿using System.Collections.Generic;
+using System.Net;
 
 namespace SharpTox.Core
 {
@@ -40,12 +38,6 @@ namespace SharpTox.Core
 
         public static bool operator ==(ToxNode node1, ToxNode node2)
         {
-            if (node1 == null)
-                throw new ArgumentNullException("node1");
-
-            if (node2 == null)
-                throw new ArgumentNullException("node2");
-
             if (object.ReferenceEquals(node1, node2))
                 return true;
 
@@ -89,12 +81,13 @@ namespace SharpTox.Core
 
             try
             {
-                content = client.DownloadString("https://wiki.tox.im/Nodes");                
+                content = client.DownloadString("https://wiki.tox.im/Nodes");
             }
             catch
-            {                
+            {
                 return new ToxNode[0];
-            }finally
+            }
+            finally
             {
                 client.Dispose();
             }
@@ -108,7 +101,7 @@ namespace SharpTox.Core
                 if (table[i] != '<')
                     continue;
 
-                if (string.Concat(table[i], table[i+1], table[i+2]) == "<tr")
+                if (string.Concat(table[i], table[i + 1], table[i + 2]) == "<tr")
                 {
                     index = table.IndexOf(">", i + 3) + 1;
                     string row = table.Substring(index, table.IndexOf("</tr>", i) - index).Replace("\n", "");

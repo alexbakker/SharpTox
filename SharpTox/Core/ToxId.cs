@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using System.Collections;
 
 namespace SharpTox.Core
 {
@@ -64,12 +63,6 @@ namespace SharpTox.Core
 
         public static bool operator ==(ToxId id1, ToxId id2)
         {
-            if (id1 == null)
-                throw new ArgumentNullException("id1");
-
-            if (id2 == null)
-                throw new ArgumentNullException("id2");
-
             if (object.ReferenceEquals(id1, id2))
                 return true;
 
