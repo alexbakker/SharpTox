@@ -15,6 +15,9 @@ namespace SharpTox.Av
         internal delegate void FrameRequestCallback(IntPtr toxAv, uint friendNumber, IntPtr userData);
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        internal delegate void BitrateStatusCallback(IntPtr toxAv, uint friendNumber, bool stable, uint bitrate, IntPtr userData);
+
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         internal delegate void ReceiveVideoFrameCallback(IntPtr toxAv, uint friendNumber, ushort width, ushort height, IntPtr y, IntPtr u, IntPtr v, int yStride, int uStride, int vStride, IntPtr userData);
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]

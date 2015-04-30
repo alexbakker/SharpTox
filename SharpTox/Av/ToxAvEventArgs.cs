@@ -15,12 +15,6 @@ namespace SharpTox.Av
             }
         }
 
-        public class FrameRequestEventArgs : CallBaseEventArgs
-        {
-            public FrameRequestEventArgs(int friendNumber)
-                : base(friendNumber) { }
-        }
-
         public class CallRequestEventArgs : CallBaseEventArgs
         {
             public ToxAvCallState State { get; private set; }
@@ -44,6 +38,20 @@ namespace SharpTox.Av
                 : base(friendNumber)
             {
                 State = state;
+            }
+        }
+
+        public class BitrateStatusEventArgs : CallBaseEventArgs
+        {
+            public bool Stable { get; private set; }
+
+            public int Bitrate { get; private set; }
+
+            public BitrateStatusEventArgs(int friendNumber, bool stable, int bitrate)
+                : base(friendNumber)
+            {
+                Stable = stable;
+                Bitrate = bitrate;
             }
         }
 

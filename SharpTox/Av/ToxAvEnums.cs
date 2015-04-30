@@ -37,10 +37,6 @@ namespace SharpTox.Av
         ReceivingAudio = 4,
         ReceivingVideo = 8,
         End = 16,
-        DecreaseAudioBitrate = 32,
-        DecreaseVideoBitrate = 64,
-        IncreaseAudioBitrate = 128,
-        IncreaseVideoBitrate = 256,
         Error = 32768
     }
 
