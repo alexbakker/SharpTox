@@ -1,5 +1,3 @@
-#pragma warning disable 1591
-
 using System;
 using System.Runtime.InteropServices;
 
@@ -26,5 +24,3 @@ namespace SharpTox.Av
         internal delegate void GroupAudioReceiveCallback(IntPtr tox, int groupNumber, int peerNumber, IntPtr frame, uint sampleCount, byte channels, uint sampleRate, IntPtr userData);
     }
 }
-
-#pragma warning restore 1591

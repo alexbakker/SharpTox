@@ -108,6 +108,7 @@ namespace SharpTox.Test
             tox.Dispose();
         }
 
+        [Ignore]
         [TestMethod]
         public void TestToxEncryption()
         {
@@ -125,6 +126,7 @@ namespace SharpTox.Test
                 Assert.Fail("Original data is not equal to the decrypted data");
         }
 
+        [Ignore]
         [TestMethod]
         public void TestToxEncryptionLoad()
         {

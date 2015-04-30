@@ -1,6 +1,5 @@
-﻿using System.Net;
-using System.Linq;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Net;
 
 namespace SharpTox.Core
 {
@@ -78,17 +77,19 @@ namespace SharpTox.Core
         public static ToxNode[] GetNodes()
         {
             WebClient client = new WebClient();
-            string content = "";
+            string content = string.Empty;
 
             try
             {
                 content = client.DownloadString("https://wiki.tox.im/Nodes");
-                client.Dispose();
             }
             catch
             {
-                client.Dispose();
                 return new ToxNode[0];
+            }
+            finally
+            {
+                client.Dispose();
             }
 
             var list = new List<ToxNode>();
@@ -100,7 +101,7 @@ namespace SharpTox.Core
                 if (table[i] != '<')
                     continue;
 
-                if (string.Concat(table[i], table[i+1], table[i+2]) == "<tr")
+                if (string.Concat(table[i], table[i + 1], table[i + 2]) == "<tr")
                 {
                     index = table.IndexOf(">", i + 3) + 1;
                     string row = table.Substring(index, table.IndexOf("</tr>", i) - index).Replace("\n", "");

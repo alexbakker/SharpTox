@@ -3,6 +3,9 @@ using System.Text;
 
 namespace SharpTox.Core
 {
+    /// <summary>
+    /// A set of helper functions for Tox.
+    /// </summary>
     public static class ToxTools
     {
         internal static string HexBinToString(byte[] b)
@@ -30,8 +33,16 @@ namespace SharpTox.Core
             return new DateTime(1970, 1, 1, 0, 0, 0).AddSeconds(Convert.ToDouble(epoch));
         }
 
+        /// <summary>
+        /// Generates a cryptographic hash of the given data.
+        /// </summary>
+        /// <param name="data">The data to calculate the hash of.</param>
+        /// <returns>The cryptographic hash of the given data.</returns>
         public static byte[] Hash(byte[] data)
         {
+            if (data == null)
+                throw new ArgumentNullException("data");
+
             byte[] hash = new byte[ToxConstants.HashLength];
             ToxFunctions.Hash(hash, data, (uint)data.Length);
             return hash;

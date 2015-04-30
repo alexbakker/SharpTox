@@ -14,6 +14,12 @@ namespace SharpTox.Encryption
 
         public static byte[] EncryptData(byte[] data, ToxEncryptionKey key, out ToxErrorEncryption error)
         {
+            if (data == null)
+                throw new ArgumentNullException("data");
+
+            if (key == null)
+                throw new ArgumentNullException("key");
+
             byte[] output = new byte[data.Length + EncryptionExtraLength];
             var pass = key.ToPassKey();
             error = ToxErrorEncryption.Ok;
@@ -32,6 +38,12 @@ namespace SharpTox.Encryption
 
         public static byte[] DecryptData(byte[] data, ToxEncryptionKey key, out ToxErrorDecryption error)
         {
+            if (data == null)
+                throw new ArgumentNullException("data");
+
+            if (key == null)
+                throw new ArgumentNullException("key");
+
             byte[] output = new byte[data.Length - EncryptionExtraLength];
             var pass = key.ToPassKey();
             error = ToxErrorDecryption.Ok;
