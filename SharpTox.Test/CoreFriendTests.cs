@@ -344,58 +344,5 @@ namespace SharpTox.Test
             if (!fileData.SequenceEqual(receivedData))
                 Assert.Fail("Original data is not equal to the data we received");
         }
-
-        [TestMethod]
-        public void TestToxFriendRequest()
-        {
-            var options = new ToxOptions(true, true);
-            var tox1 = new Tox(options);
-            var tox2 = new Tox(options);
-            var error = ToxErrorFriendAdd.Ok;
-            string message = "Hey, this is a test friend request.";
-            bool testFinished = false;
-
-            Task.Run(async () =>
-            {
-                while (!testFinished)
-                {
-                    int time1 = tox1.Iterate();
-                    int time2 = tox2.Iterate();
-
-                    await Task.Delay(Math.Min(time1, time2));
-                }
-            });
-
-            tox1.AddFriend(tox2.Id, message, out error);
-            if (error != ToxErrorFriendAdd.Ok)
-                Assert.Fail("Failed to add friend: {0}", error);
-
-            tox2.OnFriendRequestReceived += (object sender, ToxEventArgs.FriendRequestEventArgs args) =>
-            {
-                if (args.Message != message)
-                {
-                    Fail("Message received in the friend request is not the same as the one that was sent");
-                    return;
-                }
-
-                tox2.AddFriendNoRequest(args.PublicKey, out error);
-                if (error != ToxErrorFriendAdd.Ok)
-                {
-                    Fail("Failed to add friend (no request): {0}", error);
-                    return;
-                }
-
-                if (!tox2.FriendExists(0))
-                    Fail("Friend doesn't exist according to core");
-            };
-
-            while (tox1.GetFriendConnectionStatus(0) == ToxConnectionStatus.None && _wait) { Thread.Sleep(10); }
-
-            testFinished = true;
-            tox1.Dispose();
-            tox2.Dispose();
-
-            CheckFailed();
-        }
     }
 }
