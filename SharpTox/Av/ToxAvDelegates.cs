@@ -1,5 +1,3 @@
-#pragma warning disable 1591
-
 using System;
 using System.Runtime.InteropServices;
 
@@ -20,5 +18,3 @@ namespace SharpTox.Av
         internal delegate void VideoReceiveCallback(IntPtr toxav, int callIndex, IntPtr frame, IntPtr userData);
     }
 }
-
-#pragma warning restore 1591

@@ -9,6 +9,9 @@ namespace SharpTox.Core
     [StructLayout(LayoutKind.Sequential)]
     public struct ToxOptions
     {
+        /// <summary>
+        /// Default Tox Options.
+        /// </summary>
         public static ToxOptions Default
         {
             get
@@ -40,34 +43,37 @@ namespace SharpTox.Core
         /// <summary>
         /// Proxy ip or domain.
         /// </summary>
-        public IntPtr ProxyAddress;
+        public IntPtr ProxyHost;
 
         /// <summary>
         /// Proxy port, in host byte order.
         /// </summary>
+        [CLSCompliant(false)]
         public ushort ProxyPort;
 
         /// <summary>
         /// The start port of the inclusive port range to attempt to use.
         /// </summary>
+        [CLSCompliant(false)]
         public ushort StartPort;
 
         /// <summary>
         /// The end port of the inclusive port range to attempt to use.
         /// </summary>
+        [CLSCompliant(false)]
         public ushort EndPort;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ToxOptions"/> struct.
         /// </summary>
-        /// <param name="ipv6Enabled"></param>
-        /// <param name="udpEnabled"></param>
+        /// <param name="ipv6Enabled">Whether or not IPv6 should be enabled.</param>
+        /// <param name="udpEnabled">Whether or not UDP should be enabled.</param>
         public ToxOptions(bool ipv6Enabled, bool udpEnabled)
         {
             Ipv6Enabled = ipv6Enabled;
             UdpEnabled = udpEnabled;
             ProxyType = ToxProxyType.None;
-            ProxyAddress = IntPtr.Zero;
+            ProxyHost = IntPtr.Zero;
             ProxyPort = 0;
             StartPort = 0;
             EndPort = 0;
@@ -76,10 +82,10 @@ namespace SharpTox.Core
         /// <summary>
         /// Initializes a new instance of the <see cref="ToxOptions"/> struct.
         /// </summary>
-        /// <param name="ipv6Enabled"></param>
-        /// <param name="type"></param>
-        /// <param name="proxyAddress"></param>
-        /// <param name="proxyPort"></param>
+        /// <param name="ipv6Enabled">Whether or not IPv6 should be enabled.</param>
+        /// <param name="type">The type of proxy we want to connect to.</param>
+        /// <param name="proxyAddress">The IP address or DNS name of the proxy to be used.</param>
+        /// <param name="proxyPort">The port to use to connect to the proxy.</param>
         public ToxOptions(bool ipv6Enabled, ToxProxyType type, string proxyAddress, int proxyPort)
         {
             if (string.IsNullOrEmpty(proxyAddress))
@@ -96,7 +102,7 @@ namespace SharpTox.Core
             char[] sourceArray = proxyAddress.ToCharArray();
             Array.Copy(sourceArray, 0, dest, 0, sourceArray.Length);
 
-            ProxyAddress = GCHandle.Alloc(dest, GCHandleType.Pinned).AddrOfPinnedObject();
+            ProxyHost = GCHandle.Alloc(dest, GCHandleType.Pinned).AddrOfPinnedObject();
             ProxyPort = (ushort)proxyPort;
             StartPort = 0;
             EndPort = 0;

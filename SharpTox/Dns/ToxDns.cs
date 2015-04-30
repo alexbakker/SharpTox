@@ -72,6 +72,7 @@ namespace SharpTox.Dns
         /// <param name="name">Name of the registered user.</param>
         /// <param name="requestId"></param>
         /// <returns></returns>
+        [CLSCompliant(false)]
         public string GenerateDns3String(string name, out uint requestId)
         {
             ThrowIfDisposed();
@@ -95,6 +96,7 @@ namespace SharpTox.Dns
         /// <param name="dns3String"></param>
         /// <param name="requestId"></param>
         /// <returns></returns>
+        [CLSCompliant(false)]
         public string DecryptDns3TXT(string dns3String, uint requestId)
         {
             ThrowIfDisposed();

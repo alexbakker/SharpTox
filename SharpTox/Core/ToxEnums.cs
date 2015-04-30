@@ -5,7 +5,14 @@
     /// </summary>
     public enum ToxErrorNew
     {
+        /// <summary>
+        /// The function returned successfully.
+        /// </summary>
         Ok,
+
+        /// <summary>
+        /// One of the arguments to the function was NULL when it was not expected.
+        /// </summary>
         Null,
 
         /// <summary>
@@ -54,7 +61,14 @@
     /// </summary>
     public enum ToxErrorBootstrap
     {
+        /// <summary>
+        /// The function returned successfully.
+        /// </summary>
         Ok,
+
+        /// <summary>
+        /// One of the arguments to the function was NULL when it was not expected.
+        /// </summary>
         Null,
 
         /// <summary>
@@ -94,27 +108,72 @@
     /// </summary>
     public enum ToxErrorFriendGetPublicKey
     {
+        /// <summary>
+        /// The function returned successfully.
+        /// </summary>
         Ok,
+
+        /// <summary>
+        /// No friend with the given number exists on the friend list.
+        /// </summary>
         NotFound
     }
 
+    /// <summary>
+    /// Errors that can occur when trying to find a friend by their public key.
+    /// </summary>
     public enum ToxErrorFriendByPublicKey
     {
+        /// <summary>
+        /// The function returned successfully.
+        /// </summary>
         Ok,
+
+        /// <summary>
+        /// One of the arguments to the function was NULL when it was not expected.
+        /// </summary>
         Null,
+
+        /// <summary>
+        /// No friend with the given public key exists on the friend list.
+        /// </summary>
         NotFound
     }
 
+    /// <summary>
+    /// Errors that can occur when querying for information about a friend.
+    /// </summary>
     public enum ToxErrorFriendQuery
     {
+        /// <summary>
+        /// The function returned successfully.
+        /// </summary>
         Ok,
+
+        /// <summary>
+        /// One of the arguments to the function was NULL when it was not expected.
+        /// </summary>
         Null,
+
+        /// <summary>
+        /// The friend number did not designate a valid friend.
+        /// </summary>
         NotFound
     }
 
+    /// <summary>
+    /// Errors that can occur when trying to delete a friend.
+    /// </summary>
     public enum ToxErrorFriendDelete
     {
+        /// <summary>
+        /// The function returned successfully.
+        /// </summary>
         Ok,
+
+        /// <summary>
+        /// There was no friend with the given friend number. No friends were deleted.
+        /// </summary>
         NotFound
     }
 
@@ -144,7 +203,14 @@
     /// </summary>
     public enum ToxErrorSendMessage
     {
+        /// <summary>
+        /// The function returned successfully.
+        /// </summary>
         Ok,
+
+        /// <summary>
+        /// One of the arguments to the function was NULL when it was not expected.
+        /// </summary>
         Null,
 
         /// <summary>
@@ -178,39 +244,115 @@
     /// </summary>
     public enum ToxErrorFriendAdd
     {
+        /// <summary>
+        /// The function returned successfully.
+        /// </summary>
         Ok,
+
+        /// <summary>
+        /// One of the arguments to the function was NULL when it was not expected.
+        /// </summary>
         Null,
+
+        /// <summary>
+        /// The length of the friend request message was too long.
+        /// </summary>
         TooLong,
+
+        /// <summary>
+        /// The friend request message was empty.
+        /// </summary>
         NoMessage,
+
+        /// <summary>
+        /// The specified address is equal to our own.
+        /// </summary>
         OwnKey,
+
+        /// <summary>
+        /// A friend request has already been sent to this address or the address belongs to a friend that is already in our friend list.
+        /// </summary>
         AlreadySent,
+
+        /// <summary>
+        /// The address checksum failed.
+        /// </summary>
         BadChecksum,
+
+        /// <summary>
+        /// The friend was already in the list, but the nospam value was different.
+        /// </summary>
         SetNewNospam,
+
+        /// <summary>
+        /// A memory allocation failed when trying to increase the friend list size.
+        /// </summary>
         Malloc
     }
 
+    /// <summary>
+    /// Errors that can occur when trying to set typing status.
+    /// </summary>
     public enum ToxErrorSetTyping
     {
+        /// <summary>
+        /// The function returned successfully.
+        /// </summary>
         Ok,
+
+        /// <summary>
+        /// The friend number did not designate a valid friend.
+        /// </summary>
         NotFound
     }
 
+    /// <summary>
+    /// Errors that can occur when changing our name or status message.
+    /// </summary>
     public enum ToxErrorSetInfo
     {
+        /// <summary>
+        /// The function returned successfully.
+        /// </summary>
         Ok,
+
+        /// <summary>
+        /// One of the arguments to the function was NULL when it was not expected.
+        /// </summary>
         Null,
+
+        /// <summary>
+        /// The friend number did not designate a valid friend.
+        /// </summary>
         TooLong
     }
 
-    public enum ToxErrorOptionsNew
+    internal enum ToxErrorOptionsNew
     {
+        /// <summary>
+        /// The function returned successfully.
+        /// </summary>
         Ok,
+
+        /// <summary>
+        /// The function failed to allocate enough memory for the options struct.
+        /// </summary>
         Malloc
     }
 
+    /// <summary>
+    /// Errors that can occur when trying to retrieve the port an instance of Tox is bound to.
+    /// </summary>
     public enum ToxErrorGetPort
     {
+        /// <summary>
+        /// The function returned successfully.
+        /// </summary>
         Ok,
+
+        /// <summary>
+        /// The instance was not bound to any port.
+        /// </summary>
         NotBound
     }
 
@@ -220,109 +362,344 @@
     public enum ToxKeyType
     {
         /// <summary>
-        /// A public tox key.
+        /// A public key.
         /// </summary>
         Public,
 
         /// <summary>
-        /// A secret tox key.
+        /// A secret key.
         /// </summary>
         Secret
     }
 
+    /// <summary>
+    /// The different kinds of proxies.
+    /// </summary>
     public enum ToxProxyType
     {
+        /// <summary>
+        /// Don't use a proxy.
+        /// </summary>
         None,
+
+        /// <summary>
+        /// HTTP proxy.
+        /// </summary>
         Http,
+
+        /// <summary>
+        /// Socks5 proxy.
+        /// </summary>
         Socks5
     }
 
+    /// <summary>
+    /// The different kinds of file controls that can be sent.
+    /// </summary>
     public enum ToxFileControl
     {
+        /// <summary>
+        /// A control used to resume a paused file transfer. Also used to accept a file transfer request.
+        /// </summary>
         Resume,
+
+        /// <summary>
+        /// A control used to pause a file transfer.
+        /// </summary>
         Pause,
+
+        /// <summary>
+        /// A control used to kill a file transfer. Also used to decline a file transfer request.
+        /// </summary>
         Cancel
     }
 
+    /// <summary>
+    /// The different kinds of files that can be transferred.
+    /// </summary>
     public enum ToxFileKind
     {
+        /// <summary>
+        /// Arbitrary file data.
+        /// </summary>
         Data,
+
+        /// <summary>
+        /// An avatar.
+        /// </summary>
         Avatar
     }
 
+    /// <summary>
+    /// The different kinds of messages that can be sent.
+    /// </summary>
     public enum ToxMessageType
     {
+        /// <summary>
+        /// A regular message.
+        /// </summary>
         Message,
+
+        /// <summary>
+        /// An IRC-like action.
+        /// </summary>
         Action
     }
 
+    /// <summary>
+    /// Errors that can occur when trying to send a file control.
+    /// </summary>
     public enum ToxErrorFileControl
     {
+        /// <summary>
+        /// The function returned successfully.
+        /// </summary>
         Ok,
+        
+        /// <summary>
+        /// The friend number passed did not designate a valid friend.
+        /// </summary>
         FriendNotFound,
+
+        /// <summary>
+        /// This client is currently not connected to the friend.
+        /// </summary>
         FriendNotConnected,
+
+        /// <summary>
+        /// No file transfer with the given file number was found for the given friend.
+        /// </summary>
         NotFound,
+
+        /// <summary>
+        /// A RESUME control was sent, but the file transfer is running normally.
+        /// </summary>
         NotPaused,
+
+        /// <summary>
+        /// A RESUME control was sent, but the file transfer was paused by the other party. Only the party that paused the transfer can resume it.
+        /// </summary>
         Denied,
+
+        /// <summary>
+        /// A PAUSE control was sent, but the file transfer was already paused.
+        /// </summary>
         AlreadyPaused,
+
+        /// <summary>
+        /// Packet queue is full.
+        /// </summary>
         SendQ
     }
 
+    /// <summary>
+    /// Errors that can occur when trying to send a file transfer request.
+    /// </summary>
     public enum ToxErrorFileSend
     {
+        /// <summary>
+        /// The function returned successfully.
+        /// </summary>
         Ok,
+
+        /// <summary>
+        /// One of the arguments to the function was NULL when it was not expected.
+        /// </summary>
         Null,
+
+        /// <summary>
+        /// The friend number passed did not designate a valid friend.
+        /// </summary>
         FriendNotFound,
+
+        /// <summary>
+        /// This client is currently not connected to the friend.
+        /// </summary>
         FriendNotConnected,
+
+        /// <summary>
+        /// Filename length exceeded TOX_MAX_FILENAME_LENGTH bytes.
+        /// </summary>
         NameTooLong,
+
+        /// <summary>
+        /// Too many ongoing transfers. The maximum number of concurrent file transfers is 256 per friend per direction (sending and receiving).
+        /// </summary>
         TooMany
     }
 
+    /// <summary>
+    /// Errors that can occur when trying to send a chunk of a file.
+    /// </summary>
     public enum ToxErrorFileSendChunk
     {
+        /// <summary>
+        /// The function returned successfully.
+        /// </summary>
         Ok,
+
+        /// <summary>
+        /// One of the arguments to the function was NULL when it was not expected.
+        /// </summary>
         Null,
+
+        /// <summary>
+        /// The friend number passed did not designate a valid friend.
+        /// </summary>
         FriendNotFound,
+
+        /// <summary>
+        /// This client is currently not connected to the friend.
+        /// </summary>
         FriendNotConnected,
+
+        /// <summary>
+        /// No file transfer with the given file number was found for the given friend.
+        /// </summary>
         NotFound,
+
+        /// <summary>
+        /// File transfer was found but isn't in a transferring state: (paused, done, broken, etc...) (happens only when not called from the request chunk callback).
+        /// </summary>
         NotTransferring,
+
+        /// <summary>
+        /// Attempted to send more or less data than requested.
+        /// </summary>
         InvalidLength,
-        SendQ
+
+        /// <summary>
+        /// Packet queue is full.
+        /// </summary>
+        SendQ,
+
+        /// <summary>
+        /// Position parameter was wrong.
+        /// </summary>
+        WrongPosition
     }
 
+    /// <summary>
+    /// Errors that can occur when trying retrieve a file transfer by it's unique ID.
+    /// </summary>
     public enum ToxErrorFileGet
     {
+        /// <summary>
+        /// The function returned successfully.
+        /// </summary>
         Ok,
+
+        /// <summary>
+        /// The friend number passed did not designate a valid friend.
+        /// </summary>
         FriendNotFound,
+
+        /// <summary>
+        /// No file transfer with the given file number was found for the given friend.
+        /// </summary>
         NotFound
     }
 
+    /// <summary>
+    /// Errors that can occur when trying to send a file seek command.
+    /// </summary>
     public enum ToxErrorFileSeek
     {
+        /// <summary>
+        /// The function returned successfully.
+        /// </summary>
         Ok,
+        
+        /// <summary>
+        /// The friend number passed did not designate a valid friend.
+        /// </summary>
         FriendNotFound,
+
+        /// <summary>
+        /// This client is currently not connected to the friend.
+        /// </summary>
         FriendNotConnected,
+
+        /// <summary>
+        /// No file transfer with the given file number was found for the given friend.
+        /// </summary>
         NotFound,
+
+        /// <summary>
+        /// File was not in a state where it could be seeked.
+        /// </summary>
         SeekDenied,
+
+        /// <summary>
+        /// Seek position was invalid.
+        /// </summary>
         InvalidPosition,
+
+        /// <summary>
+        /// Packet queue is full.
+        /// </summary>
         SendQ
     }
 
+    /// <summary>
+    /// Errors that can occur when trying to send a custom packet.
+    /// </summary>
     public enum ToxErrorFriendCustomPacket
     {
+        /// <summary>
+        /// The function returned successfully.
+        /// </summary>
         Ok,
+
+        /// <summary>
+        /// One of the arguments to the function was NULL when it was not expected.
+        /// </summary>
         Null,
+
+        /// <summary>
+        /// The friend number did not designate a valid friend.
+        /// </summary>
         FriendNotNull,
+
+        /// <summary>
+        /// This client is currently not connected to the friend.
+        /// </summary>
         FriendNotConnected,
+
+        /// <summary>
+        /// The first byte of data was not in the specified range for the packet type. This range is 200-254 for lossy, and 160-191 for lossless packets.
+        /// </summary>
         Invalid,
+
+        /// <summary>
+        /// Attempted to send an empty packet.
+        /// </summary>
         Empty,
+
+        /// <summary>
+        /// Packet data length exceeded TOX_MAX_CUSTOM_PACKET_SIZE.
+        /// </summary>
         TooLong,
+
+        /// <summary>
+        /// Packet queue is full.
+        /// </summary>
         SendQ
     }
 
+    /// <summary>
+    /// Errors that can occur when trying to retrieve the 'last online' of a friend.
+    /// </summary>
     public enum ToxErrorFriendGetLastOnline
     {
+        /// <summary>
+        /// The function returned successfully.
+        /// </summary>
         Ok,
+
+        /// <summary>
+        ///  No friend with the given number exists on the friend list.
+        /// </summary>
         NotFound
     }
 
@@ -347,9 +724,19 @@
         PeerName
     }
 
+    /// <summary>
+    /// All of the different group types.
+    /// </summary>
     public enum ToxGroupType
     {
+        /// <summary>
+        /// Text only, no audio in this groupchat.
+        /// </summary>
         Text,
+
+        /// <summary>
+        /// Both text and audio in this groupchat.
+        /// </summary>
         Av
     }
 }

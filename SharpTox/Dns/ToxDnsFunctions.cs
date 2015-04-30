@@ -1,6 +1,4 @@
-﻿#pragma warning disable 1591
-
-using System;
+﻿using System;
 using System.Text;
 using System.Runtime.InteropServices;
 
@@ -27,5 +25,3 @@ namespace SharpTox.Dns
         internal static extern int DecryptDns3TXT(ToxDnsHandle dns3Object, byte[] toxId, byte[] idRecord, uint idRecordLenght, uint requestId);
     }
 }
-
-#pragma warning restore 1591
