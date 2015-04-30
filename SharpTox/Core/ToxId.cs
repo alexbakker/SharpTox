@@ -43,8 +43,8 @@ namespace SharpTox.Core
         {
             get
             {
-                byte[] nospam = new byte[4];
-                Array.Copy(_id, 32, nospam, 0, 4);
+                byte[] nospam = new byte[sizeof(uint)];
+                Array.Copy(_id, ToxConstants.PublicKeySize, nospam, 0, sizeof(uint));
 
                 return BitConverter.ToUInt32(nospam, 0);
             }
@@ -58,8 +58,8 @@ namespace SharpTox.Core
         {
             get
             {
-                byte[] checksum = new byte[2];
-                Array.Copy(_id, 36, checksum, 0, 2);
+                byte[] checksum = new byte[sizeof(ushort)];
+                Array.Copy(_id, ToxConstants.PublicKeySize + sizeof(uint), checksum, 0, sizeof(ushort));
 
                 return BitConverter.ToUInt16(checksum, 0);
             }
@@ -82,7 +82,7 @@ namespace SharpTox.Core
         {
             _id = id;
 
-            if (CalcChecksum(_id, 36) != Checksum)
+            if (CalcChecksum(_id, ToxConstants.PublicKeySize + sizeof(uint)) != Checksum)
                 throw new Exception("This Tox ID is invalid");
         }
 
@@ -146,13 +146,14 @@ namespace SharpTox.Core
 
             try
             {
-                byte[] checksum = new byte[2];
+                byte[] checksum = new byte[sizeof(ushort)];
+                int index = ToxConstants.PublicKeySize + sizeof(uint);
                 ushort check;
-
-                Array.Copy(id, 36, checksum, 0, 2);
+                
+                Array.Copy(id, index, checksum, 0, sizeof(ushort));
                 check = BitConverter.ToUInt16(checksum, 0);
 
-                return CalcChecksum(id, 36) == check;
+                return CalcChecksum(id, index) == check;
             }
             catch
             {
@@ -162,7 +163,7 @@ namespace SharpTox.Core
 
         private static ushort CalcChecksum(byte[] address, int length)
         {
-            byte[] checksum = new byte[2];
+            byte[] checksum = new byte[sizeof(ushort)];
 
             for (uint i = 0; i < length; i++)
                 checksum[i % 2] ^= address[i];
