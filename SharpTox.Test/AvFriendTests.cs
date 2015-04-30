@@ -36,12 +36,6 @@ namespace SharpTox.Test
             bool answered = false;
             _toxAv1.Call(0, 48, 30000);
 
-            //toxav is kind of silly and requires us to register a callback in order to start a call
-            _toxAv1.OnAudioFrameReceived += (s, e) => { };
-            _toxAv2.OnAudioFrameReceived += (s, e) => { };
-            _toxAv1.OnVideoFrameReceived += (s, e) => { };
-            _toxAv2.OnVideoFrameReceived += (s, e) => { };
-
             _toxAv2.OnCallRequestReceived += (sender, e) =>
             {
                 var error2 = ToxAvErrorAnswer.Ok;

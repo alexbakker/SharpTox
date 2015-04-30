@@ -65,6 +65,10 @@ namespace SharpTox.Av
 
             if (_toxAv == null || _toxAv.IsInvalid || error != ToxAvErrorNew.Ok)
                 throw new Exception("Could not create a new instance of toxav.");
+
+            //register audio/video callbacks early on
+            //due to toxav being silly, we can't start calls without registering those beforehand
+            RegisterAudioVideoCallbacks();
         }
 
         /// <summary>
@@ -102,6 +106,24 @@ namespace SharpTox.Av
                 _toxAv.Dispose();
 
             _disposed = true;
+        }
+
+        private void RegisterAudioVideoCallbacks()
+        {
+            _onReceiveAudioFrameCallback = (IntPtr toxAv, uint friendNumber, IntPtr pcm, uint sampleCount, byte channels, uint samplingRate, IntPtr userData) =>
+            {
+                if (OnAudioFrameReceived != null)
+                    OnAudioFrameReceived(this, new ToxAvEventArgs.AudioFrameEventArgs((int)friendNumber, new ToxAvAudioFrame(pcm, sampleCount, samplingRate, channels)));
+            };
+
+            _onReceiveVideoFrameCallback = (IntPtr toxAv, uint friendNumber, ushort width, ushort height, IntPtr y, IntPtr u, IntPtr v, int yStride, int uStride, int vStride, IntPtr userData) =>
+            {
+                if (OnVideoFrameReceived != null)
+                    OnVideoFrameReceived(this, new ToxAvEventArgs.VideoFrameEventArgs((int)friendNumber, new ToxAvVideoFrame(width, height, y, u, v)));
+            };
+
+            ToxAvFunctions.RegisterReceiveAudioFrameCallback(_toxAv, _onReceiveAudioFrameCallback, IntPtr.Zero);
+            ToxAvFunctions.RegisterReceiveVideoFrameCallback(_toxAv, _onReceiveVideoFrameCallback, IntPtr.Zero);
         }
 
         /// <summary>
@@ -481,73 +503,15 @@ namespace SharpTox.Av
             }
         }
 
-        private EventHandler<ToxAvEventArgs.VideoFrameEventArgs> _onReceiveVideoFrame;
-
         /// <summary>
         /// Occurs when an video frame is received.
         /// </summary>
-        public event EventHandler<ToxAvEventArgs.VideoFrameEventArgs> OnVideoFrameReceived
-        {
-            add
-            {
-                if (_onReceiveVideoFrameCallback == null)
-                {
-                    _onReceiveVideoFrameCallback = (IntPtr toxAv, uint friendNumber, ushort width, ushort height, IntPtr y, IntPtr u, IntPtr v, int yStride, int uStride, int vStride, IntPtr userData) =>
-                    {
-                        if (_onReceiveVideoFrame != null)
-                            _onReceiveVideoFrame(this, new ToxAvEventArgs.VideoFrameEventArgs((int)friendNumber, new ToxAvVideoFrame(width, height, y, u, v)));
-                    };
-
-                    ToxAvFunctions.RegisterReceiveVideoFrameCallback(_toxAv, _onReceiveVideoFrameCallback, IntPtr.Zero);
-                }
-
-                _onReceiveVideoFrame += value;
-            }
-            remove
-            {
-                if (_onReceiveVideoFrameCallback.GetInvocationList().Length == 1)
-                {
-                    ToxAvFunctions.RegisterReceiveVideoFrameCallback(_toxAv, null, IntPtr.Zero);
-                    _onReceiveVideoFrameCallback = null;
-                }
-
-                _onReceiveVideoFrame -= value;
-            }
-        }
-
-        private EventHandler<ToxAvEventArgs.AudioFrameEventArgs> _onReceiveAudioFrame;
+        public event EventHandler<ToxAvEventArgs.VideoFrameEventArgs> OnVideoFrameReceived;
 
         /// <summary>
         /// Occurs when an audio frame is received.
         /// </summary>
-        public event EventHandler<ToxAvEventArgs.AudioFrameEventArgs> OnAudioFrameReceived
-        {
-            add
-            {
-                if (_onReceiveAudioFrameCallback == null)
-                {
-                    _onReceiveAudioFrameCallback = (IntPtr toxAv, uint friendNumber, IntPtr pcm, uint sampleCount, byte channels, uint samplingRate, IntPtr userData) =>
-                    {
-                        if (_onReceiveAudioFrame != null)
-                            _onReceiveAudioFrame(this, new ToxAvEventArgs.AudioFrameEventArgs((int)friendNumber, new ToxAvAudioFrame(pcm, sampleCount, samplingRate, channels)));
-                    };
-
-                    ToxAvFunctions.RegisterReceiveAudioFrameCallback(_toxAv, _onReceiveAudioFrameCallback, IntPtr.Zero);
-                }
-
-                _onReceiveAudioFrame += value;
-            }
-            remove
-            {
-                if (_onReceiveAudioFrameCallback.GetInvocationList().Length == 1)
-                {
-                    ToxAvFunctions.RegisterReceiveAudioFrameCallback(_toxAv, null, IntPtr.Zero);
-                    _onReceiveAudioFrameCallback = null;
-                }
-
-                _onReceiveAudioFrame -= value;
-            }
-        }
+        public event EventHandler<ToxAvEventArgs.AudioFrameEventArgs> OnAudioFrameReceived;
 
         /// <summary>
         /// Occurs when an audio frame was received from a group.
