@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("SharpTox.Test")]
+[assembly: AssemblyTitle("SharpTox.Tests")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("SharpTox.Test")]
+[assembly: AssemblyProduct("SharpTox.Tests")]
 [assembly: AssemblyCopyright("Copyright ©  2015")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("665f3e3f-daf7-4b52-bff5-ed8d3e6de5a7")]
+[assembly: Guid("3138d06c-2fb7-413d-be1d-583600185d4d")]
 
 // Version information for an assembly consists of the following four values:
 //

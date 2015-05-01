@@ -1,17 +1,18 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
+﻿using System;
 using System.Linq;
 using System.Threading;
 using SharpTox.Core;
 using SharpTox.Encryption;
 using System.Runtime.InteropServices;
+using NUnit.Framework;
+using System.Threading.Tasks;
 
 namespace SharpTox.Test
 {
-    [TestClass]
-    public class CoreSelfTests
+    [TestFixture]
+    public class CoreSelfTests : ExtendedTestClass
     {
-        [TestMethod]
+        [Test]
         public void TestToxPortBind()
         {
             var tox1 = new Tox(new ToxOptions(true, false));
@@ -30,7 +31,7 @@ namespace SharpTox.Test
             tox2.Dispose();
         }
 
-        [TestMethod]
+        [Test]
         public void TestToxLoadData()
         {
             var tox1 = new Tox(ToxOptions.Default);
@@ -53,7 +54,7 @@ namespace SharpTox.Test
             tox2.Dispose();
         }
 
-        [TestMethod]
+        [Test]
         public void TestToxSelfName()
         {
             var tox = new Tox(ToxOptions.Default);
@@ -66,7 +67,7 @@ namespace SharpTox.Test
             tox.Dispose();
         }
 
-        [TestMethod]
+        [Test]
         public void TestToxSelfStatusMessage()
         {
             var tox = new Tox(ToxOptions.Default);
@@ -79,7 +80,7 @@ namespace SharpTox.Test
             tox.Dispose();
         }
 
-        [TestMethod]
+        [Test]
         public void TestToxSelfStatus()
         {
             var tox = new Tox(ToxOptions.Default);
@@ -92,7 +93,7 @@ namespace SharpTox.Test
             tox.Dispose();
         }
 
-        [TestMethod]
+        [Test]
         public void TestToxNospam()
         {
             var tox = new Tox(ToxOptions.Default);
@@ -109,7 +110,7 @@ namespace SharpTox.Test
         }
 
         [Ignore]
-        [TestMethod]
+        [Test]
         public void TestToxEncryption()
         {
             var key = new ToxEncryptionKey("heythisisatest");
@@ -127,7 +128,7 @@ namespace SharpTox.Test
         }
 
         [Ignore]
-        [TestMethod]
+        [Test]
         public void TestToxEncryptionLoad()
         {
             var tox1 = new Tox(ToxOptions.Default);
@@ -155,7 +156,7 @@ namespace SharpTox.Test
             tox2.Dispose();
         }
 
-        [TestMethod]
+        [Test]
         [Timeout(120000)]
         [Ignore]
         public void TestToxProxySocks5()
@@ -176,6 +177,59 @@ namespace SharpTox.Test
 
             Console.WriteLine("Tox connected!");
             tox.Dispose();
+        }
+
+        [Test]
+        public void TestToxFriendRequest()
+        {
+            var options = new ToxOptions(true, true);
+            var tox1 = new Tox(options);
+            var tox2 = new Tox(options);
+            var error = ToxErrorFriendAdd.Ok;
+            string message = "Hey, this is a test friend request.";
+            bool testFinished = false;
+
+            Task.Run(async () =>
+            {
+                while (!testFinished)
+                {
+                    int time1 = tox1.Iterate();
+                    int time2 = tox2.Iterate();
+
+                    await Task.Delay(Math.Min(time1, time2));
+                }
+            });
+
+            tox1.AddFriend(tox2.Id, message, out error);
+            if (error != ToxErrorFriendAdd.Ok)
+                Assert.Fail("Failed to add friend: {0}", error);
+
+            tox2.OnFriendRequestReceived += (object sender, ToxEventArgs.FriendRequestEventArgs args) =>
+            {
+                if (args.Message != message)
+                {
+                    Fail("Message received in the friend request is not the same as the one that was sent");
+                    return;
+                }
+
+                tox2.AddFriendNoRequest(args.PublicKey, out error);
+                if (error != ToxErrorFriendAdd.Ok)
+                {
+                    Fail("Failed to add friend (no request): {0}", error);
+                    return;
+                }
+
+                if (!tox2.FriendExists(0))
+                    Fail("Friend doesn't exist according to core");
+            };
+
+            while (tox1.GetFriendConnectionStatus(0) == ToxConnectionStatus.None && _wait) { Thread.Sleep(10); }
+
+            testFinished = true;
+            tox1.Dispose();
+            tox2.Dispose();
+
+            CheckFailed();
         }
     }
 }

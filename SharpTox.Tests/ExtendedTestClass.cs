@@ -1,4 +1,4 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using NUnit.Framework;
 
 namespace SharpTox.Test
 {
@@ -7,6 +7,13 @@ namespace SharpTox.Test
         protected volatile string _failReason = string.Empty;
         protected volatile bool _failed = false;
         protected volatile bool _wait = true;
+
+        protected void Reset()
+        {
+            _failReason = string.Empty;
+            _failed = false;
+            _wait = true;
+        }
 
         /// <summary>
         /// Stores a fail reason for later use with CheckFailed()
