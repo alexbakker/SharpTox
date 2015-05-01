@@ -260,7 +260,7 @@ namespace SharpTox.Core
                 }
             }
 
-            if (!_tox.IsInvalid && !_tox.IsClosed && _tox != null)
+            if (_tox != null && !_tox.IsInvalid && !_tox.IsClosed)
                 _tox.Dispose();
 
             _disposed = true;

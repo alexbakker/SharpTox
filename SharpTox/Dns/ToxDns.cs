@@ -49,7 +49,7 @@ namespace SharpTox.Dns
 
             if (disposing) { }
 
-            if (!_toxDns3.IsInvalid && !_toxDns3.IsClosed && _toxDns3 != null)
+            if (_toxDns3 != null && !_toxDns3.IsInvalid && !_toxDns3.IsClosed)
                 _toxDns3.Dispose();
 
             _disposed = true;
