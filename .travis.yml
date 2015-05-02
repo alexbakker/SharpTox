@@ -8,5 +8,5 @@ install:
 # - nuget install NUnit.Runners -Version 2.6.4 -OutputDirectory testrunner
 
 script:
-  - xbuild /p:Configuration=Debug solution-name.sln
+  - xbuild /p:Configuration=Debug SharpTox.sln
 # - mono ./testrunner/NUnit.Runners.2.6.4/tools/nunit-console.exe ./SharpTox/bin/Debug/SharpTox.Tests.dll
