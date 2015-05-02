@@ -10,11 +10,36 @@ Feel free to contribute!
 
 * The libtox(core, av and dns) library, you should compile that yourself from the [ProjectTox GitHub repo](https://github.com/irungentoo/ProjectTox-Core "Tox Github repo"). Guidelines on how to do this can be found [here](https://github.com/irungentoo/toxcore/blob/master/INSTALL.md "Crosscompile guidelines"). If you don't feel like compiling this yourself, you can find automatic builds for windows here: [x86](https://jenkins.libtoxcore.so/job/toxcore_win32_dll/ "x86 dll") or [x64](https://jenkins.libtoxcore.so/job/toxcore_win64_dll/ "x64 dll")
 
-* Depending on how you compiled the core libraries, the names of those may differ from the defaults in SharpTox. Be sure to change the value of the const string **dll** in ToxFunctions.cs, ToxAvFunctions.cs, ToxDnsFunctions.cs and ToxEncryptionFunctions.cs accordingly if needed.
+Depending on how you compiled the core libraries, the names of those may differ from the defaults in SharpTox. Be sure to change the value of the const string **dll** in ToxFunctions.cs, ToxAvFunctions.cs, ToxDnsFunctions.cs and ToxEncryptionFunctions.cs accordingly if needed.
+
+### Compiling and Testing
+##### Windows
+* Clone this repository.
+* Open SharpTox.sln in Visual Studio.
+* Let Visual Studio restore the NuGet packages.
+* Run the tests from the Test Explorer.
+
+Or from the command line (Be sure to install [NUnit](http://www.nunit.org/index.php?p=download) and [NuGet](https://nuget.codeplex.com/) first):
+
+```
+git clone https://github.com/Impyy/SharpTox
+nuget restore
+msbuild /p:Configuration:Debug
+nunit-console-x86 SharpTox.Tests/bin/Debug/SharpTox.Tests.dll
+```
+
+##### Linux
+* Install 'mono-complete' (this should include nunit), grab the latest version of [NuGet](https://nuget.codeplex.com/) and execute the following commands:
+```
+git clone https://github.com/Impyy/SharpTox
+mono NuGet.exe restore
+xbuild /p:Configuration="Debug POSIX"
+nunit-console4 SharpTox.Tests/bin/Debug/SharpTox.Tests.dll
+```
+If you're having issues obtaining the NuGet packages, try executing:
+```mozroots --import --sync```
 
 Looking for precompiled binaries? [Check this](https://jenkins.impy.me/ "SharpTox Binaries").
-
-SharpTox should also work on Unix-like systems (mostly untested). Select the POSIX build configs if you're interested in that.
 
 ### Basic Usage
 ```csharp
@@ -72,12 +97,6 @@ class Program
 }
 
 ```
-
-Toxy
--------
-If you're considering using SharpTox for your project, you should definitely have a look at Toxy. Toxy is a metro-style Tox client for windows. It has most of the functionality of Tox implemented.
-
-Toxy is available [here](https://github.com/Reverp/Toxy-WPF).
 
 Contact
 -------
