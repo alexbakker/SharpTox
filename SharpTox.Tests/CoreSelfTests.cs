@@ -1,18 +1,18 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
+﻿using System;
 using System.Linq;
 using System.Threading;
 using SharpTox.Core;
 using SharpTox.Encryption;
 using System.Runtime.InteropServices;
+using NUnit.Framework;
 using System.Threading.Tasks;
 
 namespace SharpTox.Test
 {
-    [TestClass]
+    [TestFixture]
     public class CoreSelfTests : ExtendedTestClass
     {
-        [TestMethod]
+        [Test]
         public void TestToxPortBind()
         {
             var tox1 = new Tox(new ToxOptions(true, false));
@@ -31,7 +31,7 @@ namespace SharpTox.Test
             tox2.Dispose();
         }
 
-        [TestMethod]
+        [Test]
         public void TestToxLoadData()
         {
             var tox1 = new Tox(ToxOptions.Default);
@@ -54,7 +54,7 @@ namespace SharpTox.Test
             tox2.Dispose();
         }
 
-        [TestMethod]
+        [Test]
         public void TestToxSelfName()
         {
             var tox = new Tox(ToxOptions.Default);
@@ -67,7 +67,7 @@ namespace SharpTox.Test
             tox.Dispose();
         }
 
-        [TestMethod]
+        [Test]
         public void TestToxSelfStatusMessage()
         {
             var tox = new Tox(ToxOptions.Default);
@@ -80,7 +80,7 @@ namespace SharpTox.Test
             tox.Dispose();
         }
 
-        [TestMethod]
+        [Test]
         public void TestToxSelfStatus()
         {
             var tox = new Tox(ToxOptions.Default);
@@ -93,7 +93,7 @@ namespace SharpTox.Test
             tox.Dispose();
         }
 
-        [TestMethod]
+        [Test]
         public void TestToxNospam()
         {
             var tox = new Tox(ToxOptions.Default);
@@ -110,7 +110,7 @@ namespace SharpTox.Test
         }
 
         [Ignore]
-        [TestMethod]
+        [Test]
         public void TestToxEncryption()
         {
             var key = new ToxEncryptionKey("heythisisatest");
@@ -128,7 +128,7 @@ namespace SharpTox.Test
         }
 
         [Ignore]
-        [TestMethod]
+        [Test]
         public void TestToxEncryptionLoad()
         {
             var tox1 = new Tox(ToxOptions.Default);
@@ -156,7 +156,7 @@ namespace SharpTox.Test
             tox2.Dispose();
         }
 
-        [TestMethod]
+        [Test]
         [Timeout(120000)]
         [Ignore]
         public void TestToxProxySocks5()
@@ -179,7 +179,7 @@ namespace SharpTox.Test
             tox.Dispose();
         }
 
-        [TestMethod]
+        [Test]
         public void TestToxFriendRequest()
         {
             var options = new ToxOptions(true, true);

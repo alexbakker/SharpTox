@@ -3,20 +3,20 @@ using System.Threading;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SharpTox.Core;
+using NUnit.Framework;
 
 namespace SharpTox.Test
 {
-    [TestClass]
+    [TestFixture]
     public class CoreFriendTests : ExtendedTestClass
     {
-        private static bool _running = true;
-        private static Tox _tox1;
-        private static Tox _tox2;
+        private bool _running = true;
+        private Tox _tox1;
+        private Tox _tox2;
 
-        [ClassInitialize()]
-        public static void InitClass(TestContext context)
+        [TestFixtureSetUp]
+        public void Init()
         {
             var options = new ToxOptions(true, true);
             _tox1 = new Tox(options);
@@ -30,16 +30,23 @@ namespace SharpTox.Test
             while (_tox1.GetFriendConnectionStatus(0) == ToxConnectionStatus.None) { Thread.Sleep(10); }
         }
 
-        [ClassCleanup()]
-        public static void ClassCleanup()
+        [TestFixtureTearDown]
+        public void Cleanup()
         {
             _running = false;
 
             _tox1.Dispose();
             _tox2.Dispose();
         }
+
+        [SetUp]
+        [TearDown]
+        public void ResetState()
+        {
+            Reset();
+        }
        
-        private static void DoLoop()
+        private void DoLoop()
         {
             Task.Run(async () =>
             {
@@ -53,7 +60,7 @@ namespace SharpTox.Test
             });
         }
 
-        [TestMethod]
+        [Test]
         public void TestToxMessage()
         {
             string messageFormat = "Hey! This is test message number ";
@@ -83,7 +90,7 @@ namespace SharpTox.Test
             Console.WriteLine("Received all messages without errors");
         }
 
-        [TestMethod]
+        [Test]
         public void TestToxAction()
         {
             string actionFormat = "Hey! This is test action number ";
@@ -113,7 +120,7 @@ namespace SharpTox.Test
             Console.WriteLine("Received all actions without errors");
         }
 
-        [TestMethod]
+        [Test]
         public void TestToxName()
         {
             string name = "Test, test and test";
@@ -131,7 +138,7 @@ namespace SharpTox.Test
             CheckFailed();
         }
 
-        [TestMethod]
+        [Test]
         public void TestToxStatus()
         {
             var status = ToxUserStatus.Busy;
@@ -149,7 +156,7 @@ namespace SharpTox.Test
             CheckFailed();
         }
 
-        [TestMethod]
+        [Test]
         public void TestToxStatusMessage()
         {
             string message = "Test, test and test";
@@ -167,7 +174,7 @@ namespace SharpTox.Test
             CheckFailed();
         }
 
-        [TestMethod]
+        [Test]
         public void TestToxTyping()
         {
             bool isTyping = true;
@@ -198,7 +205,7 @@ namespace SharpTox.Test
             }
         }
 
-        [TestMethod]
+        [Test]
         public void TestToxFriendPublicKey()
         {
             var error = ToxErrorFriendGetPublicKey.Ok;
@@ -212,7 +219,7 @@ namespace SharpTox.Test
                 Assert.Fail("Could not get friend by public key, error: {0}, friend: {1}", error2, friend);
         }
 
-        [TestMethod]
+        [Test]
         public void TestToxLossyPacket()
         {
             int receivedPackets = 0;
@@ -245,7 +252,7 @@ namespace SharpTox.Test
             CheckFailed();
         }
 
-        [TestMethod]
+        [Test]
         public void TestToxLosslessPacket()
         {
             int receivedPackets = 0;
@@ -278,7 +285,7 @@ namespace SharpTox.Test
             CheckFailed();
         }
 
-        [TestMethod]
+        [Test]
         public void TestToxFileTransfer()
         {
             byte[] fileData = new byte[0xBEEEF];
@@ -307,7 +314,7 @@ namespace SharpTox.Test
                 }
             };
 
-            _tox2.OnFileSendRequestReceived += (object sender, ToxEventArgs.FileSendRequestEventArgs args) => 
+            _tox2.OnFileSendRequestReceived += (object sender, ToxEventArgs.FileSendRequestEventArgs args) =>
             {
                 if (fileName != args.FileName)
                 {

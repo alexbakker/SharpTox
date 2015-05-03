@@ -102,7 +102,7 @@ namespace SharpTox.Av
                 }
             }
 
-            if (!_toxAv.IsInvalid && !_toxAv.IsClosed && _toxAv != null)
+            if (_toxAv != null && !_toxAv.IsInvalid && !_toxAv.IsClosed)
                 _toxAv.Dispose();
 
             _disposed = true;

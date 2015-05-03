@@ -17,26 +17,24 @@ namespace SharpTox.Dns
         /// </summary>
         public ToxDnsHandle Handle
         {
-            get
-            {
-                ThrowIfDisposed();
-
-                return _toxDns3;
-            }
+            get { return _toxDns3; }
         }
 
         /// <summary>
         /// Initializes a new instance of tox dns3.
         /// </summary>
-        /// <param name="publicKey"></param>
-        public ToxDns(string publicKey)
+        /// <param name="publicKey">The public key that this instance of toxdns should be initialized with.</param>
+        public ToxDns(ToxKey publicKey)
         {
-            _toxDns3 = ToxDnsFunctions.New(ToxTools.StringToHexBin(publicKey));
+            _toxDns3 = ToxDnsFunctions.New(publicKey.GetBytes());
 
             if (_toxDns3 == null || _toxDns3.IsInvalid)
-                throw new Exception("Could not create a new tox_dns3 instance with the provided public_key");
+                throw new Exception("Could not create a new tox_dns3 instance with the provided publicKey");
         }
 
+        /// <summary>
+        /// Releases all resources used by this instance of tox dns3.
+        /// </summary>
         public void Dispose()
         {
             Dispose(true);
@@ -51,26 +49,17 @@ namespace SharpTox.Dns
 
             if (disposing) { }
 
-            if (!_toxDns3.IsInvalid && !_toxDns3.IsClosed && _toxDns3 != null)
+            if (_toxDns3 != null && !_toxDns3.IsInvalid && !_toxDns3.IsClosed)
                 _toxDns3.Dispose();
 
             _disposed = true;
         }
 
         /// <summary>
-        /// Destroys the tox dns3 object.
-        /// </summary>
-        [Obsolete("Use Dispose() instead", true)]
-        public void Kill()
-        {
-            _toxDns3.Dispose();
-        }
-
-        /// <summary>
         /// Generates a dns3 string used to query the dns server.
         /// </summary>
         /// <param name="name">Name of the registered user.</param>
-        /// <param name="requestId"></param>
+        /// <param name="requestId">The request id, to be used when calling DecryptDns3TXT.</param>
         /// <returns></returns>
         [CLSCompliant(false)]
         public string GenerateDns3String(string name, out uint requestId)
@@ -93,15 +82,15 @@ namespace SharpTox.Dns
         /// <summary>
         /// Decodes and decrypts the dns3 string returned by <see cref="GenerateDns3String"/>.
         /// </summary>
-        /// <param name="dns3String"></param>
-        /// <param name="requestId"></param>
+        /// <param name="dns3String">String to decrypt.</param>
+        /// <param name="requestId">The request id retrieved with GenerateDns3String.</param>
         /// <returns></returns>
         [CLSCompliant(false)]
         public string DecryptDns3TXT(string dns3String, uint requestId)
         {
             ThrowIfDisposed();
 
-            byte[] id = new byte[32 + sizeof(uint) + sizeof(ushort)];
+            byte[] id = new byte[ToxConstants.AddressSize];
             byte[] idRecordBytes = Encoding.UTF8.GetBytes(dns3String);
 
             int result = ToxDnsFunctions.DecryptDns3TXT(_toxDns3, id, idRecordBytes, (uint)idRecordBytes.Length, (uint)requestId);

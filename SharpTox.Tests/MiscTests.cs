@@ -1,17 +1,17 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
+﻿using System;
 using System.Threading;
 using SharpTox.Core;
 using System.Runtime.InteropServices;
+using NUnit.Framework;
 
 namespace SharpTox.Test
 {
-    [TestClass]
+    [TestFixture]
     public class MiscTests
     {
         private ToxOptions _options = new ToxOptions(true, true);
 
-        [TestMethod]
+        [Test]
         [Timeout(30000)]
         public void TestToxBootstrapAndConnect()
         {
@@ -32,7 +32,7 @@ namespace SharpTox.Test
             tox.Dispose();
         }
 
-        [TestMethod]
+        [Test]
         [Timeout(120000)]
         public void TestToxBootstrapAndConnectTcp()
         {
@@ -53,7 +53,7 @@ namespace SharpTox.Test
             tox.Dispose();
         }
 
-        [TestMethod]
+        [Test]
         public void TestToxHash()
         {
             byte[] data = new byte[0xBEEF];
