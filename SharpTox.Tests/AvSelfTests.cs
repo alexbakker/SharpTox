@@ -1,16 +1,16 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
 using SharpTox.Av;
 using SharpTox.Core;
 
 namespace SharpTox.Test
 {
-    [TestClass]
+    [TestFixture]
     public class AvSelfTests
     {
-        [TestMethod]
+        [Test]
         public void TestToxAvCallAndAnswer()
         {
             var options = new ToxOptions(true, true);

@@ -1,23 +1,23 @@
 using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SharpTox.Core;
 using SharpTox.Av;
 using System.Threading;
 using System.Threading.Tasks;
+using NUnit.Framework;
 
 namespace SharpTox.Test
 {
-    [TestClass]
+    [TestFixture]
     public class AvFriendTests : ExtendedTestClass
     {
-        private static bool _running = true;
-        private static Tox _tox1;
-        private static Tox _tox2;
-        private static ToxAv _toxAv1;
-        private static ToxAv _toxAv2;
+        private bool _running = true;
+        private Tox _tox1;
+        private Tox _tox2;
+        private ToxAv _toxAv1;
+        private ToxAv _toxAv2;
 
-        [ClassInitialize()]
-        public static void InitClass(TestContext context)
+        [TestFixtureSetUp]
+        public void Init()
         {
             var options = new ToxOptions(true, true);
             _tox1 = new Tox(options);
@@ -50,8 +50,8 @@ namespace SharpTox.Test
             while (!answered) { Thread.Sleep(10); }
         }
 
-        [ClassCleanup()]
-        public static void ClassCleanup()
+        [TestFixtureTearDown]
+        public void Cleanup()
         {
             _running = false;
 
@@ -62,7 +62,7 @@ namespace SharpTox.Test
             _tox2.Dispose();
         }
 
-        private static void DoLoop()
+        private void DoLoop()
         {
             Task.Run(async () =>
             {
@@ -76,7 +76,7 @@ namespace SharpTox.Test
             });
         }
 
-        [TestMethod]
+        [Test]
         public void TestToxAvAudioBitrateChange()
         {
             int bitrate = 16;
@@ -87,7 +87,7 @@ namespace SharpTox.Test
                 Assert.Fail("Failed to set audio bitrate, error: {0}, result: {1}", error, result);
         }
 
-        [TestMethod]
+        [Test]
         public void TestToxAvVideoBitrateChange()
         {
             int bitrate = 2000;
@@ -98,7 +98,7 @@ namespace SharpTox.Test
                 Assert.Fail("Failed to set video bitrate, error: {0}, result: {1}", error, result);
         }
 
-        [TestMethod]
+        [Test]
         public void TestToxAvSendControl()
         {
             var control = ToxAvCallControl.Pause;
@@ -120,7 +120,7 @@ namespace SharpTox.Test
             CheckFailed();
         }
 
-        [TestMethod]
+        [Test]
         public void TestToxAvSendAudio()
         {
             _toxAv2.OnAudioFrameReceived += (sender, e) =>
@@ -143,7 +143,7 @@ namespace SharpTox.Test
             }
         }
 
-        [TestMethod]
+        [Test]
         public void TestToxAvSendVideo()
         {
             _toxAv2.OnVideoFrameReceived += (sender, e) =>
