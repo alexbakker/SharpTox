@@ -13,11 +13,12 @@ Feel free to contribute!
 Depending on how you compiled the core libraries, the names of those may differ from the defaults in SharpTox. Be sure to change the value of the const string **dll** in ToxFunctions.cs, ToxAvFunctions.cs, ToxDnsFunctions.cs and ToxEncryptionFunctions.cs accordingly if needed.
 
 ### Compiling and Testing
+Assuming you have the libraries mentioned above installed, it's time to compile (and test) SharpTox.
 ##### Windows
 * Clone this repository.
 * Open SharpTox.sln in Visual Studio.
-* Let Visual Studio restore the NuGet packages.
-* Run the tests from the Test Explorer.
+* Let Visual Studio restore the NuGet packages and build the solution.
+* Optionally, run the tests by clicking 'Run All' in the Test Explorer.
 
 Or from the command line (Be sure to install [NUnit](http://www.nunit.org/index.php?p=download) and [NuGet](https://nuget.codeplex.com/) first):
 
@@ -39,7 +40,7 @@ nunit-console4 SharpTox.Tests/bin/Debug/SharpTox.Tests.dll
 If you're having issues obtaining the NuGet packages, try executing:
 ```mozroots --import --sync```
 
-Looking for precompiled binaries? [Check this](https://jenkins.impy.me/ "SharpTox Binaries").
+**Looking for precompiled binaries? [Check this](https://jenkins.impy.me/ "SharpTox Binaries").**
 
 ### Basic Usage
 ```csharp
