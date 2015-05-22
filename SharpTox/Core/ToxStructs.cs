@@ -65,6 +65,12 @@ namespace SharpTox.Core
         public ushort EndPort;
 
         /// <summary>
+        /// The port to use for a TCP server. This can be disabled by assigning 0.
+        /// </summary>
+        [CLSCompliant(false)]
+        public ushort TcpPort;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="ToxOptions"/> struct.
         /// </summary>
         /// <param name="ipv6Enabled">Whether or not IPv6 should be enabled.</param>
@@ -78,6 +84,7 @@ namespace SharpTox.Core
             ProxyPort = 0;
             StartPort = 0;
             EndPort = 0;
+            TcpPort = 0;
         }
 
         /// <summary>
@@ -102,6 +109,7 @@ namespace SharpTox.Core
             ProxyPort = (ushort)proxyPort;
             StartPort = 0;
             EndPort = 0;
+            TcpPort = 0;
         }
 
         public static bool operator ==(ToxOptions options1, ToxOptions options2)
