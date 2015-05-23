@@ -15,16 +15,16 @@ namespace SharpTox.Core
 #endif
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_new")]
-        internal static extern ToxHandle New(ref ToxOptions options, byte[] data, uint length, ref ToxErrorNew error);
+        internal static extern ToxHandle New(ref ToxOptionsStruct options, byte[] data, uint length, ref ToxErrorNew error);
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_options_default")]
-        internal static extern void OptionsDefault(ref ToxOptions options);
+        internal static extern void OptionsDefault(ref ToxOptionsStruct options);
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_options_new")]
         internal static extern IntPtr OptionsNew(ref ToxErrorOptionsNew error);
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_options_free")]
-        internal static extern void OptionsFree(ref ToxOptions options);
+        internal static extern void OptionsFree(ref ToxOptionsStruct options);
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_options_free")]
         internal static extern void OptionsFree(IntPtr options);

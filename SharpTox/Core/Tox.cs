@@ -194,7 +194,9 @@ namespace SharpTox.Core
         public Tox(ToxOptions options)
         {
             var error = ToxErrorNew.Ok;
-            _tox = ToxFunctions.New(ref options, null, 0, ref error);
+            var optionsStruct = options.Struct;
+
+            _tox = ToxFunctions.New(ref optionsStruct, null, 0, ref error);
 
             if (_tox == null || _tox.IsInvalid || error != ToxErrorNew.Ok)
                 throw new Exception("Could not create a new instance of tox, error: " + error.ToString());
@@ -213,10 +215,12 @@ namespace SharpTox.Core
             if (data == null)
                 throw new ArgumentNullException("data");
 
+            var optionsStruct = options.Struct;
+
             if (key == null || !data.IsEncrypted)
             {
                 var error = ToxErrorNew.Ok;
-                _tox = ToxFunctions.New(ref options, data.Bytes, (uint)data.Bytes.Length, ref error);
+                _tox = ToxFunctions.New(ref optionsStruct, data.Bytes, (uint)data.Bytes.Length, ref error);
 
                 if (_tox == null || _tox.IsInvalid || error != ToxErrorNew.Ok)
                     throw new Exception("Could not create a new instance of tox, error: " + error.ToString());
@@ -227,7 +231,7 @@ namespace SharpTox.Core
                 var decryptError = ToxErrorDecryption.Ok;
                 byte[] decryptedData = ToxEncryption.DecryptData(data.Bytes, key, out decryptError);
 
-                _tox = ToxFunctions.New(ref options, decryptedData, (uint)decryptedData.Length, ref error);
+                _tox = ToxFunctions.New(ref optionsStruct, decryptedData, (uint)decryptedData.Length, ref error);
 
                 if (_tox == null || _tox.IsInvalid || error != ToxErrorNew.Ok || decryptError != ToxErrorDecryption.Ok)
                     throw new Exception(string.Format("Could not create a new instance of tox, error: {0}, decrypt error: {1}" + error.ToString(), decryptError.ToString()));
