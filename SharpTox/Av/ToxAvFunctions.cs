@@ -12,6 +12,18 @@ namespace SharpTox.Av
 		const string dll = "libtox";
 #endif
 
+        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "toxav_version_major")]
+        internal static extern uint VersionMajor();
+
+        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "toxav_version_minor")]
+        internal static extern uint VersionMinor();
+
+        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "toxav_version_patch")]
+        internal static extern uint VersionPatch();
+
+        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "toxav_version_is_compatible")]
+        internal static extern bool VersionIsCompatible(uint major, uint minor, uint patch);
+
         #region Functions
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "toxav_new")]
         internal static extern ToxAvHandle New(ToxHandle tox, ref ToxAvErrorNew error);

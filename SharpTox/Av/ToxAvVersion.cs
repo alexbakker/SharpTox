@@ -1,15 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using SharpTox.Core;
 
-namespace SharpTox.Core
+namespace SharpTox.Av
 {
     /// <summary>
-    /// Represents a version of Tox.
+    /// Represents a version of ToxAv.
     /// </summary>
-    public class ToxVersion
+    public class ToxAvVersion
     {
         /// <summary>
         /// The major version number. Incremented when the API or ABI changes in an incompatible way.
@@ -30,14 +26,14 @@ namespace SharpTox.Core
         /// <summary>
         /// The current version of Tox. Assuming there's a libtox.dll/libtoxcore.so in our PATH.
         /// </summary>
-        public static ToxVersion Current
+        public static ToxAvVersion Current
         {
             get
             {
-                return new ToxVersion(
-                    (int)ToxFunctions.VersionMajor(),
-                    (int)ToxFunctions.VersionMinor(),
-                    (int)ToxFunctions.VersionPatch());
+                return new ToxAvVersion(
+                    (int)ToxAvFunctions.VersionMajor(),
+                    (int)ToxAvFunctions.VersionMinor(),
+                    (int)ToxAvFunctions.VersionPatch());
             }
         }
 
@@ -47,7 +43,7 @@ namespace SharpTox.Core
         /// <returns>True if this version is compatible, false if it's not.</returns>
         public bool IsCompatible()
         {
-            return ToxFunctions.VersionIsCompatible((uint)Major, (uint)Minor, (uint)Patch);
+            return ToxAvFunctions.VersionIsCompatible((uint)Major, (uint)Minor, (uint)Patch);
         }
 
         /// <summary>
@@ -56,7 +52,7 @@ namespace SharpTox.Core
         /// <param name="major">The major version number.</param>
         /// <param name="minor">The minor version number.</param>
         /// <param name="patch">The patch or revision number.</param>
-        public ToxVersion(int major, int minor, int patch)
+        public ToxAvVersion(int major, int minor, int patch)
         {
             Major = major;
             Minor = minor;
