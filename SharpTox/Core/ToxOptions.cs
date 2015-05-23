@@ -171,29 +171,5 @@ namespace SharpTox.Core
         internal ushort StartPort;
         internal ushort EndPort;
         internal ushort TcpPort;
-
-        internal ToxOptionsStruct(bool ipv6Enabled, bool udpEnabled)
-        {
-            Ipv6Enabled = ipv6Enabled;
-            UdpEnabled = udpEnabled;
-            ProxyType = ToxProxyType.None;
-            ProxyHost = null;
-            ProxyPort = 0;
-            StartPort = 0;
-            EndPort = 0;
-            TcpPort = 0;
-        }
-
-        internal ToxOptionsStruct(bool ipv6Enabled, ToxProxyType type, string proxyAddress, int proxyPort)
-        {
-            Ipv6Enabled = ipv6Enabled;
-            UdpEnabled = false;
-            ProxyType = type;
-            ProxyHost = proxyAddress;
-            ProxyPort = (ushort)proxyPort;
-            StartPort = 0;
-            EndPort = 0;
-            TcpPort = 0;
-        }
     }
 }
