@@ -96,7 +96,7 @@ namespace SharpTox.Core
         {
             _options = options;
         }
-        
+
         /// <summary>
         /// Initializes a new instance of the <see cref="ToxOptions"/> struct.
         /// </summary>
@@ -156,6 +156,24 @@ namespace SharpTox.Core
             }
         }
 
+        internal void SetData(byte[] data, ToxSaveDataType type)
+        {
+            if (type == ToxSaveDataType.SecretKey && data.Length != ToxConstants.SecretKeySize)
+                throw new ArgumentException("Data must have a length of ToxConstants.SecretKeySize bytes", "data");
+
+            SaveDataType = type;
+            SaveDataLength = (uint)data.Length;
+            SaveData = Marshal.AllocHGlobal(data.Length);
+
+            Marshal.Copy(data, 0, SaveData, data.Length);
+        }
+
+        internal void Free()
+        {
+            if (SaveData != IntPtr.Zero)
+                Marshal.FreeHGlobal(SaveData);
+        }
+
         [MarshalAs(UnmanagedType.U1)]
         internal bool Ipv6Enabled;
 
@@ -171,5 +189,9 @@ namespace SharpTox.Core
         internal ushort StartPort;
         internal ushort EndPort;
         internal ushort TcpPort;
+
+        internal ToxSaveDataType SaveDataType;
+        internal IntPtr SaveData;
+        internal uint SaveDataLength;
     }
 }

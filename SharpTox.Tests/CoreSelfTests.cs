@@ -55,6 +55,19 @@ namespace SharpTox.Test
         }
 
         [Test]
+        public void TestToxLoadSecretKey()
+        {
+            var tox1 = new Tox(ToxOptions.Default);
+            var key1 = tox1.GetPrivateKey();
+
+            var tox2 = new Tox(ToxOptions.Default, key1);
+            var key2 = tox2.GetPrivateKey();
+
+            if (key1 != key2)
+                Assert.Fail("Private keys do not match");
+        }
+
+        [Test]
         public void TestToxSelfName()
         {
             var tox = new Tox(ToxOptions.Default);

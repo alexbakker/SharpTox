@@ -739,4 +739,11 @@
         /// </summary>
         Av
     }
+
+    internal enum ToxSaveDataType
+    {
+        None,
+        ToxSave,
+        SecretKey
+    }
 }
