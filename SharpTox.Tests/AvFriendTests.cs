@@ -160,8 +160,9 @@ namespace SharpTox.Test
                 byte[] y = new byte[width * height];
                 byte[] u = new byte[(height / 2) * (width / 2)];
                 byte[] v = new byte[(height / 2) * (width / 2)];
+                byte[] a = new byte[width * height];
 
-                var frame = new ToxAvVideoFrame(800, 600, y, u, v);
+                var frame = new ToxAvVideoFrame(800, 600, y, u, v, a);
 
                 var error = ToxAvErrorSendFrame.Ok;
                 bool result = _toxAv1.SendVideoFrame(0, frame, out error);

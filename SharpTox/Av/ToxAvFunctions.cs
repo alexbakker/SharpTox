@@ -49,17 +49,17 @@ namespace SharpTox.Av
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "toxav_call_control")]
         internal static extern bool CallControl(ToxAvHandle toxAv, uint friendNumber, ToxAvCallControl control, ref ToxAvErrorCallControl error);
 
-        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "toxav_set_audio_bit_rate")]
-        internal static extern bool SetAudioBitrate(ToxAvHandle toxAv, uint friendNumber, uint audioBitrate, bool force, ref ToxAvErrorBitrate error);
+        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "toxav_audio_bit_rate_set")]
+        internal static extern bool AudioBitrateSet(ToxAvHandle toxAv, uint friendNumber, uint audioBitrate, bool force, ref ToxAvErrorBitrate error);
 
-        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "toxav_set_video_bit_rate")]
-        internal static extern bool SetVideoBitrate(ToxAvHandle toxAv, uint friendNumber, uint videoBitrate, bool force, ref ToxAvErrorBitrate error);
+        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "toxav_video_bit_rate_set")]
+        internal static extern bool VideoBitrateSet(ToxAvHandle toxAv, uint friendNumber, uint videoBitrate, bool force, ref ToxAvErrorBitrate error);
 
-        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "toxav_send_video_frame")]
-        internal static extern bool SendVideoFrame(ToxAvHandle toxAv, uint friendNumber, ushort width, ushort height, byte[] y, byte[] u, byte[] v, ref ToxAvErrorSendFrame error);
+        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "toxav_video_send_frame")]
+        internal static extern bool VideoSendFrame(ToxAvHandle toxAv, uint friendNumber, ushort width, ushort height, byte[] y, byte[] u, byte[] v, byte[] a, ref ToxAvErrorSendFrame error);
 
-        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "toxav_send_audio_frame")]
-        internal static extern bool SendAudioFrame(ToxAvHandle toxAv, uint friendNumber, short[] pcm, uint sampleCount, byte channels, uint samplingRate, ref ToxAvErrorSendFrame error);
+        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "toxav_audio_send_frame")]
+        internal static extern bool AudioSendFrame(ToxAvHandle toxAv, uint friendNumber, short[] pcm, uint sampleCount, byte channels, uint samplingRate, ref ToxAvErrorSendFrame error);
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "toxav_add_av_groupchat")]
         internal static extern int AddAvGroupchat(ToxHandle tox, ToxAvDelegates.GroupAudioReceiveCallback callback, IntPtr userData);
@@ -85,11 +85,11 @@ namespace SharpTox.Av
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "toxav_callback_video_bit_rate_status")]
         internal static extern void RegisterVideoBitrateStatusCallback(ToxAvHandle toxAv, ToxAvDelegates.BitrateStatusCallback callback, IntPtr userData);
 
-        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "toxav_callback_receive_video_frame")]
-        internal static extern void RegisterReceiveVideoFrameCallback(ToxAvHandle toxAv, ToxAvDelegates.ReceiveVideoFrameCallback callback, IntPtr userData);
+        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "toxav_callback_video_receive_frame")]
+        internal static extern void RegisterVideoReceiveFrameCallback(ToxAvHandle toxAv, ToxAvDelegates.VideoReceiveFrameCallback callback, IntPtr userData);
 
-        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "toxav_callback_receive_audio_frame")]
-        internal static extern void RegisterReceiveAudioFrameCallback(ToxAvHandle toxAv, ToxAvDelegates.ReceiveAudioFrameCallback callback, IntPtr userData);
+        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "toxav_callback_audio_receive_frame")]
+        internal static extern void RegisterAudioReceiveFrameCallback(ToxAvHandle toxAv, ToxAvDelegates.AudioReceiveFrameCallback callback, IntPtr userData);
 
         #endregion
     }

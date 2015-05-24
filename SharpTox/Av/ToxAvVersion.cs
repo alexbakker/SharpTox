@@ -24,7 +24,7 @@ namespace SharpTox.Av
         public int Patch { get; private set; }
 
         /// <summary>
-        /// The current version of Tox. Assuming there's a libtox.dll/libtoxcore.so in our PATH.
+        /// The current version of Tox. Assuming there's a libtox.dll/libtoxav.so in our PATH.
         /// </summary>
         public static ToxAvVersion Current
         {
@@ -38,7 +38,7 @@ namespace SharpTox.Av
         }
 
         /// <summary>
-        /// Checks whether or not this version is compatible with the version of Tox that we're using.
+        /// Checks whether or not this version is compatible with the version of ToxAv that we're using.
         /// </summary>
         /// <returns>True if this version is compatible, false if it's not.</returns>
         public bool IsCompatible()
@@ -47,7 +47,7 @@ namespace SharpTox.Av
         }
 
         /// <summary>
-        /// Initializes a new instance of the ToxVersion class.
+        /// Initializes a new instance of the ToxAvVersion class.
         /// </summary>
         /// <param name="major">The major version number.</param>
         /// <param name="minor">The minor version number.</param>
