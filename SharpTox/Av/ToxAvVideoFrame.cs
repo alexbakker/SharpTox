@@ -13,8 +13,7 @@ namespace SharpTox.Av
         public int Width { get; private set; }
         public int Height { get; private set; }
 
-        //this relies on the caller calling vpx_img_free (which is currently the case in toxav)
-        //if this changes in the future, call Marshal.FreeHGlobal to free things manually
+        //this relies on the caller to call vpx_img_free (which is currently the case in toxav)
         internal ToxAvVideoFrame(ushort width, ushort height, IntPtr y, IntPtr u, IntPtr v, IntPtr a, int yStride, int uStride, int vStride, int aStride)
         {
             Width = width;
