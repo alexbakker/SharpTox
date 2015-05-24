@@ -188,19 +188,24 @@ namespace SharpTox.Core
         }
 
         /// <summary>
-        /// Initializes a new instance of Tox.
+        /// Initializes a new instance of Tox. If no secret key is specified, toxcore will generate a new keypair.
         /// </summary>
         /// <param name="options">The options to initialize this instance of Tox with.</param>
-        public Tox(ToxOptions options)
+        /// <param name="secretKey">Optionally, specify the secret key to initialize this instance of Tox with. Must be ToxConstants.SecretKeySize bytes in size.</param>
+        public Tox(ToxOptions options, ToxKey secretKey = null)
         {
             var error = ToxErrorNew.Ok;
             var optionsStruct = options.Struct;
 
-            _tox = ToxFunctions.New(ref optionsStruct, null, 0, ref error);
+            if (secretKey != null)
+                optionsStruct.SetData(secretKey.GetBytes(), ToxSaveDataType.SecretKey);
+
+            _tox = ToxFunctions.New(ref optionsStruct, ref error);
 
             if (_tox == null || _tox.IsInvalid || error != ToxErrorNew.Ok)
                 throw new Exception("Could not create a new instance of tox, error: " + error.ToString());
 
+            optionsStruct.Free();
             Options = options;
         }
 
@@ -220,7 +225,9 @@ namespace SharpTox.Core
             if (key == null || !data.IsEncrypted)
             {
                 var error = ToxErrorNew.Ok;
-                _tox = ToxFunctions.New(ref optionsStruct, data.Bytes, (uint)data.Bytes.Length, ref error);
+                optionsStruct.SetData(data.Bytes, ToxSaveDataType.ToxSave);
+
+                _tox = ToxFunctions.New(ref optionsStruct, ref error);
 
                 if (_tox == null || _tox.IsInvalid || error != ToxErrorNew.Ok)
                     throw new Exception("Could not create a new instance of tox, error: " + error.ToString());
@@ -230,13 +237,15 @@ namespace SharpTox.Core
                 var error = ToxErrorNew.Ok;
                 var decryptError = ToxErrorDecryption.Ok;
                 byte[] decryptedData = ToxEncryption.DecryptData(data.Bytes, key, out decryptError);
+                optionsStruct.SetData(decryptedData, ToxSaveDataType.ToxSave);
 
-                _tox = ToxFunctions.New(ref optionsStruct, decryptedData, (uint)decryptedData.Length, ref error);
+                _tox = ToxFunctions.New(ref optionsStruct, ref error);
 
                 if (_tox == null || _tox.IsInvalid || error != ToxErrorNew.Ok || decryptError != ToxErrorDecryption.Ok)
                     throw new Exception(string.Format("Could not create a new instance of tox, error: {0}, decrypt error: {1}" + error.ToString(), decryptError.ToString()));
             }
 
+            optionsStruct.Free();
             Options = options;
         }
 
