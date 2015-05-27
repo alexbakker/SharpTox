@@ -122,8 +122,7 @@ namespace SharpTox.Test
             tox.Dispose();
         }
 
-        [Ignore]
-        [Test]
+        [Test, Ignore]
         public void TestToxEncryption()
         {
             var key = new ToxEncryptionKey("heythisisatest");
@@ -140,8 +139,7 @@ namespace SharpTox.Test
                 Assert.Fail("Original data is not equal to the decrypted data");
         }
 
-        [Ignore]
-        [Test]
+        [Test, Ignore]
         public void TestToxEncryptionLoad()
         {
             var tox1 = new Tox(ToxOptions.Default);
@@ -169,9 +167,7 @@ namespace SharpTox.Test
             tox2.Dispose();
         }
 
-        [Test]
-        [Timeout(120000)]
-        [Ignore]
+        [Test, Timeout(120000), Ignore]
         public void TestToxProxySocks5()
         {
             var options = new ToxOptions(true, ToxProxyType.Socks5, "127.0.0.1", 9050);
@@ -206,7 +202,7 @@ namespace SharpTox.Test
             if (error != ToxErrorFriendAdd.Ok)
                 Assert.Fail("Failed to add friend: {0}", error);
 
-            tox2.OnFriendRequestReceived += (object sender, ToxEventArgs.FriendRequestEventArgs args) =>
+            tox2.OnFriendRequestReceived += (sender, args) =>
             {
                 if (args.Message != message)
                     Assert.Fail("Message received in the friend request is not the same as the one that was sent");

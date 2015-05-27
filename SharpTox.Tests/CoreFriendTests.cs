@@ -55,7 +55,7 @@ namespace SharpTox.Test
             int messageCount = 100;
             int receivedMessageCount = 0;
 
-            EventHandler<ToxEventArgs.FriendMessageEventArgs> callback = (object sender, ToxEventArgs.FriendMessageEventArgs args) =>
+            EventHandler<ToxEventArgs.FriendMessageEventArgs> callback = (sender, args) =>
             {
                 if (args.MessageType != ToxMessageType.Message || args.Message != messageFormat + receivedMessageCount)
                     Assert.Fail("Message arrived got garbled");
@@ -85,7 +85,7 @@ namespace SharpTox.Test
             int actionCount = 100;
             int receivedActionCount = 0;
 
-            EventHandler<ToxEventArgs.FriendMessageEventArgs> callback = (object sender, ToxEventArgs.FriendMessageEventArgs args) =>
+            EventHandler<ToxEventArgs.FriendMessageEventArgs> callback = (sender, args) =>
             {
                 if (args.MessageType != ToxMessageType.Action || args.Message != actionFormat + receivedActionCount)
                     Assert.Fail("Action arrived got garbled");
@@ -114,7 +114,7 @@ namespace SharpTox.Test
             string name = "Test, test and test";
             bool testFinished = false;
 
-            _tox2.OnFriendNameChanged += (object sender, ToxEventArgs.NameChangeEventArgs args) =>
+            _tox2.OnFriendNameChanged += (sender, args) =>
             {
                 if (args.Name != name)
                     Assert.Fail("Name received is not equal to the name we set");
@@ -132,7 +132,7 @@ namespace SharpTox.Test
             var status = ToxUserStatus.Busy;
             bool testFinished = false;
 
-            _tox2.OnFriendStatusChanged += (object sender, ToxEventArgs.StatusEventArgs args) =>
+            _tox2.OnFriendStatusChanged += (sender, args) =>
             {
                 if (args.Status != status)
                     Assert.Fail("Status received is not equal to the status we set");
@@ -150,7 +150,7 @@ namespace SharpTox.Test
             string message = "Test, test and test";
             bool testFinished = false;
 
-            _tox2.OnFriendStatusMessageChanged += (object sender, ToxEventArgs.StatusMessageEventArgs args) =>
+            _tox2.OnFriendStatusMessageChanged += (sender, args) =>
             {
                 if (args.StatusMessage != message)
                     Assert.Fail("Status message received is not equal to the status message we set");
@@ -168,7 +168,7 @@ namespace SharpTox.Test
             bool isTyping = true;
             bool testFinished = false;
 
-            _tox2.OnFriendTypingChanged += (object sender, ToxEventArgs.TypingStatusEventArgs args) =>
+            _tox2.OnFriendTypingChanged += (sender, args) =>
             {
                 if (args.IsTyping != isTyping)
                     Assert.Fail("IsTyping value received does not equal the one we set");
@@ -212,7 +212,7 @@ namespace SharpTox.Test
             new Random().NextBytes(data);
             data[0] = 210;
 
-            _tox2.OnFriendLossyPacketReceived += (object sender, ToxEventArgs.FriendPacketEventArgs args) =>
+            _tox2.OnFriendLossyPacketReceived += (sender, args) =>
             {
                 if (args.Data.Length != data.Length || data[0] != args.Data[0])
                     Assert.Fail("Packet doesn't have the same length/identifier");
@@ -238,7 +238,7 @@ namespace SharpTox.Test
             new Random().NextBytes(data);
             data[0] = 170;
 
-            _tox2.OnFriendLosslessPacketReceived += (object sender, ToxEventArgs.FriendPacketEventArgs args) =>
+            _tox2.OnFriendLosslessPacketReceived += (sender, args) =>
             {
                 if (args.Data.Length != data.Length || data[0] != args.Data[0])
                     Assert.Fail("Packet doesn't have the same length/identifier");
@@ -266,7 +266,7 @@ namespace SharpTox.Test
             string fileName = "testing.dat";
             bool fileReceived = false;
 
-            _tox2.OnFileSendRequestReceived += (object sender, ToxEventArgs.FileSendRequestEventArgs args) =>
+            _tox2.OnFileSendRequestReceived += (sender, args) =>
             {
                 if (fileName != args.FileName)
                     Assert.Fail("Filenames do not match");
@@ -285,7 +285,7 @@ namespace SharpTox.Test
             if (error != ToxErrorFileSend.Ok)
                 Assert.Fail("Failed to send a file send request, error: {0}", error);
 
-            _tox1.OnFileChunkRequested += (object sender, ToxEventArgs.FileRequestChunkEventArgs args) =>
+            _tox1.OnFileChunkRequested += (sender, args) =>
             {
                 byte[] data = new byte[args.Length];
                 Array.Copy(fileData, args.Position, data, 0, args.Length);
@@ -296,7 +296,7 @@ namespace SharpTox.Test
                     Assert.Fail("Failed to send chunk, error: {0}, result: {1}", error2, result);
             };
 
-            _tox2.OnFileChunkReceived += (object sender, ToxEventArgs.FileChunkEventArgs args) =>
+            _tox2.OnFileChunkReceived += (sender, args) =>
             {
                 if (args.Position == fileData.Length)
                     fileReceived = true;
