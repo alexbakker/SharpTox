@@ -51,54 +51,60 @@ namespace SharpTox.Test
         [Test]
         public void TestToxMessage()
         {
-            string message = "Hey! This is a test message";
+            string messageFormat = "Hey! This is test message number ";
             int messageCount = 100;
             int receivedMessageCount = 0;
 
-            _tox2.OnFriendMessageReceived += (object sender, ToxEventArgs.FriendMessageEventArgs args) =>
+            EventHandler<ToxEventArgs.FriendMessageEventArgs> callback = (object sender, ToxEventArgs.FriendMessageEventArgs args) =>
             {
-                if (args.MessageType != ToxMessageType.Message || args.Message != message)
+                if (args.MessageType != ToxMessageType.Message || args.Message != messageFormat + receivedMessageCount)
                     Assert.Fail("Message arrived got garbled");
 
                 receivedMessageCount++;
             };
 
+            _tox2.OnFriendMessageReceived += callback;
+
             for (int i = 0; i < messageCount; i++)
             {
                 var sendError = ToxErrorSendMessage.Ok;
-                _tox1.SendMessage(0, message, ToxMessageType.Message, out sendError);
+                _tox1.SendMessage(0, messageFormat + i.ToString(), ToxMessageType.Message, out sendError);
                 if (sendError != ToxErrorSendMessage.Ok)
                     Assert.Fail("Failed to send message to friend: {0}", sendError);
             }
 
             while (receivedMessageCount != messageCount) { DoIterate(); }
+            _tox2.OnFriendMessageReceived -= callback;
             Console.WriteLine("Received all messages without errors");
         }
 
         [Test]
         public void TestToxAction()
         {
-            string action = "Hey! This is a test action";
+            string actionFormat = "Hey! This is test action number ";
             int actionCount = 100;
             int receivedActionCount = 0;
 
-            _tox2.OnFriendMessageReceived += (object sender, ToxEventArgs.FriendMessageEventArgs args) =>
+            EventHandler<ToxEventArgs.FriendMessageEventArgs> callback = (object sender, ToxEventArgs.FriendMessageEventArgs args) =>
             {
-                if (args.MessageType != ToxMessageType.Action || args.Message != action)
+                if (args.MessageType != ToxMessageType.Action || args.Message != actionFormat + receivedActionCount)
                     Assert.Fail("Action arrived got garbled");
 
                 receivedActionCount++;
             };
 
+            _tox2.OnFriendMessageReceived += callback;
+
             for (int i = 0; i < actionCount; i++)
             {
                 var sendError = ToxErrorSendMessage.Ok;
-                _tox1.SendMessage(0, action, ToxMessageType.Action, out sendError);
+                _tox1.SendMessage(0, actionFormat + i.ToString(), ToxMessageType.Action, out sendError);
                 if (sendError != ToxErrorSendMessage.Ok)
                     Assert.Fail("Failed to send action to friend: {0}", sendError);
             }
 
             while (receivedActionCount != actionCount) { DoIterate(); }
+            _tox2.OnFriendMessageReceived -= callback;
             Console.WriteLine("Received all actions without errors");
         }
 
