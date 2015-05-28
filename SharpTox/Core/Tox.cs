@@ -926,43 +926,6 @@ namespace SharpTox.Core
         /// <param name="fileName">The filename of the file that will be transferred.</param>
         /// <param name="error"></param>
         /// <returns>Info about the file transfer on success.</returns>
-        public ToxFileInfo FileSend(int friendNumber, ToxFileKind kind, long fileSize, byte[] fileName, out ToxErrorFileSend error)
-        {
-            ThrowIfDisposed();
-
-            if (fileName == null)
-                throw new ArgumentNullException("fileName");
-
-            error = ToxErrorFileSend.Ok;
-            byte[] fileId = new byte[ToxConstants.FileIdLength];
-            int fileNumber = (int)ToxFunctions.FileSend(_tox, (uint)friendNumber, kind, (ulong)fileSize, fileId, fileName, (uint)fileName.Length, ref error);
-
-            return new ToxFileInfo(fileNumber, fileId);
-        }
-
-        /// <summary>
-        /// Send a file transmission request.
-        /// </summary>
-        /// <param name="friendNumber">The friend number to send the request to.</param>
-        /// <param name="kind">The kind of file that will be transferred.</param>
-        /// <param name="fileSize">The size of the file that will be transferred.</param>
-        /// <param name="fileName">The filename of the file that will be transferred.</param>
-        /// <returns>Info about the file transfer on success.</returns>
-        public ToxFileInfo FileSend(int friendNumber, ToxFileKind kind, long fileSize, byte[] fileName)
-        {
-            var error = ToxErrorFileSend.Ok;
-            return FileSend(friendNumber, kind, fileSize, fileName, out error);
-        }
-
-        /// <summary>
-        /// Send a file transmission request.
-        /// </summary>
-        /// <param name="friendNumber">The friend number to send the request to.</param>
-        /// <param name="kind">The kind of file that will be transferred.</param>
-        /// <param name="fileSize">The size of the file that will be transferred.</param>
-        /// <param name="fileName">The filename of the file that will be transferred.</param>
-        /// <param name="error"></param>
-        /// <returns>Info about the file transfer on success.</returns>
         public ToxFileInfo FileSend(int friendNumber, ToxFileKind kind, long fileSize, string fileName, out ToxErrorFileSend error)
         {
             ThrowIfDisposed();
@@ -987,6 +950,45 @@ namespace SharpTox.Core
         {
             var error = ToxErrorFileSend.Ok;
             return FileSend(friendNumber, kind, fileSize, fileName, out error);
+        }
+
+        /// <summary>
+        /// Send a file transmission request.
+        /// </summary>
+        /// <param name="friendNumber">The friend number to send the request to.</param>
+        /// <param name="kind">The kind of file that will be transferred.</param>
+        /// <param name="fileSize">The size of the file that will be transferred.</param>
+        /// <param name="fileName">The filename of the file that will be transferred.</param>
+        /// <param name="fileId">The id to identify this transfer with. Should be ToxConstants.FileIdLength bytes long.</param>
+        /// <param name="error"></param>
+        /// <returns>Info about the file transfer on success.</returns>
+        public ToxFileInfo FileSend(int friendNumber, ToxFileKind kind, long fileSize, string fileName, byte[] fileId, out ToxErrorFileSend error)
+        {
+            ThrowIfDisposed();
+
+            if (fileId.Length != ToxConstants.FileIdLength)
+                throw new ArgumentException("fileId should be exactly ToxConstants.FileIdLength bytes long", "fileId");
+
+            error = ToxErrorFileSend.Ok;
+            byte[] fileNameBytes = Encoding.UTF8.GetBytes(fileName);
+            int fileNumber = (int)ToxFunctions.FileSend(_tox, (uint)friendNumber, kind, (ulong)fileSize, fileId, fileNameBytes, (uint)fileNameBytes.Length, ref error);
+
+            return new ToxFileInfo(fileNumber, fileId);
+        }
+
+        /// <summary>
+        /// Send a file transmission request.
+        /// </summary>
+        /// <param name="friendNumber">The friend number to send the request to.</param>
+        /// <param name="kind">The kind of file that will be transferred.</param>
+        /// <param name="fileSize">The size of the file that will be transferred.</param>
+        /// <param name="fileName">The filename of the file that will be transferred.</param>
+        /// <param name="fileId">The id to identify this transfer with. Should be ToxConstants.FileIdLength bytes long.</param>
+        /// <returns>Info about the file transfer on success.</returns>
+        public ToxFileInfo FileSend(int friendNumber, ToxFileKind kind, long fileSize, string fileName, byte[] fileId)
+        {
+            var error = ToxErrorFileSend.Ok;
+            return FileSend(friendNumber, kind, fileSize, fileName, fileId, out error);
         }
 
         /// <summary>
