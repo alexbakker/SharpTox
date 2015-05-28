@@ -1400,7 +1400,7 @@ namespace SharpTox.Core
         }
 
         #region Events
-        private EventHandler<ToxEventArgs.FriendRequestEventArgs> _onFriendRequest;
+        private EventHandler<ToxEventArgs.FriendRequestEventArgs> _onFriendRequestReceived;
 
         /// <summary>
         /// Occurs when a friend request is received.
@@ -1414,28 +1414,28 @@ namespace SharpTox.Core
                 {
                     _onFriendRequestCallback = (IntPtr tox, byte[] publicKey, byte[] message, uint length, IntPtr userData) =>
                     {
-                        if (_onFriendRequest != null)
-                            _onFriendRequest(this, new ToxEventArgs.FriendRequestEventArgs(new ToxKey(ToxKeyType.Public, ToxTools.HexBinToString(publicKey)), Encoding.UTF8.GetString(message, 0, (int)length)));
+                        if (_onFriendRequestReceived != null)
+                            _onFriendRequestReceived(this, new ToxEventArgs.FriendRequestEventArgs(new ToxKey(ToxKeyType.Public, ToxTools.HexBinToString(publicKey)), Encoding.UTF8.GetString(message, 0, (int)length)));
                     };
 
                     ToxFunctions.RegisterFriendRequestCallback(_tox, _onFriendRequestCallback, IntPtr.Zero);
                 }
 
-                _onFriendRequest += value;
+                _onFriendRequestReceived += value;
             }
             remove
             {
-                if (_onFriendRequest.GetInvocationList().Length == 1)
+                if (_onFriendRequestReceived.GetInvocationList().Length == 1)
                 {
                     ToxFunctions.RegisterFriendRequestCallback(_tox, null, IntPtr.Zero);
                     _onFriendRequestCallback = null;
                 }
 
-                _onFriendRequest -= value;
+                _onFriendRequestReceived -= value;
             }
         }
 
-        private EventHandler<ToxEventArgs.FriendMessageEventArgs> _onFriendMessage;
+        private EventHandler<ToxEventArgs.FriendMessageEventArgs> _onFriendMessageReceived;
 
         /// <summary>
         /// Occurs when a message is received from a friend.
@@ -1448,28 +1448,28 @@ namespace SharpTox.Core
                 {
                     _onFriendMessageCallback = (IntPtr tox, uint friendNumber, ToxMessageType type, byte[] message, uint length, IntPtr userData) =>
                     {
-                        if (_onFriendMessage != null)
-                            _onFriendMessage(this, new ToxEventArgs.FriendMessageEventArgs((int)friendNumber, Encoding.UTF8.GetString(message, 0, (int)length), type));
+                        if (_onFriendMessageReceived != null)
+                            _onFriendMessageReceived(this, new ToxEventArgs.FriendMessageEventArgs((int)friendNumber, Encoding.UTF8.GetString(message, 0, (int)length), type));
                     };
 
                     ToxFunctions.RegisterFriendMessageCallback(_tox, _onFriendMessageCallback, IntPtr.Zero);
                 }
 
-                _onFriendMessage += value;
+                _onFriendMessageReceived += value;
             }
             remove
             {
-                if (_onFriendMessage.GetInvocationList().Length == 1)
+                if (_onFriendMessageReceived.GetInvocationList().Length == 1)
                 {
                     ToxFunctions.RegisterFriendMessageCallback(_tox, null, IntPtr.Zero);
                     _onFriendMessageCallback = null;
                 }
 
-                _onFriendMessage -= value;
+                _onFriendMessageReceived -= value;
             }
         }
 
-        private EventHandler<ToxEventArgs.NameChangeEventArgs> _onNameChange;
+        private EventHandler<ToxEventArgs.NameChangeEventArgs> _onFriendNameChanged;
 
         /// <summary>
         /// Occurs when a friend has changed his/her name.
@@ -1482,28 +1482,28 @@ namespace SharpTox.Core
                 {
                     _onNameChangeCallback = (IntPtr tox, uint friendNumber, byte[] newName, uint length, IntPtr userData) =>
                     {
-                        if (_onNameChange != null)
-                            _onNameChange(this, new ToxEventArgs.NameChangeEventArgs((int)friendNumber, Encoding.UTF8.GetString(newName, 0, (int)length)));
+                        if (_onFriendNameChanged != null)
+                            _onFriendNameChanged(this, new ToxEventArgs.NameChangeEventArgs((int)friendNumber, Encoding.UTF8.GetString(newName, 0, (int)length)));
                     };
 
                     ToxFunctions.RegisterNameChangeCallback(_tox, _onNameChangeCallback, IntPtr.Zero);
                 }
 
-                _onNameChange += value;
+                _onFriendNameChanged += value;
             }
             remove
             {
-                if (_onNameChange.GetInvocationList().Length == 1)
+                if (_onFriendNameChanged.GetInvocationList().Length == 1)
                 {
                     ToxFunctions.RegisterNameChangeCallback(_tox, null, IntPtr.Zero);
                     _onNameChangeCallback = null;
                 }
 
-                _onNameChange -= value;
+                _onFriendNameChanged -= value;
             }
         }
 
-        private EventHandler<ToxEventArgs.StatusMessageEventArgs> _onStatusMessage;
+        private EventHandler<ToxEventArgs.StatusMessageEventArgs> _onFriendStatusMessageChanged;
 
         /// <summary>
         /// Occurs when a friend has changed their status message.
@@ -1516,24 +1516,24 @@ namespace SharpTox.Core
                 {
                     _onStatusMessageCallback = (IntPtr tox, uint friendNumber, byte[] newStatus, uint length, IntPtr userData) =>
                     {
-                        if (_onStatusMessage != null)
-                            _onStatusMessage(this, new ToxEventArgs.StatusMessageEventArgs((int)friendNumber, Encoding.UTF8.GetString(newStatus, 0, (int)length)));
+                        if (_onFriendStatusMessageChanged != null)
+                            _onFriendStatusMessageChanged(this, new ToxEventArgs.StatusMessageEventArgs((int)friendNumber, Encoding.UTF8.GetString(newStatus, 0, (int)length)));
                     };
 
                     ToxFunctions.RegisterStatusMessageCallback(_tox, _onStatusMessageCallback, IntPtr.Zero);
                 }
 
-                _onStatusMessage += value;
+                _onFriendStatusMessageChanged += value;
             }
             remove
             {
-                if (_onStatusMessage.GetInvocationList().Length == 1)
+                if (_onFriendStatusMessageChanged.GetInvocationList().Length == 1)
                 {
                     ToxFunctions.RegisterStatusMessageCallback(_tox, null, IntPtr.Zero);
                     _onStatusMessageCallback = null;
                 }
 
-                _onStatusMessage -= value;
+                _onFriendStatusMessageChanged -= value;
             }
         }
 
@@ -1571,7 +1571,7 @@ namespace SharpTox.Core
             }
         }
 
-        private EventHandler<ToxEventArgs.TypingStatusEventArgs> _onTypingChange;
+        private EventHandler<ToxEventArgs.TypingStatusEventArgs> _onFriendTypingChanged;
 
         /// <summary>
         /// Occurs when a friend's typing status has changed.
@@ -1584,28 +1584,28 @@ namespace SharpTox.Core
                 {
                     _onTypingChangeCallback = (IntPtr tox, uint friendNumber, bool typing, IntPtr userData) =>
                     {
-                        if (_onTypingChange != null)
-                            _onTypingChange(this, new ToxEventArgs.TypingStatusEventArgs((int)friendNumber, typing));
+                        if (_onFriendTypingChanged != null)
+                            _onFriendTypingChanged(this, new ToxEventArgs.TypingStatusEventArgs((int)friendNumber, typing));
                     };
 
                     ToxFunctions.RegisterTypingChangeCallback(_tox, _onTypingChangeCallback, IntPtr.Zero);
                 }
 
-                _onTypingChange += value;
+                _onFriendTypingChanged += value;
             }
             remove
             {
-                if (_onTypingChange.GetInvocationList().Length == 1)
+                if (_onFriendTypingChanged.GetInvocationList().Length == 1)
                 {
                     ToxFunctions.RegisterTypingChangeCallback(_tox, null, IntPtr.Zero);
                     _onTypingChangeCallback = null;
                 }
 
-                _onTypingChange -= value;
+                _onFriendTypingChanged -= value;
             }
         }
 
-        private EventHandler<ToxEventArgs.ConnectionStatusEventArgs> _onConnectionStatus;
+        private EventHandler<ToxEventArgs.ConnectionStatusEventArgs> _onConnectionStatusChanged;
 
         /// <summary>
         /// Occurs when the connection status of this Tox instance has changed.
@@ -1618,24 +1618,24 @@ namespace SharpTox.Core
                 {
                     _onConnectionStatusCallback = (IntPtr tox, ToxConnectionStatus status, IntPtr userData) =>
                     {
-                        if (_onConnectionStatus != null)
-                            _onConnectionStatus(this, new ToxEventArgs.ConnectionStatusEventArgs(status));
+                        if (_onConnectionStatusChanged != null)
+                            _onConnectionStatusChanged(this, new ToxEventArgs.ConnectionStatusEventArgs(status));
                     };
 
                     ToxFunctions.RegisterConnectionStatusCallback(_tox, _onConnectionStatusCallback, IntPtr.Zero);
                 }
 
-                _onConnectionStatus += value;
+                _onConnectionStatusChanged += value;
             }
             remove
             {
-                if (_onConnectionStatus.GetInvocationList().Length == 1)
+                if (_onConnectionStatusChanged.GetInvocationList().Length == 1)
                 {
                     ToxFunctions.RegisterConnectionStatusCallback(_tox, null, IntPtr.Zero);
                     _onConnectionStatusCallback = null;
                 }
 
-                _onConnectionStatus -= value;
+                _onConnectionStatusChanged -= value;
             }
         }
 
@@ -1673,7 +1673,7 @@ namespace SharpTox.Core
             }
         }
 
-        private EventHandler<ToxEventArgs.ReadReceiptEventArgs> _onReadReceipt;
+        private EventHandler<ToxEventArgs.ReadReceiptEventArgs> _onReadReceiptReceived;
 
         /// <summary>
         /// Occurs when a read receipt is received.
@@ -1686,28 +1686,28 @@ namespace SharpTox.Core
                 {
                     _onReadReceiptCallback = (IntPtr tox, uint friendNumber, uint receipt, IntPtr userData) =>
                     {
-                        if (_onReadReceipt != null)
-                            _onReadReceipt(this, new ToxEventArgs.ReadReceiptEventArgs((int)friendNumber, (int)receipt));
+                        if (_onReadReceiptReceived != null)
+                            _onReadReceiptReceived(this, new ToxEventArgs.ReadReceiptEventArgs((int)friendNumber, (int)receipt));
                     };
 
                     ToxFunctions.RegisterFriendReadReceiptCallback(_tox, _onReadReceiptCallback, IntPtr.Zero);
                 }
 
-                _onReadReceipt += value;
+                _onReadReceiptReceived += value;
             }
             remove
             {
-                if (_onReadReceipt.GetInvocationList().Length == 1)
+                if (_onReadReceiptReceived.GetInvocationList().Length == 1)
                 {
                     ToxFunctions.RegisterFriendReadReceiptCallback(_tox, null, IntPtr.Zero);
                     _onReadReceiptCallback = null;
                 }
 
-                _onReadReceipt -= value;
+                _onReadReceiptReceived -= value;
             }
         }
 
-        private EventHandler<ToxEventArgs.FileControlEventArgs> _onFileControl;
+        private EventHandler<ToxEventArgs.FileControlEventArgs> _onFileControlReceived;
 
         /// <summary>
         /// Occurs when a file control is received.
@@ -1720,28 +1720,28 @@ namespace SharpTox.Core
                 {
                     _onFileControlCallback = (IntPtr tox, uint friendNumber, uint fileNumber, ToxFileControl control, IntPtr userData) =>
                     {
-                        if (_onFileControl != null)
-                            _onFileControl(this, new ToxEventArgs.FileControlEventArgs((int)friendNumber, (int)fileNumber, control));
+                        if (_onFileControlReceived != null)
+                            _onFileControlReceived(this, new ToxEventArgs.FileControlEventArgs((int)friendNumber, (int)fileNumber, control));
                     };
 
                     ToxFunctions.RegisterFileControlRecvCallback(_tox, _onFileControlCallback, IntPtr.Zero);
                 }
 
-                _onFileControl += value;
+                _onFileControlReceived += value;
             }
             remove
             {
-                if (_onFileControl.GetInvocationList().Length == 1)
+                if (_onFileControlReceived.GetInvocationList().Length == 1)
                 {
                     ToxFunctions.RegisterFileControlRecvCallback(_tox, null, IntPtr.Zero);
                     _onFileControlCallback = null;
                 }
 
-                _onFileControl -= value;
+                _onFileControlReceived -= value;
             }
         }
 
-        private EventHandler<ToxEventArgs.FileChunkEventArgs> _onFileChunk;
+        private EventHandler<ToxEventArgs.FileChunkEventArgs> _onFileChunkReceived;
 
         /// <summary>
         /// Occurs when a chunk of data from a file transfer is received
@@ -1754,28 +1754,28 @@ namespace SharpTox.Core
                 {
                     _onFileReceiveChunkCallback = (IntPtr tox, uint friendNumber, uint fileNumber, ulong position, byte[] data, uint length, IntPtr userData) =>
                     {
-                        if (_onFileChunk != null)
-                            _onFileChunk(this, new ToxEventArgs.FileChunkEventArgs((int)friendNumber, (int)fileNumber, data, (long)position));
+                        if (_onFileChunkReceived != null)
+                            _onFileChunkReceived(this, new ToxEventArgs.FileChunkEventArgs((int)friendNumber, (int)fileNumber, data, (long)position));
                     };
 
                     ToxFunctions.RegisterFileReceiveChunkCallback(_tox, _onFileReceiveChunkCallback, IntPtr.Zero);
                 }
 
-                _onFileChunk += value;
+                _onFileChunkReceived += value;
             }
             remove
             {
-                if (_onFileChunk.GetInvocationList().Length == 1)
+                if (_onFileChunkReceived.GetInvocationList().Length == 1)
                 {
                     ToxFunctions.RegisterFileReceiveChunkCallback(_tox, null, IntPtr.Zero);
                     _onFileReceiveChunkCallback = null;
                 }
 
-                _onFileChunk -= value;
+                _onFileChunkReceived -= value;
             }
         }
 
-        private EventHandler<ToxEventArgs.FileSendRequestEventArgs> _onFileReceive;
+        private EventHandler<ToxEventArgs.FileSendRequestEventArgs> _onFileSendRequestReceived;
 
         /// <summary>
         /// Occurs when a file control is received.
@@ -1788,24 +1788,24 @@ namespace SharpTox.Core
                 {
                     _onFileReceiveCallback = (IntPtr tox, uint friendNumber, uint fileNumber, ToxFileKind kind, ulong fileSize, byte[] filename, uint filenameLength, IntPtr userData) =>
                     {
-                        if (_onFileReceive != null)
-                            _onFileReceive(this, new ToxEventArgs.FileSendRequestEventArgs((int)friendNumber, (int)fileNumber, kind, (long)fileSize, filename == null ? string.Empty : Encoding.UTF8.GetString(filename, 0, filename.Length)));
+                        if (_onFileSendRequestReceived != null)
+                            _onFileSendRequestReceived(this, new ToxEventArgs.FileSendRequestEventArgs((int)friendNumber, (int)fileNumber, kind, (long)fileSize, filename == null ? string.Empty : Encoding.UTF8.GetString(filename, 0, filename.Length)));
                     };
 
                     ToxFunctions.RegisterFileReceiveCallback(_tox, _onFileReceiveCallback, IntPtr.Zero);
                 }
 
-                _onFileReceive += value;
+                _onFileSendRequestReceived += value;
             }
             remove
             {
-                if (_onFileReceive.GetInvocationList().Length == 1)
+                if (_onFileSendRequestReceived.GetInvocationList().Length == 1)
                 {
                     ToxFunctions.RegisterFileReceiveCallback(_tox, null, IntPtr.Zero);
                     _onFileReceiveCallback = null;
                 }
 
-                _onFileReceive -= value;
+                _onFileSendRequestReceived -= value;
             }
         }
 
@@ -1843,7 +1843,7 @@ namespace SharpTox.Core
             }
         }
 
-        private EventHandler<ToxEventArgs.FriendPacketEventArgs> _onFriendLossyPacket;
+        private EventHandler<ToxEventArgs.FriendPacketEventArgs> _onFriendLossyPacketReceived;
 
         /// <summary>
         /// Occurs when a lossy packet from a friend is received.
@@ -1856,28 +1856,28 @@ namespace SharpTox.Core
                 {
                     _onFriendLossyPacketCallback = (IntPtr tox, uint friendNumber, byte[] data, uint length, IntPtr userData) =>
                     {
-                        if (_onFriendLossyPacket != null)
-                            _onFriendLossyPacket(this, new ToxEventArgs.FriendPacketEventArgs((int)friendNumber, data));
+                        if (_onFriendLossyPacketReceived != null)
+                            _onFriendLossyPacketReceived(this, new ToxEventArgs.FriendPacketEventArgs((int)friendNumber, data));
                     };
 
                     ToxFunctions.RegisterFriendLossyPacketCallback(_tox, _onFriendLossyPacketCallback, IntPtr.Zero);
                 }
 
-                _onFriendLossyPacket += value;
+                _onFriendLossyPacketReceived += value;
             }
             remove
             {
-                if (_onFriendLossyPacket.GetInvocationList().Length == 1)
+                if (_onFriendLossyPacketReceived.GetInvocationList().Length == 1)
                 {
                     ToxFunctions.RegisterFriendLossyPacketCallback(_tox, null, IntPtr.Zero);
                     _onFriendLossyPacketCallback = null;
                 }
 
-                _onFriendLossyPacket -= value;
+                _onFriendLossyPacketReceived -= value;
             }
         }
 
-        private EventHandler<ToxEventArgs.FriendPacketEventArgs> _onFriendLosslessPacket;
+        private EventHandler<ToxEventArgs.FriendPacketEventArgs> _onFriendLosslessPacketReceived;
 
         /// <summary>
         /// Occurs when a lossless packet from a friend is received.
@@ -1890,24 +1890,24 @@ namespace SharpTox.Core
                 {
                     _onFriendLosslessPacketCallback = (IntPtr tox, uint friendNumber, byte[] data, uint length, IntPtr userData) =>
                     {
-                        if (_onFriendLosslessPacket != null)
-                            _onFriendLosslessPacket(this, new ToxEventArgs.FriendPacketEventArgs((int)friendNumber, data));
+                        if (_onFriendLosslessPacketReceived != null)
+                            _onFriendLosslessPacketReceived(this, new ToxEventArgs.FriendPacketEventArgs((int)friendNumber, data));
                     };
 
                     ToxFunctions.RegisterFriendLosslessPacketCallback(_tox, _onFriendLosslessPacketCallback, IntPtr.Zero);
                 }
 
-                _onFriendLosslessPacket += value;
+                _onFriendLosslessPacketReceived += value;
             }
             remove
             {
-                if (_onFriendLosslessPacket.GetInvocationList().Length == 1)
+                if (_onFriendLosslessPacketReceived.GetInvocationList().Length == 1)
                 {
                     ToxFunctions.RegisterFriendLosslessPacketCallback(_tox, null, IntPtr.Zero);
                     _onFriendLosslessPacketCallback = null;
                 }
 
-                _onFriendLosslessPacket -= value;
+                _onFriendLosslessPacketReceived -= value;
             }
         }
 
