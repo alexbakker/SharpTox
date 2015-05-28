@@ -1070,7 +1070,9 @@ namespace SharpTox.Core
 
             error = ToxErrorFileGet.Ok;
             byte[] id = new byte[ToxConstants.FileIdLength];
-            ToxFunctions.FileGetFileId(_tox, (uint)friendNumber, (uint)fileNumber, id, ref error);
+
+            if (!ToxFunctions.FileGetFileId(_tox, (uint)friendNumber, (uint)fileNumber, id, ref error))
+                return null;
 
             return id;
         }
