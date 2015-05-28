@@ -582,7 +582,9 @@ namespace SharpTox.Core
 
             byte[] address = new byte[ToxConstants.PublicKeySize];
             error = ToxErrorFriendGetPublicKey.Ok;
-            ToxFunctions.FriendGetPublicKey(_tox, (uint)friendNumber, address, ref error);
+
+            if (!ToxFunctions.FriendGetPublicKey(_tox, (uint)friendNumber, address, ref error))
+                return null;
 
             return new ToxKey(ToxKeyType.Public, address);
         }
