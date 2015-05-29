@@ -1782,7 +1782,7 @@ namespace SharpTox.Core
         private EventHandler<ToxEventArgs.FileSendRequestEventArgs> _onFileSendRequestReceived;
 
         /// <summary>
-        /// Occurs when a file control is received.
+        /// Occurs when a new file transfer request has been received.
         /// </summary>
         public event EventHandler<ToxEventArgs.FileSendRequestEventArgs> OnFileSendRequestReceived
         {
