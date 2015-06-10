@@ -8,7 +8,7 @@ using NUnit.Framework;
 namespace SharpTox.Test
 {
     [TestFixture]
-    public class AvFriendTests : ExtendedTestClass
+    public class AvFriendTests
     {
         private bool _running = true;
         private Tox _tox1;
@@ -26,12 +26,10 @@ namespace SharpTox.Test
             _toxAv1 = new ToxAv(_tox1);
             _toxAv2 = new ToxAv(_tox2);
 
-            DoLoop();
-
             _tox1.AddFriend(_tox2.Id, "hey");
             _tox2.AddFriend(_tox1.Id, "hey");
 
-            while (_tox1.GetFriendConnectionStatus(0) == ToxConnectionStatus.None) { Thread.Sleep(10); }
+            while (_tox1.GetFriendConnectionStatus(0) == ToxConnectionStatus.None) { DoIterate(); }
 
             bool answered = false;
             _toxAv1.Call(0, 48, 30000);
@@ -47,7 +45,7 @@ namespace SharpTox.Test
                 answered = true;
             };
 
-            while (!answered) { Thread.Sleep(10); }
+            while (!answered) { DoIterate(); }
         }
 
         [TestFixtureTearDown]
@@ -62,18 +60,12 @@ namespace SharpTox.Test
             _tox2.Dispose();
         }
 
-        private void DoLoop()
+        private void DoIterate()
         {
-            Task.Run(async () =>
-            {
-                while (_running)
-                {
-                    int time1 = Math.Min(_tox1.Iterate(), _tox2.Iterate());
-                    int time2 = Math.Min(_toxAv1.Iterate(), _toxAv2.Iterate());
+            int time1 = _tox1.Iterate();
+            int time2 = _tox2.Iterate();
 
-                    await Task.Delay(Math.Min(time1, time2));
-                }
-            });
+            Thread.Sleep(Math.Min(time1, time2));
         }
 
         [Test]
@@ -103,21 +95,21 @@ namespace SharpTox.Test
         {
             var control = ToxAvCallControl.Pause;
             var error = ToxAvErrorCallControl.Ok;
-            bool result = _toxAv1.SendControl(0, control, out error);
-
-            if (!result || error != ToxAvErrorCallControl.Ok)
-                Assert.Fail("Could not send call control, error: {0}, result: {1}", error, result);
+            bool testFinished = false;
 
             _toxAv2.OnCallStateChanged += (sender, e) =>
             {
                 if (!e.State.HasFlag(ToxAvCallState.Paused))
-                    Fail("Tried to pause a call but the call state didn't change correctly, call state: {0}", e.State);
+                    Assert.Fail("Tried to pause a call but the call state didn't change correctly, call state: {0}", e.State);
 
-                _wait = false;
+                testFinished = true;
             };
 
-            while (_wait) { Thread.Sleep(10); }
-            CheckFailed();
+            bool result = _toxAv1.SendControl(0, control, out error);
+            if (!result || error != ToxAvErrorCallControl.Ok)
+                Assert.Fail("Could not send call control, error: {0}, result: {1}", error, result);
+
+            while (!testFinished) { DoIterate(); }
         }
 
         [Test]
@@ -139,7 +131,7 @@ namespace SharpTox.Test
                 if (!result || error != ToxAvErrorSendFrame.Ok)
                     Assert.Fail("Failed to send audio frame, error: {0}, result: {1}", error, result);
 
-                Thread.Sleep(30);
+                DoIterate();
             }
         }
 
@@ -160,9 +152,8 @@ namespace SharpTox.Test
                 byte[] y = new byte[width * height];
                 byte[] u = new byte[(height / 2) * (width / 2)];
                 byte[] v = new byte[(height / 2) * (width / 2)];
-                byte[] a = new byte[width * height];
 
-                var frame = new ToxAvVideoFrame(800, 600, y, u, v, a);
+                var frame = new ToxAvVideoFrame(800, 600, y, u, v);
 
                 var error = ToxAvErrorSendFrame.Ok;
                 bool result = _toxAv1.SendVideoFrame(0, frame, out error);
@@ -170,7 +161,7 @@ namespace SharpTox.Test
                 if (!result || error != ToxAvErrorSendFrame.Ok)
                     Assert.Fail("Failed to send video frame, error: {0}, result: {1}", error, result);
 
-                Thread.Sleep(30);
+                DoIterate();
             }
         }
 
