@@ -237,31 +237,31 @@ namespace SharpTox.Av
             return SendControl(friendNumber, control, out error);
         }
 
-        public bool SetAudioBitrate(int friendNumber, int bitrate, bool force, out ToxAvErrorBitrate error)
+        public bool SetAudioBitrate(int friendNumber, int bitrate, bool force, out ToxAvErrorSetBitrate error)
         {
             ThrowIfDisposed();
 
-            error = ToxAvErrorBitrate.Ok;
+            error = ToxAvErrorSetBitrate.Ok;
             return ToxAvFunctions.AudioBitrateSet(_toxAv, (uint)friendNumber, (uint)bitrate, force, ref error);
         }
 
         public bool SetAudioBitrate(int friendNumber, int bitrate, bool force)
         {
-            var error = ToxAvErrorBitrate.Ok;
+            var error = ToxAvErrorSetBitrate.Ok;
             return SetAudioBitrate(friendNumber, bitrate, force, out error);
         }
 
-        public bool SetVideoBitrate(int friendNumber, int bitrate, bool force, out ToxAvErrorBitrate error)
+        public bool SetVideoBitrate(int friendNumber, int bitrate, bool force, out ToxAvErrorSetBitrate error)
         {
             ThrowIfDisposed();
 
-            error = ToxAvErrorBitrate.Ok;
+            error = ToxAvErrorSetBitrate.Ok;
             return ToxAvFunctions.VideoBitrateSet(_toxAv, (uint)friendNumber, (uint)bitrate, force, ref error);
         }
 
         public bool SetVideoBitrate(int friendNumber, int bitrate, bool force)
         {
-            var error = ToxAvErrorBitrate.Ok;
+            var error = ToxAvErrorSetBitrate.Ok;
             return SetVideoBitrate(friendNumber, bitrate, force, out error);
         }
 

@@ -22,7 +22,7 @@ namespace SharpTox.Av
     public enum ToxAvErrorAnswer
     {
         Ok,
-        Malloc,
+        CodecInitialization,
         FriendNotFound,
         FriendNotCalling,
         InvalidBitRate
@@ -32,12 +32,12 @@ namespace SharpTox.Av
     public enum ToxAvCallState
     {
         Paused = 0,
-        SendingAudio = 1,
-        SendingVideo = 2,
-        ReceivingAudio = 4,
-        ReceivingVideo = 8,
-        End = 16,
-        Error = 32768
+        Error = 1 << 0,
+        Finished = 1 << 1,
+        SendingAudio = 1 << 2,
+        SendingVideo = 1 << 3,
+        ReceivingAudio = 1 << 4,
+        ReceivingVideo = 1 << 5,
     }
 
     public enum ToxAvCallControl
@@ -45,8 +45,10 @@ namespace SharpTox.Av
         Resume,
         Pause,
         Cancel,
-        ToggleMuteAudio,
-        ToggleMuteVideo
+        MuteAudio,
+        UnmuteAudio,
+        HideVideo,
+        ShowVideo
     }
 
     public enum ToxAvErrorCallControl
@@ -54,13 +56,10 @@ namespace SharpTox.Av
         Ok,
         FriendNotFound,
         FriendNotInCall,
-        NotPaused,
-        Denied,
-        AlreadyPaused,
-        NotMuted
+        InvalidTransition
     }
 
-    public enum ToxAvErrorBitrate
+    public enum ToxAvErrorSetBitrate
     {
         Ok,
         Invalid,
@@ -74,7 +73,6 @@ namespace SharpTox.Av
         Null,
         FrienNotFound,
         FriendNotInCall,
-        FrameNotRequested,
         FrameInvalid,
         RtpFailed
     }
