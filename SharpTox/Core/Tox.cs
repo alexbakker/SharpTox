@@ -933,11 +933,13 @@ namespace SharpTox.Core
             ThrowIfDisposed();
 
             error = ToxErrorFileSend.Ok;
-            byte[] fileId = new byte[ToxConstants.FileIdLength];
             byte[] fileNameBytes = Encoding.UTF8.GetBytes(fileName);
-            int fileNumber = (int)ToxFunctions.FileSend(_tox, (uint)friendNumber, kind, (ulong)fileSize, fileId, fileNameBytes, (uint)fileNameBytes.Length, ref error);
+            int fileNumber = (int)ToxFunctions.FileSend(_tox, (uint)friendNumber, kind, (ulong)fileSize, null, fileNameBytes, (uint)fileNameBytes.Length, ref error);
 
-            return new ToxFileInfo(fileNumber, fileId);
+            if (error == ToxErrorFileSend.Ok)
+                return new ToxFileInfo(fileNumber, FileGetId(friendNumber, fileNumber));
+
+            return null;
         }
 
         /// <summary>
@@ -975,9 +977,12 @@ namespace SharpTox.Core
             byte[] fileNameBytes = Encoding.UTF8.GetBytes(fileName);
             int fileNumber = (int)ToxFunctions.FileSend(_tox, (uint)friendNumber, kind, (ulong)fileSize, fileId, fileNameBytes, (uint)fileNameBytes.Length, ref error);
 
-            return new ToxFileInfo(fileNumber, fileId);
-        }
+            if (error == ToxErrorFileSend.Ok)
+                return new ToxFileInfo(fileNumber, fileId);
 
+            return null;
+        }
+        
         /// <summary>
         /// Send a file transmission request.
         /// </summary>
