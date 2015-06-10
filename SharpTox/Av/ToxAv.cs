@@ -116,10 +116,10 @@ namespace SharpTox.Av
                     OnAudioFrameReceived(this, new ToxAvEventArgs.AudioFrameEventArgs((int)friendNumber, new ToxAvAudioFrame(pcm, sampleCount, samplingRate, channels)));
             };
 
-            _onReceiveVideoFrameCallback = (IntPtr toxAv, uint friendNumber, ushort width, ushort height, IntPtr y, IntPtr u, IntPtr v, IntPtr a, int yStride, int uStride, int vStride, int aStride, IntPtr userData) =>
+            _onReceiveVideoFrameCallback = (IntPtr toxAv, uint friendNumber, ushort width, ushort height, IntPtr y, IntPtr u, IntPtr v, int yStride, int uStride, int vStride, IntPtr userData) =>
             {
                 if (OnVideoFrameReceived != null)
-                    OnVideoFrameReceived(this, new ToxAvEventArgs.VideoFrameEventArgs((int)friendNumber, new ToxAvVideoFrame(width, height, y, u, v, a, yStride, uStride, vStride, aStride)));
+                    OnVideoFrameReceived(this, new ToxAvEventArgs.VideoFrameEventArgs((int)friendNumber, new ToxAvVideoFrame(width, height, y, u, v, yStride, uStride, vStride)));
             };
 
             ToxAvFunctions.RegisterAudioReceiveFrameCallback(_toxAv, _onReceiveAudioFrameCallback, IntPtr.Zero);
@@ -270,7 +270,7 @@ namespace SharpTox.Av
             ThrowIfDisposed();
 
             error = ToxAvErrorSendFrame.Ok;
-            return ToxAvFunctions.VideoSendFrame(_toxAv, (uint)friendNumber, (ushort)frame.Width, (ushort)frame.Height, frame.Y, frame.U, frame.V, frame.A, ref error);
+            return ToxAvFunctions.VideoSendFrame(_toxAv, (uint)friendNumber, (ushort)frame.Width, (ushort)frame.Height, frame.Y, frame.U, frame.V, ref error);
         }
 
         public bool SendVideoFrame(int friendNumber, ToxAvVideoFrame frame)

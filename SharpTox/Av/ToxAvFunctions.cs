@@ -56,7 +56,7 @@ namespace SharpTox.Av
         internal static extern bool VideoBitrateSet(ToxAvHandle toxAv, uint friendNumber, uint videoBitrate, bool force, ref ToxAvErrorBitrate error);
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "toxav_video_send_frame")]
-        internal static extern bool VideoSendFrame(ToxAvHandle toxAv, uint friendNumber, ushort width, ushort height, byte[] y, byte[] u, byte[] v, byte[] a, ref ToxAvErrorSendFrame error);
+        internal static extern bool VideoSendFrame(ToxAvHandle toxAv, uint friendNumber, ushort width, ushort height, byte[] y, byte[] u, byte[] v, ref ToxAvErrorSendFrame error);
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "toxav_audio_send_frame")]
         internal static extern bool AudioSendFrame(ToxAvHandle toxAv, uint friendNumber, short[] pcm, uint sampleCount, byte channels, uint samplingRate, ref ToxAvErrorSendFrame error);
