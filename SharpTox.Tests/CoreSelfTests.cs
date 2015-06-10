@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 namespace SharpTox.Test
 {
     [TestFixture]
-    public class CoreSelfTests : ExtendedTestClass
+    public class CoreSelfTests
     {
         [Test]
         public void TestToxPortBind()
@@ -122,8 +122,7 @@ namespace SharpTox.Test
             tox.Dispose();
         }
 
-        [Ignore]
-        [Test]
+        [Test, Ignore]
         public void TestToxEncryption()
         {
             var key = new ToxEncryptionKey("heythisisatest");
@@ -140,8 +139,7 @@ namespace SharpTox.Test
                 Assert.Fail("Original data is not equal to the decrypted data");
         }
 
-        [Ignore]
-        [Test]
+        [Test, Ignore]
         public void TestToxEncryptionLoad()
         {
             var tox1 = new Tox(ToxOptions.Default);
@@ -169,9 +167,7 @@ namespace SharpTox.Test
             tox2.Dispose();
         }
 
-        [Test]
-        [Timeout(120000)]
-        [Ignore]
+        [Test, Timeout(120000), Ignore]
         public void TestToxProxySocks5()
         {
             var options = new ToxOptions(true, ToxProxyType.Socks5, "127.0.0.1", 9050);
@@ -202,47 +198,35 @@ namespace SharpTox.Test
             string message = "Hey, this is a test friend request.";
             bool testFinished = false;
 
-            Task.Run(async () =>
-            {
-                while (!testFinished)
-                {
-                    int time1 = tox1.Iterate();
-                    int time2 = tox2.Iterate();
-
-                    await Task.Delay(Math.Min(time1, time2));
-                }
-            });
-
             tox1.AddFriend(tox2.Id, message, out error);
             if (error != ToxErrorFriendAdd.Ok)
                 Assert.Fail("Failed to add friend: {0}", error);
 
-            tox2.OnFriendRequestReceived += (object sender, ToxEventArgs.FriendRequestEventArgs args) =>
+            tox2.OnFriendRequestReceived += (sender, args) =>
             {
                 if (args.Message != message)
-                {
-                    Fail("Message received in the friend request is not the same as the one that was sent");
-                    return;
-                }
+                    Assert.Fail("Message received in the friend request is not the same as the one that was sent");
 
                 tox2.AddFriendNoRequest(args.PublicKey, out error);
                 if (error != ToxErrorFriendAdd.Ok)
-                {
-                    Fail("Failed to add friend (no request): {0}", error);
-                    return;
-                }
+                    Assert.Fail("Failed to add friend (no request): {0}", error);
 
                 if (!tox2.FriendExists(0))
-                    Fail("Friend doesn't exist according to core");
+                    Assert.Fail("Friend doesn't exist according to core");
+
+                testFinished = true;
             };
 
-            while (tox1.GetFriendConnectionStatus(0) == ToxConnectionStatus.None && _wait) { Thread.Sleep(10); }
+            while (!testFinished && tox1.GetFriendConnectionStatus(0) == ToxConnectionStatus.None)
+            {
+                int time1 = tox1.Iterate();
+                int time2 = tox2.Iterate();
 
-            testFinished = true;
+                Thread.Sleep(Math.Min(time1, time2));
+            }
+
             tox1.Dispose();
             tox2.Dispose();
-
-            CheckFailed();
         }
     }
 }

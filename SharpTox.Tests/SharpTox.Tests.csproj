@@ -99,7 +99,6 @@
     <Compile Include="AvSelfTests.cs" />
     <Compile Include="CoreFriendTests.cs" />
     <Compile Include="CoreSelfTests.cs" />
-    <Compile Include="ExtendedTestClass.cs" />
     <Compile Include="Globals.cs" />
     <Compile Include="MiscTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

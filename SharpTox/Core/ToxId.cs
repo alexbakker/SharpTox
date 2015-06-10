@@ -131,7 +131,15 @@ namespace SharpTox.Core
         /// <returns>True if the ID is valid, false if the ID is invalid.</returns>
         public static bool IsValid(string id)
         {
-            return IsValid(ToxTools.StringToHexBin(id));
+            if (string.IsNullOrEmpty(id))
+                return false;
+
+            byte[] bytes = null;
+
+            try { bytes = ToxTools.StringToHexBin(id); }
+            catch { return false; }
+
+            return IsValid(bytes);
         }
 
         /// <summary>
@@ -142,7 +150,7 @@ namespace SharpTox.Core
         public static bool IsValid(byte[] id)
         {
             if (id == null)
-                throw new ArgumentNullException("id");
+                return false;
 
             try
             {
