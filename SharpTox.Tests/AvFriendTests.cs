@@ -122,11 +122,11 @@ namespace SharpTox.Test
 
             for (int i = 0; i < 100; i++)
             {
-                short[] frame = new short[960];
+                short[] frame = new short[1920];
                 RandomShorts(frame);
 
                 var error = ToxAvErrorSendFrame.Ok;
-                bool result = _toxAv1.SendAudioFrame(0, new ToxAvAudioFrame(frame, 48000, 1), out error);
+                bool result = _toxAv1.SendAudioFrame(0, new ToxAvAudioFrame(frame, 48000, 2), out error);
 
                 if (!result || error != ToxAvErrorSendFrame.Ok)
                     Assert.Fail("Failed to send audio frame, error: {0}, result: {1}", error, result);
