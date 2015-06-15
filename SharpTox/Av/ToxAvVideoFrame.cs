@@ -9,6 +9,10 @@ namespace SharpTox.Av
         public byte[] U { get; private set; }
         public byte[] V { get; private set; }
 
+        public int YStride { get; private set; }
+        public int UStride { get; private set; }
+        public int VStride { get; private set; }
+
         public int Width { get; private set; }
         public int Height { get; private set; }
 
@@ -17,6 +21,10 @@ namespace SharpTox.Av
         {
             Width = width;
             Height = height;
+
+            YStride = yStride;
+            UStride = uStride;
+            VStride = vStride;
 
             Y = new byte[Math.Max(width, Math.Abs(yStride)) * height];
             U = new byte[Math.Max(width / 2, Math.Abs(uStride)) * (height / 2)];
@@ -36,6 +44,10 @@ namespace SharpTox.Av
             Y = y;
             U = u;
             V = v;
+
+            YStride = width;
+            UStride = width / 2;
+            VStride = width / 2;
         }
     }
 }

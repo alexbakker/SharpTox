@@ -62,8 +62,8 @@ namespace SharpTox.Test
 
         private void DoIterate()
         {
-            int time1 = _tox1.Iterate();
-            int time2 = _tox2.Iterate();
+            int time1 = Math.Min(_tox1.Iterate(), _tox2.Iterate());
+            int time2 = Math.Min(_toxAv1.Iterate(), _toxAv2.Iterate());
 
             Thread.Sleep(Math.Min(time1, time2));
         }
@@ -115,9 +115,13 @@ namespace SharpTox.Test
         [Test]
         public void TestToxAvSendAudio()
         {
+            var stopWatch = new System.Diagnostics.Stopwatch();
+            int count = 0;
+
             _toxAv2.OnAudioFrameReceived += (sender, e) =>
             {
                 Console.WriteLine("Received frame, length: {0}, sampling rate: {1}", e.Frame.Data.Length, e.Frame.SamplingRate);
+                count++;
             };
 
             for (int i = 0; i < 100; i++)
@@ -133,6 +137,16 @@ namespace SharpTox.Test
 
                 DoIterate();
             }
+
+            stopWatch.Start();
+
+            while (stopWatch.Elapsed.TotalSeconds < 5)
+            {
+                //give the frames a bit less than 5 seconds to arrive
+                DoIterate();
+            }
+
+            Console.WriteLine("Received a total of {0} audio frames", count);
         }
 
         [Test]
