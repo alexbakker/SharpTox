@@ -70,9 +70,7 @@ namespace SharpTox.Core
         /// </summary>
         /// <param name="id">A (ToxConstant.AddressSize * 2) character long hexadecimal string, containing a Tox ID.</param>
         public ToxId(string id)
-            : this(ToxTools.StringToHexBin(id))
-        {
-        }
+            : this(ToxTools.StringToHexBin(id)) { }
 
         /// <summary>
         /// Initializes a new instance of the ToxId class.
@@ -85,6 +83,34 @@ namespace SharpTox.Core
             if (CalcChecksum(_id, ToxConstants.PublicKeySize + sizeof(uint)) != Checksum)
                 throw new Exception("This Tox ID is invalid");
         }
+
+        /// <summary>
+        /// Creates a new tox id with the specified public key and nospam.
+        /// </summary>
+        /// <param name="publicKey">Public key to create this Tox ID with.</param>
+        /// <param name="nospam">Nospam value to create this Tox ID with.</param>
+        [CLSCompliant(false)]
+        public ToxId(byte[] publicKey, uint nospam)
+        {
+            byte[] id = new byte[ToxConstants.AddressSize];
+
+            Array.Copy(publicKey, 0, id, 0, ToxConstants.PublicKeySize);
+            Array.Copy(BitConverter.GetBytes(nospam), 0, id, ToxConstants.PublicKeySize, sizeof(uint));
+
+            ushort checksum = CalcChecksum(id, ToxConstants.PublicKeySize + sizeof(uint));
+            Array.Copy(BitConverter.GetBytes(checksum), 0, id, ToxConstants.PublicKeySize + sizeof(uint), sizeof(ushort));
+
+            _id = id;
+        }
+
+        /// <summary>
+        /// Creates a new tox id with the specified public key and nospam.
+        /// </summary>
+        /// <param name="publicKey">Public key to create this Tox ID with.</param>
+        /// <param name="nospam">Nospam value to create this Tox ID with.</param>
+        [CLSCompliant(false)]
+        public ToxId(string publicKey, uint nospam)
+            : this(ToxTools.StringToHexBin(publicKey), nospam) { }
 
         public static bool operator ==(ToxId id1, ToxId id2)
         {
@@ -157,7 +183,7 @@ namespace SharpTox.Core
                 byte[] checksum = new byte[sizeof(ushort)];
                 int index = ToxConstants.PublicKeySize + sizeof(uint);
                 ushort check;
-                
+
                 Array.Copy(id, index, checksum, 0, sizeof(ushort));
                 check = BitConverter.ToUInt16(checksum, 0);
 

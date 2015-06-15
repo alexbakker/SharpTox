@@ -122,6 +122,16 @@ namespace SharpTox.Test
             tox.Dispose();
         }
 
+        [Test]
+        public void TestToxId()
+        {
+            var tox = new Tox(ToxOptions.Default);
+            var toxId = new ToxId(tox.Id.PublicKey.GetBytes(), tox.Id.Nospam);
+
+            if (toxId != tox.Id)
+                Assert.Fail("Tox id's are not equal");
+        }
+
         [Test, Ignore]
         public void TestToxEncryption()
         {
