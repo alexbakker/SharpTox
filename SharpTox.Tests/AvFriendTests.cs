@@ -99,7 +99,7 @@ namespace SharpTox.Test
 
             _toxAv2.OnCallStateChanged += (sender, e) =>
             {
-                if (!e.State.HasFlag(ToxAvCallState.Paused))
+                if (!e.State.HasFlag(ToxAvFriendCallState.Paused))
                     Assert.Fail("Tried to pause a call but the call state didn't change correctly, call state: {0}", e.State);
 
                 testFinished = true;

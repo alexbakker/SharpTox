@@ -412,7 +412,7 @@ namespace SharpTox.Av
             {
                 if (_onCallStateCallback == null)
                 {
-                    _onCallStateCallback = (IntPtr toxAv, uint friendNumber, ToxAvCallState state, IntPtr userData) =>
+                    _onCallStateCallback = (IntPtr toxAv, uint friendNumber, ToxAvFriendCallState state, IntPtr userData) =>
                     {
                         if (_onCallStateChanged != null)
                             _onCallStateChanged(this, new ToxAvEventArgs.CallStateEventArgs((int)friendNumber, state));

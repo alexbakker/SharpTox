@@ -17,7 +17,7 @@ namespace SharpTox.Av
 
         public class CallRequestEventArgs : CallBaseEventArgs
         {
-            public ToxAvCallState State { get; private set; }
+            public ToxAvFriendCallState State { get; private set; }
 
             public bool AudioEnabled { get; private set; }
             public bool VideoEnabled { get; private set; }
@@ -32,9 +32,9 @@ namespace SharpTox.Av
 
         public class CallStateEventArgs : CallBaseEventArgs
         {
-            public ToxAvCallState State { get; private set; }
+            public ToxAvFriendCallState State { get; private set; }
 
-            public CallStateEventArgs(int friendNumber, ToxAvCallState state)
+            public CallStateEventArgs(int friendNumber, ToxAvFriendCallState state)
                 : base(friendNumber)
             {
                 State = state;

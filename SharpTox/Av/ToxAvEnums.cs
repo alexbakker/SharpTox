@@ -29,7 +29,7 @@ namespace SharpTox.Av
     }
 
     [Flags]
-    public enum ToxAvCallState
+    public enum ToxAvFriendCallState
     {
         Paused = 0,
         Error = 1 << 0,

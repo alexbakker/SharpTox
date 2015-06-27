@@ -9,7 +9,7 @@ namespace SharpTox.Av
         internal delegate void CallCallback(IntPtr toxAv, uint friendNumber, bool audioEnabled, bool videoEnabled, IntPtr userData);
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        internal delegate void CallStateCallback(IntPtr toxAv, uint friendNumber, ToxAvCallState state, IntPtr userData);
+        internal delegate void CallStateCallback(IntPtr toxAv, uint friendNumber, ToxAvFriendCallState state, IntPtr userData);
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         internal delegate void FrameRequestCallback(IntPtr toxAv, uint friendNumber, IntPtr userData);
