@@ -58,5 +58,10 @@ namespace SharpTox.Av
             Minor = minor;
             Patch = patch;
         }
+
+        public override string ToString()
+        {
+            return string.Format("{0}.{1}.{2}", Major, Minor, Patch);
+        }
     }
 }
