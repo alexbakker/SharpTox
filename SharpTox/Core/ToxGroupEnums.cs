@@ -92,7 +92,7 @@
         FailSend
     }
 
-    public enum ToxErrorGroupSelfStatusGet
+    public enum ToxErrorGroupSelfStatusSet
     {
         Ok,
         GroupNotFound,
@@ -225,7 +225,7 @@
         FailSend
     }
 
-    public enum ToxErrorGroupModRemoveBam
+    public enum ToxErrorGroupModRemoveBan
     {
         Ok,
         GroupNotFound,
