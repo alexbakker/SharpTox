@@ -1180,6 +1180,164 @@ namespace SharpTox.Core
             return GetFriendLastOnline(friendNumber, out error);
         }
 
+        /// <summary>
+        /// Creates a new group.
+        /// </summary>
+        /// <returns>The group.</returns>
+        /// <param name="privacyState">Privacy state.</param>
+        /// <param name="groupName">Group name.</param>
+        /// <param name="error">Error.</param>
+        public int CreateGroup(ToxGroupPrivacyState privacyState, string groupName, out ToxErrorGroupNew error)
+        {
+            error = ToxErrorGroupNew.Ok;
+            byte[] nameBytes = Encoding.UTF8.GetBytes(groupName);
+
+            return (int)ToxGroupFunctions.New(_tox, privacyState, nameBytes, (uint)nameBytes.Length, ref error);
+        }
+
+        /// <summary>
+        /// Creates a new group.
+        /// </summary>
+        /// <returns>The group.</returns>
+        /// <param name="privacyState">Privacy state.</param>
+        /// <param name="groupName">Group name.</param>
+        public int CreateGroup(ToxGroupPrivacyState privacyState, string groupName)
+        {
+            var error = ToxErrorGroupNew.Ok;
+            return CreateGroup(privacyState, groupName, out error);
+        }
+
+        /// <summary>
+        /// Joins a group.
+        /// </summary>
+        /// <returns>The group.</returns>
+        /// <param name="chatId">Chat identifier.</param>
+        /// <param name="password">Password.</param>
+        /// <param name="error">Error.</param>
+        public int JoinGroup(byte[] chatId, string password, out ToxErrorGroupJoin error)
+        {
+            error = ToxErrorGroupJoin.Ok;
+            byte[] passwordBytes = Encoding.UTF8.GetBytes(password);
+
+            return (int)ToxGroupFunctions.Join(_tox, chatId, passwordBytes, (uint)passwordBytes.Length, ref error);
+        }
+
+        /// <summary>
+        /// Joins a group.
+        /// </summary>
+        /// <returns>The group.</returns>
+        /// <param name="chatId">Chat identifier.</param>
+        /// <param name="password">Password.</param>
+        public int JoinGroup(byte[] chatId, string password)
+        {
+            var error = ToxErrorGroupJoin.Ok;
+            return JoinGroup(chatId, password, out error);
+        }
+
+        /// <summary>
+        /// Attempts to reconnect to the specified group.
+        /// </summary>
+        /// <param name="groupNumber">Group number.</param>
+        /// <param name="error">Error.</param>
+        public bool ReconnectToGroup(int groupNumber, out ToxErrorGroupReconnect error)
+        {
+            error = ToxErrorGroupReconnect.Ok;
+            return ToxGroupFunctions.Reconnect(_tox, (uint)groupNumber, ref error);
+        }
+
+        /// <summary>
+        /// Attempts to reconnect to the specified group.
+        /// </summary>
+        /// <param name="groupNumber">Group number.</param>
+        public bool ReconnectToGroup(int groupNumber)
+        {
+            var error = ToxErrorGroupReconnect.Ok;
+            return ReconnectToGroup(groupNumber, out error);
+        }
+
+        /// <summary>
+        /// Leaves a group.
+        /// </summary>
+        /// <returns><c>true</c>, if group was left, <c>false</c> otherwise.</returns>
+        /// <param name="groupNumber">Group number.</param>
+        /// <param name="partMessage">Message.</param>
+        /// <param name="error">Error.</param>
+        public bool LeaveGroup(int groupNumber, string partMessage, out ToxErrorGroupLeave error)
+        {
+            error = ToxErrorGroupLeave.Ok;
+            byte[] messageBytes = Encoding.UTF8.GetBytes(partMessage);
+
+            return ToxGroupFunctions.Leave(_tox, (uint)groupNumber, messageBytes, (uint)messageBytes.Length, ref error);
+        }
+
+        /// <summary>
+        /// Leaves a group.
+        /// </summary>
+        /// <returns><c>true</c>, if group was left, <c>false</c> otherwise.</returns>
+        /// <param name="groupNumber">Group number.</param>
+        /// <param name="partMessage">Part message.</param>
+        public bool LeaveGroup(int groupNumber, string partMessage)
+        {
+            var error = ToxErrorGroupLeave.Ok;
+            return LeaveGroup(groupNumber, partMessage, out error);
+        }
+
+        /// <summary>
+        /// Sets our name for the specified group.
+        /// </summary>
+        /// <returns><c>true</c>, if the name was set successfully, <c>false</c> otherwise.</returns>
+        /// <param name="groupNumber">Group number.</param>
+        /// <param name="name">Name.</param>
+        /// <param name="error">Error.</param>
+        public bool GroupSetSelfName(int groupNumber, string name, out ToxErrorGroupSelfNameSet error)
+        {
+            error = ToxErrorGroupSelfNameSet.Ok;
+            byte[] nameBytes = Encoding.UTF8.GetBytes(name);
+
+            return ToxGroupFunctions.SelfSetName(_tox, groupNumber, nameBytes, nameBytes.Length, ref error);
+        }
+
+        /// <summary>
+        /// Sets our name for the specified group.
+        /// </summary>
+        /// <returns><c>true</c>, if the name was set successfully, <c>false</c> otherwise.</returns>
+        /// <param name="groupNumber">Group number.</param>
+        /// <param name="name">Name.</param>
+        public bool GroupSetSelfName(int groupNumber, string name)
+        {
+            var error = ToxErrorGroupSelfNameSet.Ok;
+            return GroupSetSelfName(groupNumber, name, out error);
+        }
+
+        /// <summary>
+        /// Get our name for the specified group.
+        /// </summary>
+        /// <returns>The name.</returns>
+        /// <param name="groupNumber">Group number.</param>
+        /// <param name="error">Error.</param>
+        public string GroupGetSelfName(int groupNumber, out ToxErrorGroupSelfQuery error)
+        {
+            error = ToxErrorGroupSelfQuery.Ok;
+
+            uint nameLength = ToxGroupFunctions.SelfGetNameSize(_tox, groupNumber, ref error);
+            if (error != ToxErrorGroupSelfQuery.Ok)
+                return null;
+            
+            byte[] nameBytes = new byte[nameLength];
+            return ToxGroupFunctions.SelfGetName(_tox, groupNumber, nameBytes, ref error);
+        }
+
+        /// <summary>
+        /// Get our name for the specified group.
+        /// </summary>
+        /// <returns>The name.</returns>
+        /// <param name="groupNumber">Group number.</param>
+        public string GroupGetSelfName(int groupNumber)
+        {
+            var error = ToxErrorGroupSelfQuery.Ok;
+            return GroupGetSelfName(groupNumber, out error);
+        }
+
         #region Events
         private EventHandler<ToxEventArgs.FriendRequestEventArgs> _onFriendRequestReceived;
 
