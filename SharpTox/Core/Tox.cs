@@ -33,11 +33,6 @@ namespace SharpTox.Core
         private ToxDelegates.CallbackFileRequestChunkDelegate _onFileRequestChunkCallback;
         private ToxDelegates.CallbackFriendPacketDelegate _onFriendLossyPacketCallback;
         private ToxDelegates.CallbackFriendPacketDelegate _onFriendLosslessPacketCallback;
-        private ToxDelegates.CallbackGroupInviteDelegate _onGroupInviteCallback;
-        private ToxDelegates.CallbackGroupActionDelegate _onGroupActionCallback;
-        private ToxDelegates.CallbackGroupMessageDelegate _onGroupMessageCallback;
-        private ToxDelegates.CallbackGroupNamelistChangeDelegate _onGroupNamelistChangeCallback;
-        private ToxDelegates.CallbackGroupTitleDelegate _onGroupTitleCallback;
         #endregion
 
         /// <summary>
