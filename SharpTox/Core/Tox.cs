@@ -1294,7 +1294,7 @@ namespace SharpTox.Core
             error = ToxErrorGroupSelfNameSet.Ok;
             byte[] nameBytes = Encoding.UTF8.GetBytes(name);
 
-            return ToxGroupFunctions.SelfSetName(_tox, groupNumber, nameBytes, nameBytes.Length, ref error);
+            return ToxGroupFunctions.SelfSetName(_tox, (uint)groupNumber, nameBytes, (uint)nameBytes.Length, ref error);
         }
 
         /// <summary>
@@ -1319,12 +1319,15 @@ namespace SharpTox.Core
         {
             error = ToxErrorGroupSelfQuery.Ok;
 
-            uint nameLength = ToxGroupFunctions.SelfGetNameSize(_tox, groupNumber, ref error);
+            uint nameLength = ToxGroupFunctions.SelfGetNameSize(_tox, (uint)groupNumber, ref error);
             if (error != ToxErrorGroupSelfQuery.Ok)
                 return null;
             
             byte[] nameBytes = new byte[nameLength];
-            return ToxGroupFunctions.SelfGetName(_tox, groupNumber, nameBytes, ref error);
+            if (!ToxGroupFunctions.SelfGetName(_tox, (uint)groupNumber, nameBytes, ref error))
+                return null;
+
+            return Encoding.UTF8.GetString(nameBytes, 0, nameBytes.Length);
         }
 
         /// <summary>
