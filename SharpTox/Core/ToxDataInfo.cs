@@ -75,10 +75,10 @@ namespace SharpTox.Core
                                 stream.Position += length; //skip this
                                 break;
                             case StateType.Name:
-                                name = Encoding.UTF8.GetString(reader.ReadBytes((int)length));
+                                name = Encoding.UTF8.GetString(reader.ReadBytes((int)length), 0, (int)length);
                                 break;
                             case StateType.StatusMessage:
-                                statusMessage = Encoding.UTF8.GetString(reader.ReadBytes((int)length));
+                                statusMessage = Encoding.UTF8.GetString(reader.ReadBytes((int)length), 0, (int)length);
                                 break;
                             case StateType.Status:
                                 status = (ToxUserStatus)reader.ReadByte();
