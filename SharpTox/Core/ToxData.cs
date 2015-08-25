@@ -1,6 +1,8 @@
 ﻿using SharpTox.Encryption;
+using System;
 using System.IO;
 using System.Linq;
+using System.Text;
 
 namespace SharpTox.Core
 {
@@ -34,10 +36,21 @@ namespace SharpTox.Core
             }
         }
 
-        internal ToxData(byte[] data)
+        private ToxData(byte[] data)
         {
             _data = data;
             _encrypted = ToxEncryptionFunctions.IsDataEncrypted(data);
+        }
+
+        /// <summary>
+        /// Tries to parse this Tox profile.
+        /// </summary>
+        /// <param name="info"></param>
+        /// <returns>Tox profile information.</returns>
+        public bool TryParse(out ToxDataInfo info)
+        {
+            info = ToxDataInfo.FromToxData(this);
+            return info != null;
         }
 
 #if !IS_PORTABLE
@@ -86,7 +99,7 @@ namespace SharpTox.Core
             if (bytes == null || bytes.Length == 0)
                 return null;
 
-            return new ToxData(bytes);
+            return FromBytes(bytes);
         }
 #endif
 
