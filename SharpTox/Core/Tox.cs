@@ -33,6 +33,22 @@ namespace SharpTox.Core
         private ToxDelegates.CallbackFileRequestChunkDelegate _onFileRequestChunkCallback;
         private ToxDelegates.CallbackFriendPacketDelegate _onFriendLossyPacketCallback;
         private ToxDelegates.CallbackFriendPacketDelegate _onFriendLosslessPacketCallback;
+
+        private ToxGroupDelegates.CallbackInviteDelegate _onGroupInviteCallback;
+        private ToxGroupDelegates.CallbackJoinFailDelegate _onGroupJoinFailCallback;
+        private ToxGroupDelegates.CallbackMessageDelegate _onGroupMessageCallback;
+        private ToxGroupDelegates.CallbackModerationDelegate _onGroupModerationCallback;
+        private ToxGroupDelegates.CallbackPasswordDelegate _onGroupPasswordCallback;
+        private ToxGroupDelegates.CallbackPeerExitDelegate _onGroupPeerExitCallback;
+        private ToxGroupDelegates.CallbackPeerJoinDelegate _onGroupPeerJoinCallback;
+        private ToxGroupDelegates.CallbackPeerLimitDelegate _onGroupPeerLimitCallback;
+        private ToxGroupDelegates.CallbackPeerListUpdateDelegate _onGroupPeerListUpdateCallback;
+        private ToxGroupDelegates.CallbackPeerNameDelegate _onGroupPeerNameCallback;
+        private ToxGroupDelegates.CallbackPeerStatusDelegate _onGroupPeerStatusCallback;
+        private ToxGroupDelegates.CallbackPrivacyStateDelegate _onGroupPrivacyStateCallback;
+        private ToxGroupDelegates.CallbackPrivateMessageDelegate _onGroupPrivateMessageCallback;
+        private ToxGroupDelegates.CallbackSelfJoinDelegate _onGroupSelfJoinCallback;
+        private ToxGroupDelegates.CallbackTopicDelegate _onGroupTopicCallback;
         #endregion
 
         /// <summary>
@@ -2253,6 +2269,516 @@ namespace SharpTox.Core
                 }
 
                 _onFriendLosslessPacketReceived -= value;
+            }
+        }
+
+        private EventHandler<ToxGroupEventArgs.PeerNameEventArgs> _onGroupPeerNameChanged;
+
+        /// <summary>
+        /// Occurs when a peer in a group changed his name.
+        /// </summary>
+        public event EventHandler<ToxGroupEventArgs.PeerNameEventArgs> OnGroupPeerNameChanged
+        {
+            add
+            {
+                if (_onGroupPeerNameCallback == null)
+                {
+                    _onGroupPeerNameCallback = (IntPtr tox, uint groupNumber, uint peerNumber, byte[] name, uint length, IntPtr userData) =>
+                    {
+                        if (_onGroupPeerNameChanged != null)
+                            _onGroupPeerNameChanged(this, new ToxGroupEventArgs.PeerNameEventArgs((int)groupNumber, (int)peerNumber, Encoding.UTF8.GetString(name, 0, (int)length)));
+                    };
+
+                    ToxGroupFunctions.RegisterPeerNameCallback(_tox, _onGroupPeerNameCallback, IntPtr.Zero);
+                }
+
+                _onGroupPeerNameChanged += value;
+            }
+            remove
+            {
+                if (_onGroupPeerNameChanged.GetInvocationList().Length == 1)
+                {
+                    ToxGroupFunctions.RegisterPeerNameCallback(_tox, null, IntPtr.Zero);
+                    _onGroupPeerNameCallback = null;
+                }
+
+                _onGroupPeerNameChanged -= value;
+            }
+        }
+
+        private EventHandler<ToxGroupEventArgs.PeerStatusEventArgs> _onGroupPeerStatusChanged;
+
+        /// <summary>
+        /// Occurs when a peer in a group changed his status.
+        /// </summary>
+        public event EventHandler<ToxGroupEventArgs.PeerStatusEventArgs> OnGroupPeerStatusChanged
+        {
+            add
+            {
+                if (_onGroupPeerStatusCallback == null)
+                {
+                    _onGroupPeerStatusCallback = (IntPtr tox, uint groupNumber, uint peerNumber, ToxUserStatus status, IntPtr userData) =>
+                    {
+                        if (_onGroupPeerStatusChanged != null)
+                            _onGroupPeerStatusChanged(this, new ToxGroupEventArgs.PeerStatusEventArgs((int)groupNumber, (int)peerNumber, status));
+                    };
+
+                    ToxGroupFunctions.RegisterPeerStatusCallback(_tox, _onGroupPeerStatusCallback, IntPtr.Zero);
+                }
+
+                _onGroupPeerStatusChanged += value;
+            }
+            remove
+            {
+                if (_onGroupPeerStatusChanged.GetInvocationList().Length == 1)
+                {
+                    ToxGroupFunctions.RegisterPeerStatusCallback(_tox, null, IntPtr.Zero);
+                    _onGroupPeerStatusCallback = null;
+                }
+
+                _onGroupPeerStatusChanged -= value;
+            }
+        }
+
+        private EventHandler<ToxGroupEventArgs.TopicEventArgs> _onGroupTopicChanged;
+
+        /// <summary>
+        /// Occurs when a peer changed the topic of a group.
+        /// </summary>
+        public event EventHandler<ToxGroupEventArgs.TopicEventArgs> OnGroupTopicChanged
+        {
+            add
+            {
+                if (_onGroupTopicCallback == null)
+                {
+                    _onGroupTopicCallback = (IntPtr tox, uint groupNumber, uint peerNumber, byte[] topic, uint length, IntPtr userData) =>
+                    {
+                        if (_onGroupTopicChanged != null)
+                            _onGroupTopicChanged(this, new ToxGroupEventArgs.TopicEventArgs((int)groupNumber, (int)peerNumber, Encoding.UTF8.GetString(topic, 0, (int)length)));
+                    };
+
+                    ToxGroupFunctions.RegisterTopicCallback(_tox, _onGroupTopicCallback, IntPtr.Zero);
+                }
+
+                _onGroupTopicChanged += value;
+            }
+            remove
+            {
+                if (_onGroupTopicChanged.GetInvocationList().Length == 1)
+                {
+                    ToxGroupFunctions.RegisterTopicCallback(_tox, null, IntPtr.Zero);
+                    _onGroupTopicCallback = null;
+                }
+
+                _onGroupTopicChanged -= value;
+            }
+        }
+
+        private EventHandler<ToxGroupEventArgs.PrivacyStateEventArgs> _onGroupPrivacyStateChanged;
+
+        /// <summary>
+        /// Occurs when the privacy status of a group was changed.
+        /// </summary>
+        public event EventHandler<ToxGroupEventArgs.PrivacyStateEventArgs> OnGroupPrivacyStateChanged
+        {
+            add
+            {
+                if (_onGroupPrivacyStateCallback == null)
+                {
+                    _onGroupPrivacyStateCallback = (IntPtr tox, uint groupNumber, ToxGroupPrivacyState privacyState, IntPtr userData) =>
+                    {
+                        if (_onGroupPrivacyStateChanged != null)
+                            _onGroupPrivacyStateChanged(this, new ToxGroupEventArgs.PrivacyStateEventArgs((int)groupNumber, privacyState));
+                    };
+
+                    ToxGroupFunctions.RegisterPrivacyStateCallback(_tox, _onGroupPrivacyStateCallback, IntPtr.Zero);
+                }
+
+                _onGroupPrivacyStateChanged += value;
+            }
+            remove
+            {
+                if (_onGroupPrivacyStateChanged.GetInvocationList().Length == 1)
+                {
+                    ToxGroupFunctions.RegisterPrivacyStateCallback(_tox, null, IntPtr.Zero);
+                    _onGroupPrivacyStateCallback = null;
+                }
+
+                _onGroupPrivacyStateChanged -= value;
+            }
+        }
+
+        private EventHandler<ToxGroupEventArgs.PeerLimitEventArgs> _onGroupPeerLimitChanged;
+
+        /// <summary>
+        /// Occurs when a the peer limit of a group was changed.
+        /// </summary>
+        public event EventHandler<ToxGroupEventArgs.PeerLimitEventArgs> OnGroupPeerLimitChanged
+        {
+            add
+            {
+                if (_onGroupPeerLimitCallback == null)
+                {
+                    _onGroupPeerLimitCallback = (IntPtr tox, uint groupNumber, uint peerLimit, IntPtr userData) =>
+                    {
+                        if (_onGroupPeerLimitChanged != null)
+                            _onGroupPeerLimitChanged(this, new ToxGroupEventArgs.PeerLimitEventArgs((int)groupNumber, (int)peerLimit));
+                    };
+
+                    ToxGroupFunctions.RegisterPeerLimitCallback(_tox, _onGroupPeerLimitCallback, IntPtr.Zero);
+                }
+
+                _onGroupPeerLimitChanged += value;
+            }
+            remove
+            {
+                if (_onGroupPeerLimitChanged.GetInvocationList().Length == 1)
+                {
+                    ToxGroupFunctions.RegisterPeerLimitCallback(_tox, null, IntPtr.Zero);
+                    _onGroupPeerLimitCallback = null;
+                }
+
+                _onGroupPeerLimitChanged -= value;
+            }
+        }
+
+        private EventHandler<ToxGroupEventArgs.PasswordEventArgs> _onGroupPasswordhanged;
+
+        /// <summary>
+        /// Occurs when a the password of a group was changed.
+        /// </summary>
+        public event EventHandler<ToxGroupEventArgs.PasswordEventArgs> OnGroupPasswordhanged
+        {
+            add
+            {
+                if (_onGroupPasswordCallback == null)
+                {
+                    _onGroupPasswordCallback = (IntPtr tox, uint groupNumber, byte[] password, uint length, IntPtr userData) =>
+                    {
+                        if (_onGroupPasswordhanged != null)
+                            _onGroupPasswordhanged(this, new ToxGroupEventArgs.PasswordEventArgs((int)groupNumber, Encoding.UTF8.GetString(password, 0, (int)length)));
+                    };
+
+                    ToxGroupFunctions.RegisterPasswordCallback(_tox, _onGroupPasswordCallback, IntPtr.Zero);
+                }
+
+                _onGroupPasswordhanged += value;
+            }
+            remove
+            {
+                if (_onGroupPasswordhanged.GetInvocationList().Length == 1)
+                {
+                    ToxGroupFunctions.RegisterPasswordCallback(_tox, null, IntPtr.Zero);
+                    _onGroupPasswordCallback = null;
+                }
+
+                _onGroupPasswordhanged -= value;
+            }
+        }
+
+        private EventHandler<ToxGroupEventArgs.PeerListUpdateEventArgs> _onGroupPeerListUpdated;
+
+        /// <summary>
+        /// Occurs when a the peer limit of a group gets changed.
+        /// </summary>
+        public event EventHandler<ToxGroupEventArgs.PeerListUpdateEventArgs> OnGroupPeerListUpdated
+        {
+            add
+            {
+                if (_onGroupPeerListUpdateCallback == null)
+                {
+                    _onGroupPeerListUpdateCallback = (IntPtr tox, uint groupNumber, IntPtr userData) =>
+                    {
+                        if (_onGroupPeerListUpdated != null)
+                            _onGroupPeerListUpdated(this, new ToxGroupEventArgs.PeerListUpdateEventArgs((int)groupNumber));
+                    };
+
+                    ToxGroupFunctions.RegisterPeerListUpdateCallback(_tox, _onGroupPeerListUpdateCallback, IntPtr.Zero);
+                }
+
+                _onGroupPeerListUpdated += value;
+            }
+            remove
+            {
+                if (_onGroupPeerListUpdated.GetInvocationList().Length == 1)
+                {
+                    ToxGroupFunctions.RegisterPeerListUpdateCallback(_tox, null, IntPtr.Zero);
+                    _onGroupPeerListUpdateCallback = null;
+                }
+
+                _onGroupPeerListUpdated -= value;
+            }
+        }
+
+        private EventHandler<ToxGroupEventArgs.MessageEventArgs> _onGroupMessageReceived;
+
+        /// <summary>
+        /// Occurs when message from a group was received.
+        /// </summary>
+        public event EventHandler<ToxGroupEventArgs.MessageEventArgs> OnGroupMessageReceived
+        {
+            add
+            {
+                if (_onGroupMessageCallback == null)
+                {
+                    _onGroupMessageCallback = (IntPtr tox, uint groupNumber, uint peerNumber, ToxMessageType type, byte[] message, uint length, IntPtr userData) =>
+                    {
+                        if (_onGroupMessageReceived != null)
+                            _onGroupMessageReceived(this, new ToxGroupEventArgs.MessageEventArgs((int)groupNumber, (int)peerNumber, type, Encoding.UTF8.GetString(message, 0, (int)length)));
+                    };
+
+                    ToxGroupFunctions.RegisterMessageCallback(_tox, _onGroupMessageCallback, IntPtr.Zero);
+                }
+
+                _onGroupMessageReceived += value;
+            }
+            remove
+            {
+                if (_onGroupMessageReceived.GetInvocationList().Length == 1)
+                {
+                    ToxGroupFunctions.RegisterMessageCallback(_tox, null, IntPtr.Zero);
+                    _onGroupMessageCallback = null;
+                }
+
+                _onGroupMessageReceived -= value;
+            }
+        }
+
+        private EventHandler<ToxGroupEventArgs.PrivateMessageEventArgs> _onGroupPrivateMessageReceived;
+
+        /// <summary>
+        /// Occurs when private message from a peer in a group was received.
+        /// </summary>
+        public event EventHandler<ToxGroupEventArgs.PrivateMessageEventArgs> OnGroupPrivateMessageReceived
+        {
+            add
+            {
+                if (_onGroupPrivateMessageCallback == null)
+                {
+                    _onGroupPrivateMessageCallback = (IntPtr tox, uint groupNumber, uint peerNumber, byte[] message, uint length, IntPtr userData) =>
+                    {
+                        if (_onGroupPrivateMessageReceived != null)
+                            _onGroupPrivateMessageReceived(this, new ToxGroupEventArgs.PrivateMessageEventArgs((int)groupNumber, (int)peerNumber, Encoding.UTF8.GetString(message, 0, (int)length)));
+                    };
+
+                    ToxGroupFunctions.RegisterPrivateMessageCallback(_tox, _onGroupPrivateMessageCallback, IntPtr.Zero);
+                }
+
+                _onGroupPrivateMessageReceived += value;
+            }
+            remove
+            {
+                if (_onGroupPrivateMessageReceived.GetInvocationList().Length == 1)
+                {
+                    ToxGroupFunctions.RegisterPrivateMessageCallback(_tox, null, IntPtr.Zero);
+                    _onGroupPrivateMessageCallback = null;
+                }
+
+                _onGroupPrivateMessageReceived -= value;
+            }
+        }
+
+        private EventHandler<ToxGroupEventArgs.InviteEventArgs> _onGroupInviteReceived;
+
+        /// <summary>
+        /// Occurs when an invite to a group was received from a friend.
+        /// </summary>
+        public event EventHandler<ToxGroupEventArgs.InviteEventArgs> OnGroupInviteReceived
+        {
+            add
+            {
+                if (_onGroupInviteCallback == null)
+                {
+                    _onGroupInviteCallback = (IntPtr tox, uint friendNumber, byte[] inviteData, uint length, IntPtr userData) =>
+                    {
+                        if (_onGroupInviteReceived != null)
+                            _onGroupInviteReceived(this, new ToxGroupEventArgs.InviteEventArgs((int)friendNumber, inviteData));
+                    };
+
+                    ToxGroupFunctions.RegisterInviteCallback(_tox, _onGroupInviteCallback, IntPtr.Zero);
+                }
+
+                _onGroupInviteReceived += value;
+            }
+            remove
+            {
+                if (_onGroupInviteReceived.GetInvocationList().Length == 1)
+                {
+                    ToxGroupFunctions.RegisterInviteCallback(_tox, null, IntPtr.Zero);
+                    _onGroupInviteCallback = null;
+                }
+
+                _onGroupInviteReceived -= value;
+            }
+        }
+
+        private EventHandler<ToxGroupEventArgs.PeerJoinEventArgs> _onGroupPeerJoined;
+
+        /// <summary>
+        /// Occurs when a new peer joined a groupchat.
+        /// </summary>
+        public event EventHandler<ToxGroupEventArgs.PeerJoinEventArgs> OnGroupPeerJoined
+        {
+            add
+            {
+                if (_onGroupPeerJoinCallback == null)
+                {
+                    _onGroupPeerJoinCallback = (IntPtr tox, uint groupNumber, uint peerNumber, IntPtr userData) =>
+                    {
+                        if (_onGroupPeerJoined != null)
+                            _onGroupPeerJoined(this, new ToxGroupEventArgs.PeerJoinEventArgs((int)groupNumber, (int)peerNumber));
+                    };
+
+                    ToxGroupFunctions.RegisterPeerJoinCallback(_tox, _onGroupPeerJoinCallback, IntPtr.Zero);
+                }
+
+                _onGroupPeerJoined += value;
+            }
+            remove
+            {
+                if (_onGroupPeerJoined.GetInvocationList().Length == 1)
+                {
+                    ToxGroupFunctions.RegisterPeerJoinCallback(_tox, null, IntPtr.Zero);
+                    _onGroupPeerJoinCallback = null;
+                }
+
+                _onGroupPeerJoined -= value;
+            }
+        }
+
+        private EventHandler<ToxGroupEventArgs.PeerExitEventArgs> _onGroupPeerLeft;
+
+        /// <summary>
+        /// Occurs when a new peer left a groupchat.
+        /// </summary>
+        public event EventHandler<ToxGroupEventArgs.PeerExitEventArgs> OnGroupPeerLeft
+        {
+            add
+            {
+                if (_onGroupPeerExitCallback == null)
+                {
+                    _onGroupPeerExitCallback = (IntPtr tox, uint groupNumber, uint peerNumber, byte[] message, uint length, IntPtr userData) =>
+                    {
+                        if (_onGroupPeerLeft != null)
+                            _onGroupPeerLeft(this, new ToxGroupEventArgs.PeerExitEventArgs((int)groupNumber, (int)peerNumber, Encoding.UTF8.GetString(message, 0, (int)length)));
+                    };
+
+                    ToxGroupFunctions.RegisterPeerExitCallback(_tox, _onGroupPeerExitCallback, IntPtr.Zero);
+                }
+
+                _onGroupPeerLeft += value;
+            }
+            remove
+            {
+                if (_onGroupPeerLeft.GetInvocationList().Length == 1)
+                {
+                    ToxGroupFunctions.RegisterPeerExitCallback(_tox, null, IntPtr.Zero);
+                    _onGroupPeerExitCallback = null;
+                }
+
+                _onGroupPeerLeft -= value;
+            }
+        }
+
+        private EventHandler<ToxGroupEventArgs.SelfJoinEventArgs> _onGroupJoined;
+
+        /// <summary>
+        /// Occurs when we successfully joined a groupchat.
+        /// </summary>
+        public event EventHandler<ToxGroupEventArgs.SelfJoinEventArgs> OnGroupJoined
+        {
+            add
+            {
+                if (_onGroupSelfJoinCallback == null)
+                {
+                    _onGroupSelfJoinCallback = (IntPtr tox, uint groupNumber, IntPtr userData) =>
+                    {
+                        if (_onGroupJoined != null)
+                            _onGroupJoined(this, new ToxGroupEventArgs.SelfJoinEventArgs((int)groupNumber));
+                    };
+
+                    ToxGroupFunctions.RegisterSelfJoinCallback(_tox, _onGroupSelfJoinCallback, IntPtr.Zero);
+                }
+
+                _onGroupJoined += value;
+            }
+            remove
+            {
+                if (_onGroupJoined.GetInvocationList().Length == 1)
+                {
+                    ToxGroupFunctions.RegisterSelfJoinCallback(_tox, null, IntPtr.Zero);
+                    _onGroupSelfJoinCallback = null;
+                }
+
+                _onGroupJoined -= value;
+            }
+        }
+
+        private EventHandler<ToxGroupEventArgs.JoinFailEventArgs> _onGroupJoinFailed;
+
+        /// <summary>
+        /// Occurs when we failed to join a groupchat.
+        /// </summary>
+        public event EventHandler<ToxGroupEventArgs.JoinFailEventArgs> OnGroupJoinFailed
+        {
+            add
+            {
+                if (_onGroupJoinFailCallback == null)
+                {
+                    _onGroupJoinFailCallback = (IntPtr tox, uint groupNumber, ToxGroupJoinFail failType, IntPtr userData) =>
+                    {
+                        if (_onGroupJoinFailed != null)
+                            _onGroupJoinFailed(this, new ToxGroupEventArgs.JoinFailEventArgs((int)groupNumber, failType));
+                    };
+
+                    ToxGroupFunctions.RegisterJoinFailCallback(_tox, _onGroupJoinFailCallback, IntPtr.Zero);
+                }
+
+                _onGroupJoinFailed += value;
+            }
+            remove
+            {
+                if (_onGroupJoinFailed.GetInvocationList().Length == 1)
+                {
+                    ToxGroupFunctions.RegisterJoinFailCallback(_tox, null, IntPtr.Zero);
+                    _onGroupJoinFailCallback = null;
+                }
+
+                _onGroupJoinFailed -= value;
+            }
+        }
+
+        private EventHandler<ToxGroupEventArgs.ModActionEventArgs> _onGroupModerationAction;
+
+        /// <summary>
+        /// Occurs when we failed to join a groupchat.
+        /// </summary>
+        public event EventHandler<ToxGroupEventArgs.ModActionEventArgs> OnGroupModerationAction
+        {
+            add
+            {
+                if (_onGroupModerationCallback == null)
+                {
+                    _onGroupModerationCallback = (IntPtr tox, uint groupNumber, uint sourcePeerNumber, uint targetPeerNumber, ToxGroupModEvent modEvent, IntPtr userData) =>
+                    {
+                        if (_onGroupModerationAction != null)
+                            _onGroupModerationAction(this, new ToxGroupEventArgs.ModActionEventArgs((int)groupNumber, (int)sourcePeerNumber, (int)targetPeerNumber, modEvent));
+                    };
+
+                    ToxGroupFunctions.RegisterModerationCallback(_tox, _onGroupModerationCallback, IntPtr.Zero);
+                }
+
+                _onGroupModerationAction += value;
+            }
+            remove
+            {
+                if (_onGroupModerationAction.GetInvocationList().Length == 1)
+                {
+                    ToxGroupFunctions.RegisterModerationCallback(_tox, null, IntPtr.Zero);
+                    _onGroupModerationCallback = null;
+                }
+
+                _onGroupModerationAction -= value;
             }
         }
 

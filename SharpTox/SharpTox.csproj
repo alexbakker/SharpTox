@@ -165,6 +165,7 @@
     <Compile Include="Core\ToxGroupConstants.cs" />
     <Compile Include="Core\ToxGroupDelegates.cs" />
     <Compile Include="Core\ToxGroupEnums.cs" />
+    <Compile Include="Core\ToxGroupEventArgs.cs" />
     <Compile Include="Core\ToxGroupFunctions.cs" />
     <Compile Include="Core\ToxHandle.cs" />
     <Compile Include="Core\ToxId.cs" />
