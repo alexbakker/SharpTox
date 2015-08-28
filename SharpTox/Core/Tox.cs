@@ -1205,6 +1205,8 @@ namespace SharpTox.Core
         /// <param name="error">Error.</param>
         public int CreateGroup(ToxGroupPrivacyState privacyState, string groupName, out ToxErrorGroupNew error)
         {
+            ThrowIfDisposed();
+
             error = ToxErrorGroupNew.Ok;
             byte[] nameBytes = Encoding.UTF8.GetBytes(groupName);
 
@@ -1232,6 +1234,8 @@ namespace SharpTox.Core
         /// <param name="error">Error.</param>
         public int JoinGroup(byte[] chatId, string password, out ToxErrorGroupJoin error)
         {
+            ThrowIfDisposed();
+
             error = ToxErrorGroupJoin.Ok;
             byte[] passwordBytes = Encoding.UTF8.GetBytes(password);
 
@@ -1257,6 +1261,8 @@ namespace SharpTox.Core
         /// <param name="error">Error.</param>
         public bool ReconnectToGroup(int groupNumber, out ToxErrorGroupReconnect error)
         {
+            ThrowIfDisposed();
+
             error = ToxErrorGroupReconnect.Ok;
             return ToxGroupFunctions.Reconnect(_tox, (uint)groupNumber, ref error);
         }
@@ -1280,6 +1286,8 @@ namespace SharpTox.Core
         /// <param name="error">Error.</param>
         public bool LeaveGroup(int groupNumber, string partMessage, out ToxErrorGroupLeave error)
         {
+            ThrowIfDisposed();
+
             error = ToxErrorGroupLeave.Ok;
             byte[] messageBytes = Encoding.UTF8.GetBytes(partMessage);
 
@@ -1306,6 +1314,8 @@ namespace SharpTox.Core
         /// <param name="error">Error.</param>
         public string GroupGetSelfName(int groupNumber, out ToxErrorGroupSelfQuery error)
         {
+            ThrowIfDisposed();
+
             return GetNameGeneric((uint)groupNumber, ToxGroupFunctions.SelfGetNameSize, ToxGroupFunctions.SelfGetName, out error);
         }
 
@@ -1329,6 +1339,8 @@ namespace SharpTox.Core
         /// <returns></returns>
         public bool GroupSetSelfName(int groupNumber, string name, out ToxErrorGroupSelfNameSet error)
         {
+            ThrowIfDisposed();
+
             return SetNameGeneric((uint)groupNumber, name, ToxGroupFunctions.SelfSetName, out error);
         }
 
@@ -1346,6 +1358,8 @@ namespace SharpTox.Core
 
         public bool GroupSetSelfStatus(int groupNumber, ToxUserStatus status, out ToxErrorGroupSelfStatusSet error)
         {
+            ThrowIfDisposed();
+
             error = ToxErrorGroupSelfStatusSet.Ok;
             return ToxGroupFunctions.SelfSetStatus(_tox, (uint)groupNumber, status, ref error);
         }
@@ -1358,6 +1372,8 @@ namespace SharpTox.Core
 
         public ToxUserStatus GroupGetSelfStatus(int groupNumber, out ToxErrorGroupSelfQuery error)
         {
+            ThrowIfDisposed();
+
             error = ToxErrorGroupSelfQuery.Ok;
             return ToxGroupFunctions.SelfGetStatus(_tox, (uint)groupNumber, ref error);
         }
@@ -1370,6 +1386,8 @@ namespace SharpTox.Core
 
         public ToxGroupRole GroupGetSelfRole(int groupNumber, out ToxErrorGroupSelfQuery error)
         {
+            ThrowIfDisposed();
+
             error = ToxErrorGroupSelfQuery.Ok;
             return ToxGroupFunctions.SelfGetRole(_tox, (uint)groupNumber, ref error);
         }
@@ -1382,6 +1400,8 @@ namespace SharpTox.Core
 
         public string GroupGetPeerName(int groupNumber, int peerNumber, out ToxErrorGroupPeerQuery error)
         {
+            ThrowIfDisposed();
+
             error = ToxErrorGroupPeerQuery.Ok;
 
             uint nameLength = ToxGroupFunctions.PeerGetNameSize(_tox, (uint)groupNumber, (uint)peerNumber, ref error);
@@ -1403,6 +1423,8 @@ namespace SharpTox.Core
 
         public ToxUserStatus GroupGetPeerStatus(int groupNumber, int peerNumber, out ToxErrorGroupPeerQuery error)
         {
+            ThrowIfDisposed();
+
             error = ToxErrorGroupPeerQuery.Ok;
             return ToxGroupFunctions.PeerGetStatus(_tox, (uint)groupNumber, (uint)peerNumber, ref error);
         }
@@ -1415,6 +1437,8 @@ namespace SharpTox.Core
 
         public ToxGroupRole GroupGetPeerRole(int groupNumber, int peerNumber, out ToxErrorGroupPeerQuery error)
         {
+            ThrowIfDisposed();
+
             error = ToxErrorGroupPeerQuery.Ok;
             return ToxGroupFunctions.PeerGetRole(_tox, (uint)groupNumber, (uint)peerNumber, ref error);
         }
@@ -1427,6 +1451,8 @@ namespace SharpTox.Core
 
         public bool GroupSetTopic(int groupNumber, string topic, out ToxErrorGroupTopicSet error)
         {
+            ThrowIfDisposed();
+
             return SetNameGeneric((uint)groupNumber, topic, ToxGroupFunctions.SetTopic, out error);
         }
 
@@ -1438,6 +1464,8 @@ namespace SharpTox.Core
 
         public string GroupGetTopic(int groupNumber, out ToxErrorGroupStateQueries error)
         {
+            ThrowIfDisposed();
+
             return GetNameGeneric((uint)groupNumber, ToxGroupFunctions.GetTopicSize, ToxGroupFunctions.GetTopic, out error);
         }
 
@@ -1449,6 +1477,8 @@ namespace SharpTox.Core
 
         public string GroupGetName(int groupNumber, out ToxErrorGroupStateQueries error)
         {
+            ThrowIfDisposed();
+
             return GetNameGeneric((uint)groupNumber, ToxGroupFunctions.GetNameSize, ToxGroupFunctions.GetName, out error);
         }
 
@@ -1460,6 +1490,8 @@ namespace SharpTox.Core
 
         public ToxKey GroupGetChatId(int groupNumber, out ToxErrorGroupStateQueries error)
         {
+            ThrowIfDisposed();
+
             error = ToxErrorGroupStateQueries.Ok;
             byte[] chatId = new byte[ToxGroupConstants.ChatIdSize];
 
@@ -1477,6 +1509,8 @@ namespace SharpTox.Core
 
         public int GroupGetPeerCount(int groupNumber, out ToxErrorGroupStateQueries error)
         {
+            ThrowIfDisposed();
+
             error = ToxErrorGroupStateQueries.Ok;
             return (int)ToxGroupFunctions.GetNumberPeers(_tox, (uint)groupNumber, ref error);
         }
@@ -1489,11 +1523,15 @@ namespace SharpTox.Core
 
         public int GetGroupCount()
         {
+            ThrowIfDisposed();
+
             return (int)ToxGroupFunctions.GetNumberGroups(_tox);
         }
 
         public string GroupGetPassword(int groupNumber, out ToxErrorGroupStateQueries error)
         {
+            ThrowIfDisposed();
+
             return GetNameGeneric((uint)groupNumber, ToxGroupFunctions.GetPasswordSize, ToxGroupFunctions.GetPassword, out error);
         }
 
@@ -1505,6 +1543,8 @@ namespace SharpTox.Core
 
         public ToxGroupPrivacyState GroupGetPrivacyState(int groupNumber, out ToxErrorGroupStateQueries error)
         {
+            ThrowIfDisposed();
+
             error = ToxErrorGroupStateQueries.Ok;
             return ToxGroupFunctions.GetPrivacyState(_tox, (uint)groupNumber, ref error);
         }
@@ -1517,6 +1557,8 @@ namespace SharpTox.Core
 
         public int GroupGetPeerLimit(int groupNumber, out ToxErrorGroupStateQueries error)
         {
+            ThrowIfDisposed();
+
             error = ToxErrorGroupStateQueries.Ok;
             return (int)ToxGroupFunctions.GetPeerLimit(_tox, (uint)groupNumber, ref error);
         }
@@ -1529,6 +1571,8 @@ namespace SharpTox.Core
 
         public bool GroupSendMessage(int groupNumber, ToxMessageType messageType, string message, out ToxErrorGroupSendMessage error)
         {
+            ThrowIfDisposed();
+
             error = ToxErrorGroupSendMessage.Ok;
             byte[] msgBytes = Encoding.UTF8.GetBytes(message);
 
@@ -1543,6 +1587,8 @@ namespace SharpTox.Core
 
         public bool GroupSendPrivateMessage(int groupNumber, int peerNumber, string message, out ToxErrorGroupSendPrivateMessage error)
         {
+            ThrowIfDisposed();
+
             error = ToxErrorGroupSendPrivateMessage.Ok;
             byte[] msgBytes = Encoding.UTF8.GetBytes(message);
 
@@ -1557,6 +1603,8 @@ namespace SharpTox.Core
 
         public bool GroupInviteFriend(int groupNumber, int friendNumber, out ToxErrorGroupInviteFriend error)
         {
+            ThrowIfDisposed();
+
             error = ToxErrorGroupInviteFriend.Ok;
             return ToxGroupFunctions.InviteFriend(_tox, (uint)groupNumber, (uint)friendNumber, ref error);
         }
@@ -1569,6 +1617,8 @@ namespace SharpTox.Core
 
         public bool GroupAcceptInvite(byte[] inviteData, string password, out ToxErrorGroupInviteAccept error)
         {
+            ThrowIfDisposed();
+
             error = ToxErrorGroupInviteAccept.Ok;
             byte[] passwordBytes = Encoding.UTF8.GetBytes(password);
 
@@ -1577,6 +1627,8 @@ namespace SharpTox.Core
 
         public bool GroupAcceptInvite(byte[] inviteData, out ToxErrorGroupInviteAccept error)
         {
+            ThrowIfDisposed();
+
             error = ToxErrorGroupInviteAccept.Ok;
             return ToxGroupFunctions.InviteAccept(_tox, inviteData, (uint)inviteData.Length, null, 0, ref error);
         }
@@ -1593,6 +1645,8 @@ namespace SharpTox.Core
 
         public bool GroupSetPassword(int groupNumber, string password, out ToxErrorGroupFounderSetPassword error)
         {
+            ThrowIfDisposed();
+
             return SetNameGeneric((uint)groupNumber, password, ToxGroupFunctions.FounderSetPassword, out error);
         }
 
@@ -1604,6 +1658,8 @@ namespace SharpTox.Core
 
         public bool GroupSetPrivacyState(int groupNumber, ToxGroupPrivacyState state, out ToxErrorGroupFounderSetPrivacyState error)
         {
+            ThrowIfDisposed();
+
             error = ToxErrorGroupFounderSetPrivacyState.Ok;
             return ToxGroupFunctions.FounderSetPrivacyState(_tox, (uint)groupNumber, state, ref error);
         }
@@ -1616,6 +1672,8 @@ namespace SharpTox.Core
 
         public bool GroupSetPeerLimit(int groupNumber, int maxPeers, out ToxErrorGroupFounderSetPeerLimit error)
         {
+            ThrowIfDisposed();
+
             error = ToxErrorGroupFounderSetPeerLimit.Ok;
             return ToxGroupFunctions.FounderSetPeerLimit(_tox, (uint)groupNumber, (uint)maxPeers, ref error);
         }
@@ -1628,6 +1686,8 @@ namespace SharpTox.Core
 
         public bool GroupToggleIgnore(int groupNumber, int peerNumber, bool ignore, out ToxErrorGroupToggleIgnore error)
         {
+            ThrowIfDisposed();
+
             error = ToxErrorGroupToggleIgnore.Ok;
             return ToxGroupFunctions.ToggleIgnore(_tox, (uint)groupNumber, (uint)peerNumber, ignore, ref error);
         }
@@ -1640,6 +1700,8 @@ namespace SharpTox.Core
 
         public bool GroupSetRole(int groupNumber, int peerNumber, ToxGroupRole role, out ToxErrorGroupModSetRole error)
         {
+            ThrowIfDisposed();
+
             error = ToxErrorGroupModSetRole.Ok;
             return ToxGroupFunctions.ModSetRole(_tox, (uint)groupNumber, (uint)peerNumber, role, ref error);
         }
@@ -1652,6 +1714,8 @@ namespace SharpTox.Core
 
         public bool GroupRemovePeer(int groupNumber, int peerNumber, bool setBan, out ToxErrorGroupModRemovePeer error)
         {
+            ThrowIfDisposed();
+
             error = ToxErrorGroupModRemovePeer.Ok;
             return ToxGroupFunctions.ModRemovePeer(_tox, (uint)groupNumber, (uint)peerNumber, setBan, ref error);
         }
@@ -1664,6 +1728,8 @@ namespace SharpTox.Core
 
         public bool GroupRemoveBan(int groupNumber, int banId, out ToxErrorGroupModRemoveBan error)
         {
+            ThrowIfDisposed();
+
             error = ToxErrorGroupModRemoveBan.Ok;
             return ToxGroupFunctions.ModRemoveBan(_tox, (uint)groupNumber, (uint)banId, ref error);
         }
@@ -1676,6 +1742,8 @@ namespace SharpTox.Core
 
         public int[] GroupGetBanList(int groupNumber, out ToxErrorGroupBanQuery error)
         {
+            ThrowIfDisposed();
+
             error = ToxErrorGroupBanQuery.Ok;
 
             uint listSize = ToxGroupFunctions.BanGetListSize(_tox, (uint)groupNumber, ref error);
@@ -1697,6 +1765,8 @@ namespace SharpTox.Core
 
         public string GroupGetBanName(int groupNumber, int banId, out ToxErrorGroupBanQuery error)
         {
+            ThrowIfDisposed();
+
             error = ToxErrorGroupBanQuery.Ok;
 
             uint nameLength = ToxGroupFunctions.BanGetNameSize(_tox, (uint)groupNumber, (uint)banId, ref error);
@@ -1718,6 +1788,8 @@ namespace SharpTox.Core
 
         public long GroupGetBanTime(int groupNumber, int banId, out ToxErrorGroupBanQuery error)
         {
+            ThrowIfDisposed();
+
             error = ToxErrorGroupBanQuery.Ok;
             return (long)ToxGroupFunctions.BanGetTimeSet(_tox, (uint)groupNumber, (uint)banId, ref error);
         }
