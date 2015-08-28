@@ -24,7 +24,7 @@ namespace SharpTox.Core
         /// <summary>
         /// Maximum length of a group name.
         /// </summary>
-        public const int MaxGroupNameLength = 48;
+        public const int MaxNameLength = 48;
 
         /// <summary>
         /// Maximum length of a group password.
@@ -34,6 +34,6 @@ namespace SharpTox.Core
         /// <summary>
         /// Number of bytes in a group chat ID.
         /// </summary>
-        public const int GroupChatIdSize = 32;
+        public const int ChatIdSize = 32;
     }
 }

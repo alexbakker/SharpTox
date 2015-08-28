@@ -1283,33 +1283,6 @@ namespace SharpTox.Core
         }
 
         /// <summary>
-        /// Sets our name for the specified group.
-        /// </summary>
-        /// <returns><c>true</c>, if the name was set successfully, <c>false</c> otherwise.</returns>
-        /// <param name="groupNumber">Group number.</param>
-        /// <param name="name">Name.</param>
-        /// <param name="error">Error.</param>
-        public bool GroupSetSelfName(int groupNumber, string name, out ToxErrorGroupSelfNameSet error)
-        {
-            error = ToxErrorGroupSelfNameSet.Ok;
-            byte[] nameBytes = Encoding.UTF8.GetBytes(name);
-
-            return ToxGroupFunctions.SelfSetName(_tox, (uint)groupNumber, nameBytes, (uint)nameBytes.Length, ref error);
-        }
-
-        /// <summary>
-        /// Sets our name for the specified group.
-        /// </summary>
-        /// <returns><c>true</c>, if the name was set successfully, <c>false</c> otherwise.</returns>
-        /// <param name="groupNumber">Group number.</param>
-        /// <param name="name">Name.</param>
-        public bool GroupSetSelfName(int groupNumber, string name)
-        {
-            var error = ToxErrorGroupSelfNameSet.Ok;
-            return GroupSetSelfName(groupNumber, name, out error);
-        }
-
-        /// <summary>
         /// Get our name for the specified group.
         /// </summary>
         /// <returns>The name.</returns>
@@ -1317,17 +1290,7 @@ namespace SharpTox.Core
         /// <param name="error">Error.</param>
         public string GroupGetSelfName(int groupNumber, out ToxErrorGroupSelfQuery error)
         {
-            error = ToxErrorGroupSelfQuery.Ok;
-
-            uint nameLength = ToxGroupFunctions.SelfGetNameSize(_tox, (uint)groupNumber, ref error);
-            if (error != ToxErrorGroupSelfQuery.Ok)
-                return null;
-            
-            byte[] nameBytes = new byte[nameLength];
-            if (!ToxGroupFunctions.SelfGetName(_tox, (uint)groupNumber, nameBytes, ref error))
-                return null;
-
-            return Encoding.UTF8.GetString(nameBytes, 0, nameBytes.Length);
+            return GetNameGeneric((uint)groupNumber, ToxGroupFunctions.SelfGetNameSize, ToxGroupFunctions.SelfGetName, out error);
         }
 
         /// <summary>
@@ -1340,6 +1303,446 @@ namespace SharpTox.Core
             var error = ToxErrorGroupSelfQuery.Ok;
             return GroupGetSelfName(groupNumber, out error);
         }
+
+        /// <summary>
+        /// Set our displayed name for the specified group.
+        /// </summary>
+        /// <param name="groupNumber"></param>
+        /// <param name="name"></param>
+        /// <param name="error"></param>
+        /// <returns></returns>
+        public bool GroupSetSelfName(int groupNumber, string name, out ToxErrorGroupSelfNameSet error)
+        {
+            return SetNameGeneric((uint)groupNumber, name, ToxGroupFunctions.SelfSetName, out error);
+        }
+
+        /// <summary>
+        /// Set our displayed name for the specified group.
+        /// </summary>
+        /// <param name="groupNumber"></param>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public bool GroupSetSelfName(int groupNumber, string name)
+        {
+            var error = ToxErrorGroupSelfNameSet.Ok;
+            return GroupSetSelfName(groupNumber, name, out error);
+        }
+
+        public bool GroupSetSelfStatus(int groupNumber, ToxUserStatus status, out ToxErrorGroupSelfStatusSet error)
+        {
+            error = ToxErrorGroupSelfStatusSet.Ok;
+            return ToxGroupFunctions.SelfSetStatus(_tox, (uint)groupNumber, status, ref error);
+        }
+
+        public bool GroupSetSelfStatus(int groupNumber, ToxUserStatus status)
+        {
+            var error = ToxErrorGroupSelfStatusSet.Ok;
+            return GroupSetSelfStatus(groupNumber, status, out error);
+        }
+
+        public ToxUserStatus GroupGetSelfStatus(int groupNumber, out ToxErrorGroupSelfQuery error)
+        {
+            error = ToxErrorGroupSelfQuery.Ok;
+            return ToxGroupFunctions.SelfGetStatus(_tox, (uint)groupNumber, ref error);
+        }
+
+        public ToxUserStatus GroupGetSelfStatus(int groupNumber)
+        {
+            var error = ToxErrorGroupSelfQuery.Ok;
+            return GroupGetSelfStatus(groupNumber, out error);
+        }
+
+        public ToxGroupRole GroupGetSelfRole(int groupNumber, out ToxErrorGroupSelfQuery error)
+        {
+            error = ToxErrorGroupSelfQuery.Ok;
+            return ToxGroupFunctions.SelfGetRole(_tox, (uint)groupNumber, ref error);
+        }
+
+        public ToxGroupRole GroupGetSelfRole(int groupNumber)
+        {
+            var error = ToxErrorGroupSelfQuery.Ok;
+            return GroupGetSelfRole(groupNumber, out error);
+        }
+
+        public string GroupGetPeerName(int groupNumber, int peerNumber, out ToxErrorGroupPeerQuery error)
+        {
+            error = ToxErrorGroupPeerQuery.Ok;
+
+            uint nameLength = ToxGroupFunctions.PeerGetNameSize(_tox, (uint)groupNumber, (uint)peerNumber, ref error);
+            if (error != ToxErrorGroupPeerQuery.Ok)
+                return null;
+
+            byte[] nameBytes = new byte[nameLength];
+            if (!ToxGroupFunctions.PeerGetName(_tox, (uint)groupNumber, (uint)peerNumber, nameBytes, ref error))
+                return null;
+
+            return Encoding.UTF8.GetString(nameBytes, 0, nameBytes.Length);
+        }
+
+        public string GroupGetPeerName(int groupNumber, int peerNumber)
+        {
+            var error = ToxErrorGroupPeerQuery.Ok;
+            return GroupGetPeerName(groupNumber, peerNumber, out error);
+        }
+
+        public ToxUserStatus GroupGetPeerStatus(int groupNumber, int peerNumber, out ToxErrorGroupPeerQuery error)
+        {
+            error = ToxErrorGroupPeerQuery.Ok;
+            return ToxGroupFunctions.PeerGetStatus(_tox, (uint)groupNumber, (uint)peerNumber, ref error);
+        }
+
+        public ToxUserStatus GroupGetPeerStatus(int groupNumber, int peerNumber)
+        {
+            var error = ToxErrorGroupPeerQuery.Ok;
+            return GroupGetPeerStatus(groupNumber, peerNumber, out error);
+        }
+
+        public ToxGroupRole GroupGetPeerRole(int groupNumber, int peerNumber, out ToxErrorGroupPeerQuery error)
+        {
+            error = ToxErrorGroupPeerQuery.Ok;
+            return ToxGroupFunctions.PeerGetRole(_tox, (uint)groupNumber, (uint)peerNumber, ref error);
+        }
+
+        public ToxGroupRole GroupGetPeerRole(int groupNumber, int peerNumber)
+        {
+            var error = ToxErrorGroupPeerQuery.Ok;
+            return GroupGetPeerRole(groupNumber, peerNumber, out error);
+        }
+
+        public bool GroupSetTopic(int groupNumber, string topic, out ToxErrorGroupTopicSet error)
+        {
+            return SetNameGeneric((uint)groupNumber, topic, ToxGroupFunctions.SetTopic, out error);
+        }
+
+        public bool GroupSetTopic(int groupNumber, string topic)
+        {
+            var error = ToxErrorGroupTopicSet.Ok;
+            return GroupSetTopic(groupNumber, topic, out error);
+        }
+
+        public string GroupGetTopic(int groupNumber, out ToxErrorGroupStateQueries error)
+        {
+            return GetNameGeneric((uint)groupNumber, ToxGroupFunctions.GetTopicSize, ToxGroupFunctions.GetTopic, out error);
+        }
+
+        public string GroupGetTopic(int groupNumber)
+        {
+            var error = ToxErrorGroupStateQueries.Ok;
+            return GroupGetTopic(groupNumber, out error);
+        }
+
+        public string GroupGetName(int groupNumber, out ToxErrorGroupStateQueries error)
+        {
+            return GetNameGeneric((uint)groupNumber, ToxGroupFunctions.GetNameSize, ToxGroupFunctions.GetName, out error);
+        }
+
+        public string GroupGetName(int groupNumber)
+        {
+            var error = ToxErrorGroupStateQueries.Ok;
+            return GroupGetName(groupNumber, out error);
+        }
+
+        public ToxKey GroupGetChatId(int groupNumber, out ToxErrorGroupStateQueries error)
+        {
+            error = ToxErrorGroupStateQueries.Ok;
+            byte[] chatId = new byte[ToxGroupConstants.ChatIdSize];
+
+            if (!ToxGroupFunctions.GetChatId(_tox, (uint)groupNumber, chatId, ref error))
+                return null;
+
+            return new ToxKey(ToxKeyType.Public, chatId);
+        }
+
+        public ToxKey GroupGetChatId(int groupNumber)
+        {
+            var error = ToxErrorGroupStateQueries.Ok;
+            return GroupGetChatId(groupNumber, out error);
+        }
+
+        public int GroupGetPeerCount(int groupNumber, out ToxErrorGroupStateQueries error)
+        {
+            error = ToxErrorGroupStateQueries.Ok;
+            return (int)ToxGroupFunctions.GetNumberPeers(_tox, (uint)groupNumber, ref error);
+        }
+
+        public int GroupGetPeerCount(int groupNumber)
+        {
+            var error = ToxErrorGroupStateQueries.Ok;
+            return GroupGetPeerCount(groupNumber, out error);
+        }
+
+        public int GetGroupCount()
+        {
+            return (int)ToxGroupFunctions.GetNumberGroups(_tox);
+        }
+
+        public string GroupGetPassword(int groupNumber, out ToxErrorGroupStateQueries error)
+        {
+            return GetNameGeneric((uint)groupNumber, ToxGroupFunctions.GetPasswordSize, ToxGroupFunctions.GetPassword, out error);
+        }
+
+        public string GroupGetPassword(int groupNumber)
+        {
+            var error = ToxErrorGroupStateQueries.Ok;
+            return GroupGetPassword(groupNumber, out error);
+        }
+
+        public ToxGroupPrivacyState GroupGetPrivacyState(int groupNumber, out ToxErrorGroupStateQueries error)
+        {
+            error = ToxErrorGroupStateQueries.Ok;
+            return ToxGroupFunctions.GetPrivacyState(_tox, (uint)groupNumber, ref error);
+        }
+
+        public ToxGroupPrivacyState GroupGetPrivacyState(int groupNumber)
+        {
+            var error = ToxErrorGroupStateQueries.Ok;
+            return GroupGetPrivacyState(groupNumber, out error);
+        }
+
+        public int GroupGetPeerLimit(int groupNumber, out ToxErrorGroupStateQueries error)
+        {
+            error = ToxErrorGroupStateQueries.Ok;
+            return (int)ToxGroupFunctions.GetPeerLimit(_tox, (uint)groupNumber, ref error);
+        }
+
+        public int GroupGetPeerLimit(int groupNumber)
+        {
+            var error = ToxErrorGroupStateQueries.Ok;
+            return GroupGetPeerLimit(groupNumber, out error);
+        }
+
+        public bool GroupSendMessage(int groupNumber, ToxMessageType messageType, string message, out ToxErrorGroupSendMessage error)
+        {
+            error = ToxErrorGroupSendMessage.Ok;
+            byte[] msgBytes = Encoding.UTF8.GetBytes(message);
+
+            return ToxGroupFunctions.SendMessage(_tox, (uint)groupNumber, messageType, msgBytes, (uint)msgBytes.Length, ref error);
+        }
+
+        public bool GroupSendMessage(int groupNumber, ToxMessageType messageType, string message)
+        {
+            var error = ToxErrorGroupSendMessage.Ok;
+            return GroupSendMessage(groupNumber, messageType, message, out error);
+        }
+
+        public bool GroupSendPrivateMessage(int groupNumber, int peerNumber, string message, out ToxErrorGroupSendPrivateMessage error)
+        {
+            error = ToxErrorGroupSendPrivateMessage.Ok;
+            byte[] msgBytes = Encoding.UTF8.GetBytes(message);
+
+            return ToxGroupFunctions.SendPrivateMessage(_tox, (uint)groupNumber, (uint)peerNumber, msgBytes, (uint)msgBytes.Length, ref error);
+        }
+
+        public bool GroupSendPrivateMessage(int groupNumber, int peerNumber, string message)
+        {
+            var error = ToxErrorGroupSendPrivateMessage.Ok;
+            return GroupSendPrivateMessage(groupNumber, peerNumber, message, out error);
+        }
+
+        public bool GroupInviteFriend(int groupNumber, int friendNumber, out ToxErrorGroupInviteFriend error)
+        {
+            error = ToxErrorGroupInviteFriend.Ok;
+            return ToxGroupFunctions.InviteFriend(_tox, (uint)groupNumber, (uint)friendNumber, ref error);
+        }
+
+        public bool GroupInviteFriend(int groupNumber, int friendNumber)
+        {
+            var error = ToxErrorGroupInviteFriend.Ok;
+            return GroupInviteFriend(groupNumber, friendNumber, out error);
+        }
+
+        public bool GroupAcceptInvite(byte[] inviteData, string password, out ToxErrorGroupInviteAccept error)
+        {
+            error = ToxErrorGroupInviteAccept.Ok;
+            byte[] passwordBytes = Encoding.UTF8.GetBytes(password);
+
+            return ToxGroupFunctions.InviteAccept(_tox, inviteData, (uint)inviteData.Length, passwordBytes, (uint)passwordBytes.Length, ref error);
+        }
+
+        public bool GroupAcceptInvite(byte[] inviteData, out ToxErrorGroupInviteAccept error)
+        {
+            error = ToxErrorGroupInviteAccept.Ok;
+            return ToxGroupFunctions.InviteAccept(_tox, inviteData, (uint)inviteData.Length, null, 0, ref error);
+        }
+
+        public bool GroupAcceptInvite(byte[] inviteData, string password = null)
+        {
+            var error = ToxErrorGroupInviteAccept.Ok;
+
+            if (password == null)
+                GroupAcceptInvite(inviteData, out error);
+
+            return GroupAcceptInvite(inviteData, password, out error);
+        }
+
+        public bool GroupSetPassword(int groupNumber, string password, out ToxErrorGroupFounderSetPassword error)
+        {
+            return SetNameGeneric((uint)groupNumber, password, ToxGroupFunctions.FounderSetPassword, out error);
+        }
+
+        public bool GroupSetPassword(int groupNumber, string password)
+        {
+            var error = ToxErrorGroupFounderSetPassword.Ok;
+            return GroupSetPassword(groupNumber, password, out error);
+        }
+
+        public bool GroupSetPrivacyState(int groupNumber, ToxGroupPrivacyState state, out ToxErrorGroupFounderSetPrivacyState error)
+        {
+            error = ToxErrorGroupFounderSetPrivacyState.Ok;
+            return ToxGroupFunctions.FounderSetPrivacyState(_tox, (uint)groupNumber, state, ref error);
+        }
+
+        public bool GroupSetPrivacyState(int groupNumber, ToxGroupPrivacyState state)
+        {
+            var error = ToxErrorGroupFounderSetPrivacyState.Ok;
+            return GroupSetPrivacyState(groupNumber, state, out error);
+        }
+
+        public bool GroupSetPeerLimit(int groupNumber, int maxPeers, out ToxErrorGroupFounderSetPeerLimit error)
+        {
+            error = ToxErrorGroupFounderSetPeerLimit.Ok;
+            return ToxGroupFunctions.FounderSetPeerLimit(_tox, (uint)groupNumber, (uint)maxPeers, ref error);
+        }
+
+        public bool GroupSetPeerLimit(int groupNumber, int maxPeers)
+        {
+            var error = ToxErrorGroupFounderSetPeerLimit.Ok;
+            return GroupSetPeerLimit(groupNumber, maxPeers, out error);
+        }
+
+        public bool GroupToggleIgnore(int groupNumber, int peerNumber, bool ignore, out ToxErrorGroupToggleIgnore error)
+        {
+            error = ToxErrorGroupToggleIgnore.Ok;
+            return ToxGroupFunctions.ToggleIgnore(_tox, (uint)groupNumber, (uint)peerNumber, ignore, ref error);
+        }
+
+        public bool GroupToggleIgnore(int groupNumber, int peerNumber, bool ignore)
+        {
+            var error = ToxErrorGroupToggleIgnore.Ok;
+            return GroupToggleIgnore(groupNumber, peerNumber, ignore, out error);
+        }
+
+        public bool GroupSetRole(int groupNumber, int peerNumber, ToxGroupRole role, out ToxErrorGroupModSetRole error)
+        {
+            error = ToxErrorGroupModSetRole.Ok;
+            return ToxGroupFunctions.ModSetRole(_tox, (uint)groupNumber, (uint)peerNumber, role, ref error);
+        }
+
+        public bool GroupSetRole(int groupNumber, int peerNumber, ToxGroupRole role)
+        {
+            var error = ToxErrorGroupModSetRole.Ok;
+            return GroupSetRole(groupNumber, peerNumber, role, out error);
+        }
+
+        public bool GroupRemovePeer(int groupNumber, int peerNumber, bool setBan, out ToxErrorGroupModRemovePeer error)
+        {
+            error = ToxErrorGroupModRemovePeer.Ok;
+            return ToxGroupFunctions.ModRemovePeer(_tox, (uint)groupNumber, (uint)peerNumber, setBan, ref error);
+        }
+
+        public bool GroupRemovePeer(int groupNumber, int peerNumber, bool setBan)
+        {
+            var error = ToxErrorGroupModRemovePeer.Ok;
+            return GroupRemovePeer(groupNumber, peerNumber, setBan, out error);
+        }
+
+        public bool GroupRemoveBan(int groupNumber, int banId, out ToxErrorGroupModRemoveBan error)
+        {
+            error = ToxErrorGroupModRemoveBan.Ok;
+            return ToxGroupFunctions.ModRemoveBan(_tox, (uint)groupNumber, (uint)banId, ref error);
+        }
+
+        public bool GroupRemoveBan(int groupNumber, int banId)
+        {
+            var error = ToxErrorGroupModRemoveBan.Ok;
+            return GroupRemoveBan(groupNumber, banId, out error);
+        }
+
+        public int[] GroupGetBanList(int groupNumber, out ToxErrorGroupBanQuery error)
+        {
+            error = ToxErrorGroupBanQuery.Ok;
+
+            uint listSize = ToxGroupFunctions.BanGetListSize(_tox, (uint)groupNumber, ref error);
+            if (error != ToxErrorGroupBanQuery.Ok)
+                return null;
+
+            uint[] bans = new uint[listSize];
+            if (!ToxGroupFunctions.BanGetList(_tox, (uint)groupNumber, bans, ref error))
+                return null;
+
+            return (int[])(object)bans;
+        }
+
+        public int[] GroupGetBanList(int groupNumber)
+        {
+            var error = ToxErrorGroupBanQuery.Ok;
+            return GroupGetBanList(groupNumber, out error);
+        }
+
+        public string GroupGetBanName(int groupNumber, int banId, out ToxErrorGroupBanQuery error)
+        {
+            error = ToxErrorGroupBanQuery.Ok;
+
+            uint nameLength = ToxGroupFunctions.BanGetNameSize(_tox, (uint)groupNumber, (uint)banId, ref error);
+            if (error != ToxErrorGroupBanQuery.Ok)
+                return null;
+
+            byte[] nameBytes = new byte[nameLength];
+            if (!ToxGroupFunctions.BanGetName(_tox, (uint)groupNumber, (uint)banId, nameBytes, ref error))
+                return null;
+
+            return Encoding.UTF8.GetString(nameBytes, 0, nameBytes.Length);
+        }
+
+        public string GroupGetBanName(int groupNumber, int banId)
+        {
+            var error = ToxErrorGroupBanQuery.Ok;
+            return GroupGetBanName(groupNumber, banId, out error);
+        }
+
+        public long GroupGetBanTime(int groupNumber, int banId, out ToxErrorGroupBanQuery error)
+        {
+            error = ToxErrorGroupBanQuery.Ok;
+            return (long)ToxGroupFunctions.BanGetTimeSet(_tox, (uint)groupNumber, (uint)banId, ref error);
+        }
+
+        public long GroupGetBanTime(int groupNumber, int banId)
+        {
+            var error = ToxErrorGroupBanQuery.Ok;
+            return GroupGetBanTime(groupNumber, banId, out error);
+        }
+
+        #region Generics
+
+        private delegate uint GetNameSizeDelegate<T>(ToxHandle handle, uint groupNumber, ref T error);
+        private delegate bool GetNameDelegate<T>(ToxHandle handle, uint groupNumber, byte[] buffer, ref T error);
+        private delegate bool SetNameDelegate<T>(ToxHandle handle, uint groupNumber, byte[] name, uint length, ref T error);
+
+        private string GetNameGeneric<T>(uint groupNumber, GetNameSizeDelegate<T> sizeFunc, GetNameDelegate<T> nameFunc, out T error) 
+            where T : struct, IConvertible
+        {
+            error = (T)(object)0;
+
+            uint nameLength = sizeFunc(_tox, groupNumber, ref error);
+            if ((int)(object)error != 0)
+                return null;
+
+            byte[] nameBytes = new byte[nameLength];
+            if (!nameFunc(_tox, groupNumber, nameBytes, ref error))
+                return null;
+
+            return Encoding.UTF8.GetString(nameBytes, 0, nameBytes.Length);
+        }
+
+        private bool SetNameGeneric<T>(uint groupNumber, string name, SetNameDelegate<T> nameFunc, out T error)
+        {
+            error = (T)(object)0;
+            byte[] topicBytes = Encoding.UTF8.GetBytes(name);
+
+            return nameFunc(_tox, groupNumber, topicBytes, (uint)topicBytes.Length, ref error);
+        }
+
+        #endregion
 
         #region Events
         private EventHandler<ToxEventArgs.FriendRequestEventArgs> _onFriendRequestReceived;

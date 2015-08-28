@@ -132,7 +132,7 @@ namespace SharpTox.Core
         internal static extern uint BanGetNameSize(ToxHandle tox, uint groupNumber, uint banId, ref ToxErrorGroupBanQuery error);
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_group_ban_get_name")]
-        internal static extern uint BanGetName(ToxHandle tox, uint groupNumber, uint banId, byte[] name, ref ToxErrorGroupBanQuery error);
+        internal static extern bool BanGetName(ToxHandle tox, uint groupNumber, uint banId, byte[] name, ref ToxErrorGroupBanQuery error);
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_group_ban_get_time_set")]
         internal static extern ulong BanGetTimeSet(ToxHandle tox, uint groupNumber, uint banId, ref ToxErrorGroupBanQuery error);
