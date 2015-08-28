@@ -1786,15 +1786,17 @@ namespace SharpTox.Core
             return GroupGetBanName(groupNumber, banId, out error);
         }
 
-        public long GroupGetBanTime(int groupNumber, int banId, out ToxErrorGroupBanQuery error)
+        public DateTime GroupGetBanTime(int groupNumber, int banId, out ToxErrorGroupBanQuery error)
         {
             ThrowIfDisposed();
 
             error = ToxErrorGroupBanQuery.Ok;
-            return (long)ToxGroupFunctions.BanGetTimeSet(_tox, (uint)groupNumber, (uint)banId, ref error);
+            ulong time = ToxGroupFunctions.BanGetTimeSet(_tox, (uint)groupNumber, (uint)banId, ref error);
+
+            return ToxTools.EpochToDateTime(time);
         }
 
-        public long GroupGetBanTime(int groupNumber, int banId)
+        public DateTime GroupGetBanTime(int groupNumber, int banId)
         {
             var error = ToxErrorGroupBanQuery.Ok;
             return GroupGetBanTime(groupNumber, banId, out error);
