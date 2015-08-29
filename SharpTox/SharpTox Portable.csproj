@@ -101,6 +101,7 @@
     <Compile Include="Av\ToxAvVideoFrame.cs" />
     <Compile Include="Core\Tox.cs" />
     <Compile Include="Core\ToxData.cs" />
+    <Compile Include="Core\ToxDataInfo.cs" />
     <Compile Include="Core\ToxEventArgs.cs" />
     <Compile Include="Core\ToxHandle.cs" />
     <Compile Include="Core\ToxId.cs" />

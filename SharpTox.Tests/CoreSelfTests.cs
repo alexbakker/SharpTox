@@ -238,5 +238,25 @@ namespace SharpTox.Test
             tox1.Dispose();
             tox2.Dispose();
         }
+
+        [Test]
+        public void TestToxDataParsing()
+        {
+            var tox = new Tox(ToxOptions.Default);
+            tox.Name = "Test";
+            tox.StatusMessage = "Status";
+            tox.Status = ToxUserStatus.Away;
+
+            var data = tox.GetData();
+            ToxDataInfo info = null;
+
+            if (data == null || !data.TryParse(out info))
+                Assert.Fail("Parsing the data file failed");
+
+            if (info.Id != tox.Id || info.Name != tox.Name || info.SecretKey != tox.GetPrivateKey() || info.Status != tox.Status || info.StatusMessage != tox.StatusMessage)
+                Assert.Fail("Parsing the data file failed");
+
+            tox.Dispose();
+        }
     }
 }
