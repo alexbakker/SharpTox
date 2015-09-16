@@ -730,7 +730,7 @@ namespace SharpTox.Core
             byte[] bytes = new byte[ToxFunctions.GetSaveDataSize(_tox)];
             ToxFunctions.GetSaveData(_tox, bytes);
 
-            return new ToxData(bytes);
+            return ToxData.FromBytes(bytes);
         }
 
         /// <summary>
@@ -745,7 +745,7 @@ namespace SharpTox.Core
             var data = GetData();
             byte[] encrypted = ToxEncryption.EncryptData(data.Bytes, key);
 
-            return new ToxData(encrypted);
+            return ToxData.FromBytes(encrypted);
         }
 
         /// <summary>
