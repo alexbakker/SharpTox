@@ -113,7 +113,7 @@ namespace SharpTox.Test
             byte[] randomBytes = new byte[sizeof(uint)];
             new Random().NextBytes(randomBytes);
 
-            uint nospam = BitConverter.ToUInt32(randomBytes, 0);
+            int nospam = BitConverter.ToInt32(randomBytes, 0);
             tox.SetNospam(nospam);
 
             if (nospam != tox.GetNospam())
