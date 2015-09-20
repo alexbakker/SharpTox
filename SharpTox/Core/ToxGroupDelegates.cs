@@ -24,9 +24,6 @@ namespace SharpTox.Core
         internal delegate void CallbackPasswordDelegate(IntPtr tox, uint groupNumber, [In, MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 3)] byte[] password, uint length, IntPtr userData);
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        internal delegate void CallbackPeerListUpdateDelegate(IntPtr tox, uint groupNumber, IntPtr userData);
-
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         internal delegate void CallbackMessageDelegate(IntPtr tox, uint groupNumber, uint peerNumber, ToxMessageType messageType, [In, MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 5)] byte[] message, uint length, IntPtr userData);
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]

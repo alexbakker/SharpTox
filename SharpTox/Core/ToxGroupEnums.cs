@@ -249,4 +249,13 @@
         GroupNotFound,
         BadId
     }
+
+    public enum ToxErrorGroupSendCustomPacket
+    {
+        Ok,
+        GroupNotFound,
+        TooLong,
+        Empty,
+        Permissions
+    }
 }

@@ -42,7 +42,6 @@ namespace SharpTox.Core
         private ToxGroupDelegates.CallbackPeerExitDelegate _onGroupPeerExitCallback;
         private ToxGroupDelegates.CallbackPeerJoinDelegate _onGroupPeerJoinCallback;
         private ToxGroupDelegates.CallbackPeerLimitDelegate _onGroupPeerLimitCallback;
-        private ToxGroupDelegates.CallbackPeerListUpdateDelegate _onGroupPeerListUpdateCallback;
         private ToxGroupDelegates.CallbackPeerNameDelegate _onGroupPeerNameCallback;
         private ToxGroupDelegates.CallbackPeerStatusDelegate _onGroupPeerStatusCallback;
         private ToxGroupDelegates.CallbackPrivacyStateDelegate _onGroupPrivacyStateCallback;
@@ -1507,20 +1506,6 @@ namespace SharpTox.Core
             return GroupGetChatId(groupNumber, out error);
         }
 
-        public int GroupGetPeerCount(int groupNumber, out ToxErrorGroupStateQueries error)
-        {
-            ThrowIfDisposed();
-
-            error = ToxErrorGroupStateQueries.Ok;
-            return (int)ToxGroupFunctions.GetNumberPeers(_tox, (uint)groupNumber, ref error);
-        }
-
-        public int GroupGetPeerCount(int groupNumber)
-        {
-            var error = ToxErrorGroupStateQueries.Ok;
-            return GroupGetPeerCount(groupNumber, out error);
-        }
-
         public int GetGroupCount()
         {
             ThrowIfDisposed();
@@ -1800,6 +1785,64 @@ namespace SharpTox.Core
         {
             var error = ToxErrorGroupBanQuery.Ok;
             return GroupGetBanTime(groupNumber, banId, out error);
+        }
+
+        public int GroupSelfGetPeerNumber(int groupNumber, out ToxErrorGroupSelfQuery error)
+        {
+            error = ToxErrorGroupSelfQuery.Ok;
+            return (int)ToxGroupFunctions.SelfGetPeerId(_tox, (uint)groupNumber, ref error);
+        }
+
+        public int GroupSelfGetPeerNumber(int groupNumber)
+        {
+            var error = ToxErrorGroupSelfQuery.Ok;
+            return GroupSelfGetPeerNumber(groupNumber, out error);
+        }
+
+        public ToxKey GroupGetPeerPublicKey(int groupNumber, int peerNumber, out ToxErrorGroupPeerQuery error)
+        {
+            error = ToxErrorGroupPeerQuery.Ok;
+            byte[] publicKey = new byte[ToxGroupConstants.PeerPublicKeySize];
+
+            if (!ToxGroupFunctions.PeerGetPublicKey(_tox, (uint)groupNumber, (uint)peerNumber, publicKey, ref error))
+                return null;
+
+            return new ToxKey(ToxKeyType.Public, publicKey);
+        }
+
+        public ToxKey GroupGetPeerPublicKey(int groupNumber, int peerNumber)
+        {
+            var error = ToxErrorGroupPeerQuery.Ok;
+            return GroupGetPeerPublicKey(groupNumber, peerNumber, out error);
+        }
+
+        public ToxKey GroupGetSelfPublicKey(int groupNumber, out ToxErrorGroupSelfQuery error)
+        {
+            error = ToxErrorGroupSelfQuery.Ok;
+            byte[] publicKey = new byte[ToxGroupConstants.PeerPublicKeySize];
+
+            if (!ToxGroupFunctions.SelfGetPublicKey(_tox, (uint)groupNumber, publicKey, ref error))
+                return null;
+
+            return new ToxKey(ToxKeyType.Public, publicKey);
+        }
+
+        public ToxKey GroupGetSelfPublicKey(int groupNumber)
+        {
+            var error = ToxErrorGroupSelfQuery.Ok;
+            return GroupGetSelfPublicKey(groupNumber, out error);
+        }
+
+        public bool GroupSendCustomPacket(int groupNumber, bool lossless, byte[] data, out ToxErrorGroupSendCustomPacket error)
+        {
+            error = ToxErrorGroupSendCustomPacket.Ok;
+            return ToxGroupFunctions.SendCustomPacket(_tox, (uint)groupNumber, lossless, data, (uint)data.Length, ref error);
+        }
+
+        public bool GroupSendCustomPacket(int groupNumber, bool lossless, byte[] data)
+        {
+            var error = ToxErrorGroupSendCustomPacket.Ok;
+            return GroupSendCustomPacket(groupNumber, lossless, data, out error);
         }
 
         #region Generics
@@ -2550,40 +2593,6 @@ namespace SharpTox.Core
             }
         }
 
-        private EventHandler<ToxGroupEventArgs.PeerListUpdateEventArgs> _onGroupPeerListUpdated;
-
-        /// <summary>
-        /// Occurs when a the peer limit of a group gets changed.
-        /// </summary>
-        public event EventHandler<ToxGroupEventArgs.PeerListUpdateEventArgs> OnGroupPeerListUpdated
-        {
-            add
-            {
-                if (_onGroupPeerListUpdateCallback == null)
-                {
-                    _onGroupPeerListUpdateCallback = (IntPtr tox, uint groupNumber, IntPtr userData) =>
-                    {
-                        if (_onGroupPeerListUpdated != null)
-                            _onGroupPeerListUpdated(this, new ToxGroupEventArgs.PeerListUpdateEventArgs((int)groupNumber));
-                    };
-
-                    ToxGroupFunctions.RegisterPeerListUpdateCallback(_tox, _onGroupPeerListUpdateCallback, IntPtr.Zero);
-                }
-
-                _onGroupPeerListUpdated += value;
-            }
-            remove
-            {
-                if (_onGroupPeerListUpdated.GetInvocationList().Length == 1)
-                {
-                    ToxGroupFunctions.RegisterPeerListUpdateCallback(_tox, null, IntPtr.Zero);
-                    _onGroupPeerListUpdateCallback = null;
-                }
-
-                _onGroupPeerListUpdated -= value;
-            }
-        }
-
         private EventHandler<ToxGroupEventArgs.MessageEventArgs> _onGroupMessageReceived;
 
         /// <summary>
@@ -2689,7 +2698,7 @@ namespace SharpTox.Core
         private EventHandler<ToxGroupEventArgs.PeerJoinEventArgs> _onGroupPeerJoined;
 
         /// <summary>
-        /// Occurs when a new peer joined a groupchat.
+        /// Occurs when a new peer joined a groupchat (will not be triggered if we join the group ourselves).
         /// </summary>
         public event EventHandler<ToxGroupEventArgs.PeerJoinEventArgs> OnGroupPeerJoined
         {
@@ -2723,7 +2732,7 @@ namespace SharpTox.Core
         private EventHandler<ToxGroupEventArgs.PeerExitEventArgs> _onGroupPeerLeft;
 
         /// <summary>
-        /// Occurs when a new peer left a groupchat.
+        /// Occurs when a new peer left a groupchat (will not be triggered if we leave the group ourselves).
         /// </summary>
         public event EventHandler<ToxGroupEventArgs.PeerExitEventArgs> OnGroupPeerLeft
         {
@@ -2825,7 +2834,7 @@ namespace SharpTox.Core
         private EventHandler<ToxGroupEventArgs.ModActionEventArgs> _onGroupModerationAction;
 
         /// <summary>
-        /// Occurs when we failed to join a groupchat.
+        /// Occurs when a moderation action occurred in a groupchat.
         /// </summary>
         public event EventHandler<ToxGroupEventArgs.ModActionEventArgs> OnGroupModerationAction
         {

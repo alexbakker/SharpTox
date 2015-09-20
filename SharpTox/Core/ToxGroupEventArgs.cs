@@ -95,13 +95,6 @@ namespace SharpTox.Core
             }
         }
 
-        public class PeerListUpdateEventArgs : GroupBaseEventArgs
-        {
-            public PeerListUpdateEventArgs(int groupNumber)
-                : base(groupNumber)
-            { }
-        }
-
         public class MessageEventArgs : GroupPeerBaseEventArgs
         {
             public ToxMessageType Type { get; private set; }

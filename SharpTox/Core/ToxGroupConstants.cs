@@ -35,5 +35,10 @@ namespace SharpTox.Core
         /// Number of bytes in a group chat ID.
         /// </summary>
         public const int ChatIdSize = 32;
+
+        /// <summary>
+        /// Size of any peer's public key in bytes.
+        /// </summary>
+        public const int PeerPublicKeySize = 32;
     }
 }

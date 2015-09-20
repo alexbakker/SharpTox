@@ -71,9 +71,6 @@ namespace SharpTox.Core
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_group_get_chat_id")]
         internal static extern bool GetChatId(ToxHandle tox, uint groupNumber, byte[] chatId, ref ToxErrorGroupStateQueries error);
 
-        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_group_get_number_peers")]
-        internal static extern uint GetNumberPeers(ToxHandle tox, uint groupNumber, ref ToxErrorGroupStateQueries error);
-
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_group_get_number_groups")]
         internal static extern uint GetNumberGroups(ToxHandle tox);
 
@@ -137,6 +134,18 @@ namespace SharpTox.Core
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_group_ban_get_time_set")]
         internal static extern ulong BanGetTimeSet(ToxHandle tox, uint groupNumber, uint banId, ref ToxErrorGroupBanQuery error);
 
+        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_group_self_get_peer_id")]
+        internal static extern uint SelfGetPeerId(ToxHandle tox, uint groupNumber, ref ToxErrorGroupSelfQuery error);
+
+        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_group_peer_get_public_key")]
+        internal static extern bool PeerGetPublicKey(ToxHandle tox, uint groupNumber, uint peerNumber, byte[] publicKey, ref ToxErrorGroupPeerQuery error);
+
+        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_group_self_get_public_key")]
+        internal static extern bool SelfGetPublicKey(ToxHandle tox, uint groupNumber, byte[] publicKey, ref ToxErrorGroupSelfQuery error);
+
+        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_group_send_custom_packet")]
+        internal static extern bool SendCustomPacket(ToxHandle tox, uint groupNumber, bool lossless, byte[] data, uint length, ref ToxErrorGroupSendCustomPacket error);
+
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_callback_group_peer_name")]
         internal static extern void RegisterPeerNameCallback(ToxHandle tox, ToxGroupDelegates.CallbackPeerNameDelegate callback, IntPtr userData);
 
@@ -154,9 +163,6 @@ namespace SharpTox.Core
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_callback_group_password")]
         internal static extern void RegisterPasswordCallback(ToxHandle tox, ToxGroupDelegates.CallbackPasswordDelegate callback, IntPtr userData);
-
-        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_callback_group_peerlist_update")]
-        internal static extern void RegisterPeerListUpdateCallback(ToxHandle tox, ToxGroupDelegates.CallbackPeerListUpdateDelegate callback, IntPtr userData);
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "tox_callback_group_message")]
         internal static extern void RegisterMessageCallback(ToxHandle tox, ToxGroupDelegates.CallbackMessageDelegate callback, IntPtr userData);
