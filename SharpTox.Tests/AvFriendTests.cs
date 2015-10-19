@@ -73,7 +73,7 @@ namespace SharpTox.Test
         {
             int bitrate = 16;
             var error = ToxAvErrorSetBitrate.Ok;
-            bool result = _toxAv1.SetAudioBitrate(0, bitrate, false, out error);
+            bool result = _toxAv1.SetAudioBitrate(0, bitrate, out error);
 
             if (!result || error != ToxAvErrorSetBitrate.Ok)
                 Assert.Fail("Failed to set audio bitrate, error: {0}, result: {1}", error, result);
@@ -84,7 +84,7 @@ namespace SharpTox.Test
         {
             int bitrate = 2000;
             var error = ToxAvErrorSetBitrate.Ok;
-            bool result = _toxAv1.SetVideoBitrate(0, bitrate, false, out error);
+            bool result = _toxAv1.SetVideoBitrate(0, bitrate, out error);
 
             if (!result || error != ToxAvErrorSetBitrate.Ok)
                 Assert.Fail("Failed to set video bitrate, error: {0}, result: {1}", error, result);

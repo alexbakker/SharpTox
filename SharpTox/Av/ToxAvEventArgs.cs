@@ -43,15 +43,14 @@ namespace SharpTox.Av
 
         public class BitrateStatusEventArgs : CallBaseEventArgs
         {
-            public bool Stable { get; private set; }
+            public int AudioBitrate { get; private set; }
+            public int VideoBitrate { get; private set; }
 
-            public int Bitrate { get; private set; }
-
-            public BitrateStatusEventArgs(int friendNumber, bool stable, int bitrate)
+            public BitrateStatusEventArgs(int friendNumber, int audioBitrate, int videoBitrate)
                 : base(friendNumber)
             {
-                Stable = stable;
-                Bitrate = bitrate;
+                AudioBitrate = audioBitrate;
+                VideoBitrate = videoBitrate;
             }
         }
 

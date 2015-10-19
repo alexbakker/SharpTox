@@ -17,8 +17,7 @@ namespace SharpTox.Av
         private ToxAvDelegates.CallStateCallback _onCallStateCallback;
         private ToxAvDelegates.AudioReceiveFrameCallback _onReceiveAudioFrameCallback;
         private ToxAvDelegates.VideoReceiveFrameCallback _onReceiveVideoFrameCallback;
-        private ToxAvDelegates.BitrateStatusCallback _onAudioBitrateStatusCallback;
-        private ToxAvDelegates.BitrateStatusCallback _onVideoBitrateStatusCallback;
+        private ToxAvDelegates.BitrateStatusCallback _onBitrateStatusCallback;
         #endregion
 
         private List<ToxAvDelegates.GroupAudioReceiveCallback> _groupAudioHandlers = new List<ToxAvDelegates.GroupAudioReceiveCallback>();
@@ -237,32 +236,32 @@ namespace SharpTox.Av
             return SendControl(friendNumber, control, out error);
         }
 
-        public bool SetAudioBitrate(int friendNumber, int bitrate, bool force, out ToxAvErrorSetBitrate error)
+        public bool SetAudioBitrate(int friendNumber, int bitrate, out ToxAvErrorSetBitrate error)
         {
             ThrowIfDisposed();
 
             error = ToxAvErrorSetBitrate.Ok;
-            return ToxAvFunctions.AudioBitrateSet(_toxAv, (uint)friendNumber, (uint)bitrate, force, ref error);
+            return ToxAvFunctions.BitrateSet(_toxAv, (uint)friendNumber, bitrate, -1, ref error);
         }
 
-        public bool SetAudioBitrate(int friendNumber, int bitrate, bool force)
+        public bool SetAudioBitrate(int friendNumber, int bitrate)
         {
             var error = ToxAvErrorSetBitrate.Ok;
-            return SetAudioBitrate(friendNumber, bitrate, force, out error);
+            return SetAudioBitrate(friendNumber, bitrate, out error);
         }
 
-        public bool SetVideoBitrate(int friendNumber, int bitrate, bool force, out ToxAvErrorSetBitrate error)
+        public bool SetVideoBitrate(int friendNumber, int bitrate, out ToxAvErrorSetBitrate error)
         {
             ThrowIfDisposed();
 
             error = ToxAvErrorSetBitrate.Ok;
-            return ToxAvFunctions.VideoBitrateSet(_toxAv, (uint)friendNumber, (uint)bitrate, force, ref error);
+            return ToxAvFunctions.BitrateSet(_toxAv, (uint)friendNumber, -1, bitrate, ref error);
         }
 
-        public bool SetVideoBitrate(int friendNumber, int bitrate, bool force)
+        public bool SetVideoBitrate(int friendNumber, int bitrate)
         {
             var error = ToxAvErrorSetBitrate.Ok;
-            return SetVideoBitrate(friendNumber, bitrate, force, out error);
+            return SetVideoBitrate(friendNumber, bitrate, out error);
         }
 
         public bool SendVideoFrame(int friendNumber, ToxAvVideoFrame frame, out ToxAvErrorSendFrame error)
@@ -435,71 +434,37 @@ namespace SharpTox.Av
             }
         }
 
-        private EventHandler<ToxAvEventArgs.BitrateStatusEventArgs> _onAudioBitrateChanged;
+        private EventHandler<ToxAvEventArgs.BitrateStatusEventArgs> _onBitrateSuggestion;
 
         /// <summary>
-        /// Occurs when a friend changed their audio bitrate during a call.
+        /// Occurs when a friend changed their bitrate during a call.
         /// </summary>
-        public event EventHandler<ToxAvEventArgs.BitrateStatusEventArgs> OnAudioBitrateChanged
+        public event EventHandler<ToxAvEventArgs.BitrateStatusEventArgs> OnBitrateSuggestion
         {
             add
             {
-                if (_onAudioBitrateStatusCallback == null)
+                if (_onBitrateStatusCallback == null)
                 {
-                    _onAudioBitrateStatusCallback = (IntPtr toxAv, uint friendNumber, bool stable, uint bitrate, IntPtr userData) =>
+                    _onBitrateStatusCallback = (IntPtr toxAv, uint friendNumber, uint audioBitrate, uint videoBitrate, IntPtr userData) =>
                     {
-                        if (_onAudioBitrateChanged != null)
-                            _onAudioBitrateChanged(this, new ToxAvEventArgs.BitrateStatusEventArgs((int)friendNumber, stable, (int)bitrate));
+                            if (_onBitrateSuggestion != null)
+                                _onBitrateSuggestion(this, new ToxAvEventArgs.BitrateStatusEventArgs((int)friendNumber, (int)audioBitrate, (int)audioBitrate));
                     };
 
-                    ToxAvFunctions.RegisterAudioBitrateStatusCallback(_toxAv, _onAudioBitrateStatusCallback, IntPtr.Zero);
+                    ToxAvFunctions.RegisterBitrateStatusCallback(_toxAv, _onBitrateStatusCallback, IntPtr.Zero);
                 }
 
-                _onAudioBitrateChanged += value;
+                _onBitrateSuggestion += value;
             }
             remove
             {
-                if (_onAudioBitrateChanged.GetInvocationList().Length == 1)
+                if (_onBitrateSuggestion.GetInvocationList().Length == 1)
                 {
-                    ToxAvFunctions.RegisterAudioBitrateStatusCallback(_toxAv, null, IntPtr.Zero);
-                    _onAudioBitrateStatusCallback = null;
+                    ToxAvFunctions.RegisterBitrateStatusCallback(_toxAv, null, IntPtr.Zero);
+                    _onBitrateStatusCallback = null;
                 }
 
-                _onAudioBitrateChanged -= value;
-            }
-        }
-
-        private EventHandler<ToxAvEventArgs.BitrateStatusEventArgs> _onVideoBitrateChanged;
-
-        /// <summary>
-        /// Occurs when a friend changed their video bitrate during a call.
-        /// </summary>
-        public event EventHandler<ToxAvEventArgs.BitrateStatusEventArgs> OnVideoBitrateChanged
-        {
-            add
-            {
-                if (_onVideoBitrateStatusCallback == null)
-                {
-                    _onVideoBitrateStatusCallback = (IntPtr toxAv, uint friendNumber, bool stable, uint bitrate, IntPtr userData) =>
-                    {
-                        if (_onVideoBitrateChanged != null)
-                            _onVideoBitrateChanged(this, new ToxAvEventArgs.BitrateStatusEventArgs((int)friendNumber, stable, (int)bitrate));
-                    };
-
-                    ToxAvFunctions.RegisterVideoBitrateStatusCallback(_toxAv, _onVideoBitrateStatusCallback, IntPtr.Zero);
-                }
-
-                _onVideoBitrateChanged += value;
-            }
-            remove
-            {
-                if (_onVideoBitrateChanged.GetInvocationList().Length == 1)
-                {
-                    ToxAvFunctions.RegisterVideoBitrateStatusCallback(_toxAv, null, IntPtr.Zero);
-                    _onVideoBitrateStatusCallback = null;
-                }
-
-                _onVideoBitrateChanged -= value;
+                _onBitrateSuggestion -= value;
             }
         }
 

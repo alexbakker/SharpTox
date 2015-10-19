@@ -13,6 +13,7 @@ namespace SharpTox.Av
     {
         Ok,
         Malloc,
+        Sync,
         FriendNotFound,
         FriendNotConnected,
         FriendAlreadyInCall,
@@ -22,6 +23,7 @@ namespace SharpTox.Av
     public enum ToxAvErrorAnswer
     {
         Ok,
+        Sync,
         CodecInitialization,
         FriendNotFound,
         FriendNotCalling,
@@ -54,6 +56,7 @@ namespace SharpTox.Av
     public enum ToxAvErrorCallControl
     {
         Ok,
+        Sync,
         FriendNotFound,
         FriendNotInCall,
         InvalidTransition
@@ -62,7 +65,9 @@ namespace SharpTox.Av
     public enum ToxAvErrorSetBitrate
     {
         Ok,
-        Invalid,
+        Sync,
+        InvalidAudioBitrate,
+        InvalidVideoBitrate,
         FriendNotFound,
         FriendNotInCall
     }

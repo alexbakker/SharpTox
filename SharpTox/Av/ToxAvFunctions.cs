@@ -49,11 +49,8 @@ namespace SharpTox.Av
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "toxav_call_control")]
         internal static extern bool CallControl(ToxAvHandle toxAv, uint friendNumber, ToxAvCallControl control, ref ToxAvErrorCallControl error);
 
-        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "toxav_audio_bit_rate_set")]
-        internal static extern bool AudioBitrateSet(ToxAvHandle toxAv, uint friendNumber, uint audioBitrate, bool force, ref ToxAvErrorSetBitrate error);
-
-        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "toxav_video_bit_rate_set")]
-        internal static extern bool VideoBitrateSet(ToxAvHandle toxAv, uint friendNumber, uint videoBitrate, bool force, ref ToxAvErrorSetBitrate error);
+        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "toxav_bit_rate_set")]
+        internal static extern bool BitrateSet(ToxAvHandle toxAv, uint friendNumber, int audioBitrate, int videoBitrate, ref ToxAvErrorSetBitrate error);
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "toxav_video_send_frame")]
         internal static extern bool VideoSendFrame(ToxAvHandle toxAv, uint friendNumber, ushort width, ushort height, byte[] y, byte[] u, byte[] v, ref ToxAvErrorSendFrame error);
@@ -79,11 +76,8 @@ namespace SharpTox.Av
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "toxav_callback_call_state")]
         internal static extern void RegisterCallStateCallback(ToxAvHandle toxAv, ToxAvDelegates.CallStateCallback callback, IntPtr userData);
 
-        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "toxav_callback_audio_bit_rate_status")]
-        internal static extern void RegisterAudioBitrateStatusCallback(ToxAvHandle toxAv, ToxAvDelegates.BitrateStatusCallback callback, IntPtr userData);
-
-        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "toxav_callback_video_bit_rate_status")]
-        internal static extern void RegisterVideoBitrateStatusCallback(ToxAvHandle toxAv, ToxAvDelegates.BitrateStatusCallback callback, IntPtr userData);
+        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "toxav_callback_bit_rate_status")]
+        internal static extern void RegisterBitrateStatusCallback(ToxAvHandle toxAv, ToxAvDelegates.BitrateStatusCallback callback, IntPtr userData);
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "toxav_callback_video_receive_frame")]
         internal static extern void RegisterVideoReceiveFrameCallback(ToxAvHandle toxAv, ToxAvDelegates.VideoReceiveFrameCallback callback, IntPtr userData);
