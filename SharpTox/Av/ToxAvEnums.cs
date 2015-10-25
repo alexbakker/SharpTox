@@ -78,6 +78,7 @@ namespace SharpTox.Av
         Null,
         FrienNotFound,
         FriendNotInCall,
+        Sync,
         FrameInvalid,
         BitrateNotSet,
         RtpFailed
