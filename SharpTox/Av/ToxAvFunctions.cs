@@ -12,66 +12,51 @@ namespace SharpTox.Av
 		const string dll = "libtox";
 #endif
 
+        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "toxav_version_major")]
+        internal static extern uint VersionMajor();
+
+        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "toxav_version_minor")]
+        internal static extern uint VersionMinor();
+
+        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "toxav_version_patch")]
+        internal static extern uint VersionPatch();
+
+        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "toxav_version_is_compatible")]
+        internal static extern bool VersionIsCompatible(uint major, uint minor, uint patch);
+
         #region Functions
+        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "toxav_new")]
+        internal static extern ToxAvHandle New(ToxHandle tox, ref ToxAvErrorNew error);
+
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "toxav_kill")]
         internal static extern void Kill(IntPtr toxAv);
-
-        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "toxav_new")]
-        internal static extern ToxAvHandle New(ToxHandle tox, int maxCalls);
-
-        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "toxav_prepare_audio_frame")]
-        internal static extern int PrepareAudioFrame(ToxAvHandle toxAv, int callIndex, byte[] dest, int destMax, short[] frame, int frameSize);
-
-        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "toxav_prepare_video_frame")]
-        internal static extern int PrepareVideoFrame(ToxAvHandle toxAv, int callIndex, byte[] dest, int destMax, IntPtr image);
-
-        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "toxav_call")]
-        internal static extern ToxAvError Call(ToxAvHandle toxAv, ref int callIndex, int friend_number, ref ToxAvCodecSettings settings, int ringingSeconds);
-
-        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "toxav_hangup")]
-        internal static extern ToxAvError Hangup(ToxAvHandle toxAv, int callIndex);
-
-        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "toxav_answer")]
-        internal static extern ToxAvError Answer(ToxAvHandle toxAv, int callIndex, ref ToxAvCodecSettings settings);
-
-        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "toxav_reject")]
-        internal static extern ToxAvError Reject(ToxAvHandle toxAv, int callIndex, string reason);
-
-        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "toxav_cancel")]
-        internal static extern ToxAvError Cancel(ToxAvHandle toxAv, int callIndex, int peerId, string reason);
-
-        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "toxav_change_settings")]
-        internal static extern ToxAvError ChangeSettings(ToxAvHandle toxAv, int callIndex, ref ToxAvCodecSettings settings);
-
-        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "toxav_stop_call")]
-        internal static extern ToxAvError StopCall(ToxAvHandle toxAv, int callIndex);
-
-        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "toxav_prepare_transmission")]
-        internal static extern ToxAvError PrepareTransmission(ToxAvHandle toxAv, int callIndex, int videoSupported);
-
-        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "toxav_kill_transmission")]
-        internal static extern ToxAvError KillTransmission(ToxAvHandle toxAv, int callIndex);
-
-        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "toxav_send_video")]
-        internal static extern ToxAvError SendVideo(ToxAvHandle toxAv, int callIndex, byte[] frame, uint frameSize);
-
-        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "toxav_send_audio")]
-        internal static extern ToxAvError SendAudio(ToxAvHandle toxAv, int callIndex, byte[] frame, uint frame_size);
-
-        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "toxav_get_peer_id")]
-        internal static extern int GetPeerID(ToxAvHandle toxAv, int callIndex, int peer);
-
-        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "toxav_capability_supported")]
-        internal static extern int CapabilitySupported(ToxAvHandle toxAv, int callIndex, ToxAvCapabilities capability);
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "toxav_get_tox")]
         internal static extern IntPtr GetTox(ToxAvHandle toxAv);
 
-        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "toxav_get_call_state")]
-        internal static extern ToxAvCallState GetCallState(ToxAvHandle toxAv, int callIndex);
+        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "toxav_iteration_interval")]
+        internal static extern uint IterationInterval(ToxAvHandle toxAv);
 
-        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "toxav_get_peer_csettings")]
-        internal static extern int GetPeerCodecSettings(ToxAvHandle toxAv, int callIndex, int peer, ref ToxAvCodecSettings settings);
+        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "toxav_iterate")]
+        internal static extern void Iterate(ToxAvHandle toxAv);
+
+        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "toxav_call")]
+        internal static extern bool Call(ToxAvHandle toxAv, uint friendNumber, uint audioBitrate, uint videoBitrate, ref ToxAvErrorCall error);
+
+        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "toxav_answer")]
+        internal static extern bool Answer(ToxAvHandle toxAv, uint friendNumber, uint audioBitrate, uint videoBitrate, ref ToxAvErrorAnswer error);
+
+        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "toxav_call_control")]
+        internal static extern bool CallControl(ToxAvHandle toxAv, uint friendNumber, ToxAvCallControl control, ref ToxAvErrorCallControl error);
+
+        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "toxav_bit_rate_set")]
+        internal static extern bool BitrateSet(ToxAvHandle toxAv, uint friendNumber, int audioBitrate, int videoBitrate, ref ToxAvErrorSetBitrate error);
+
+        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "toxav_video_send_frame")]
+        internal static extern bool VideoSendFrame(ToxAvHandle toxAv, uint friendNumber, ushort width, ushort height, byte[] y, byte[] u, byte[] v, ref ToxAvErrorSendFrame error);
+
+        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "toxav_audio_send_frame")]
+        internal static extern bool AudioSendFrame(ToxAvHandle toxAv, uint friendNumber, short[] pcm, uint sampleCount, byte channels, uint samplingRate, ref ToxAvErrorSendFrame error);
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "toxav_add_av_groupchat")]
         internal static extern int AddAvGroupchat(ToxHandle tox, ToxAvDelegates.GroupAudioReceiveCallback callback, IntPtr userData);
@@ -82,26 +67,23 @@ namespace SharpTox.Av
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "toxav_group_send_audio")]
         internal static extern int GroupSendAudio(ToxHandle tox, int groupNumber, short[] pcm, uint sampleCount, byte channels, uint sampleRate);
 
-        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "toxav_do_interval")]
-        internal static extern uint DoInterval(ToxAvHandle toxAv);
-
-        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "toxav_do")]
-        internal static extern void Do(ToxAvHandle toxAv);
-
-        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "toxav_get_active_count")]
-        internal static extern int GetActiveCount(ToxAvHandle toxav);
-
         #endregion
 
         #region Callbacks
-        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "toxav_register_callstate_callback")]
-        internal static extern void RegisterCallstateCallback(ToxAvHandle toxAv, ToxAvDelegates.CallstateCallback callback, ToxAvCallbackID id, IntPtr userData);
+        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "toxav_callback_call")]
+        internal static extern void RegisterCallCallback(ToxAvHandle toxAv, ToxAvDelegates.CallCallback callback, IntPtr userData);
 
-        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "toxav_register_audio_callback")]
-        internal static extern void RegisterAudioReceiveCallback(ToxAvHandle toxAv, ToxAvDelegates.AudioReceiveCallback callback, IntPtr userData);
+        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "toxav_callback_call_state")]
+        internal static extern void RegisterCallStateCallback(ToxAvHandle toxAv, ToxAvDelegates.CallStateCallback callback, IntPtr userData);
 
-        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "toxav_register_video_callback")]
-        internal static extern void RegisterVideoReceiveCallback(ToxAvHandle toxAv, ToxAvDelegates.VideoReceiveCallback callback, IntPtr userData);
+        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "toxav_callback_bit_rate_status")]
+        internal static extern void RegisterBitrateStatusCallback(ToxAvHandle toxAv, ToxAvDelegates.BitrateStatusCallback callback, IntPtr userData);
+
+        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "toxav_callback_video_receive_frame")]
+        internal static extern void RegisterVideoReceiveFrameCallback(ToxAvHandle toxAv, ToxAvDelegates.VideoReceiveFrameCallback callback, IntPtr userData);
+
+        [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "toxav_callback_audio_receive_frame")]
+        internal static extern void RegisterAudioReceiveFrameCallback(ToxAvHandle toxAv, ToxAvDelegates.AudioReceiveFrameCallback callback, IntPtr userData);
 
         #endregion
     }

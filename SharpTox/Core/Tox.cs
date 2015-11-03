@@ -1170,8 +1170,6 @@ namespace SharpTox.Core
             ThrowIfDisposed();
 
             int count = ToxFunctions.GroupNumberPeers(_tox, groupNumber);
-
-            //just return an empty string array before we get an overflow exception
             if (count <= 0)
                 return new string[0];
 

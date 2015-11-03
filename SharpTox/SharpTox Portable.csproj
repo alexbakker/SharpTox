@@ -95,8 +95,10 @@
     <TargetPlatform Include="Windows, Version=8.1" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Av\ToxAvAudioFrame.cs" />
     <Compile Include="Av\ToxAvEventArgs.cs" />
     <Compile Include="Av\ToxAvHandle.cs" />
+    <Compile Include="Av\ToxAvVideoFrame.cs" />
     <Compile Include="Core\Tox.cs" />
     <Compile Include="Core\ToxData.cs" />
     <Compile Include="Core\ToxDataInfo.cs" />
@@ -117,7 +119,6 @@
     <Compile Include="Av\ToxAvDelegates.cs" />
     <Compile Include="Av\ToxAvEnums.cs" />
     <Compile Include="Av\ToxAvFunctions.cs" />
-    <Compile Include="Av\ToxAvStructs.cs" />
     <Compile Include="Core\ToxConstants.cs" />
     <Compile Include="Core\ToxDelegates.cs" />
     <Compile Include="Dns\ToxDns.cs" />
