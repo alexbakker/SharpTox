@@ -22,6 +22,7 @@ namespace SharpTox.Av
         internal static extern uint VersionPatch();
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "toxav_version_is_compatible")]
+        [return: MarshalAs(UnmanagedType.I1)]
         internal static extern bool VersionIsCompatible(uint major, uint minor, uint patch);
 
         #region Functions
@@ -41,21 +42,27 @@ namespace SharpTox.Av
         internal static extern void Iterate(ToxAvHandle toxAv);
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "toxav_call")]
+        [return: MarshalAs(UnmanagedType.I1)]
         internal static extern bool Call(ToxAvHandle toxAv, uint friendNumber, uint audioBitrate, uint videoBitrate, ref ToxAvErrorCall error);
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "toxav_answer")]
+        [return: MarshalAs(UnmanagedType.I1)]
         internal static extern bool Answer(ToxAvHandle toxAv, uint friendNumber, uint audioBitrate, uint videoBitrate, ref ToxAvErrorAnswer error);
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "toxav_call_control")]
+        [return: MarshalAs(UnmanagedType.I1)]
         internal static extern bool CallControl(ToxAvHandle toxAv, uint friendNumber, ToxAvCallControl control, ref ToxAvErrorCallControl error);
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "toxav_bit_rate_set")]
+        [return: MarshalAs(UnmanagedType.I1)]
         internal static extern bool BitrateSet(ToxAvHandle toxAv, uint friendNumber, int audioBitrate, int videoBitrate, ref ToxAvErrorSetBitrate error);
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "toxav_video_send_frame")]
+        [return: MarshalAs(UnmanagedType.I1)]
         internal static extern bool VideoSendFrame(ToxAvHandle toxAv, uint friendNumber, ushort width, ushort height, byte[] y, byte[] u, byte[] v, ref ToxAvErrorSendFrame error);
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "toxav_audio_send_frame")]
+        [return: MarshalAs(UnmanagedType.I1)]
         internal static extern bool AudioSendFrame(ToxAvHandle toxAv, uint friendNumber, short[] pcm, uint sampleCount, byte channels, uint samplingRate, ref ToxAvErrorSendFrame error);
 
         [DllImport(dll, CallingConvention = CallingConvention.Cdecl, EntryPoint = "toxav_add_av_groupchat")]
