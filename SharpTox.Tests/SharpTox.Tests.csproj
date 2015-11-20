@@ -95,6 +95,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AvFriendTests.cs" />
+    <Compile Include="AvSelfTests.cs" />
     <Compile Include="CoreFriendTests.cs" />
     <Compile Include="CoreSelfTests.cs" />
     <Compile Include="Globals.cs" />

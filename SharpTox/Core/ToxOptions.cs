@@ -174,10 +174,10 @@ namespace SharpTox.Core
                 Marshal.FreeHGlobal(SaveData);
         }
 
-        [MarshalAs(UnmanagedType.U1)]
+        [MarshalAs(UnmanagedType.I1)]
         internal bool Ipv6Enabled;
 
-        [MarshalAs(UnmanagedType.U1)]
+        [MarshalAs(UnmanagedType.I1)]
         internal bool UdpEnabled;
 
         internal ToxProxyType ProxyType;

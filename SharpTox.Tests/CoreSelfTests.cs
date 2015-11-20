@@ -258,5 +258,14 @@ namespace SharpTox.Test
 
             tox.Dispose();
         }
+
+        [Test]
+        public void TestToxIsDataEncrypted()
+        {
+            var tox = new Tox(ToxOptions.Default);
+            var data = tox.GetData();
+
+            Assert.IsFalse(data.IsEncrypted);
+        }
     }
 }
