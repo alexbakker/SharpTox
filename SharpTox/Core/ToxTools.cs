@@ -61,5 +61,15 @@ namespace SharpTox.Core
 
             return s;
         }
+
+        internal static uint Map(int i)
+        {
+            return unchecked((uint)i);
+        }
+
+        internal static int Map(uint i)
+        {
+            return unchecked((int)i);
+        }
     }
 }

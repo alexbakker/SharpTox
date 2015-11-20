@@ -61,8 +61,7 @@ namespace SharpTox.Dns
         /// <param name="name">Name of the registered user.</param>
         /// <param name="requestId">The request id, to be used when calling DecryptDns3TXT.</param>
         /// <returns></returns>
-        [CLSCompliant(false)]
-        public string GenerateDns3String(string name, out uint requestId)
+        public string GenerateDns3String(string name, out int requestId)
         {
             ThrowIfDisposed();
 
@@ -71,7 +70,7 @@ namespace SharpTox.Dns
 
             uint id = new uint();
             int length = ToxDnsFunctions.GenerateDns3String(_toxDns3, result, (ushort)result.Length, ref id, bytes, (byte)bytes.Length);
-            requestId = id;
+            requestId = ToxTools.Map(id);
 
             if (length != -1)
                 return Encoding.UTF8.GetString(result, 0, length);
@@ -85,15 +84,14 @@ namespace SharpTox.Dns
         /// <param name="dns3String">String to decrypt.</param>
         /// <param name="requestId">The request id retrieved with GenerateDns3String.</param>
         /// <returns></returns>
-        [CLSCompliant(false)]
-        public string DecryptDns3TXT(string dns3String, uint requestId)
+        public string DecryptDns3TXT(string dns3String, int requestId)
         {
             ThrowIfDisposed();
 
             byte[] id = new byte[ToxConstants.AddressSize];
             byte[] idRecordBytes = Encoding.UTF8.GetBytes(dns3String);
 
-            int result = ToxDnsFunctions.DecryptDns3TXT(_toxDns3, id, idRecordBytes, (uint)idRecordBytes.Length, (uint)requestId);
+            int result = ToxDnsFunctions.DecryptDns3TXT(_toxDns3, id, idRecordBytes, (uint)idRecordBytes.Length, ToxTools.Map(requestId));
 
             if (result == 0)
                 return ToxTools.HexBinToString(id);

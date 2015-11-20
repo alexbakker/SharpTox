@@ -112,13 +112,13 @@ namespace SharpTox.Av
             _onReceiveAudioFrameCallback = (IntPtr toxAv, uint friendNumber, IntPtr pcm, uint sampleCount, byte channels, uint samplingRate, IntPtr userData) =>
             {
                 if (OnAudioFrameReceived != null)
-                    OnAudioFrameReceived(this, new ToxAvEventArgs.AudioFrameEventArgs((int)friendNumber, new ToxAvAudioFrame(pcm, sampleCount, samplingRate, channels)));
+                    OnAudioFrameReceived(this, new ToxAvEventArgs.AudioFrameEventArgs(ToxTools.Map(friendNumber), new ToxAvAudioFrame(pcm, sampleCount, samplingRate, channels)));
             };
 
             _onReceiveVideoFrameCallback = (IntPtr toxAv, uint friendNumber, ushort width, ushort height, IntPtr y, IntPtr u, IntPtr v, int yStride, int uStride, int vStride, IntPtr userData) =>
             {
                 if (OnVideoFrameReceived != null)
-                    OnVideoFrameReceived(this, new ToxAvEventArgs.VideoFrameEventArgs((int)friendNumber, new ToxAvVideoFrame(width, height, y, u, v, yStride, uStride, vStride)));
+                    OnVideoFrameReceived(this, new ToxAvEventArgs.VideoFrameEventArgs(ToxTools.Map(friendNumber), new ToxAvVideoFrame(width, height, y, u, v, yStride, uStride, vStride)));
             };
 
             ToxAvFunctions.RegisterAudioReceiveFrameCallback(_toxAv, _onReceiveAudioFrameCallback, IntPtr.Zero);
@@ -199,7 +199,7 @@ namespace SharpTox.Av
             ThrowIfDisposed();
 
             error = ToxAvErrorCall.Ok;
-            return ToxAvFunctions.Call(_toxAv, (uint)friendNumber, (uint)audioBitrate, (uint)videoBitrate, ref error);
+            return ToxAvFunctions.Call(_toxAv, ToxTools.Map(friendNumber), (uint)audioBitrate, (uint)videoBitrate, ref error);
         }
 
         public bool Call(int friendNumber, int audioBitrate, int videoBitrate)
@@ -213,7 +213,7 @@ namespace SharpTox.Av
             ThrowIfDisposed();
 
             error = ToxAvErrorAnswer.Ok;
-            return ToxAvFunctions.Answer(_toxAv, (uint)friendNumber, (uint)audioBitrate, (uint)videoBitrate, ref error);
+            return ToxAvFunctions.Answer(_toxAv, ToxTools.Map(friendNumber), (uint)audioBitrate, (uint)videoBitrate, ref error);
         }
 
         public bool Answer(int friendNumber, int audioBitrate, int videoBitrate)
@@ -227,7 +227,7 @@ namespace SharpTox.Av
             ThrowIfDisposed();
 
             error = ToxAvErrorCallControl.Ok;
-            return ToxAvFunctions.CallControl(_toxAv, (uint)friendNumber, control, ref error);
+            return ToxAvFunctions.CallControl(_toxAv, ToxTools.Map(friendNumber), control, ref error);
         }
 
         public bool SendControl(int friendNumber, ToxAvCallControl control)
@@ -241,7 +241,7 @@ namespace SharpTox.Av
             ThrowIfDisposed();
 
             error = ToxAvErrorSetBitrate.Ok;
-            return ToxAvFunctions.BitrateSet(_toxAv, (uint)friendNumber, bitrate, -1, ref error);
+            return ToxAvFunctions.BitrateSet(_toxAv, ToxTools.Map(friendNumber), bitrate, -1, ref error);
         }
 
         public bool SetAudioBitrate(int friendNumber, int bitrate)
@@ -255,7 +255,7 @@ namespace SharpTox.Av
             ThrowIfDisposed();
 
             error = ToxAvErrorSetBitrate.Ok;
-            return ToxAvFunctions.BitrateSet(_toxAv, (uint)friendNumber, -1, bitrate, ref error);
+            return ToxAvFunctions.BitrateSet(_toxAv, ToxTools.Map(friendNumber), -1, bitrate, ref error);
         }
 
         public bool SetVideoBitrate(int friendNumber, int bitrate)
@@ -269,7 +269,7 @@ namespace SharpTox.Av
             ThrowIfDisposed();
 
             error = ToxAvErrorSendFrame.Ok;
-            return ToxAvFunctions.VideoSendFrame(_toxAv, (uint)friendNumber, (ushort)frame.Width, (ushort)frame.Height, frame.Y, frame.U, frame.V, ref error);
+            return ToxAvFunctions.VideoSendFrame(_toxAv, ToxTools.Map(friendNumber), (ushort)frame.Width, (ushort)frame.Height, frame.Y, frame.U, frame.V, ref error);
         }
 
         public bool SendVideoFrame(int friendNumber, ToxAvVideoFrame frame)
@@ -283,7 +283,7 @@ namespace SharpTox.Av
             ThrowIfDisposed();
 
             error = ToxAvErrorSendFrame.Ok;
-            return ToxAvFunctions.AudioSendFrame(_toxAv, (uint)friendNumber, frame.Data, (uint)(frame.Data.Length / frame.Channels), (byte)frame.Channels, (uint)frame.SamplingRate, ref error);
+            return ToxAvFunctions.AudioSendFrame(_toxAv, ToxTools.Map(friendNumber), frame.Data, (uint)(frame.Data.Length / frame.Channels), (byte)frame.Channels, (uint)frame.SamplingRate, ref error);
         }
 
         public bool SendAudioFrame(int friendNumber, ToxAvAudioFrame frame)
@@ -380,7 +380,7 @@ namespace SharpTox.Av
                     _onCallCallback = (IntPtr toxAv, uint friendNumber, bool audioEnabled, bool videoEnabled, IntPtr userData) =>
                     {
                         if (_onCallRequestReceived != null)
-                            _onCallRequestReceived(this, new ToxAvEventArgs.CallRequestEventArgs((int)friendNumber, audioEnabled, videoEnabled));
+                            _onCallRequestReceived(this, new ToxAvEventArgs.CallRequestEventArgs(ToxTools.Map(friendNumber), audioEnabled, videoEnabled));
                     };
 
                     ToxAvFunctions.RegisterCallCallback(_toxAv, _onCallCallback, IntPtr.Zero);
@@ -414,7 +414,7 @@ namespace SharpTox.Av
                     _onCallStateCallback = (IntPtr toxAv, uint friendNumber, ToxAvFriendCallState state, IntPtr userData) =>
                     {
                         if (_onCallStateChanged != null)
-                            _onCallStateChanged(this, new ToxAvEventArgs.CallStateEventArgs((int)friendNumber, state));
+                            _onCallStateChanged(this, new ToxAvEventArgs.CallStateEventArgs(ToxTools.Map(friendNumber), state));
                     };
 
                     ToxAvFunctions.RegisterCallStateCallback(_toxAv, _onCallStateCallback, IntPtr.Zero);
@@ -448,7 +448,7 @@ namespace SharpTox.Av
                     _onBitrateStatusCallback = (IntPtr toxAv, uint friendNumber, uint audioBitrate, uint videoBitrate, IntPtr userData) =>
                     {
                             if (_onBitrateSuggestion != null)
-                                _onBitrateSuggestion(this, new ToxAvEventArgs.BitrateStatusEventArgs((int)friendNumber, (int)audioBitrate, (int)videoBitrate));
+                                _onBitrateSuggestion(this, new ToxAvEventArgs.BitrateStatusEventArgs(ToxTools.Map(friendNumber), (int)audioBitrate, (int)videoBitrate));
                     };
 
                     ToxAvFunctions.RegisterBitrateStatusCallback(_toxAv, _onBitrateStatusCallback, IntPtr.Zero);
