@@ -36,6 +36,30 @@ namespace SharpTox.Encryption
             return EncryptData(data, key, out error);
         }
 
+        public static byte[] EncryptData(byte[] data, string password, out ToxErrorEncryption error)
+        {
+            if (data == null)
+                throw new ArgumentNullException("data");
+
+            if (password == null)
+                throw new ArgumentNullException("password");
+
+            byte[] output = new byte[data.Length + EncryptionExtraLength];
+            byte[] passBytes = Encoding.UTF8.GetBytes(password);
+            error = ToxErrorEncryption.Ok;
+
+            if (!ToxEncryptionFunctions.PassEncrypt(data, (uint)data.Length, passBytes, (uint)passBytes.Length, output, ref error) || error != ToxErrorEncryption.Ok)
+                return null;
+
+            return output;
+        }
+
+        public static byte[] EncryptData(byte[] data, string password)
+        {
+            var error = ToxErrorEncryption.Ok;
+            return EncryptData(data, password, out error);
+        }
+
         public static byte[] DecryptData(byte[] data, ToxEncryptionKey key, out ToxErrorDecryption error)
         {
             if (data == null)
@@ -58,6 +82,30 @@ namespace SharpTox.Encryption
         {
             var error = ToxErrorDecryption.Ok;
             return DecryptData(data, key, out error);
+        }
+
+        public static byte[] DecryptData(byte[] data, string password, out ToxErrorDecryption error)
+        {
+            if (data == null)
+                throw new ArgumentNullException("data");
+
+            if (password == null)
+                throw new ArgumentNullException("password");
+
+            byte[] output = new byte[data.Length - EncryptionExtraLength];
+            byte[] passBytes = Encoding.UTF8.GetBytes(password);
+            error = ToxErrorDecryption.Ok;
+
+            if (!ToxEncryptionFunctions.PassDecrypt(data, (uint)data.Length, passBytes, (uint)passBytes.Length, output, ref error) || error != ToxErrorDecryption.Ok)
+                return null;
+
+            return output;
+        }
+
+        public static byte[] DecryptData(byte[] data, string password)
+        {
+            var error = ToxErrorDecryption.Ok;
+            return DecryptData(data, password, out error);
         }
 
         public static bool IsDataEncrypted(byte[] data)

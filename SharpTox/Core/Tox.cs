@@ -214,36 +214,83 @@ namespace SharpTox.Core
         /// </summary>
         /// <param name="options">The options to initialize this instance of Tox with.</param>
         /// <param name="data">A byte array containing Tox save data.</param>
-        /// <param name="key">The key to decrypt the given encrypted Tox profile data. If the data is not encrypted, this should be null.</param>
-        public Tox(ToxOptions options, ToxData data, ToxEncryptionKey key = null)
+        public Tox(ToxOptions options, ToxData data)
         {
             if (data == null)
                 throw new ArgumentNullException("data");
 
             var optionsStruct = options.Struct;
+            var error = ToxErrorNew.Ok;
 
-            if (key == null || !data.IsEncrypted)
-            {
-                var error = ToxErrorNew.Ok;
-                optionsStruct.SetData(data.Bytes, ToxSaveDataType.ToxSave);
+            optionsStruct.SetData(data.Bytes, ToxSaveDataType.ToxSave);
+            _tox = ToxFunctions.New(ref optionsStruct, ref error);
 
-                _tox = ToxFunctions.New(ref optionsStruct, ref error);
+            if (_tox == null || _tox.IsInvalid || error != ToxErrorNew.Ok)
+                throw new Exception("Could not create a new instance of tox, error: " + error.ToString());
 
-                if (_tox == null || _tox.IsInvalid || error != ToxErrorNew.Ok)
-                    throw new Exception("Could not create a new instance of tox, error: " + error.ToString());
-            }
-            else
-            {
-                var error = ToxErrorNew.Ok;
-                var decryptError = ToxErrorDecryption.Ok;
-                byte[] decryptedData = ToxEncryption.DecryptData(data.Bytes, key, out decryptError);
-                optionsStruct.SetData(decryptedData, ToxSaveDataType.ToxSave);
+            optionsStruct.Free();
+            Options = options;
+        }
 
-                _tox = ToxFunctions.New(ref optionsStruct, ref error);
+        /// <summary>
+        /// Initializes a new instance of Tox.
+        /// </summary>
+        /// <param name="options">The options to initialize this instance of Tox with.</param>
+        /// <param name="data">A byte array containing Tox save data.</param>
+        /// <param name="key">The key to decrypt the given encrypted Tox profile data.</param>
+        public Tox(ToxOptions options, ToxData data, ToxEncryptionKey key)
+        {
+            if (data == null)
+                throw new ArgumentNullException("data");
 
-                if (_tox == null || _tox.IsInvalid || error != ToxErrorNew.Ok || decryptError != ToxErrorDecryption.Ok)
-                    throw new Exception(string.Format("Could not create a new instance of tox, error: {0}, decrypt error: {1}" + error.ToString(), decryptError.ToString()));
-            }
+            if (key == null)
+                throw new ArgumentNullException("key");
+
+            if (!data.IsEncrypted)
+                throw new Exception("This data is not encrypted");
+
+            var optionsStruct = options.Struct;
+            var error = ToxErrorNew.Ok;
+            var decryptError = ToxErrorDecryption.Ok;
+
+            byte[] decryptedData = ToxEncryption.DecryptData(data.Bytes, key, out decryptError);
+            optionsStruct.SetData(decryptedData, ToxSaveDataType.ToxSave);
+            _tox = ToxFunctions.New(ref optionsStruct, ref error);
+
+            if (_tox == null || _tox.IsInvalid || error != ToxErrorNew.Ok || decryptError != ToxErrorDecryption.Ok)
+                throw new Exception(string.Format("Could not create a new instance of tox, error: {0}, decrypt error: {1}" + error.ToString(), decryptError.ToString()));
+
+            optionsStruct.Free();
+            Options = options;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of Tox.
+        /// </summary>
+        /// <param name="options">The options to initialize this instance of Tox with.</param>
+        /// <param name="data">A byte array containing Tox save data.</param>
+        /// <param name="password">The password to decrypt the given encrypted Tox profile data.</param>
+        public Tox(ToxOptions options, ToxData data, string password)
+        {
+            if (data == null)
+                throw new ArgumentNullException("data");
+
+            if (password == null)
+                throw new ArgumentNullException("password");
+
+            if (!data.IsEncrypted)
+                throw new Exception("This data is not encrypted");
+
+            var optionsStruct = options.Struct;
+            var error = ToxErrorNew.Ok;
+            var decryptError = ToxErrorDecryption.Ok;
+
+            byte[] decryptedData = ToxEncryption.DecryptData(data.Bytes, password, out decryptError);
+            optionsStruct.SetData(decryptedData, ToxSaveDataType.ToxSave);
+            _tox = ToxFunctions.New(ref optionsStruct, ref error);
+
+            if (_tox == null || _tox.IsInvalid || error != ToxErrorNew.Ok || decryptError != ToxErrorDecryption.Ok)
+                throw new Exception(string.Format("Could not create a new instance of tox, error: {0}, decrypt error: {1}" + error.ToString(), decryptError.ToString()));
 
             optionsStruct.Free();
             Options = options;
@@ -733,6 +780,16 @@ namespace SharpTox.Core
 
             var data = GetData();
             byte[] encrypted = ToxEncryption.EncryptData(data.Bytes, key);
+
+            return ToxData.FromBytes(encrypted);
+        }
+
+        public ToxData GetData(string password)
+        {
+            ThrowIfDisposed();
+
+            var data = GetData();
+            byte[] encrypted = ToxEncryption.EncryptData(data.Bytes, password);
 
             return ToxData.FromBytes(encrypted);
         }
