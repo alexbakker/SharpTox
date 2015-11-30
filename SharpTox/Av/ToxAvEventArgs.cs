@@ -7,42 +7,70 @@ namespace SharpTox.Av
     {
         public abstract class CallBaseEventArgs : EventArgs
         {
-            public int CallIndex { get; private set; }
+            public int FriendNumber { get; private set; }
 
-            protected CallBaseEventArgs(int callIndex)
+            protected CallBaseEventArgs(int friendNumber)
             {
-                CallIndex = callIndex;
+                FriendNumber = friendNumber;
+            }
+        }
+
+        public class CallRequestEventArgs : CallBaseEventArgs
+        {
+            public ToxAvFriendCallState State { get; private set; }
+
+            public bool AudioEnabled { get; private set; }
+            public bool VideoEnabled { get; private set; }
+
+            public CallRequestEventArgs(int friendNumber, bool audioEnabled, bool videoEnabled)
+                : base(friendNumber)
+            {
+                AudioEnabled = audioEnabled;
+                VideoEnabled = videoEnabled;
             }
         }
 
         public class CallStateEventArgs : CallBaseEventArgs
         {
-            public ToxAvCallbackID Id { get; private set; }
+            public ToxAvFriendCallState State { get; private set; }
 
-            public CallStateEventArgs(int callIndex, ToxAvCallbackID id)
-                : base(callIndex)
+            public CallStateEventArgs(int friendNumber, ToxAvFriendCallState state)
+                : base(friendNumber)
             {
-                Id = id;
+                State = state;
             }
         }
 
-        public class AudioDataEventArgs : CallBaseEventArgs
+        public class BitrateStatusEventArgs : CallBaseEventArgs
         {
-            public short[] Data { get; private set; }
+            public int AudioBitrate { get; private set; }
+            public int VideoBitrate { get; private set; }
 
-            public AudioDataEventArgs(int callIndex, short[] data)
-                : base(callIndex)
+            public BitrateStatusEventArgs(int friendNumber, int audioBitrate, int videoBitrate)
+                : base(friendNumber)
             {
-                Data = data;
+                AudioBitrate = audioBitrate;
+                VideoBitrate = videoBitrate;
             }
         }
 
-        public class VideoDataEventArgs : CallBaseEventArgs
+        public class AudioFrameEventArgs : CallBaseEventArgs
         {
-            public IntPtr Frame { get; private set; }
+            public ToxAvAudioFrame Frame { get; private set; }
 
-            public VideoDataEventArgs(int callIndex, IntPtr frame)
-                : base(callIndex)
+            public AudioFrameEventArgs(int friendNumber, ToxAvAudioFrame frame)
+                : base(friendNumber)
+            {
+                Frame = frame;
+            }
+        }
+
+        public class VideoFrameEventArgs : CallBaseEventArgs
+        {
+            public ToxAvVideoFrame Frame { get; private set; }
+
+            public VideoFrameEventArgs(int friendNumber, ToxAvVideoFrame frame)
+                : base(friendNumber)
             {
                 Frame = frame;
             }

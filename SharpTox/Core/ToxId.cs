@@ -38,30 +38,28 @@ namespace SharpTox.Core
         /// <summary>
         /// Retrieves the nospam value of this Tox ID.
         /// </summary>
-        [CLSCompliant(false)]
-        public uint Nospam
+        public int Nospam
         {
             get
             {
                 byte[] nospam = new byte[sizeof(uint)];
                 Array.Copy(_id, ToxConstants.PublicKeySize, nospam, 0, sizeof(uint));
 
-                return BitConverter.ToUInt32(nospam, 0);
+                return BitConverter.ToInt32(nospam, 0);
             }
         }
 
         /// <summary>
         /// Retrieves the checksum of this Tox ID.
         /// </summary>
-        [CLSCompliant(false)]
-        public ushort Checksum
+        public short Checksum
         {
             get
             {
                 byte[] checksum = new byte[sizeof(ushort)];
                 Array.Copy(_id, ToxConstants.PublicKeySize + sizeof(uint), checksum, 0, sizeof(ushort));
 
-                return BitConverter.ToUInt16(checksum, 0);
+                return BitConverter.ToInt16(checksum, 0);
             }
         }
 
@@ -80,7 +78,7 @@ namespace SharpTox.Core
         {
             _id = id;
 
-            if (CalcChecksum(_id, ToxConstants.PublicKeySize + sizeof(uint)) != Checksum)
+            if (CalcChecksum(_id, ToxConstants.PublicKeySize + sizeof(uint)) != unchecked((ushort)Checksum))
                 throw new Exception("This Tox ID is invalid");
         }
 
@@ -89,8 +87,7 @@ namespace SharpTox.Core
         /// </summary>
         /// <param name="publicKey">Public key to create this Tox ID with.</param>
         /// <param name="nospam">Nospam value to create this Tox ID with.</param>
-        [CLSCompliant(false)]
-        public ToxId(byte[] publicKey, uint nospam)
+        public ToxId(byte[] publicKey, int nospam)
         {
             byte[] id = new byte[ToxConstants.AddressSize];
 
@@ -108,8 +105,7 @@ namespace SharpTox.Core
         /// </summary>
         /// <param name="publicKey">Public key to create this Tox ID with.</param>
         /// <param name="nospam">Nospam value to create this Tox ID with.</param>
-        [CLSCompliant(false)]
-        public ToxId(string publicKey, uint nospam)
+        public ToxId(string publicKey, int nospam)
             : this(ToxTools.StringToHexBin(publicKey), nospam) { }
 
         public static bool operator ==(ToxId id1, ToxId id2)

@@ -62,7 +62,7 @@ namespace SharpTox.Core
                         switch (type)
                         {
                             case StateType.NospamKeys:
-                                uint nospam = reader.ReadUInt32();
+                                int nospam = reader.ReadInt32();
                                 byte[] publicKey = reader.ReadBytes(ToxConstants.PublicKeySize);
 
                                 secretKey = reader.ReadBytes(ToxConstants.SecretKeySize);

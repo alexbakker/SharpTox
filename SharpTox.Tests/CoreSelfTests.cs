@@ -113,7 +113,7 @@ namespace SharpTox.Test
             byte[] randomBytes = new byte[sizeof(uint)];
             new Random().NextBytes(randomBytes);
 
-            uint nospam = BitConverter.ToUInt32(randomBytes, 0);
+            int nospam = BitConverter.ToInt32(randomBytes, 0);
             tox.SetNospam(nospam);
 
             if (nospam != tox.GetNospam())
@@ -132,37 +132,37 @@ namespace SharpTox.Test
                 Assert.Fail("Tox id's are not equal");
         }
 
-        [Test, Ignore]
+        [Test]
         public void TestToxEncryption()
         {
-            var key = new ToxEncryptionKey("heythisisatest");
+            string password = "heythisisatest";
             byte[] garbage = new byte[0xBEEF];
             new Random().NextBytes(garbage);
 
-            byte[] encryptedData = ToxEncryption.EncryptData(garbage, key);
+            byte[] encryptedData = ToxEncryption.EncryptData(garbage, password);
             Assert.IsNotNull(encryptedData, "Failed to encrypt the data");
 
-            byte[] decryptedData = ToxEncryption.DecryptData(encryptedData, key);
+            byte[] decryptedData = ToxEncryption.DecryptData(encryptedData, password);
             Assert.IsNotNull(decryptedData, "Failed to decrypt the data");
 
             if (!garbage.SequenceEqual(decryptedData))
                 Assert.Fail("Original data is not equal to the decrypted data");
         }
 
-        [Test, Ignore]
+        [Test]
         public void TestToxEncryptionLoad()
         {
             var tox1 = new Tox(ToxOptions.Default);
             tox1.Name = "Test";
             tox1.StatusMessage = "Hey";
 
-            var key = new ToxEncryptionKey("heythisisatest");
-            var data = tox1.GetData(key);
+            string password = "heythisisatest";
+            var data = tox1.GetData(password);
 
             Assert.IsNotNull(data, "Failed to encrypt the Tox data");
             Assert.IsTrue(data.IsEncrypted, "We encrypted the data, but toxencryptsave thinks we didn't");
 
-            var tox2 = new Tox(ToxOptions.Default, ToxData.FromBytes(data.Bytes), key);
+            var tox2 = new Tox(ToxOptions.Default, ToxData.FromBytes(data.Bytes), password);
 
             if (tox2.Id != tox1.Id)
                 Assert.Fail("Failed to load tox data correctly, tox id's don't match");
@@ -257,6 +257,15 @@ namespace SharpTox.Test
                 Assert.Fail("Parsing the data file failed");
 
             tox.Dispose();
+        }
+
+        [Test]
+        public void TestToxIsDataEncrypted()
+        {
+            var tox = new Tox(ToxOptions.Default);
+            var data = tox.GetData();
+
+            Assert.IsFalse(data.IsEncrypted);
         }
     }
 }

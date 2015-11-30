@@ -224,36 +224,83 @@ namespace SharpTox.Core
         /// </summary>
         /// <param name="options">The options to initialize this instance of Tox with.</param>
         /// <param name="data">A byte array containing Tox save data.</param>
-        /// <param name="key">The key to decrypt the given encrypted Tox profile data. If the data is not encrypted, this should be null.</param>
-        public Tox(ToxOptions options, ToxData data, ToxEncryptionKey key = null)
+        public Tox(ToxOptions options, ToxData data)
         {
             if (data == null)
                 throw new ArgumentNullException("data");
 
             var optionsStruct = options.Struct;
+            var error = ToxErrorNew.Ok;
 
-            if (key == null || !data.IsEncrypted)
-            {
-                var error = ToxErrorNew.Ok;
-                optionsStruct.SetData(data.Bytes, ToxSaveDataType.ToxSave);
+            optionsStruct.SetData(data.Bytes, ToxSaveDataType.ToxSave);
+            _tox = ToxFunctions.New(ref optionsStruct, ref error);
 
-                _tox = ToxFunctions.New(ref optionsStruct, ref error);
+            if (_tox == null || _tox.IsInvalid || error != ToxErrorNew.Ok)
+                throw new Exception("Could not create a new instance of tox, error: " + error.ToString());
 
-                if (_tox == null || _tox.IsInvalid || error != ToxErrorNew.Ok)
-                    throw new Exception("Could not create a new instance of tox, error: " + error.ToString());
-            }
-            else
-            {
-                var error = ToxErrorNew.Ok;
-                var decryptError = ToxErrorDecryption.Ok;
-                byte[] decryptedData = ToxEncryption.DecryptData(data.Bytes, key, out decryptError);
-                optionsStruct.SetData(decryptedData, ToxSaveDataType.ToxSave);
+            optionsStruct.Free();
+            Options = options;
+        }
 
-                _tox = ToxFunctions.New(ref optionsStruct, ref error);
+        /// <summary>
+        /// Initializes a new instance of Tox.
+        /// </summary>
+        /// <param name="options">The options to initialize this instance of Tox with.</param>
+        /// <param name="data">A byte array containing Tox save data.</param>
+        /// <param name="key">The key to decrypt the given encrypted Tox profile data.</param>
+        public Tox(ToxOptions options, ToxData data, ToxEncryptionKey key)
+        {
+            if (data == null)
+                throw new ArgumentNullException("data");
 
-                if (_tox == null || _tox.IsInvalid || error != ToxErrorNew.Ok || decryptError != ToxErrorDecryption.Ok)
-                    throw new Exception(string.Format("Could not create a new instance of tox, error: {0}, decrypt error: {1}" + error.ToString(), decryptError.ToString()));
-            }
+            if (key == null)
+                throw new ArgumentNullException("key");
+
+            if (!data.IsEncrypted)
+                throw new Exception("This data is not encrypted");
+
+            var optionsStruct = options.Struct;
+            var error = ToxErrorNew.Ok;
+            var decryptError = ToxErrorDecryption.Ok;
+
+            byte[] decryptedData = ToxEncryption.DecryptData(data.Bytes, key, out decryptError);
+            optionsStruct.SetData(decryptedData, ToxSaveDataType.ToxSave);
+            _tox = ToxFunctions.New(ref optionsStruct, ref error);
+
+            if (_tox == null || _tox.IsInvalid || error != ToxErrorNew.Ok || decryptError != ToxErrorDecryption.Ok)
+                throw new Exception(string.Format("Could not create a new instance of tox, error: {0}, decrypt error: {1}" + error.ToString(), decryptError.ToString()));
+
+            optionsStruct.Free();
+            Options = options;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of Tox.
+        /// </summary>
+        /// <param name="options">The options to initialize this instance of Tox with.</param>
+        /// <param name="data">A byte array containing Tox save data.</param>
+        /// <param name="password">The password to decrypt the given encrypted Tox profile data.</param>
+        public Tox(ToxOptions options, ToxData data, string password)
+        {
+            if (data == null)
+                throw new ArgumentNullException("data");
+
+            if (password == null)
+                throw new ArgumentNullException("password");
+
+            if (!data.IsEncrypted)
+                throw new Exception("This data is not encrypted");
+
+            var optionsStruct = options.Struct;
+            var error = ToxErrorNew.Ok;
+            var decryptError = ToxErrorDecryption.Ok;
+
+            byte[] decryptedData = ToxEncryption.DecryptData(data.Bytes, password, out decryptError);
+            optionsStruct.SetData(decryptedData, ToxSaveDataType.ToxSave);
+            _tox = ToxFunctions.New(ref optionsStruct, ref error);
+
+            if (_tox == null || _tox.IsInvalid || error != ToxErrorNew.Ok || decryptError != ToxErrorDecryption.Ok)
+                throw new Exception(string.Format("Could not create a new instance of tox, error: {0}, decrypt error: {1}" + error.ToString(), decryptError.ToString()));
 
             optionsStruct.Free();
             Options = options;
@@ -377,7 +424,7 @@ namespace SharpTox.Core
             byte[] msg = Encoding.UTF8.GetBytes(message);
             error = ToxErrorFriendAdd.Ok;
 
-            return (int)ToxFunctions.FriendAdd(_tox, id.Bytes, msg, (uint)msg.Length, ref error);
+            return ToxTools.Map(ToxFunctions.FriendAdd(_tox, id.Bytes, msg, (uint)msg.Length, ref error));
         }
 
         /// <summary>
@@ -407,7 +454,7 @@ namespace SharpTox.Core
                 throw new ArgumentNullException("publicKey");
 
             error = ToxErrorFriendAdd.Ok;
-            return (int)ToxFunctions.FriendAddNoRequest(_tox, publicKey.GetBytes(), ref error);
+            return ToxTools.Map(ToxFunctions.FriendAddNoRequest(_tox, publicKey.GetBytes(), ref error));
         }
 
         /// <summary>
@@ -489,7 +536,7 @@ namespace SharpTox.Core
         {
             ThrowIfDisposed();
 
-            return ToxFunctions.FriendExists(_tox, (uint)friendNumber);
+            return ToxFunctions.FriendExists(_tox, ToxTools.Map(friendNumber));
         }
 
         /// <summary>
@@ -503,7 +550,7 @@ namespace SharpTox.Core
             ThrowIfDisposed();
 
             error = ToxErrorFriendQuery.Ok;
-            return ToxFunctions.FriendGetTyping(_tox, (uint)friendNumber, ref error);
+            return ToxFunctions.FriendGetTyping(_tox, ToxTools.Map(friendNumber), ref error);
         }
 
         /// <summary>
@@ -531,7 +578,7 @@ namespace SharpTox.Core
                 throw new ArgumentNullException("publicKey");
 
             error = ToxErrorFriendByPublicKey.Ok;
-            return (int)ToxFunctions.FriendByPublicKey(_tox, publicKey.GetBytes(), ref error);
+            return ToxTools.Map(ToxFunctions.FriendByPublicKey(_tox, publicKey.GetBytes(), ref error));
         }
 
         /// <summary>
@@ -556,7 +603,7 @@ namespace SharpTox.Core
             ThrowIfDisposed();
 
             error = ToxErrorFriendQuery.Ok;
-            return ToxFunctions.FriendGetConnectionStatus(_tox, (uint)friendNumber, ref error);
+            return ToxFunctions.FriendGetConnectionStatus(_tox, ToxTools.Map(friendNumber), ref error);
         }
 
         /// <summary>
@@ -593,7 +640,7 @@ namespace SharpTox.Core
             byte[] address = new byte[ToxConstants.PublicKeySize];
             error = ToxErrorFriendGetPublicKey.Ok;
 
-            if (!ToxFunctions.FriendGetPublicKey(_tox, (uint)friendNumber, address, ref error))
+            if (!ToxFunctions.FriendGetPublicKey(_tox, ToxTools.Map(friendNumber), address, ref error))
                 return null;
 
             return new ToxKey(ToxKeyType.Public, address);
@@ -621,7 +668,7 @@ namespace SharpTox.Core
             ThrowIfDisposed();
 
             error = ToxErrorFriendQuery.Ok;
-            return ToxFunctions.FriendGetStatus(_tox, (uint)friendNumber, ref error);
+            return ToxFunctions.FriendGetStatus(_tox, ToxTools.Map(friendNumber), ref error);
         }
 
         /// <summary>
@@ -647,7 +694,7 @@ namespace SharpTox.Core
             ThrowIfDisposed();
 
             error = ToxErrorSetTyping.Ok;
-            return ToxFunctions.SelfSetTyping(_tox, (uint)friendNumber, isTyping, ref error);
+            return ToxFunctions.SelfSetTyping(_tox, ToxTools.Map(friendNumber), isTyping, ref error);
         }
 
         /// <summary>
@@ -677,7 +724,7 @@ namespace SharpTox.Core
             byte[] bytes = Encoding.UTF8.GetBytes(message);
             error = ToxErrorSendMessage.Ok;
 
-            return (int)ToxFunctions.FriendSendMessage(_tox, (uint)friendNumber, type, bytes, (uint)bytes.Length, ref error);
+            return ToxTools.Map(ToxFunctions.FriendSendMessage(_tox, ToxTools.Map(friendNumber), type, bytes, (uint)bytes.Length, ref error));
         }
 
         /// <summary>
@@ -704,7 +751,7 @@ namespace SharpTox.Core
             ThrowIfDisposed();
 
             error = ToxErrorFriendDelete.Ok;
-            return ToxFunctions.FriendDelete(_tox, (uint)friendNumber, ref error);
+            return ToxFunctions.FriendDelete(_tox, ToxTools.Map(friendNumber), ref error);
         }
 
         /// <summary>
@@ -747,6 +794,16 @@ namespace SharpTox.Core
             return ToxData.FromBytes(encrypted);
         }
 
+        public ToxData GetData(string password)
+        {
+            ThrowIfDisposed();
+
+            var data = GetData();
+            byte[] encrypted = ToxEncryption.EncryptData(data.Bytes, password);
+
+            return ToxData.FromBytes(encrypted);
+        }
+
         /// <summary>
         /// Retrieves the private key of this Tox instance.
         /// </summary>
@@ -772,13 +829,13 @@ namespace SharpTox.Core
             ThrowIfDisposed();
 
             error = ToxErrorFriendQuery.Ok;
-            uint size = ToxFunctions.FriendGetNameSize(_tox, (uint)friendNumber, ref error);
+            uint size = ToxFunctions.FriendGetNameSize(_tox, ToxTools.Map(friendNumber), ref error);
 
             if (error != ToxErrorFriendQuery.Ok)
                 return string.Empty;
 
             byte[] name = new byte[size];
-            if (!ToxFunctions.FriendGetName(_tox, (uint)friendNumber, name, ref error))
+            if (!ToxFunctions.FriendGetName(_tox, ToxTools.Map(friendNumber), name, ref error))
                 return string.Empty;
 
             return Encoding.UTF8.GetString(name, 0, name.Length);
@@ -806,13 +863,13 @@ namespace SharpTox.Core
             ThrowIfDisposed();
 
             error = ToxErrorFriendQuery.Ok;
-            uint size = ToxFunctions.FriendGetStatusMessageSize(_tox, (uint)friendNumber, ref error);
+            uint size = ToxFunctions.FriendGetStatusMessageSize(_tox, ToxTools.Map(friendNumber), ref error);
 
             if (error != ToxErrorFriendQuery.Ok)
                 return string.Empty;
 
             byte[] message = new byte[size];
-            if (!ToxFunctions.FriendGetStatusMessage(_tox, (uint)friendNumber, message, ref error))
+            if (!ToxFunctions.FriendGetStatusMessage(_tox, ToxTools.Map(friendNumber), message, ref error))
                 return string.Empty;
 
             return Encoding.UTF8.GetString(message, 0, message.Length);
@@ -879,24 +936,22 @@ namespace SharpTox.Core
         /// Sets the nospam value for this Tox instance.
         /// </summary>
         /// <param name="nospam">The nospam value to set.</param>
-        [CLSCompliant(false)]
-        public void SetNospam(uint nospam)
+        public void SetNospam(int nospam)
         {
             ThrowIfDisposed();
 
-            ToxFunctions.SelfSetNospam(_tox, nospam);
+            ToxFunctions.SelfSetNospam(_tox, ToxTools.Map(nospam));
         }
 
         /// <summary>
         /// Retrieves the nospam value of this Tox instance.
         /// </summary>
         /// <returns>The nospam value.</returns>
-        [CLSCompliant(false)]
-        public uint GetNospam()
+        public int GetNospam()
         {
             ThrowIfDisposed();
 
-            return ToxFunctions.SelfGetNospam(_tox);
+            return ToxTools.Map(ToxFunctions.SelfGetNospam(_tox));
         }
 
         /// <summary>
@@ -913,7 +968,7 @@ namespace SharpTox.Core
 
             error = ToxErrorFileControl.Ok;
 
-            return ToxFunctions.FileControl(_tox, (uint)friendNumber, (uint)fileNumber, control, ref error);
+            return ToxFunctions.FileControl(_tox, ToxTools.Map(friendNumber), ToxTools.Map(fileNumber), control, ref error);
         }
 
         /// <summary>
@@ -944,7 +999,7 @@ namespace SharpTox.Core
 
             error = ToxErrorFileSend.Ok;
             byte[] fileNameBytes = Encoding.UTF8.GetBytes(fileName);
-            int fileNumber = (int)ToxFunctions.FileSend(_tox, (uint)friendNumber, kind, (ulong)fileSize, null, fileNameBytes, (uint)fileNameBytes.Length, ref error);
+            int fileNumber = ToxTools.Map(ToxFunctions.FileSend(_tox, ToxTools.Map(friendNumber), kind, (ulong)fileSize, null, fileNameBytes, (uint)fileNameBytes.Length, ref error));
 
             if (error == ToxErrorFileSend.Ok)
                 return new ToxFileInfo(fileNumber, FileGetId(friendNumber, fileNumber));
@@ -985,7 +1040,7 @@ namespace SharpTox.Core
 
             error = ToxErrorFileSend.Ok;
             byte[] fileNameBytes = Encoding.UTF8.GetBytes(fileName);
-            int fileNumber = (int)ToxFunctions.FileSend(_tox, (uint)friendNumber, kind, (ulong)fileSize, fileId, fileNameBytes, (uint)fileNameBytes.Length, ref error);
+            int fileNumber = ToxTools.Map(ToxFunctions.FileSend(_tox, ToxTools.Map(friendNumber), kind, (ulong)fileSize, fileId, fileNameBytes, (uint)fileNameBytes.Length, ref error));
 
             if (error == ToxErrorFileSend.Ok)
                 return new ToxFileInfo(fileNumber, fileId);
@@ -1021,7 +1076,7 @@ namespace SharpTox.Core
             ThrowIfDisposed();
 
             error = ToxErrorFileSeek.Ok;
-            return ToxFunctions.FileSeek(_tox, (uint)friendNumber, (uint)fileNumber, (ulong)position, ref error);
+            return ToxFunctions.FileSeek(_tox, ToxTools.Map(friendNumber), ToxTools.Map(fileNumber), (ulong)position, ref error);
         }
 
         /// <summary>
@@ -1055,7 +1110,7 @@ namespace SharpTox.Core
 
             error = ToxErrorFileSendChunk.Ok;
 
-            return ToxFunctions.FileSendChunk(_tox, (uint)friendNumber, (uint)fileNumber, (ulong)position, data, (uint)data.Length, ref error);
+            return ToxFunctions.FileSendChunk(_tox, ToxTools.Map(friendNumber), ToxTools.Map(fileNumber), (ulong)position, data, (uint)data.Length, ref error);
         }
 
         /// <summary>
@@ -1086,7 +1141,7 @@ namespace SharpTox.Core
             error = ToxErrorFileGet.Ok;
             byte[] id = new byte[ToxConstants.FileIdLength];
 
-            if (!ToxFunctions.FileGetFileId(_tox, (uint)friendNumber, (uint)fileNumber, id, ref error))
+            if (!ToxFunctions.FileGetFileId(_tox, ToxTools.Map(friendNumber), ToxTools.Map(fileNumber), id, ref error))
                 return null;
 
             return id;
@@ -1121,7 +1176,7 @@ namespace SharpTox.Core
 
             error = ToxErrorFriendCustomPacket.Ok;
 
-            return ToxFunctions.FriendSendLossyPacket(_tox, (uint)friendNumber, data, (uint)data.Length, ref error);
+            return ToxFunctions.FriendSendLossyPacket(_tox, ToxTools.Map(friendNumber), data, (uint)data.Length, ref error);
         }
 
         /// <summary>
@@ -1154,7 +1209,7 @@ namespace SharpTox.Core
 
             error = ToxErrorFriendCustomPacket.Ok;
 
-            return ToxFunctions.FriendSendLosslessPacket(_tox, (uint)friendNumber, data, (uint)data.Length, ref error);
+            return ToxFunctions.FriendSendLosslessPacket(_tox, ToxTools.Map(friendNumber), data, (uint)data.Length, ref error);
         }
 
         /// <summary>
@@ -1178,6 +1233,8 @@ namespace SharpTox.Core
         /// <returns>The time this friend was last seen online, on success.</returns>
         public DateTime GetFriendLastOnline(int friendNumber, out ToxErrorFriendGetLastOnline error)
         {
+            ThrowIfDisposed();
+
             error = ToxErrorFriendGetLastOnline.Ok;
             ulong time = ToxFunctions.FriendGetLastOnline(_tox, (uint)friendNumber, ref error);
 
@@ -2063,7 +2120,7 @@ namespace SharpTox.Core
                     _onTypingChangeCallback = (IntPtr tox, uint friendNumber, bool typing, IntPtr userData) =>
                     {
                         if (_onFriendTypingChanged != null)
-                            _onFriendTypingChanged(this, new ToxEventArgs.TypingStatusEventArgs((int)friendNumber, typing));
+                            _onFriendTypingChanged(this, new ToxEventArgs.TypingStatusEventArgs(ToxTools.Map(friendNumber), typing));
                     };
 
                     ToxFunctions.RegisterTypingChangeCallback(_tox, _onTypingChangeCallback, IntPtr.Zero);
@@ -2131,7 +2188,7 @@ namespace SharpTox.Core
                     _onFriendConnectionStatusCallback = (IntPtr tox, uint friendNumber, ToxConnectionStatus status, IntPtr userData) =>
                     {
                         if (_onFriendConnectionStatusChanged != null)
-                            _onFriendConnectionStatusChanged(this, new ToxEventArgs.FriendConnectionStatusEventArgs((int)friendNumber, (ToxConnectionStatus)status));
+                            _onFriendConnectionStatusChanged(this, new ToxEventArgs.FriendConnectionStatusEventArgs(ToxTools.Map(friendNumber), status));
                     };
 
                     ToxFunctions.RegisterFriendConnectionStatusCallback(_tox, _onFriendConnectionStatusCallback, IntPtr.Zero);
@@ -2165,7 +2222,7 @@ namespace SharpTox.Core
                     _onReadReceiptCallback = (IntPtr tox, uint friendNumber, uint receipt, IntPtr userData) =>
                     {
                         if (_onReadReceiptReceived != null)
-                            _onReadReceiptReceived(this, new ToxEventArgs.ReadReceiptEventArgs((int)friendNumber, (int)receipt));
+                            _onReadReceiptReceived(this, new ToxEventArgs.ReadReceiptEventArgs(ToxTools.Map(friendNumber), ToxTools.Map(receipt)));
                     };
 
                     ToxFunctions.RegisterFriendReadReceiptCallback(_tox, _onReadReceiptCallback, IntPtr.Zero);
@@ -2199,7 +2256,7 @@ namespace SharpTox.Core
                     _onFileControlCallback = (IntPtr tox, uint friendNumber, uint fileNumber, ToxFileControl control, IntPtr userData) =>
                     {
                         if (_onFileControlReceived != null)
-                            _onFileControlReceived(this, new ToxEventArgs.FileControlEventArgs((int)friendNumber, (int)fileNumber, control));
+                            _onFileControlReceived(this, new ToxEventArgs.FileControlEventArgs(ToxTools.Map(friendNumber), ToxTools.Map(fileNumber), control));
                     };
 
                     ToxFunctions.RegisterFileControlRecvCallback(_tox, _onFileControlCallback, IntPtr.Zero);
@@ -2233,7 +2290,7 @@ namespace SharpTox.Core
                     _onFileReceiveChunkCallback = (IntPtr tox, uint friendNumber, uint fileNumber, ulong position, byte[] data, uint length, IntPtr userData) =>
                     {
                         if (_onFileChunkReceived != null)
-                            _onFileChunkReceived(this, new ToxEventArgs.FileChunkEventArgs((int)friendNumber, (int)fileNumber, data, (long)position));
+                            _onFileChunkReceived(this, new ToxEventArgs.FileChunkEventArgs(ToxTools.Map(friendNumber), ToxTools.Map(fileNumber), data, (long)position));
                     };
 
                     ToxFunctions.RegisterFileReceiveChunkCallback(_tox, _onFileReceiveChunkCallback, IntPtr.Zero);
@@ -2267,7 +2324,7 @@ namespace SharpTox.Core
                     _onFileReceiveCallback = (IntPtr tox, uint friendNumber, uint fileNumber, ToxFileKind kind, ulong fileSize, byte[] filename, uint filenameLength, IntPtr userData) =>
                     {
                         if (_onFileSendRequestReceived != null)
-                            _onFileSendRequestReceived(this, new ToxEventArgs.FileSendRequestEventArgs((int)friendNumber, (int)fileNumber, kind, (long)fileSize, filename == null ? string.Empty : Encoding.UTF8.GetString(filename, 0, filename.Length)));
+                            _onFileSendRequestReceived(this, new ToxEventArgs.FileSendRequestEventArgs(ToxTools.Map(friendNumber), ToxTools.Map(fileNumber), kind, (long)fileSize, filename == null ? string.Empty : Encoding.UTF8.GetString(filename, 0, filename.Length)));
                     };
 
                     ToxFunctions.RegisterFileReceiveCallback(_tox, _onFileReceiveCallback, IntPtr.Zero);
@@ -2301,7 +2358,7 @@ namespace SharpTox.Core
                     _onFileRequestChunkCallback = (IntPtr tox, uint friendNumber, uint fileNumber, ulong position, uint length, IntPtr userData) =>
                     {
                         if (_onFileChunkRequested != null)
-                            _onFileChunkRequested(this, new ToxEventArgs.FileRequestChunkEventArgs((int)friendNumber, (int)fileNumber, (long)position, (int)length));
+                            _onFileChunkRequested(this, new ToxEventArgs.FileRequestChunkEventArgs(ToxTools.Map(friendNumber), ToxTools.Map(fileNumber), (long)position, (int)length));
                     };
 
                     ToxFunctions.RegisterFileChunkRequestCallback(_tox, _onFileRequestChunkCallback, IntPtr.Zero);
@@ -2335,7 +2392,7 @@ namespace SharpTox.Core
                     _onFriendLossyPacketCallback = (IntPtr tox, uint friendNumber, byte[] data, uint length, IntPtr userData) =>
                     {
                         if (_onFriendLossyPacketReceived != null)
-                            _onFriendLossyPacketReceived(this, new ToxEventArgs.FriendPacketEventArgs((int)friendNumber, data));
+                            _onFriendLossyPacketReceived(this, new ToxEventArgs.FriendPacketEventArgs(ToxTools.Map(friendNumber), data));
                     };
 
                     ToxFunctions.RegisterFriendLossyPacketCallback(_tox, _onFriendLossyPacketCallback, IntPtr.Zero);
@@ -2369,7 +2426,7 @@ namespace SharpTox.Core
                     _onFriendLosslessPacketCallback = (IntPtr tox, uint friendNumber, byte[] data, uint length, IntPtr userData) =>
                     {
                         if (_onFriendLosslessPacketReceived != null)
-                            _onFriendLosslessPacketReceived(this, new ToxEventArgs.FriendPacketEventArgs((int)friendNumber, data));
+                            _onFriendLosslessPacketReceived(this, new ToxEventArgs.FriendPacketEventArgs(ToxTools.Map(friendNumber), data));
                     };
 
                     ToxFunctions.RegisterFriendLosslessPacketCallback(_tox, _onFriendLosslessPacketCallback, IntPtr.Zero);
