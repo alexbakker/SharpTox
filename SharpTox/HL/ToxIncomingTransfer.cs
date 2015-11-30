@@ -6,8 +6,8 @@ namespace SharpTox.HL
 {
     public class ToxIncomingTransfer : ToxFileTransfer
     {
-        internal ToxIncomingTransfer(ToxHL tox, Stream stream, ToxFileInfo info)
-            : base(tox, stream, info)
+        internal ToxIncomingTransfer(ToxHL tox, Stream stream, ToxFriend friend, ToxFileInfo info)
+            : base(tox, stream, friend, info)
         {
         }
     }

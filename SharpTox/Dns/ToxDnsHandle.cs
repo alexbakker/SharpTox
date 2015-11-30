@@ -5,7 +5,7 @@ namespace SharpTox.Dns
     /// <summary>
     /// Represents a handle for an instance of tox_dns3.
     /// </summary>
-    public class ToxDnsHandle : SafeHandleZeroOrMinusOneIsInvalid
+    internal class ToxDnsHandle : SafeHandleZeroOrMinusOneIsInvalid
     {
         private ToxDnsHandle()
             : base(true) { }

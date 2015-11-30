@@ -6,13 +6,27 @@ namespace SharpTox.HL
 {
     public class ToxFriend
     {
-        public readonly int Number;
-        public readonly ToxHL Tox;
+        public int Number { get; private set; }
+        public ToxHL Tox { get; private set; }
 
         internal ToxFriend(ToxHL tox, int friendNumber)
         {
             Tox = tox;
             Number = friendNumber;
+        }
+
+        public int SendMessage(string message, ToxMessageType type)
+        {
+            if (message == null)
+                throw new ArgumentNullException("message");
+
+            var error = ToxErrorSendMessage.Ok;
+            int messageNumber = Tox.Core.SendMessage(Number, message, type, out error);
+
+            if (error != ToxErrorSendMessage.Ok)
+                throw new Exception("Could not send message");
+
+            return messageNumber;
         }
 
         public ToxFileTransfer SendFile(Stream stream, string fileName, ToxFileKind kind)
@@ -29,7 +43,7 @@ namespace SharpTox.HL
             if (error != ToxErrorFileSend.Ok)
                 throw new Exception("Could not create file sender");
 
-            return new ToxFileTransfer(Tox, stream, fileInfo);
+            return new ToxFileTransfer(Tox, stream, this, fileInfo);
         }
     }
 }
