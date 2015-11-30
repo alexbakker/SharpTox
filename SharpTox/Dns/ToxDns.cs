@@ -15,7 +15,7 @@ namespace SharpTox.Dns
         /// <summary>
         /// The handle of this tox dns3 instance.
         /// </summary>
-        public ToxDnsHandle Handle
+        internal ToxDnsHandle Handle
         {
             get { return _toxDns3; }
         }
