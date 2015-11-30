@@ -32,12 +32,12 @@ namespace SharpTox.Test
             while (_tox1.GetFriendConnectionStatus(0) == ToxConnectionStatus.None) { DoIterate(); }
 
             bool answered = false;
-            _toxAv1.Call(0, 48, 30000);
+            _toxAv1.Call(0, 48, 3000);
 
             _toxAv2.OnCallRequestReceived += (sender, e) =>
             {
                 var error2 = ToxAvErrorAnswer.Ok;
-                bool result2 = _toxAv2.Answer(e.FriendNumber, 48, 30000, out error2);
+                bool result2 = _toxAv2.Answer(e.FriendNumber, 48, 3000, out error2);
             };
 
             _toxAv1.OnCallStateChanged += (sender, e) =>
