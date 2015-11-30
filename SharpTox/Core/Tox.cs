@@ -179,7 +179,7 @@ namespace SharpTox.Core
         /// The handle of this instance of Tox. 
         /// Do not dispose this handle manually, use the Dispose method in this class instead.
         /// </summary>
-        public ToxHandle Handle
+        internal ToxHandle Handle
         {
             get
             {

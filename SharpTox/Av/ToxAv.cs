@@ -30,7 +30,7 @@ namespace SharpTox.Av
         /// <summary>
         /// The handle of this toxav instance.
         /// </summary>
-        public ToxAvHandle Handle
+        internal ToxAvHandle Handle
         {
             get
             {
@@ -43,7 +43,7 @@ namespace SharpTox.Av
         /// <summary>
         /// The Tox instance that this toxav instance belongs to.
         /// </summary>
-        public ToxHandle ToxHandle
+        internal ToxHandle ToxHandle
         {
             get
             {
@@ -55,7 +55,7 @@ namespace SharpTox.Av
         /// Initialises a new instance of toxav.
         /// </summary>
         /// <param name="tox"></param>
-        public ToxAv(ToxHandle tox)
+        internal ToxAv(ToxHandle tox)
         {
             _tox = tox;
 
