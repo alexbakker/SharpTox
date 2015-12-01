@@ -45,7 +45,7 @@ namespace SharpTox.HL
             int friendNumber = Core.AddFriend(id, message, out error);
 
             if (error != ToxErrorFriendAdd.Ok)
-                throw new Exception("Could not add friend");
+                throw new ToxException<ToxErrorFriendAdd>(error);
 
             var friend = new ToxFriend(this, friendNumber);
             AddFriendToList(friend);
@@ -58,7 +58,7 @@ namespace SharpTox.HL
             int friendNumber = Core.AddFriendNoRequest(publicKey, out error);
 
             if (error != ToxErrorFriendAdd.Ok)
-                throw new Exception("Could not add friend");
+                throw new ToxException<ToxErrorFriendAdd>(error);
 
             var friend = new ToxFriend(this, friendNumber);
             AddFriendToList(friend);
@@ -69,6 +69,18 @@ namespace SharpTox.HL
         {
             lock (_friendsLock)
                 _friends.Add(friend);
+        }
+
+        public void RemoveFriend(ToxFriend friend)
+        {
+            var error = ToxErrorFriendDelete.Ok;
+            Core.DeleteFriend(friend.Number, out error);
+
+            if (error != ToxErrorFriendDelete.Ok)
+                throw new ToxException<ToxErrorFriendDelete>(error);
+
+            lock (_friendsLock)
+                _friends.Remove(friend);
         }
     }
 }

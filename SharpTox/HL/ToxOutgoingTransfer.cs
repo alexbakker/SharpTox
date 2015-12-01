@@ -6,9 +6,53 @@ namespace SharpTox.HL
 {
     public class ToxOutgoingTransfer : ToxFileTransfer
     {
-        internal ToxOutgoingTransfer(ToxHL tox, Stream stream, ToxFriend friend, ToxFileInfo info)
-            : base(tox, stream, friend, info)
+        internal ToxOutgoingTransfer(ToxHL tox, Stream stream, ToxFriend friend, ToxFileInfo info, string name, ToxFileKind kind)
+            : base(tox, stream, friend, info, name, kind)
         {
+            Tox.Core.OnFileChunkRequested += OnFileChunkRequested;
+        }
+
+        private void OnFileChunkRequested (object sender, ToxEventArgs.FileRequestChunkEventArgs e)
+        {
+            if (e.FriendNumber != Friend.Number || e.FileNumber != Info.Number)
+                return;
+
+            if (e.Length == 0)
+            {
+                //we're nice people, let's send an empty chunk so the other end knows we're done sending
+                Tox.Core.FileSendChunk(Friend.Number, Info.Number, e.Position, new byte[0]);
+                return;
+            }
+
+            if (_stream.Position != e.Position)
+            {
+                //we have to rewind the stream
+                try { _stream.Seek(e.Position, SeekOrigin.Begin); }
+                catch (Exception ex)
+                {
+                    //failed to rewind stream, we can't recover from this
+                    Cancel();
+                    return;
+                }
+            }
+
+            byte[] chunk = new byte[e.Length];
+            try { _stream.Read(chunk, 0, e.Length); }
+            catch (Exception ex)
+            {
+                //could not read from stream, cancel the transfer and fire the error event
+                Cancel();
+                return;
+            }
+
+            var error = ToxErrorFileSendChunk.Ok;
+            Tox.Core.FileSendChunk(Friend.Number, Info.Number, e.Position, chunk, out error);
+
+            if (error != ToxErrorFileSendChunk.Ok)
+            {
+                //could not send a chunk, cancel the transfer and fire the error event
+                Cancel();
+            }
         }
     }
 }
