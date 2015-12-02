@@ -42,6 +42,11 @@ namespace SharpTox.HL
             get { return QueryFriend(Tox.Core.GetFriendConnectionStatus, Number); }
         }
 
+        public bool IsOnline
+        {
+            get { return ConnectionStatus != ToxConnectionStatus.None; }
+        }
+
         public bool IsTyping
         {
             get { return QueryFriend(Tox.Core.GetFriendTypingStatus, Number); }
@@ -94,7 +99,8 @@ namespace SharpTox.HL
             var transfer = new ToxIncomingTransfer(Tox, this, new ToxFileInfo(e.FileNumber, Tox.Core.FileGetId(Number, e.FileNumber)), e.FileName, e.FileSize, e.FileKind);
             AddTransferToList(transfer);
 
-            OnFileSendRequestReceived(this, new ToxHLEventArgs.FileSendRequestEventArgs(transfer));
+            if (OnFileSendRequestReceived != null)
+                OnFileSendRequestReceived(this, new ToxHLEventArgs.FileSendRequestEventArgs(transfer));
         }
 
         public int SendMessage(string message, ToxMessageType type)

@@ -21,6 +21,7 @@ namespace SharpTox.HL
             {
                 //we're nice people, let's send an empty chunk so the other end knows we're done sending
                 Tox.Core.FileSendChunk(Friend.Number, Info.Number, e.Position, new byte[0]);
+                Finish();
                 return;
             }
 

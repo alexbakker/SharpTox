@@ -13,8 +13,9 @@ namespace SharpTox.HL
             Tox.Core.OnFileChunkReceived += OnFileChunkReceived;
         }
 
-        public void Accept()
+        public void Accept(Stream stream)
         {
+            _stream = stream;
             Resume();
         }
 
@@ -26,6 +27,7 @@ namespace SharpTox.HL
             if (e.Data == null || e.Data.Length == 0)
             {
                 //end of file transfer, fire the finished event
+                Finish();
                 return;
             }
 

@@ -22,7 +22,7 @@ namespace SharpTox.HL
         public event EventHandler<EventArgs> OnCanceled;
         public event EventHandler<EventArgs> OnFinished;
 
-        protected readonly Stream _stream;
+        protected Stream _stream;
 
         internal ToxFileTransfer(ToxHL tox, Stream stream, ToxFriend friend, ToxFileInfo info, string name, ToxFileKind kind)
         {
@@ -58,13 +58,16 @@ namespace SharpTox.HL
             switch (e.Control)
             {
                 case ToxFileControl.Pause:
-                    OnPaused(this, new EventArgs());
+                    if (OnPaused != null)
+                        OnPaused(this, new EventArgs());
                     break;
                 case ToxFileControl.Resume:
-                    OnResumed(this, new EventArgs());
+                    if (OnResumed != null)
+                        OnResumed(this, new EventArgs());
                     break;
                 case ToxFileControl.Cancel:
-                    OnCanceled(this, new EventArgs());
+                    if (OnCanceled != null)
+                        OnCanceled(this, new EventArgs());
                     break;
             }
         }
@@ -85,6 +88,12 @@ namespace SharpTox.HL
         {
             SendControl(ToxFileControl.Cancel);
             OnFileControlReceived(null, new ToxEventArgs.FileControlEventArgs(Friend.Number, Info.Number, ToxFileControl.Cancel));
+        }
+
+        protected void Finish()
+        {
+            if (OnFinished != null)
+                OnFinished(this, new EventArgs());
         }
 
         protected void SendControl(ToxFileControl control)

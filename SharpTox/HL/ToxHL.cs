@@ -6,10 +6,17 @@ using System.Collections.Generic;
 
 namespace SharpTox.HL
 {
-    public class ToxHL
+    public class ToxHL : IDisposable
     {
         public ToxOptions Options { get; private set; }
         internal Tox Core { get; private set; }
+
+        public event EventHandler<ToxEventArgs.FriendRequestEventArgs> OnFriendRequestReceived;
+
+        public ToxId Id
+        {
+            get { return Core.Id; }
+        }
 
         private readonly List<ToxFriend> _friends = new List<ToxFriend>();
         private readonly object _friendsLock = new object();
@@ -27,6 +34,8 @@ namespace SharpTox.HL
         {
             Core = new Tox(options);
             Options = options;
+
+            Core.OnFriendRequestReceived += (sender, e) => OnFriendRequestReceived(this, e);
         }
 
         public ToxHL(ToxOptions options, ToxData data)
@@ -37,6 +46,21 @@ namespace SharpTox.HL
             //initial population of the friend list (no need to lock here)
             foreach (int friendNumber in Core.Friends)
                 _friends.Add(new ToxFriend(this, friendNumber));
+        }
+            
+        public void Dispose()
+        {
+            Core.Dispose();
+        }
+
+        public void Start()
+        {
+            Core.Start();
+        }
+
+        public void Stop()
+        {
+            Core.Stop();
         }
 
         public ToxFriend AddFriend(ToxId id, string message)
