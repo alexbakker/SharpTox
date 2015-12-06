@@ -59,6 +59,9 @@ namespace SharpTox.Core
                     {
                         var type = ReadStateType(reader);
 
+                        if (type == StateType.EOF)
+                            break;
+
                         switch (type)
                         {
                             case StateType.NospamKeys:
@@ -127,7 +130,8 @@ namespace SharpTox.Core
             Status = 6,
             TcpRelay = 10,
             PathNode = 11,
-            Corrupt = 50
+            Corrupt = 50,
+            EOF = 255,
         }
     }
 }
