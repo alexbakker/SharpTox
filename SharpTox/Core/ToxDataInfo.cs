@@ -68,12 +68,6 @@ namespace SharpTox.Core
                                 secretKey = reader.ReadBytes(ToxConstants.SecretKeySize);
                                 id = new ToxId(publicKey, nospam);
                                 break;
-                            case StateType.Dht:
-                                stream.Position += length; //skip this
-                                break;
-                            case StateType.Friends:
-                                stream.Position += length; //skip this
-                                break;
                             case StateType.Name:
                                 name = Encoding.UTF8.GetString(reader.ReadBytes((int)length), 0, (int)length);
                                 break;
@@ -83,16 +77,15 @@ namespace SharpTox.Core
                             case StateType.Status:
                                 status = (ToxUserStatus)reader.ReadByte();
                                 break;
+                            default:
+                            case StateType.Dht:
+                            case StateType.Friends:
                             case StateType.TcpRelay:
-                                stream.Position += length; //skip this
-                                break;
                             case StateType.PathNode:
                                 stream.Position += length; //skip this
                                 break;
                             case StateType.Corrupt:
                                 throw new Exception("This Tox save file is corrupt");
-                            default:
-                                break;
                         }
 
                         left = reader.BaseStream.Length - reader.BaseStream.Position;
