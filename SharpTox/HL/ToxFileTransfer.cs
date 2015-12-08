@@ -12,8 +12,7 @@ namespace SharpTox.HL
         public string Name { get; private set; }
         public long Size { get; private set; }
         public ToxFileKind Kind { get; private set; }
-
-        public ToxTransferState State { get; protected set; } = ToxTransferState.Paused;
+        public ToxTransferState State { get; protected set; } //initial state is 'paused' for the receiving end, 'in progress' for the sending end
 
         public event EventHandler<EventArgs> OnPaused;
         public event EventHandler<EventArgs> OnResumed;
