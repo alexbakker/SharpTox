@@ -164,6 +164,7 @@
     <Compile Include="Encryption\ToxEncryptionFunctions.cs" />
     <Compile Include="Encryption\ToxEncryptionKey.cs" />
     <Compile Include="Encryption\ToxPassKey.cs" />
+    <Compile Include="HL\ToxHLEnums.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Av\ToxAv.cs" />
     <Compile Include="Av\ToxAvDelegates.cs" />
@@ -197,7 +198,5 @@
   <Target Name="AfterBuild">
   </Target>
   -->
-  <ItemGroup>
-    <Folder Include="HL\" />
-  </ItemGroup>
+  <ItemGroup />
 </Project>
