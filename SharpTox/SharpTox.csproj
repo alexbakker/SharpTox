@@ -164,7 +164,6 @@
     <Compile Include="Encryption\ToxEncryptionFunctions.cs" />
     <Compile Include="Encryption\ToxEncryptionKey.cs" />
     <Compile Include="Encryption\ToxPassKey.cs" />
-    <Compile Include="HL\ToxHLEnums.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Av\ToxAv.cs" />
     <Compile Include="Av\ToxAvDelegates.cs" />
@@ -180,13 +179,14 @@
     <Compile Include="Core\ToxTools.cs" />
     <Compile Include="Core\ToxFileInfo.cs" />
     <Compile Include="HL\ToxHL.cs" />
-    <Compile Include="HL\ToxFileTransfer.cs" />
     <Compile Include="HL\ToxFriend.cs" />
-    <Compile Include="HL\ToxOutgoingTransfer.cs" />
-    <Compile Include="HL\ToxIncomingTransfer.cs" />
     <Compile Include="HL\ToxException.cs" />
-    <Compile Include="HL\ToxHLEventArgs.cs" />
-    <Compile Include="HL\ToxFileTransferError.cs" />
+    <Compile Include="HL\Transfers\ToxIncomingTransfer.cs" />
+    <Compile Include="HL\Transfers\ToxOutgoingTransfer.cs" />
+    <Compile Include="HL\Transfers\ToxTransferEventArgs.cs" />
+    <Compile Include="HL\Transfers\ToxTransfer.cs" />
+    <Compile Include="HL\Transfers\ToxTransferError.cs" />
+    <Compile Include="HL\Transfers\ToxTransferState.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -200,4 +200,7 @@
   </Target>
   -->
   <ItemGroup />
+  <ItemGroup>
+    <Folder Include="HL\Transfers\" />
+  </ItemGroup>
 </Project>

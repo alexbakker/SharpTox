@@ -4,6 +4,8 @@ using SharpTox.Core;
 using System.Collections.ObjectModel;
 using System.Collections.Generic;
 
+using SharpTox.HL.Transfers;
+
 namespace SharpTox.HL
 {
     public class ToxFriend
@@ -11,9 +13,9 @@ namespace SharpTox.HL
         public int Number { get; private set; }
         public ToxHL Tox { get; private set; }
 
-        public event EventHandler<ToxHLEventArgs.FileSendRequestEventArgs> OnFileSendRequestReceived;
+        public event EventHandler<ToxTransferEventArgs.RequestEventArgs> OnFileSendRequestReceived;
 
-        public ReadOnlyCollection<ToxFileTransfer> Transfers 
+        public ReadOnlyCollection<ToxTransfer> Transfers 
         {
             get
             {
@@ -80,7 +82,7 @@ namespace SharpTox.HL
             }
         }
 
-        private readonly List<ToxFileTransfer> _transfers = new List<ToxFileTransfer>();
+        private readonly List<ToxTransfer> _transfers = new List<ToxTransfer>();
         private readonly object _transfersLock = new object();
 
         internal ToxFriend(ToxHL tox, int friendNumber)
@@ -100,7 +102,7 @@ namespace SharpTox.HL
             AddTransferToList(transfer);
 
             if (OnFileSendRequestReceived != null)
-                OnFileSendRequestReceived(this, new ToxHLEventArgs.FileSendRequestEventArgs(transfer));
+                OnFileSendRequestReceived(this, new ToxTransferEventArgs.RequestEventArgs(transfer));
         }
 
         public int SendMessage(string message, ToxMessageType type)
@@ -117,7 +119,7 @@ namespace SharpTox.HL
             return messageNumber;
         }
 
-        public ToxFileTransfer SendFile(Stream stream, string fileName, ToxFileKind kind)
+        public ToxTransfer SendFile(Stream stream, string fileName, ToxFileKind kind)
         {
             if (stream == null)
                 throw new ArgumentNullException("stream");
@@ -136,7 +138,7 @@ namespace SharpTox.HL
             return transfer;
         }
 
-        private void AddTransferToList(ToxFileTransfer transfer)
+        private void AddTransferToList(ToxTransfer transfer)
         {
             transfer.StateChanged += OnRemoveTransfer;
 
@@ -147,7 +149,7 @@ namespace SharpTox.HL
         private void OnRemoveTransfer(object sender, EventArgs args)
         {
             lock (_transfersLock)
-                _transfers.Remove(sender as ToxFileTransfer);
+                _transfers.Remove(sender as ToxTransfer);
         }
 
         private delegate T QueryFriendDelegate<T>(int friendNumber, out ToxErrorFriendQuery error);

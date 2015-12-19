@@ -2,9 +2,9 @@
 using System.IO;
 using SharpTox.Core;
 
-namespace SharpTox.HL
+namespace SharpTox.HL.Transfers
 {
-    public class ToxIncomingTransfer : ToxFileTransfer
+    public class ToxIncomingTransfer : ToxTransfer
     {
         internal ToxIncomingTransfer(ToxHL tox, ToxFriend friend, ToxFileInfo info, string name, long size, ToxFileKind kind)
             : base(tox, friend, info, name, size, kind)
@@ -38,7 +38,7 @@ namespace SharpTox.HL
                 catch (Exception ex)
                 {
                     //failed to rewind stream, we can't recover from this
-                    OnError(new ToxFileTransferError("Failed to rewind the stream", ex));
+                    OnError(new ToxTransferError("Failed to rewind the stream", ex));
                     Cancel();
                     return;
                 }
@@ -46,7 +46,7 @@ namespace SharpTox.HL
             else if (e.Position > _stream.Position)
             {
                 //if this happens, we're missing some bytes for sure and we can't recover from that, cancel the transfer and fire an error event
-                OnError(new ToxFileTransferError(""));
+                OnError(new ToxTransferError(""));
                 Cancel();
                 return;
             }
@@ -55,7 +55,7 @@ namespace SharpTox.HL
             catch (Exception ex) 
             {
                 //couldn't write to stream, cancel the transfer and fire an error event
-                OnError(new ToxFileTransferError("Failed to write to the stream", ex));
+                OnError(new ToxTransferError("Failed to write to the stream", ex));
                 Cancel();
             }
         }

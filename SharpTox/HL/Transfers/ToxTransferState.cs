@@ -1,4 +1,6 @@
-﻿namespace SharpTox.HL
+﻿using System;
+
+namespace SharpTox.HL.Transfers
 {
     public enum ToxTransferState
     {

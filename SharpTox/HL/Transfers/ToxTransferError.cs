@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace SharpTox
+namespace SharpTox.HL.Transfers
 {
-    public class ToxFileTransferError
+    public class ToxTransferError
     {
         public string Message { get; private set; }
 
@@ -11,7 +11,7 @@ namespace SharpTox
         /// </summary>
         public Exception Exception { get; private set; }
 
-        public ToxFileTransferError(string message, Exception innerException = null)
+        public ToxTransferError(string message, Exception innerException = null)
         {
             Message = message;
             Exception = innerException;

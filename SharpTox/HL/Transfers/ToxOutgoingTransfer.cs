@@ -2,9 +2,9 @@
 using System.IO;
 using SharpTox.Core;
 
-namespace SharpTox.HL
+namespace SharpTox.HL.Transfers
 {
-    public class ToxOutgoingTransfer : ToxFileTransfer
+    public class ToxOutgoingTransfer : ToxTransfer
     {
         internal ToxOutgoingTransfer(ToxHL tox, Stream stream, ToxFriend friend, ToxFileInfo info, string name, ToxFileKind kind)
             : base(tox, stream, friend, info, name, kind)
@@ -33,7 +33,7 @@ namespace SharpTox.HL
                 catch (Exception ex)
                 {
                     //failed to rewind stream, we can't recover from this
-                    OnError(new ToxFileTransferError("Failed to rewind the stream", ex));
+                    OnError(new ToxTransferError("Failed to rewind the stream", ex));
                     Cancel();
                     return;
                 }
@@ -44,7 +44,7 @@ namespace SharpTox.HL
             catch (Exception ex)
             {
                 //could not read from stream, cancel the transfer and fire the error event
-                OnError(new ToxFileTransferError("Failed to read from the stream", ex));
+                OnError(new ToxTransferError("Failed to read from the stream", ex));
                 Cancel();
                 return;
             }
@@ -56,7 +56,7 @@ namespace SharpTox.HL
             {
                 //could not send a chunk, cancel the transfer and fire the error event
                 //TODO: or should we retry in a bit?
-                OnError(new ToxFileTransferError("Could not send the next chunk"));
+                OnError(new ToxTransferError("Could not send the next chunk"));
                 Cancel();
             }
         }

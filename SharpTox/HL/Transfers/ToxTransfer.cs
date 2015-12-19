@@ -2,9 +2,9 @@
 using System.IO;
 using SharpTox.Core;
 
-namespace SharpTox.HL
+namespace SharpTox.HL.Transfers
 {
-    public class ToxFileTransfer
+    public class ToxTransfer
     {
         public ToxHL Tox { get; private set; }
         public ToxFileInfo Info { get; private set; }
@@ -14,12 +14,12 @@ namespace SharpTox.HL
         public ToxFileKind Kind { get; private set; }
         public ToxTransferState State { get; protected set; } //initial state is 'paused' for the receiving end, 'in progress' for the sending end
 
-        public event EventHandler<ToxHLEventArgs.TransferStateEventArgs> StateChanged;
-        public event EventHandler<ToxHLEventArgs.TransferErrorEventArgs> Errored;
+        public event EventHandler<ToxTransferEventArgs.StateEventArgs> StateChanged;
+        public event EventHandler<ToxTransferEventArgs.ErrorEventArgs> Errored;
 
         protected Stream _stream;
 
-        internal ToxFileTransfer(ToxHL tox, Stream stream, ToxFriend friend, ToxFileInfo info, string name, ToxFileKind kind)
+        internal ToxTransfer(ToxHL tox, Stream stream, ToxFriend friend, ToxFileInfo info, string name, ToxFileKind kind)
         {
             Tox = tox;
             Friend = friend;
@@ -33,7 +33,7 @@ namespace SharpTox.HL
             Tox.Core.OnFileControlReceived += OnFileControlReceived;
         }
 
-        internal ToxFileTransfer(ToxHL tox, ToxFriend friend, ToxFileInfo info, string name, long size, ToxFileKind kind)
+        internal ToxTransfer(ToxHL tox, ToxFriend friend, ToxFileInfo info, string name, long size, ToxFileKind kind)
         {
             Tox = tox;
             Friend = friend;
@@ -62,12 +62,12 @@ namespace SharpTox.HL
                     State = ToxTransferState.Canceled;
                     break;
                 default:
-                    OnError(new ToxFileTransferError(string.Format("Unknown file control received: {0}", e.Control)));
+                    OnError(new ToxTransferError(string.Format("Unknown file control received: {0}", e.Control)));
                     return;
             }
 
             if (StateChanged != null)
-                StateChanged(this, new ToxHLEventArgs.TransferStateEventArgs(State));
+                StateChanged(this, new ToxTransferEventArgs.StateEventArgs(State));
         }
 
         public void Pause()
@@ -92,13 +92,13 @@ namespace SharpTox.HL
         {
             State = ToxTransferState.Finished;
             if (StateChanged != null)
-                StateChanged(this, new ToxHLEventArgs.TransferStateEventArgs(State));
+                StateChanged(this, new ToxTransferEventArgs.StateEventArgs(State));
         }
 
-        protected void OnError(ToxFileTransferError error)
+        protected void OnError(ToxTransferError error)
         {
             if (Errored != null)
-                Errored(this, new ToxHLEventArgs.TransferErrorEventArgs(error));
+                Errored(this, new ToxTransferEventArgs.ErrorEventArgs(error));
         }
 
         protected void SendControl(ToxFileControl control)

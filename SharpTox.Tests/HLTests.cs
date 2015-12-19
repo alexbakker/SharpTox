@@ -1,6 +1,7 @@
 ﻿using System;
 using NUnit.Framework;
 using SharpTox.HL;
+using SharpTox.HL.Transfers;
 using SharpTox.Core;
 using System.IO;
 using System.Threading;
