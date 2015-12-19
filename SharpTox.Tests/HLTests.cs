@@ -37,8 +37,13 @@ namespace SharpTox.Tests
             }
 
             var transfer = tox1.Friends[0].SendFile(new MemoryStream(data), "test.dat", ToxFileKind.Data);
-            transfer.OnFinished += (sender, e) => finished = true;
-            transfer.OnCanceled += (sender, e) => Assert.Fail();
+            transfer.StateChanged += (sender, e) =>
+            {
+                if (e.State == ToxTransferState.Finished)
+                    finished = true;
+                else if (e.State == ToxTransferState.Canceled)
+                    Assert.Fail();
+            };
 
             while (!finished)
             {

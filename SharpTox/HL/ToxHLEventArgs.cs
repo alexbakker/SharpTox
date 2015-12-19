@@ -2,7 +2,7 @@
 
 namespace SharpTox.HL
 {
-    public class ToxHLEventArgs
+    public static class ToxHLEventArgs
     {
         public class FileSendRequestEventArgs : EventArgs
         {
@@ -11,6 +11,16 @@ namespace SharpTox.HL
             public FileSendRequestEventArgs(ToxIncomingTransfer transfer)
             {
                 Transfer = transfer;
+            }
+        }
+
+        public class FileStateEventArgs : EventArgs
+        {
+            public ToxTransferState State { get; private set; }
+
+            public FileStateEventArgs(ToxTransferState state)
+            {
+                State = state;
             }
         }
     }

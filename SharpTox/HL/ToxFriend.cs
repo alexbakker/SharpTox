@@ -138,8 +138,7 @@ namespace SharpTox.HL
 
         private void AddTransferToList(ToxFileTransfer transfer)
         {
-            transfer.OnCanceled += OnRemoveTransfer;
-            transfer.OnFinished += OnRemoveTransfer;
+            transfer.StateChanged += OnRemoveTransfer;
 
             lock (_transfersLock)
                 _transfers.Add(transfer);
@@ -148,7 +147,7 @@ namespace SharpTox.HL
         private void OnRemoveTransfer(object sender, EventArgs args)
         {
             lock (_transfersLock)
-                _transfers.Add(sender as ToxFileTransfer);
+                _transfers.Remove(sender as ToxFileTransfer);
         }
 
         private delegate T QueryFriendDelegate<T>(int friendNumber, out ToxErrorFriendQuery error);
