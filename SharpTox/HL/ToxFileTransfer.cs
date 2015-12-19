@@ -14,7 +14,8 @@ namespace SharpTox.HL
         public ToxFileKind Kind { get; private set; }
         public ToxTransferState State { get; protected set; } //initial state is 'paused' for the receiving end, 'in progress' for the sending end
 
-        public event EventHandler<ToxHLEventArgs.FileStateEventArgs> StateChanged;
+        public event EventHandler<ToxHLEventArgs.TransferStateEventArgs> StateChanged;
+        public event EventHandler<ToxHLEventArgs.TransferErrorEventArgs> Errored;
 
         protected Stream _stream;
 
@@ -61,12 +62,12 @@ namespace SharpTox.HL
                     State = ToxTransferState.Canceled;
                     break;
                 default:
-                    //should we raise an error event here?
+                    OnError(new ToxFileTransferError(string.Format("Unknown file control received: {0}", e.Control)));
                     return;
-
-                if (StateChanged != null)
-                    StateChanged(this, new ToxHLEventArgs.FileStateEventArgs(State));
             }
+
+            if (StateChanged != null)
+                StateChanged(this, new ToxHLEventArgs.TransferStateEventArgs(State));
         }
 
         public void Pause()
@@ -91,7 +92,13 @@ namespace SharpTox.HL
         {
             State = ToxTransferState.Finished;
             if (StateChanged != null)
-                StateChanged(this, new ToxHLEventArgs.FileStateEventArgs(State));
+                StateChanged(this, new ToxHLEventArgs.TransferStateEventArgs(State));
+        }
+
+        protected void OnError(ToxFileTransferError error)
+        {
+            if (Errored != null)
+                Errored(this, new ToxHLEventArgs.TransferErrorEventArgs(error));
         }
 
         protected void SendControl(ToxFileControl control)

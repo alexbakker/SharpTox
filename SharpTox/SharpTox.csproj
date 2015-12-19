@@ -186,6 +186,7 @@
     <Compile Include="HL\ToxIncomingTransfer.cs" />
     <Compile Include="HL\ToxException.cs" />
     <Compile Include="HL\ToxHLEventArgs.cs" />
+    <Compile Include="HL\ToxFileTransferError.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />

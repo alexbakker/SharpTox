@@ -14,15 +14,24 @@ namespace SharpTox.HL
             }
         }
 
-        public class FileStateEventArgs : EventArgs
+        public class TransferStateEventArgs : EventArgs
         {
             public ToxTransferState State { get; private set; }
 
-            public FileStateEventArgs(ToxTransferState state)
+            public TransferStateEventArgs(ToxTransferState state)
             {
                 State = state;
             }
         }
+
+        public class TransferErrorEventArgs : EventArgs
+        {
+            public ToxFileTransferError Error { get; private set; }
+
+            public TransferErrorEventArgs(ToxFileTransferError error)
+            {
+                Error = error;
+            }
+        }
     }
 }
-

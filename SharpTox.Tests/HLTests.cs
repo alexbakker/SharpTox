@@ -44,6 +44,7 @@ namespace SharpTox.Tests
                 else if (e.State == ToxTransferState.Canceled)
                     Assert.Fail();
             };
+            transfer.StateChanged += (sender, e) => Assert.Fail();
 
             while (!finished)
             {
