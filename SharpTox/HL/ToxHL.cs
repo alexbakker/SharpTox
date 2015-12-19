@@ -11,7 +11,7 @@ namespace SharpTox.HL
         public ToxOptions Options { get; private set; }
         internal Tox Core { get; private set; }
 
-        public event EventHandler<ToxEventArgs.FriendRequestEventArgs> OnFriendRequestReceived;
+        public event EventHandler<ToxEventArgs.FriendRequestEventArgs> FriendRequestReceived;
 
         public ToxId Id
         {
@@ -35,7 +35,7 @@ namespace SharpTox.HL
             Core = new Tox(options);
             Options = options;
 
-            Core.OnFriendRequestReceived += (sender, e) => OnFriendRequestReceived(this, e);
+            Core.OnFriendRequestReceived += (sender, e) => FriendRequestReceived(this, e);
         }
 
         public ToxHL(ToxOptions options, ToxData data)

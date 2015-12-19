@@ -26,10 +26,10 @@ namespace SharpTox.Tests
             tox2.Start();
 
             tox1.AddFriend(tox2.Id, "test");
-            tox2.OnFriendRequestReceived += (sender, args) =>
+            tox2.FriendRequestReceived += (sender, args) =>
             {
                 var friend = tox2.AddFriendNoRequest(args.PublicKey);
-                friend.OnFileSendRequestReceived += (s, e) => e.Transfer.Accept(new MemoryStream(receivedData));
+                friend.FileSendRequestReceived += (s, e) => e.Transfer.Accept(new MemoryStream(receivedData));
             };
 
             while (!tox1.Friends[0].IsOnline)
