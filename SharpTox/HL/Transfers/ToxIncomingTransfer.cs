@@ -38,16 +38,14 @@ namespace SharpTox.HL.Transfers
                 catch (Exception ex)
                 {
                     //failed to rewind stream, we can't recover from this
-                    OnError(new ToxTransferError("Failed to rewind the stream", ex));
-                    Cancel();
+                    OnError(new ToxTransferError("Failed to rewind the stream", ex), true);
                     return;
                 }
             }
             else if (e.Position > _stream.Position)
             {
                 //if this happens, we're missing some bytes for sure and we can't recover from that, cancel the transfer and fire an error event
-                OnError(new ToxTransferError(""));
-                Cancel();
+                OnError(new ToxTransferError("Missing some chunks. This should never happen!"), true);
                 return;
             }
 
@@ -55,8 +53,7 @@ namespace SharpTox.HL.Transfers
             catch (Exception ex) 
             {
                 //couldn't write to stream, cancel the transfer and fire an error event
-                OnError(new ToxTransferError("Failed to write to the stream", ex));
-                Cancel();
+                OnError(new ToxTransferError("Failed to write to the stream", ex), true);
             }
         }
     }

@@ -62,7 +62,7 @@ namespace SharpTox.HL.Transfers
                     State = ToxTransferState.Canceled;
                     break;
                 default:
-                    OnError(new ToxTransferError(string.Format("Unknown file control received: {0}", e.Control)));
+                    OnError(new ToxTransferError(string.Format("Unknown file control received: {0}", e.Control)), false);
                     return;
             }
 
@@ -95,10 +95,13 @@ namespace SharpTox.HL.Transfers
                 StateChanged(this, new ToxTransferEventArgs.StateEventArgs(State));
         }
 
-        protected void OnError(ToxTransferError error)
+        protected void OnError(ToxTransferError error, bool fatal)
         {
             if (Errored != null)
                 Errored(this, new ToxTransferEventArgs.ErrorEventArgs(error));
+
+            if (fatal)
+                Cancel();
         }
 
         protected void SendControl(ToxFileControl control)
