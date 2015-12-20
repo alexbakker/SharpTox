@@ -119,7 +119,7 @@ namespace SharpTox.HL
             return messageNumber;
         }
 
-        public ToxTransfer SendFile(Stream stream, string fileName, ToxFileKind kind)
+        public ToxOutgoingTransfer SendFile(Stream stream, string fileName, ToxFileKind kind)
         {
             if (stream == null)
                 throw new ArgumentNullException("stream");
