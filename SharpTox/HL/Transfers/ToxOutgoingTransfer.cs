@@ -9,7 +9,6 @@ namespace SharpTox.HL.Transfers
         internal ToxOutgoingTransfer(ToxHL tox, Stream stream, ToxFriend friend, ToxFileInfo info, string name, ToxFileKind kind)
             : base(tox, stream, friend, info, name, kind)
         {
-            State = ToxTransferState.InProgress;
             Tox.Core.OnFileChunkRequested += OnFileChunkRequested;
         }
 

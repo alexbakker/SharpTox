@@ -9,7 +9,6 @@ namespace SharpTox.HL.Transfers
         internal ToxIncomingTransfer(ToxHL tox, ToxFriend friend, ToxFileInfo info, string name, long size, ToxFileKind kind)
             : base(tox, friend, info, name, size, kind)
         {
-            State = ToxTransferState.Paused;
             Tox.Core.OnFileChunkReceived += OnFileChunkReceived;
         }
 

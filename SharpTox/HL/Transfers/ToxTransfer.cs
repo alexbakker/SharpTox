@@ -12,7 +12,7 @@ namespace SharpTox.HL.Transfers
         public string Name { get; private set; }
         public long Size { get; private set; }
         public ToxFileKind Kind { get; private set; }
-        public ToxTransferState State { get; protected set; } //initial state is 'paused' for the receiving end, 'in progress' for the sending end
+        public ToxTransferState State { get; protected set; }
 
         public event EventHandler<ToxTransferEventArgs.StateEventArgs> StateChanged;
         public event EventHandler<ToxTransferEventArgs.ErrorEventArgs> Errored;
@@ -27,6 +27,7 @@ namespace SharpTox.HL.Transfers
             Name = name;
             Size = stream.Length;
             Kind = kind;
+            State = ToxTransferState.Pending;
 
             _stream = stream;
 
