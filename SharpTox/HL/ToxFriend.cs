@@ -13,7 +13,7 @@ namespace SharpTox.HL
         public int Number { get; private set; }
         public ToxHL Tox { get; private set; }
 
-        public event EventHandler<ToxTransferEventArgs.RequestEventArgs> FileSendRequestReceived;
+        public event EventHandler<ToxTransferEventArgs.RequestEventArgs> TransferRequestReceived;
 
         public ReadOnlyCollection<ToxTransfer> Transfers 
         {
@@ -101,8 +101,8 @@ namespace SharpTox.HL
             var transfer = new ToxIncomingTransfer(Tox, this, new ToxFileInfo(e.FileNumber, Tox.Core.FileGetId(Number, e.FileNumber)), e.FileName, e.FileSize, e.FileKind);
             AddTransferToList(transfer);
 
-            if (FileSendRequestReceived != null)
-                FileSendRequestReceived(this, new ToxTransferEventArgs.RequestEventArgs(transfer));
+            if (TransferRequestReceived != null)
+                TransferRequestReceived(this, new ToxTransferEventArgs.RequestEventArgs(transfer));
         }
 
         public int SendMessage(string message, ToxMessageType type)
