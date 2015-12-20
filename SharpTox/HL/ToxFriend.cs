@@ -138,6 +138,24 @@ namespace SharpTox.HL
             return transfer;
         }
 
+        public void SendLossyPacket(byte[] packet)
+        {
+            var error = ToxErrorFriendCustomPacket.Ok;
+            Tox.Core.FriendSendLossyPacket(Number, packet, out error);
+
+            if (error != ToxErrorFriendCustomPacket.Ok)
+                throw new ToxException<ToxErrorFriendCustomPacket>(error);
+        }
+
+        public void SendLosslessPacket(byte[] packet)
+        {
+            var error = ToxErrorFriendCustomPacket.Ok;
+            Tox.Core.FriendSendLosslessPacket(Number, packet, out error);
+
+            if (error != ToxErrorFriendCustomPacket.Ok)
+                throw new ToxException<ToxErrorFriendCustomPacket>(error);
+        }
+
         private void AddTransferToList(ToxTransfer transfer)
         {
             transfer.StateChanged += OnRemoveTransfer;
@@ -153,7 +171,7 @@ namespace SharpTox.HL
 
             lock (_transfersLock)
                 _transfers.Remove(sender as ToxTransfer);
-        }
+        } 
 
         private delegate T QueryFriendDelegate<T>(int friendNumber, out ToxErrorFriendQuery error);
 

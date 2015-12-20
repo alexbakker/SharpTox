@@ -3,6 +3,7 @@ using SharpTox.Core;
 using System.IO;
 using System.Collections.ObjectModel;
 using System.Collections.Generic;
+using SharpTox.Encryption;
 
 namespace SharpTox.HL
 {
@@ -12,10 +13,54 @@ namespace SharpTox.HL
         internal Tox Core { get; private set; }
 
         public event EventHandler<ToxEventArgs.FriendRequestEventArgs> FriendRequestReceived;
+        public event EventHandler<ToxEventArgs.ConnectionStatusEventArgs> ConnectionStatusChanged;
 
         public ToxId Id
         {
-            get { return Core.Id; }
+            get { return Core.Id;}
+        }
+
+        public ToxKey DhtId
+        {
+            get { return Core.DhtId; }
+        }
+
+        public int TcpPort
+        {
+            get { return GetPort(Core.GetTcpPort); }
+        }
+
+        public int UdpPort
+        {
+            get { return GetPort(Core.GetUdpPort); } 
+        }
+
+        public bool IsConnected
+        {
+            get { return Core.IsConnected; }
+        }
+
+        public ToxConnectionStatus ConnectionStatus
+        {
+            get { return Core.ConnectionStatus; }
+        }
+
+        public string Name
+        {
+            get { return Core.Name; }
+            set { Core.Name = value; }
+        }
+
+        public string StatusMessage
+        {
+            get { return Core.StatusMessage; }
+            set { Core.StatusMessage = value; }
+        }
+
+        public ToxUserStatus Status
+        {
+            get { return Core.Status; }
+            set { Core.Status = value; }
         }
 
         private readonly List<ToxFriend> _friends = new List<ToxFriend>();
@@ -35,7 +80,7 @@ namespace SharpTox.HL
             Core = new Tox(options);
             Options = options;
 
-            Core.OnFriendRequestReceived += (sender, e) => FriendRequestReceived(this, e);
+            HookEvents();
         }
 
         public ToxHL(ToxOptions options, ToxData data)
@@ -61,6 +106,16 @@ namespace SharpTox.HL
         public void Stop()
         {
             Core.Stop();
+        }
+
+        public void Bootstrap(ToxNode node)
+        {
+            AddNode(Core.Bootstrap, node);
+        }
+
+        public void AddTcpRelay(ToxNode node)
+        {
+            AddNode(Core.AddTcpRelay, node);
         }
 
         public ToxFriend AddFriend(ToxId id, string message)
@@ -89,12 +144,6 @@ namespace SharpTox.HL
             return friend;
         }
 
-        private void AddFriendToList(ToxFriend friend)
-        {
-            lock (_friendsLock)
-                _friends.Add(friend);
-        }
-
         public void RemoveFriend(ToxFriend friend)
         {
             var error = ToxErrorFriendDelete.Ok;
@@ -105,6 +154,67 @@ namespace SharpTox.HL
 
             lock (_friendsLock)
                 _friends.Remove(friend);
+        }
+
+        public ToxData GetData()
+        {
+            return Core.GetData();
+        }
+
+        public ToxData GetData(ToxEncryptionKey key)
+        {
+            return Core.GetData(key);
+        }
+
+        public ToxData GetData(string password)
+        {
+            return Core.GetData(password);
+        }
+
+        private void AddFriendToList(ToxFriend friend)
+        {
+            lock (_friendsLock)
+                _friends.Add(friend);
+        }
+
+        private void HookEvents()
+        {
+            Core.OnFriendRequestReceived += (sender, e) =>
+            {
+                if (FriendRequestReceived != null)
+                    FriendRequestReceived(this, e);
+            };
+
+            Core.OnConnectionStatusChanged += (sender, e) =>
+            {
+                if (ConnectionStatusChanged != null)
+                    ConnectionStatusChanged(this, e);
+            };
+        }
+
+        private delegate T GetPortDelegate<T>(out ToxErrorGetPort error);
+        private delegate T AddNodeDelegate<T>(ToxNode node, out ToxErrorBootstrap error);
+
+        private T GetPort<T>(GetPortDelegate<T> func)
+        {
+            var error = ToxErrorGetPort.Ok;
+            var result = func(out error);
+
+            if (error != ToxErrorGetPort.Ok)
+                throw new ToxException<ToxErrorGetPort>(error);
+
+            return result;
+        }
+
+        private T AddNode<T>(AddNodeDelegate<T> func, ToxNode node)
+        {
+            var error = ToxErrorBootstrap.Ok;
+            var result = func(node, out error);
+
+            if (error != ToxErrorBootstrap.Ok)
+                throw new ToxException<ToxErrorBootstrap>(error);
+
+            return result;
         }
     }
 }

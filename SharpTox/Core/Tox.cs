@@ -52,9 +52,17 @@ namespace SharpTox.Core
         {
             get
             {
+                return ConnectionStatus != ToxConnectionStatus.None;
+            }
+        }
+
+        public ToxConnectionStatus ConnectionStatus
+        {
+            get
+            {
                 ThrowIfDisposed();
 
-                return ToxFunctions.SelfGetConnectionStatus(_tox) != ToxConnectionStatus.None;
+                return ToxFunctions.SelfGetConnectionStatus(_tox);
             }
         }
 

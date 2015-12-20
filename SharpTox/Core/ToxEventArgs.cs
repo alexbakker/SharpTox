@@ -222,16 +222,6 @@ namespace SharpTox.Core
             }
         }
 
-        public class ConnectionEventArgs : EventArgs
-        {
-            public bool IsConnected { get; private set; }
-
-            public ConnectionEventArgs(bool isConnected)
-            {
-                IsConnected = isConnected;
-            }
-        }
-
         public class GroupInviteEventArgs : FriendBaseEventArgs
         {
             public byte[] Data { get; private set; }
