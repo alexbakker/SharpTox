@@ -146,8 +146,11 @@ namespace SharpTox.HL
                 _transfers.Add(transfer);
         }
 
-        private void OnRemoveTransfer(object sender, EventArgs args)
+        private void OnRemoveTransfer(object sender, ToxTransferEventArgs.StateEventArgs e)
         {
+            if (e.State != ToxTransferState.Canceled && e.State != ToxTransferState.Finished)
+                return;
+
             lock (_transfersLock)
                 _transfers.Remove(sender as ToxTransfer);
         }
