@@ -45,22 +45,6 @@ namespace SharpTox.HL.Transfers
 
         protected Stream _stream;
 
-        internal ToxTransfer(ToxHL tox, Stream stream, ToxFriend friend, ToxFileInfo info, string name, ToxFileKind kind)
-        {
-            State = ToxTransferState.Pending;
-
-            Tox = tox;
-            Friend = friend;
-            Info = info;
-            Name = name;
-            Size = stream.Length;
-            Kind = kind;
-
-            _stream = stream;
-
-            Tox.Core.OnFileControlReceived += OnFileControlReceived;
-        }
-
         internal ToxTransfer(ToxHL tox, ToxFriend friend, ToxFileInfo info, string name, long size, ToxFileKind kind)
         {
             State = ToxTransferState.Pending;
@@ -75,6 +59,11 @@ namespace SharpTox.HL.Transfers
             Tox.Core.OnFileControlReceived += OnFileControlReceived;
         }
 
+        internal ToxTransfer(ToxHL tox, Stream stream, ToxFriend friend, ToxFileInfo info, string name, ToxFileKind kind) : this(tox, friend, info, name, stream.Length, kind)
+        {
+            _stream = stream;
+        }
+        
         private void OnFileControlReceived (object sender, ToxEventArgs.FileControlEventArgs e)
         {
             if (e.FileNumber != Info.Number || e.FriendNumber != Friend.Number)
