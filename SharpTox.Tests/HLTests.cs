@@ -45,6 +45,12 @@ namespace SharpTox.Tests
                 Console.WriteLine(args.Progress.ToString("P"));
             };
 
+            Console.WriteLine((transfer.Speed / 1000).ToString("F") + " kByte/sec");
+            transfer.SpeedChanged += (sender, args) =>
+            {
+                Console.WriteLine((args.Speed / 1000).ToString("F") + " kByte/sec");
+            };
+
             transfer.StateChanged += (sender, e) =>
             {
                 if (e.State == ToxTransferState.Finished)

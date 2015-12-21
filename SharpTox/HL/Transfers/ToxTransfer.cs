@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Threading;
 using SharpTox.Core;
 
 namespace SharpTox.HL.Transfers
@@ -12,7 +13,42 @@ namespace SharpTox.HL.Transfers
         public string Name { get; private set; }
         public long Size { get; private set; }
         public ToxFileKind Kind { get; private set; }
-        public ToxTransferState State { get; protected set; }
+
+        private ToxTransferState _state;
+
+        public ToxTransferState State
+        {
+            get { return _state; }
+            protected set
+            {
+                if (value == _state)
+                    return;
+
+                _state = value;
+
+                switch (value)
+                {
+                    case ToxTransferState.Pending:
+                        Speed = 0;
+                        break;
+                    case ToxTransferState.Paused:
+                        Speed = 0;
+                        break;
+                    case ToxTransferState.InProgress:
+                        _speedLastMeasured = DateTime.Now;
+                        break;
+                    case ToxTransferState.Finished:
+                        Speed = 0;
+                        break;
+                    case ToxTransferState.Canceled:
+                        Speed = 0;
+                        break;
+                }
+
+                if (StateChanged != null)
+                    StateChanged(this, new ToxTransferEventArgs.StateEventArgs(value));
+            }
+        }
 
         private long _transferredBytes;
 
@@ -23,25 +59,66 @@ namespace SharpTox.HL.Transfers
             {
                 if (value == _transferredBytes)
                     return;
-                
-                // We fire the event only if the progress goes up by at least a full percent.
+
+                // We fire the ProgressChanged event and update speed only if the progress goes up by at least a full percent.
                 var oldProgressPercentIntPart = (int) Math.Truncate(Progress*100);
                 _transferredBytes = value;
                 var newProgressPercentIntPart = (int) Math.Truncate(Progress*100);
 
-                if ((ProgressChanged != null) && (oldProgressPercentIntPart != newProgressPercentIntPart))
-                    ProgressChanged(this, new ToxTransferEventArgs.ProgressEventArgs(Progress));
+                if (oldProgressPercentIntPart != newProgressPercentIntPart)
+                {
+                    if (ProgressChanged != null)
+                        ProgressChanged(this, new ToxTransferEventArgs.ProgressEventArgs(Progress));
+
+                    UpdateSpeed();
+                }
+            }
+        }
+
+        private long _lastTransferredBytes;
+        private DateTime _speedLastMeasured;
+
+        private void UpdateSpeed()
+        {
+            var byteDiff = _transferredBytes - _lastTransferredBytes;
+            _lastTransferredBytes = _transferredBytes;
+
+            var now = DateTime.Now;
+            var timeDiff = (now - _speedLastMeasured).Milliseconds/1000.0f;
+            _speedLastMeasured = now;
+            if (timeDiff.Equals(0))
+                return;
+
+            Speed = byteDiff/timeDiff;
+        }
+
+        private float _speed;
+
+        // byte/sec
+        public float Speed
+        {
+            get { return _speed; }
+            private set
+            {
+                if (value.Equals(_speed))
+                    return;
+
+                _speed = value;
+
+                if (SpeedChanged != null)
+                    SpeedChanged(this, new ToxTransferEventArgs.SpeedEventArgs(value));
             }
         }
 
         public float Progress
         {
-            get { return TransferredBytes/(float) Size; }
+            get { return TransferredBytes / (float)Size; }
         }
 
         public event EventHandler<ToxTransferEventArgs.StateEventArgs> StateChanged;
         public event EventHandler<ToxTransferEventArgs.ErrorEventArgs> Errored;
         public event EventHandler<ToxTransferEventArgs.ProgressEventArgs> ProgressChanged;
+        public event EventHandler<ToxTransferEventArgs.SpeedEventArgs> SpeedChanged;
 
         protected Stream _stream;
 
@@ -63,8 +140,8 @@ namespace SharpTox.HL.Transfers
         {
             _stream = stream;
         }
-        
-        private void OnFileControlReceived (object sender, ToxEventArgs.FileControlEventArgs e)
+
+        private void OnFileControlReceived(object sender, ToxEventArgs.FileControlEventArgs e)
         {
             if (e.FileNumber != Info.Number || e.FriendNumber != Friend.Number)
                 return;
@@ -84,9 +161,6 @@ namespace SharpTox.HL.Transfers
                     OnError(new ToxTransferError(string.Format("Unknown file control received: {0}", e.Control)), false);
                     return;
             }
-
-            if (StateChanged != null)
-                StateChanged(this, new ToxTransferEventArgs.StateEventArgs(State));
         }
 
         public void Pause()

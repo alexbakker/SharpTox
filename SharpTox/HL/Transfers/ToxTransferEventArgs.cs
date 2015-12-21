@@ -43,5 +43,15 @@ namespace SharpTox.HL.Transfers
                 Progress = progress;
             }
         }
+
+        public class SpeedEventArgs : EventArgs
+        {
+            public float Speed { get; private set; }
+
+            public SpeedEventArgs(float speed)
+            {
+                Speed = speed;
+            }
+        }
     }
 }
