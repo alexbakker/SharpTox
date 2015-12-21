@@ -14,17 +14,22 @@ namespace SharpTox.HL.Transfers
         public ToxFileKind Kind { get; private set; }
         public ToxTransferState State { get; protected set; }
 
-        private int _transferredBytes;
+        private long _transferredBytes;
 
-        protected int TransferredBytes
+        public long TransferredBytes
         {
             get { return _transferredBytes; }
-            set
+            protected set
             {
                 if (value == _transferredBytes)
                     return;
+                
+                // We fire the event only if the progress goes up by at least a full percent.
+                var oldProgressPercentIntPart = (int) Math.Truncate(Progress*100);
                 _transferredBytes = value;
-                if (ProgressChanged != null)
+                var newProgressPercentIntPart = (int) Math.Truncate(Progress*100);
+
+                if ((ProgressChanged != null) && (oldProgressPercentIntPart != newProgressPercentIntPart))
                     ProgressChanged(this, new ToxTransferEventArgs.ProgressEventArgs(Progress));
             }
         }
@@ -43,7 +48,6 @@ namespace SharpTox.HL.Transfers
         internal ToxTransfer(ToxHL tox, Stream stream, ToxFriend friend, ToxFileInfo info, string name, ToxFileKind kind)
         {
             State = ToxTransferState.Pending;
-            TransferredBytes = 0;
 
             Tox = tox;
             Friend = friend;
@@ -60,7 +64,6 @@ namespace SharpTox.HL.Transfers
         internal ToxTransfer(ToxHL tox, ToxFriend friend, ToxFileInfo info, string name, long size, ToxFileKind kind)
         {
             State = ToxTransferState.Pending;
-            TransferredBytes = 0;
 
             Tox = tox;
             Friend = friend;
