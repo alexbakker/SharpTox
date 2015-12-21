@@ -54,6 +54,8 @@ namespace SharpTox.HL.Transfers
                 //couldn't write to stream, cancel the transfer and fire an error event
                 OnError(new ToxTransferError("Failed to write to the stream", ex), true);
             }
+
+            TransferredBytes += e.Data.Length;
         }
     }
 }

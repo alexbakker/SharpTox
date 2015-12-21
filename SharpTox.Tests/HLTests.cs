@@ -38,6 +38,13 @@ namespace SharpTox.Tests
             }
 
             var transfer = tox1.Friends[0].SendFile(new MemoryStream(data), "test.dat", ToxFileKind.Data);
+
+            Console.WriteLine(transfer.Progress.ToString("P"));
+            transfer.ProgressChanged += (sender, args) =>
+            {
+                Console.WriteLine(args.Progress.ToString("P"));
+            };
+
             transfer.StateChanged += (sender, e) =>
             {
                 if (e.State == ToxTransferState.Finished)

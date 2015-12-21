@@ -55,6 +55,8 @@ namespace SharpTox.HL.Transfers
                 //TODO: or should we retry in a bit?
                 OnError(new ToxTransferError("Could not send the next chunk"), true);
             }
+
+            TransferredBytes += e.Length;
         }
     }
 }

@@ -14,20 +14,43 @@ namespace SharpTox.HL.Transfers
         public ToxFileKind Kind { get; private set; }
         public ToxTransferState State { get; protected set; }
 
+        private int _transferredBytes;
+
+        protected int TransferredBytes
+        {
+            get { return _transferredBytes; }
+            set
+            {
+                if (value == _transferredBytes)
+                    return;
+                _transferredBytes = value;
+                if (ProgressChanged != null)
+                    ProgressChanged(this, new ToxTransferEventArgs.ProgressEventArgs(Progress));
+            }
+        }
+
+        public float Progress
+        {
+            get { return TransferredBytes/(float) Size; }
+        }
+
         public event EventHandler<ToxTransferEventArgs.StateEventArgs> StateChanged;
         public event EventHandler<ToxTransferEventArgs.ErrorEventArgs> Errored;
+        public event EventHandler<ToxTransferEventArgs.ProgressEventArgs> ProgressChanged;
 
         protected Stream _stream;
 
         internal ToxTransfer(ToxHL tox, Stream stream, ToxFriend friend, ToxFileInfo info, string name, ToxFileKind kind)
         {
+            State = ToxTransferState.Pending;
+            TransferredBytes = 0;
+
             Tox = tox;
             Friend = friend;
             Info = info;
             Name = name;
             Size = stream.Length;
             Kind = kind;
-            State = ToxTransferState.Pending;
 
             _stream = stream;
 
@@ -36,6 +59,9 @@ namespace SharpTox.HL.Transfers
 
         internal ToxTransfer(ToxHL tox, ToxFriend friend, ToxFileInfo info, string name, long size, ToxFileKind kind)
         {
+            State = ToxTransferState.Pending;
+            TransferredBytes = 0;
+
             Tox = tox;
             Friend = friend;
             Info = info;
