@@ -26,12 +26,16 @@ namespace SharpTox.HL.Transfers
 
                 _state = value;
 
+                // TODO: Add fall through if nothing else comes here!
                 switch (value)
                 {
                     case ToxTransferState.Pending:
                         Speed = 0;
                         break;
-                    case ToxTransferState.Paused:
+                    case ToxTransferState.PausedByUser:
+                        Speed = 0;
+                        break;
+                    case ToxTransferState.PausedByFriend:
                         Speed = 0;
                         break;
                     case ToxTransferState.InProgress:
@@ -112,7 +116,7 @@ namespace SharpTox.HL.Transfers
 
         public float Progress
         {
-            get { return TransferredBytes / (float)Size; }
+            get { return TransferredBytes/(float) Size; }
         }
 
         public event EventHandler<ToxTransferEventArgs.StateEventArgs> StateChanged;
@@ -149,7 +153,7 @@ namespace SharpTox.HL.Transfers
             switch (e.Control)
             {
                 case ToxFileControl.Pause:
-                    State = ToxTransferState.Paused;
+                    State = ToxTransferState.PausedByFriend;
                     break;
                 case ToxFileControl.Resume:
                     State = ToxTransferState.InProgress;
@@ -166,26 +170,24 @@ namespace SharpTox.HL.Transfers
         public void Pause()
         {
             SendControl(ToxFileControl.Pause);
-            OnFileControlReceived(null, new ToxEventArgs.FileControlEventArgs(Friend.Number, Info.Number, ToxFileControl.Pause));
+            State = ToxTransferState.PausedByUser;
         }
 
         public void Resume()
         {
             SendControl(ToxFileControl.Resume);
-            OnFileControlReceived(null, new ToxEventArgs.FileControlEventArgs(Friend.Number, Info.Number, ToxFileControl.Resume));
+            State = ToxTransferState.InProgress;
         }
 
         public void Cancel()
         {
             SendControl(ToxFileControl.Cancel);
-            OnFileControlReceived(null, new ToxEventArgs.FileControlEventArgs(Friend.Number, Info.Number, ToxFileControl.Cancel));
+            State = ToxTransferState.Canceled;
         }
 
         protected void Finish()
         {
             State = ToxTransferState.Finished;
-            if (StateChanged != null)
-                StateChanged(this, new ToxTransferEventArgs.StateEventArgs(State));
         }
 
         protected void OnError(ToxTransferError error, bool fatal)
