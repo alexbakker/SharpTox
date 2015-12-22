@@ -51,10 +51,10 @@ namespace SharpTox.Tests
                 Console.WriteLine((args.Speed / 1000).ToString("F") + " kByte/sec");
             };
             
-            Console.WriteLine(transfer.ElapsedTime.Second + " s");
+            Console.WriteLine(transfer.ElapsedTime.ToString("HH:mm:ss"));
             transfer.ElapsedTimeChanged += (sender, args) =>
             {
-                Console.WriteLine(args.Time.Second + " s");
+                Console.WriteLine(args.Time.ToString("HH:mm:ss"));
             };
 
             transfer.StateChanged += (sender, e) =>
@@ -71,7 +71,7 @@ namespace SharpTox.Tests
                 Thread.Sleep(100);
             }
 
-            Console.WriteLine(transfer.ElapsedTime.Second + " s");
+            Console.WriteLine(transfer.ElapsedTime.ToString("HH:mm:ss"));
 
             tox1.Dispose();
             tox2.Dispose();
