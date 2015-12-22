@@ -164,6 +164,7 @@
     <Compile Include="Encryption\ToxEncryptionFunctions.cs" />
     <Compile Include="Encryption\ToxEncryptionKey.cs" />
     <Compile Include="Encryption\ToxPassKey.cs" />
+    <Compile Include="HL\ToxFriendEventArgs.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Av\ToxAv.cs" />
     <Compile Include="Av\ToxAvDelegates.cs" />
@@ -200,7 +201,5 @@
   </Target>
   -->
   <ItemGroup />
-  <ItemGroup>
-    <Folder Include="HL\Transfers\" />
-  </ItemGroup>
+  <ItemGroup />
 </Project>

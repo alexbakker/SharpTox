@@ -14,8 +14,17 @@ namespace SharpTox.HL
         public ToxHL Tox { get; private set; }
 
         public event EventHandler<ToxTransferEventArgs.RequestEventArgs> FileSendRequestReceived;
+        public event EventHandler<ToxFriendEventArgs.ConnectionStatusEventArgs> ConnectionStatusChanged;
+        public event EventHandler<ToxFriendEventArgs.MessageEventArgs> MessageReceived;
+        public event EventHandler<ToxFriendEventArgs.NameChangeEventArgs> NameChanged;
+        public event EventHandler<ToxFriendEventArgs.StatusEventArgs> StatusChanged;
+        public event EventHandler<ToxFriendEventArgs.StatusMessageEventArgs> StatusMessageChanged;
+        public event EventHandler<ToxFriendEventArgs.TypingStatusEventArgs> TypingStatusChanged;
+        public event EventHandler<ToxFriendEventArgs.CustomPacketEventArgs> CustomLossyPacketReceived;
+        public event EventHandler<ToxFriendEventArgs.CustomPacketEventArgs> CustomLosslessPacketReceived;
+        public event EventHandler<ToxFriendEventArgs.ReadReceiptEventArgs> ReadReceiptReceived;
 
-        public ReadOnlyCollection<ToxTransfer> Transfers 
+        public ReadOnlyCollection<ToxTransfer> Transfers
         {
             get
             {
@@ -24,22 +33,22 @@ namespace SharpTox.HL
             }
         }
 
-        public string Name 
-        { 
+        public string Name
+        {
             get { return QueryFriend(Tox.Core.GetFriendName, Number); }
         }
 
-        public string StatusMessage 
-        { 
+        public string StatusMessage
+        {
             get { return QueryFriend(Tox.Core.GetFriendStatusMessage, Number); }
         }
 
-        public ToxUserStatus Status 
-        { 
+        public ToxUserStatus Status
+        {
             get { return QueryFriend(Tox.Core.GetFriendStatus, Number); }
         }
 
-        public ToxConnectionStatus ConnectionStatus 
+        public ToxConnectionStatus ConnectionStatus
         {
             get { return QueryFriend(Tox.Core.GetFriendConnectionStatus, Number); }
         }
@@ -56,8 +65,8 @@ namespace SharpTox.HL
 
         public ToxKey PublicKey
         {
-            get 
-            { 
+            get
+            {
                 var error = ToxErrorFriendGetPublicKey.Ok;
                 var result = Tox.Core.GetFriendPublicKey(Number, out error);
 
@@ -70,8 +79,8 @@ namespace SharpTox.HL
 
         public DateTime LastOnline
         {
-            get 
-            { 
+            get
+            {
                 var error = ToxErrorFriendGetLastOnline.Ok;
                 var result = Tox.Core.GetFriendLastOnline(Number, out error);
 
@@ -91,18 +100,7 @@ namespace SharpTox.HL
             Number = friendNumber;
 
             Tox.Core.OnFileSendRequestReceived += Core_OnFileSendRequestReceived;
-        }
-
-        private void Core_OnFileSendRequestReceived (object sender, ToxEventArgs.FileSendRequestEventArgs e)
-        {
-            if (e.FriendNumber != Number)
-                return;
-
-            var transfer = new ToxIncomingTransfer(Tox, this, new ToxFileInfo(e.FileNumber, Tox.Core.FileGetId(Number, e.FileNumber)), e.FileName, e.FileSize, e.FileKind);
-            AddTransferToList(transfer);
-
-            if (FileSendRequestReceived != null)
-                FileSendRequestReceived(this, new ToxTransferEventArgs.RequestEventArgs(transfer));
+            HookEvents();
         }
 
         public int SendMessage(string message, ToxMessageType type)
@@ -171,7 +169,58 @@ namespace SharpTox.HL
 
             lock (_transfersLock)
                 _transfers.Remove(sender as ToxTransfer);
-        } 
+        }
+
+        private void HookEvents()
+        {
+            Tox.Core.OnFriendConnectionStatusChanged += (sender, e) =>
+              RaiseFriendEvent(ConnectionStatusChanged, e, () =>
+                 new ToxFriendEventArgs.ConnectionStatusEventArgs(e.Status));
+
+            Tox.Core.OnFriendLossyPacketReceived += (sender, e) =>
+              RaiseFriendEvent(CustomLossyPacketReceived, e, () =>
+                 new ToxFriendEventArgs.CustomPacketEventArgs(e.Data));
+
+            Tox.Core.OnFriendLosslessPacketReceived += (sender, e) =>
+              RaiseFriendEvent(CustomLosslessPacketReceived, e, () =>
+                 new ToxFriendEventArgs.CustomPacketEventArgs(e.Data));
+
+            Tox.Core.OnFriendMessageReceived += (sender, e) =>
+              RaiseFriendEvent(MessageReceived, e, () =>
+                 new ToxFriendEventArgs.MessageEventArgs(e.Message, e.MessageType));
+
+            Tox.Core.OnFriendNameChanged += (sender, e) =>
+              RaiseFriendEvent(NameChanged, e, () =>
+                 new ToxFriendEventArgs.NameChangeEventArgs(e.Name));
+
+            Tox.Core.OnFriendStatusChanged += (sender, e) =>
+               RaiseFriendEvent(StatusChanged, e, () =>
+                  new ToxFriendEventArgs.StatusEventArgs(e.Status));
+
+            Tox.Core.OnFriendStatusMessageChanged += (sender, e) =>
+                RaiseFriendEvent(StatusMessageChanged, e, () =>
+                   new ToxFriendEventArgs.StatusMessageEventArgs(e.StatusMessage));
+
+            Tox.Core.OnFriendTypingChanged += (sender, e) =>
+                RaiseFriendEvent(TypingStatusChanged, e, () =>
+                   new ToxFriendEventArgs.TypingStatusEventArgs(e.IsTyping));
+
+            Tox.Core.OnReadReceiptReceived += (sender, e) =>
+                RaiseFriendEvent(ReadReceiptReceived, e, () =>
+                    new ToxFriendEventArgs.ReadReceiptEventArgs(e.Receipt));
+        }
+
+        private void Core_OnFileSendRequestReceived(object sender, ToxEventArgs.FileSendRequestEventArgs e)
+        {
+            if (e.FriendNumber != Number)
+                return;
+
+            var transfer = new ToxIncomingTransfer(Tox, this, new ToxFileInfo(e.FileNumber, Tox.Core.FileGetId(Number, e.FileNumber)), e.FileName, e.FileSize, e.FileKind);
+            AddTransferToList(transfer);
+
+            if (FileSendRequestReceived != null)
+                FileSendRequestReceived(this, new ToxTransferEventArgs.RequestEventArgs(transfer));
+        }
 
         private delegate T QueryFriendDelegate<T>(int friendNumber, out ToxErrorFriendQuery error);
 
@@ -184,6 +233,17 @@ namespace SharpTox.HL
                 throw new ToxException<ToxErrorFriendQuery>(error);
 
             return result;
+        }
+
+        private void RaiseFriendEvent<T, T2>(EventHandler<T2> handler, T oldArgs, Func<T2> getNewArgs)
+            where T : ToxEventArgs.FriendBaseEventArgs
+            where T2 : EventArgs
+        {
+            if (oldArgs.FriendNumber != Number)
+                return;
+
+            if (handler != null)
+                handler(this, getNewArgs());
         }
     }
 }
