@@ -53,5 +53,15 @@ namespace SharpTox.HL.Transfers
                 Speed = speed;
             }
         }
+
+        public class TimeEventArgs : EventArgs
+        {
+            public DateTime Time { get; private set; }
+
+            public TimeEventArgs(DateTime time)
+            {
+                Time = time;
+            }
+        }
     }
 }

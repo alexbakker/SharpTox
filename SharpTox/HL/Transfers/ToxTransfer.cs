@@ -25,27 +25,30 @@ namespace SharpTox.HL.Transfers
                     return;
 
                 _state = value;
-
-                // TODO: Add fall through if nothing else comes here!
+                
                 switch (value)
                 {
                     case ToxTransferState.Pending:
-                        Speed = 0;
                         break;
                     case ToxTransferState.PausedByUser:
                         Speed = 0;
+                        _elapsedTimeCounter.Change(Timeout.Infinite, Timeout.Infinite);
                         break;
                     case ToxTransferState.PausedByFriend:
                         Speed = 0;
+                        _elapsedTimeCounter.Change(Timeout.Infinite, Timeout.Infinite);
                         break;
                     case ToxTransferState.InProgress:
                         _speedLastMeasured = DateTime.Now;
+                        _elapsedTimeCounter.Change(1000, 1000);
                         break;
                     case ToxTransferState.Finished:
                         Speed = 0;
+                        _elapsedTimeCounter.Dispose();
                         break;
                     case ToxTransferState.Canceled:
                         Speed = 0;
+                        _elapsedTimeCounter.Dispose();
                         break;
                 }
 
@@ -121,10 +124,30 @@ namespace SharpTox.HL.Transfers
             get { return TransferredBytes/(float) Size; }
         }
 
+        private readonly Timer _elapsedTimeCounter;
+        private DateTime _elapsedTime;
+
+        // Seconds
+        public DateTime ElapsedTime
+        {
+            get { return _elapsedTime; }
+            private set
+            {
+                if (Equals(value, _elapsedTime))
+                    return;
+
+                _elapsedTime = value;
+
+                if (ElapsedTimeChanged != null)
+                    ElapsedTimeChanged(this, new ToxTransferEventArgs.TimeEventArgs(value));
+            }
+        }
+
         public event EventHandler<ToxTransferEventArgs.StateEventArgs> StateChanged;
         public event EventHandler<ToxTransferEventArgs.ErrorEventArgs> Errored;
         public event EventHandler<ToxTransferEventArgs.ProgressEventArgs> ProgressChanged;
         public event EventHandler<ToxTransferEventArgs.SpeedEventArgs> SpeedChanged;
+        public event EventHandler<ToxTransferEventArgs.TimeEventArgs> ElapsedTimeChanged;
 
         protected Stream _stream;
 
@@ -140,6 +163,9 @@ namespace SharpTox.HL.Transfers
             Kind = kind;
 
             Tox.Core.OnFileControlReceived += OnFileControlReceived;
+
+            _elapsedTimeCounter = new Timer(state => { ElapsedTime = ElapsedTime.AddSeconds(1); }, null,
+                Timeout.Infinite, Timeout.Infinite);
         }
 
         internal ToxTransfer(ToxHL tox, Stream stream, ToxFriend friend, ToxFileInfo info, string name, ToxFileKind kind) : this(tox, friend, info, name, stream.Length, kind)

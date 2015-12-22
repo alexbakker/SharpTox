@@ -15,8 +15,8 @@ namespace SharpTox.Tests
         public void HLTest()
         {
             bool finished = false;
-            byte[] data = new byte[1 << 16];
-            byte[] receivedData = new byte[1 << 16];
+            byte[] data = new byte[1 << 26];
+            byte[] receivedData = new byte[1 << 26];
             new Random().NextBytes(data);
 
             var tox1 = new ToxHL(ToxOptions.Default);
@@ -38,17 +38,23 @@ namespace SharpTox.Tests
             }
 
             var transfer = tox1.Friends[0].SendFile(new MemoryStream(data), "test.dat", ToxFileKind.Data);
-
+            
             Console.WriteLine(transfer.Progress.ToString("P"));
             transfer.ProgressChanged += (sender, args) =>
             {
                 Console.WriteLine(args.Progress.ToString("P"));
             };
-
+            
             Console.WriteLine((transfer.Speed / 1000).ToString("F") + " kByte/sec");
             transfer.SpeedChanged += (sender, args) =>
             {
                 Console.WriteLine((args.Speed / 1000).ToString("F") + " kByte/sec");
+            };
+            
+            Console.WriteLine(transfer.ElapsedTime.Second + " s");
+            transfer.ElapsedTimeChanged += (sender, args) =>
+            {
+                Console.WriteLine(args.Time.Second + " s");
             };
 
             transfer.StateChanged += (sender, e) =>
@@ -64,6 +70,8 @@ namespace SharpTox.Tests
             {
                 Thread.Sleep(100);
             }
+
+            Console.WriteLine(transfer.ElapsedTime.Second + " s");
 
             tox1.Dispose();
             tox2.Dispose();
