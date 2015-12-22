@@ -85,15 +85,17 @@ namespace SharpTox.HL.Transfers
         private void UpdateSpeed()
         {
             var byteDiff = _transferredBytes - _lastTransferredBytes;
-            _lastTransferredBytes = _transferredBytes;
-
+        
             var now = DateTime.Now;
             var timeDiff = (now - _speedLastMeasured).Milliseconds/1000.0f;
-            _speedLastMeasured = now;
+           
             if (timeDiff.Equals(0))
                 return;
-
+            
             Speed = byteDiff/timeDiff;
+            
+            _lastTransferredBytes = _transferredBytes;
+            _speedLastMeasured = now;
         }
 
         private float _speed;
