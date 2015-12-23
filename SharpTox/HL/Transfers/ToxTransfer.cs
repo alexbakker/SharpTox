@@ -27,11 +27,6 @@ namespace SharpTox.HL.Transfers
                 switch (value)
                 {
                     case ToxTransferState.PausedByUser:
-                        Speed = 0;
-                        _speedUpdater.Change(Timeout.Infinite, Timeout.Infinite);
-
-                        _elapsedTimeOnLastStop = ElapsedTime;
-                        break;
                     case ToxTransferState.PausedByFriend:
                         Speed = 0;
                         _speedUpdater.Change(Timeout.Infinite, Timeout.Infinite);
@@ -39,17 +34,11 @@ namespace SharpTox.HL.Transfers
                         _elapsedTimeOnLastStop = ElapsedTime;
                         break;
                     case ToxTransferState.InProgress:
-                        Speed = -1;
-                        _speedUpdater.Change(1000, 1000); // Update speed once every second.
+                        _speedUpdater.Change(500, 500); // Update speed twice every second.
 
                         _lastResume = DateTime.Now;
                         break;
                     case ToxTransferState.Finished:
-                        Speed = 0;
-                        _speedUpdater.Dispose();
-
-                        _elapsedTimeOnLastStop = ElapsedTime;
-                        break;
                     case ToxTransferState.Canceled:
                         Speed = 0;
                         _speedUpdater.Dispose();
@@ -95,7 +84,7 @@ namespace SharpTox.HL.Transfers
         private float _speed;
 
         /// <summary>
-        /// Measured in byte/sec. -1 means 'undefined'.
+        /// Measured in byte/sec.
         /// </summary>
         public float Speed
         {
@@ -117,8 +106,9 @@ namespace SharpTox.HL.Transfers
 
         private void SpeedUpdaterCallback(object state)
         {
-            // We know that the callback is called once per second, so the speed equals to the amount of transferred bytes during this period:
-            Speed = _transferredBytes - _lastTransferredBytes;
+            // We know that the callback is called twice per second,
+            // so the speed equals to the double of the amount of transferred bytes during this period:
+            Speed = (_transferredBytes - _lastTransferredBytes) * 2;
             _lastTransferredBytes = _transferredBytes;
         }
 
@@ -147,7 +137,6 @@ namespace SharpTox.HL.Transfers
         internal ToxTransfer(ToxHL tox, ToxFriend friend, ToxFileInfo info, string name, long size, ToxFileKind kind)
         {
             State = ToxTransferState.Pending;
-            Speed = -1;
 
             Tox = tox;
             Friend = friend;

@@ -47,10 +47,10 @@ namespace SharpTox.Tests
                 Console.WriteLine(args.Progress.ToString("P"));
             };
             
-            Console.WriteLine(transfer.Speed.Equals(-1) ? "unkown speed" : (transfer.Speed / 1000).ToString("F") + " kByte/sec");
+            Console.WriteLine((transfer.Speed / 1000).ToString("F") + " kByte/sec");
             transfer.SpeedChanged += (sender, args) =>
             {
-                Console.WriteLine(args.Speed.Equals(-1) ? "unkown speed" : (args.Speed / 1000).ToString("F") + " kByte/sec");
+                Console.WriteLine((args.Speed / 1000).ToString("F") + " kByte/sec");
             };
 
             transfer.StateChanged += (sender, e) =>
