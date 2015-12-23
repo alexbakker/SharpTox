@@ -9,7 +9,6 @@ namespace SharpTox.HL.Transfers
         internal ToxOutgoingTransfer(ToxHL tox, Stream stream, ToxFriend friend, ToxFileInfo info, string name, ToxFileKind kind)
             : base(tox, stream, friend, info, name, kind)
         {
-            State = ToxTransferState.InProgress;
             Tox.Core.OnFileChunkRequested += OnFileChunkRequested;
         }
 
@@ -56,6 +55,8 @@ namespace SharpTox.HL.Transfers
                 //TODO: or should we retry in a bit?
                 OnError(new ToxTransferError("Could not send the next chunk"), true);
             }
+
+            TransferredBytes += e.Length;
         }
     }
 }

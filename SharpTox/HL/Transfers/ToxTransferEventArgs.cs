@@ -33,5 +33,35 @@ namespace SharpTox.HL.Transfers
                 Error = error;
             }
         }
+
+        public class ProgressEventArgs : EventArgs
+        {
+            public float Progress { get; private set; }
+
+            public ProgressEventArgs(float progress)
+            {
+                Progress = progress;
+            }
+        }
+
+        public class SpeedEventArgs : EventArgs
+        {
+            public float Speed { get; private set; }
+
+            public SpeedEventArgs(float speed)
+            {
+                Speed = speed;
+            }
+        }
+
+        public class TimeEventArgs : EventArgs
+        {
+            public DateTime Time { get; private set; }
+
+            public TimeEventArgs(DateTime time)
+            {
+                Time = time;
+            }
+        }
     }
 }

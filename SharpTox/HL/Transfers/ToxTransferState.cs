@@ -4,7 +4,9 @@ namespace SharpTox.HL.Transfers
 {
     public enum ToxTransferState
     {
-        Paused,
+        Pending,
+        PausedByUser,
+        PausedByFriend,
         InProgress,
         Finished,
         Canceled

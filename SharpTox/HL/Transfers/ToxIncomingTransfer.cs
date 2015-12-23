@@ -9,7 +9,6 @@ namespace SharpTox.HL.Transfers
         internal ToxIncomingTransfer(ToxHL tox, ToxFriend friend, ToxFileInfo info, string name, long size, ToxFileKind kind)
             : base(tox, friend, info, name, size, kind)
         {
-            State = ToxTransferState.Paused;
             Tox.Core.OnFileChunkReceived += OnFileChunkReceived;
         }
 
@@ -55,6 +54,8 @@ namespace SharpTox.HL.Transfers
                 //couldn't write to stream, cancel the transfer and fire an error event
                 OnError(new ToxTransferError("Failed to write to the stream", ex), true);
             }
+
+            TransferredBytes += e.Data.Length;
         }
     }
 }

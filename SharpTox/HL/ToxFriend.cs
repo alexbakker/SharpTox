@@ -13,7 +13,7 @@ namespace SharpTox.HL
         public int Number { get; private set; }
         public ToxHL Tox { get; private set; }
 
-        public event EventHandler<ToxTransferEventArgs.RequestEventArgs> FileSendRequestReceived;
+        public event EventHandler<ToxTransferEventArgs.RequestEventArgs> TransferRequestReceived;
         public event EventHandler<ToxFriendEventArgs.ConnectionStatusEventArgs> ConnectionStatusChanged;
         public event EventHandler<ToxFriendEventArgs.MessageEventArgs> MessageReceived;
         public event EventHandler<ToxFriendEventArgs.NameChangeEventArgs> NameChanged;
@@ -24,7 +24,7 @@ namespace SharpTox.HL
         public event EventHandler<ToxFriendEventArgs.CustomPacketEventArgs> CustomLosslessPacketReceived;
         public event EventHandler<ToxFriendEventArgs.ReadReceiptEventArgs> ReadReceiptReceived;
 
-        public ReadOnlyCollection<ToxTransfer> Transfers
+        public ReadOnlyCollection<ToxTransfer> Transfers 
         {
             get
             {
@@ -103,6 +103,18 @@ namespace SharpTox.HL
             HookEvents();
         }
 
+        private void Core_OnFileSendRequestReceived (object sender, ToxEventArgs.FileSendRequestEventArgs e)
+        {
+            if (e.FriendNumber != Number)
+                return;
+
+            var transfer = new ToxIncomingTransfer(Tox, this, new ToxFileInfo(e.FileNumber, Tox.Core.FileGetId(Number, e.FileNumber)), e.FileName, e.FileSize, e.FileKind);
+            AddTransferToList(transfer);
+
+            if (TransferRequestReceived != null)
+                TransferRequestReceived(this, new ToxTransferEventArgs.RequestEventArgs(transfer));
+        }
+
         public int SendMessage(string message, ToxMessageType type)
         {
             if (message == null)
@@ -117,7 +129,7 @@ namespace SharpTox.HL
             return messageNumber;
         }
 
-        public ToxTransfer SendFile(Stream stream, string fileName, ToxFileKind kind)
+        public ToxOutgoingTransfer SendFile(Stream stream, string fileName, ToxFileKind kind)
         {
             if (stream == null)
                 throw new ArgumentNullException("stream");
@@ -210,7 +222,7 @@ namespace SharpTox.HL
                     new ToxFriendEventArgs.ReadReceiptEventArgs(e.Receipt));
         }
 
-        private void Core_OnFileSendRequestReceived(object sender, ToxEventArgs.FileSendRequestEventArgs e)
+        private void Core_OnTransferRequestReceived(object sender, ToxEventArgs.FileSendRequestEventArgs e)
         {
             if (e.FriendNumber != Number)
                 return;
@@ -218,8 +230,8 @@ namespace SharpTox.HL
             var transfer = new ToxIncomingTransfer(Tox, this, new ToxFileInfo(e.FileNumber, Tox.Core.FileGetId(Number, e.FileNumber)), e.FileName, e.FileSize, e.FileKind);
             AddTransferToList(transfer);
 
-            if (FileSendRequestReceived != null)
-                FileSendRequestReceived(this, new ToxTransferEventArgs.RequestEventArgs(transfer));
+            if (TransferRequestReceived != null)
+                TransferRequestReceived(this, new ToxTransferEventArgs.RequestEventArgs(transfer));
         }
 
         private delegate T QueryFriendDelegate<T>(int friendNumber, out ToxErrorFriendQuery error);
