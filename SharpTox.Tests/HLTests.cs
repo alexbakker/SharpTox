@@ -39,26 +39,39 @@ namespace SharpTox.Tests
 
             var transfer = tox1.Friends[0].SendFile(new MemoryStream(data), "test.dat", ToxFileKind.Data);
 
-            Console.WriteLine(transfer.ElapsedTime.ToString("hh\\:mm\\:ss"));
-
             Console.WriteLine(transfer.Progress.ToString("P"));
+
+            Console.WriteLine("elapsed:\t" + transfer.ElapsedTime.ToString("hh\\:mm\\:ss\\:ff"));
+            Console.WriteLine("remaining:\t" +
+                              (transfer.RemainingTime.HasValue
+                                  ? transfer.RemainingTime.Value.ToString("hh\\:mm\\:ss\\:ff")
+                                  : "unknown"));
+
             transfer.ProgressChanged += (sender, args) =>
             {
                 Console.WriteLine(args.Progress.ToString("P"));
+
+                Console.WriteLine("elapsed:\t" + transfer.ElapsedTime.ToString("hh\\:mm\\:ss\\:ff"));
+                Console.WriteLine("remaining:\t" +
+                                  (transfer.RemainingTime.HasValue
+                                      ? transfer.RemainingTime.Value.ToString("hh\\:mm\\:ss\\:ff")
+                                      : "unknown"));
             };
-            
-            Console.WriteLine((transfer.Speed / 1000).ToString("F") + " kByte/sec");
-            transfer.SpeedChanged += (sender, args) =>
-            {
-                Console.WriteLine((args.Speed / 1000).ToString("F") + " kByte/sec");
-            };
+
+            Console.WriteLine(">> " + (transfer.Speed/1000).ToString("F") + " kByte/sec");
+            transfer.SpeedChanged +=
+                (sender, args) => { Console.WriteLine(">> " + (args.Speed/1000).ToString("F") + " kByte/sec"); };
 
             transfer.StateChanged += (sender, e) =>
             {
                 if (e.State == ToxTransferState.Finished)
+                {
                     finished = true;
+                }
                 else if (e.State == ToxTransferState.Canceled)
+                {
                     Assert.Fail();
+                }
             };
             transfer.Errored += (sender, e) => Assert.Fail();
 
@@ -66,8 +79,6 @@ namespace SharpTox.Tests
             {
                 Thread.Sleep(100);
             }
-
-            Console.WriteLine(transfer.ElapsedTime.ToString("hh\\:mm\\:ss"));
 
             tox1.Dispose();
             tox2.Dispose();

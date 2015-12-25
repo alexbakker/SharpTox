@@ -127,6 +127,21 @@ namespace SharpTox.HL.Transfers
             }
         }
 
+        /// <summary>
+        /// If it's null, then we couldn't estimate it due to 0 speed.
+        /// </summary>
+        public TimeSpan? RemainingTime
+        {
+            get
+            {
+                if (Speed.Equals(0))
+                {
+                    return null;
+                }
+                return TimeSpan.FromSeconds((Size - _transferredBytes) / Speed);
+            }
+        }
+
         public event EventHandler<ToxTransferEventArgs.StateEventArgs> StateChanged;
         public event EventHandler<ToxTransferEventArgs.ErrorEventArgs> Errored;
         public event EventHandler<ToxTransferEventArgs.ProgressEventArgs> ProgressChanged;
