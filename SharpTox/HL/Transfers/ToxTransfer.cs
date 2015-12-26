@@ -230,7 +230,7 @@ namespace SharpTox.HL.Transfers
             Tox.Core.FileControl(Friend.Number, Info.Number, control, out error);
 
             if (error != ToxErrorFileControl.Ok)
-                throw new ToxException<ToxErrorFileControl>(error);
+                OnError(new ToxTransferError(control + " control send failed! Error:" + error), false);
         }
     }
 }
