@@ -9,35 +9,53 @@ using System.Threading;
 namespace SharpTox.Tests
 {
     [TestFixture]
-    public class HLTests
+    public class HLFileTransferTests
     {
-        [Test]
-        public void HLTest()
+        private ToxHL _tox1, _tox2;
+        private readonly byte[] _dataToSend = new byte[1 << 26];
+
+        [TestFixtureSetUp]
+        public void SetUp()
         {
-            bool finished = false;
-            byte[] data = new byte[1 << 26];
-            byte[] receivedData = new byte[1 << 26];
-            new Random().NextBytes(data);
+            new Random().NextBytes(_dataToSend);
 
-            var tox1 = new ToxHL(ToxOptions.Default);
-            var tox2 = new ToxHL(ToxOptions.Default);
+            _tox1 = new ToxHL(ToxOptions.Default);
+            _tox2 = new ToxHL(ToxOptions.Default);
 
-            tox1.Start();
-            tox2.Start();
+            _tox1.Start();
+            _tox2.Start();
 
-            tox1.AddFriend(tox2.Id, "test");
-            tox2.FriendRequestReceived += (sender, args) =>
+            _tox1.AddFriend(_tox2.Id, "test");
+
+            _tox2.FriendRequestReceived += (sender, args) =>
             {
-                var friend = tox2.AddFriendNoRequest(args.PublicKey);
-                friend.TransferRequestReceived += (s, e) => e.Transfer.Accept(new MemoryStream(receivedData));
+                var friend = _tox2.AddFriendNoRequest(args.PublicKey);
+
+                friend.TransferRequestReceived +=
+                    (s, e) => e.Transfer.Accept(new MemoryStream(new byte[e.Transfer.Size]));
             };
 
-            while (!tox1.Friends[0].IsOnline)
+            while (!_tox1.Friends[0].IsOnline)
             {
                 Thread.Sleep(100);
             }
+        }
 
-            var transfer = tox1.Friends[0].SendFile(new MemoryStream(data), "test.dat", ToxFileKind.Data);
+        [TestFixtureTearDown]
+        public void TearDown()
+        {
+            _tox1.Dispose();
+            _tox2.Dispose();
+        }
+
+        [Test]
+        public void HLTestToxFileTransferInfo()
+        {
+            var errored = false;
+            var errorMessage = string.Empty;
+            var finished = false;
+
+            var transfer = _tox1.Friends[0].SendFile(new MemoryStream(_dataToSend), "test.dat", ToxFileKind.Data);
 
             Console.WriteLine(transfer.Progress.ToString("P"));
 
@@ -62,26 +80,30 @@ namespace SharpTox.Tests
             transfer.SpeedChanged +=
                 (sender, args) => { Console.WriteLine(">> " + (args.Speed/1000).ToString("F") + " kByte/sec"); };
 
-            transfer.StateChanged += (sender, e) =>
+            transfer.StateChanged += (sender, args) =>
             {
-                if (e.State == ToxTransferState.Finished)
+                if (args.State == ToxTransferState.Finished)
                 {
                     finished = true;
                 }
-                else if (e.State == ToxTransferState.Canceled)
+                else if (args.State == ToxTransferState.Canceled)
                 {
-                    Assert.Fail();
+                    errored = true;
+                    errorMessage = "Transfer is canceled unexpectedly!";
                 }
             };
-            transfer.Errored += (sender, e) => Assert.Fail();
+
+            transfer.Errored += (sender, args) =>
+            {
+                errored = true;
+                errorMessage = args.Error.Message;
+            };
 
             while (!finished)
             {
+                Assert.IsTrue(!errored, errorMessage);
                 Thread.Sleep(100);
             }
-
-            tox1.Dispose();
-            tox2.Dispose();
         }
     }
 }
