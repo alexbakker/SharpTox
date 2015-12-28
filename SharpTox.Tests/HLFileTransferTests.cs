@@ -12,7 +12,7 @@ namespace SharpTox.Tests
     public class HLFileTransferTests
     {
         private ToxHL _tox1, _tox2;
-        private readonly byte[] _dataToSend = new byte[1 << 26];
+        private readonly byte[] _dataToSend = new byte[1 << 16];
 
         [TestFixtureSetUp]
         public void SetUp()
@@ -107,19 +107,37 @@ namespace SharpTox.Tests
         }
 
         [Test]
-        public void HLTestToxFileTransferMultiple()
+        public void HLTestToxFileTransferConsecutively()
         {
+            SendOne();
+            SendOne();
+        }
+
+        private void SendOne()
+        {
+            var errored = false;
+            var errorMessage = string.Empty;
+            var finished = false;
+
             var transfer = _tox1.Friends[0].SendFile(new MemoryStream(_dataToSend), "test.dat", ToxFileKind.Data);
 
-            while (transfer.State != ToxTransferState.Finished)
+            transfer.StateChanged += (sender, args) =>
             {
-                Thread.Sleep(100);
-            }
+                if (args.State == ToxTransferState.Finished || args.State == ToxTransferState.Canceled)
+                {
+                    finished = true;
+                }
+            };
 
-            transfer = _tox1.Friends[0].SendFile(new MemoryStream(_dataToSend), "test.dat", ToxFileKind.Data);
-
-            while (transfer.State != ToxTransferState.Finished)
+            transfer.Errored += (sender, args) =>
             {
+                errored = true;
+                errorMessage = args.Error.Message;
+            };
+
+            while (!finished)
+            {
+                Assert.IsTrue(!errored, errorMessage);
                 Thread.Sleep(100);
             }
         }
