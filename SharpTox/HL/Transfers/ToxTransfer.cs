@@ -19,7 +19,7 @@ namespace SharpTox.HL.Transfers
         public ToxTransferState State
         {
             get { return _state; }
-            protected set
+            private set
             {
                 if (value == _state)
                     return;
@@ -52,6 +52,11 @@ namespace SharpTox.HL.Transfers
                 if (StateChanged != null)
                     StateChanged(this, new ToxTransferEventArgs.StateEventArgs(value));
             }
+        }
+
+        protected bool IsActive
+        {
+            get { return State != ToxTransferState.Finished && State != ToxTransferState.Canceled; }
         }
 
         private long _transferredBytes;
@@ -172,7 +177,7 @@ namespace SharpTox.HL.Transfers
         
         private void OnFileControlReceived(object sender, ToxEventArgs.FileControlEventArgs e)
         {
-            if (e.FileNumber != Info.Number || e.FriendNumber != Friend.Number)
+            if (ShouldntHandle(e))
                 return;
 
             switch (e.Control)
@@ -231,6 +236,11 @@ namespace SharpTox.HL.Transfers
 
             if (error != ToxErrorFileControl.Ok)
                 OnError(new ToxTransferError(control + " control send failed! Error:" + error), false);
+        }
+
+        protected bool ShouldntHandle(ToxEventArgs.FileBaseEventArgs e)
+        {
+            return e.FriendNumber != Friend.Number || e.FileNumber != Info.Number || !IsActive;
         }
     }
 }

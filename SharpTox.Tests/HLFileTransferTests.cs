@@ -105,5 +105,23 @@ namespace SharpTox.Tests
                 Thread.Sleep(100);
             }
         }
+
+        [Test]
+        public void HLTestToxFileTransferMultiple()
+        {
+            var transfer = _tox1.Friends[0].SendFile(new MemoryStream(_dataToSend), "test.dat", ToxFileKind.Data);
+
+            while (transfer.State != ToxTransferState.Finished)
+            {
+                Thread.Sleep(100);
+            }
+
+            transfer = _tox1.Friends[0].SendFile(new MemoryStream(_dataToSend), "test.dat", ToxFileKind.Data);
+
+            while (transfer.State != ToxTransferState.Finished)
+            {
+                Thread.Sleep(100);
+            }
+        }
     }
 }

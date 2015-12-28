@@ -20,7 +20,7 @@ namespace SharpTox.HL.Transfers
 
         private void OnFileChunkReceived (object sender, ToxEventArgs.FileChunkEventArgs e)
         {
-            if (e.FriendNumber != Friend.Number || e.FileNumber != Info.Number)
+            if (ShouldntHandle(e))
                 return;
 
             if (e.Data == null || e.Data.Length == 0)
