@@ -222,18 +222,6 @@ namespace SharpTox.HL
                     new ToxFriendEventArgs.ReadReceiptEventArgs(e.Receipt));
         }
 
-        private void Core_OnTransferRequestReceived(object sender, ToxEventArgs.FileSendRequestEventArgs e)
-        {
-            if (e.FriendNumber != Number)
-                return;
-
-            var transfer = new ToxIncomingTransfer(Tox, this, new ToxFileInfo(e.FileNumber, Tox.Core.FileGetId(Number, e.FileNumber)), e.FileName, e.FileSize, e.FileKind);
-            AddTransferToList(transfer);
-
-            if (TransferRequestReceived != null)
-                TransferRequestReceived(this, new ToxTransferEventArgs.RequestEventArgs(transfer));
-        }
-
         private delegate T QueryFriendDelegate<T>(int friendNumber, out ToxErrorFriendQuery error);
 
         private T QueryFriend<T>(QueryFriendDelegate<T> func, int friendNumber)
