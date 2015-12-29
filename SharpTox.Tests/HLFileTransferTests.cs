@@ -12,7 +12,7 @@ namespace SharpTox.Tests
     public class HLFileTransferTests
     {
         private ToxHL _tox1, _tox2;
-        private readonly byte[] _dataToSend = new byte[1 << 16];
+        private readonly byte[] _dataToSend = new byte[1 << 26];
 
         [TestFixtureSetUp]
         public void SetUp()
@@ -140,6 +140,64 @@ namespace SharpTox.Tests
                 Assert.IsTrue(!errored, errorMessage);
                 Thread.Sleep(100);
             }
+        }
+
+        [Test]
+        public void HLTestToxFileTransferStates()
+        {
+            var errored = false;
+            var errorMessage = string.Empty;
+            var finished = false;
+            var restarted = false;
+
+            var transfer = _tox1.Friends[0].SendFile(new MemoryStream(_dataToSend), "test.dat", ToxFileKind.Data);
+
+            Console.WriteLine(transfer.Progress.ToString("P"));
+
+            transfer.ProgressChanged += (sender, args) =>
+            {
+                if (0.1 <= args.Progress && args.Progress <= 0.11 && !restarted)
+                {
+                    RestartTox2();
+                    restarted = true;
+                }
+
+                Console.WriteLine(args.Progress.ToString("P"));
+            };
+
+            Console.WriteLine(transfer.State);
+
+            transfer.StateChanged += (sender, args) =>
+            {
+                Console.WriteLine(args.State);
+
+                if (args.State == ToxTransferState.Finished || args.State == ToxTransferState.Canceled)
+                {
+                    finished = true;
+                }
+            };
+
+            transfer.Errored += (sender, args) =>
+            {
+                errored = true;
+                errorMessage = args.Error.Message;
+            };
+
+            while (!finished)
+            {
+                Assert.IsTrue(!errored, errorMessage);
+                Thread.Sleep(100);
+            }
+        }
+
+        private void RestartTox2()
+        {
+            var tox2Data = _tox2.GetData();
+            _tox2.Dispose();
+            _tox2 = new ToxHL(ToxOptions.Default, tox2Data);
+            _tox2.Start();
+            _tox2.Friends[0].TransferRequestReceived +=
+                (s, e) => e.Transfer.Accept(new MemoryStream(new byte[e.Transfer.Size]));
         }
     }
 }

@@ -55,7 +55,7 @@ namespace SharpTox.HL.Transfers
                 OnError(new ToxTransferError("Failed to write to the stream", ex), true);
             }
 
-            TransferredBytes += e.Data.Length;
+            TransferredBytes = _stream.Position;
         }
     }
 }

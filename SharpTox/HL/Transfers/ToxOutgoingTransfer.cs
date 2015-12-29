@@ -56,7 +56,27 @@ namespace SharpTox.HL.Transfers
                 OnError(new ToxTransferError("Could not send the next chunk"), true);
             }
 
-            TransferredBytes += e.Length;
+            TransferredBytes = _stream.Position;
+        }
+
+        protected override void OnConnectionStatusChanged(object sender, ToxFriendEventArgs.ConnectionStatusEventArgs connectionStatusEventArgs)
+        {
+            base.OnConnectionStatusChanged(sender, connectionStatusEventArgs);
+
+            if (Friend.IsOnline && State == ToxTransferState.Broken)
+            {
+                var error = ToxErrorFileSend.Ok;
+                Info = Tox.Core.FileSend(Friend.Number, Kind, Size, Name, Info.Id);
+
+                if (error != ToxErrorFileSend.Ok)
+                {
+                    OnError(new ToxTransferError("Couldn't resume broken transfer"), true);
+                }
+                else
+                {
+                    State = ToxTransferState.Pending;
+                }
+            }
         }
     }
 }

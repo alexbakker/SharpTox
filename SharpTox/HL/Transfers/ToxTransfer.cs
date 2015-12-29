@@ -8,7 +8,7 @@ namespace SharpTox.HL.Transfers
     public class ToxTransfer
     {
         public ToxHL Tox { get; private set; }
-        public ToxFileInfo Info { get; private set; }
+        public ToxFileInfo Info { get; protected set; }
         public ToxFriend Friend { get; private set; }
         public string Name { get; private set; }
         public long Size { get; private set; }
@@ -19,7 +19,7 @@ namespace SharpTox.HL.Transfers
         public ToxTransferState State
         {
             get { return _state; }
-            private set
+            protected set
             {
                 if (value == _state)
                     return;
@@ -28,6 +28,7 @@ namespace SharpTox.HL.Transfers
                 {
                     case ToxTransferState.PausedByUser:
                     case ToxTransferState.PausedByFriend:
+                    case ToxTransferState.Broken:
                         Speed = 0;
                         _speedUpdater.Change(Timeout.Infinite, Timeout.Infinite);
 
@@ -167,9 +168,12 @@ namespace SharpTox.HL.Transfers
 
             Tox.Core.OnFileControlReceived += OnFileControlReceived;
 
+            Friend.ConnectionStatusChanged += OnConnectionStatusChanged;
+
             _speedUpdater = new Timer(SpeedUpdaterCallback, null,
                 Timeout.Infinite, Timeout.Infinite);
         }
+
         internal ToxTransfer(ToxHL tox, Stream stream, ToxFriend friend, ToxFileInfo info, string name, ToxFileKind kind) : this(tox, friend, info, name, stream.Length, kind)
         {
             _stream = stream;
@@ -194,6 +198,14 @@ namespace SharpTox.HL.Transfers
                 default:
                     OnError(new ToxTransferError(string.Format("Unknown file control received: {0}", e.Control)), false);
                     return;
+            }
+        }
+        
+        protected virtual void OnConnectionStatusChanged(object sender, ToxFriendEventArgs.ConnectionStatusEventArgs connectionStatusEventArgs)
+        {
+            if (!Friend.IsOnline && IsActive)
+            {
+                State = ToxTransferState.Broken;
             }
         }
 
