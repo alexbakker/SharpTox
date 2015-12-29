@@ -54,6 +54,7 @@ namespace SharpTox.HL.Transfers
                 //could not send a chunk, cancel the transfer and fire the error event
                 //TODO: or should we retry in a bit?
                 OnError(new ToxTransferError("Could not send the next chunk"), true);
+                return;
             }
 
             TransferredBytes = _stream.Position;
@@ -77,6 +78,13 @@ namespace SharpTox.HL.Transfers
                     State = ToxTransferState.Pending;
                 }
             }
+        }
+
+        public override ToxTransferResumeData GetResumeData()
+        {
+            var resumeData = base.GetResumeData();
+            resumeData.Direction = ToxTransferDirection.Outgoing;
+            return resumeData;
         }
     }
 }

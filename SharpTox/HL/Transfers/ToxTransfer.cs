@@ -23,7 +23,7 @@ namespace SharpTox.HL.Transfers
             {
                 if (value == _state)
                     return;
-                
+
                 switch (value)
                 {
                     case ToxTransferState.PausedByUser:
@@ -71,9 +71,9 @@ namespace SharpTox.HL.Transfers
                     return;
 
                 // We fire the ProgressChanged event if the progress goes up by at least a full percent.
-                var oldProgressPercentIntPart = (int)Math.Truncate(Progress * 100);
+                var oldProgressPercentIntPart = (int) Math.Truncate(Progress*100);
                 _transferredBytes = value;
-                var newProgressPercentIntPart = (int)Math.Truncate(Progress * 100);
+                var newProgressPercentIntPart = (int) Math.Truncate(Progress*100);
 
                 if (ProgressChanged != null && oldProgressPercentIntPart != newProgressPercentIntPart)
                 {
@@ -84,7 +84,7 @@ namespace SharpTox.HL.Transfers
 
         public float Progress
         {
-            get { return TransferredBytes / (float)Size; }
+            get { return TransferredBytes/(float) Size; }
         }
 
         private float _speed;
@@ -114,7 +114,7 @@ namespace SharpTox.HL.Transfers
         {
             // We know that the callback is called twice per second,
             // so the speed equals to the double of the amount of transferred bytes during this period:
-            Speed = (_transferredBytes - _lastTransferredBytes) * 2;
+            Speed = (_transferredBytes - _lastTransferredBytes)*2;
             _lastTransferredBytes = _transferredBytes;
         }
 
@@ -144,7 +144,7 @@ namespace SharpTox.HL.Transfers
                 {
                     return null;
                 }
-                return TimeSpan.FromSeconds((Size - _transferredBytes) / Speed);
+                return TimeSpan.FromSeconds((Size - _transferredBytes)/Speed);
             }
         }
 
@@ -155,10 +155,8 @@ namespace SharpTox.HL.Transfers
 
         protected Stream _stream;
 
-        internal ToxTransfer(ToxHL tox, ToxFriend friend, ToxFileInfo info, string name, long size, ToxFileKind kind)
+        protected ToxTransfer(ToxHL tox, ToxFriend friend, ToxFileInfo info, string name, long size, ToxFileKind kind)
         {
-            State = ToxTransferState.Pending;
-
             Tox = tox;
             Friend = friend;
             Info = info;
@@ -172,13 +170,22 @@ namespace SharpTox.HL.Transfers
 
             _speedUpdater = new Timer(SpeedUpdaterCallback, null,
                 Timeout.Infinite, Timeout.Infinite);
+
+            State = ToxTransferState.Pending;
         }
 
-        internal ToxTransfer(ToxHL tox, Stream stream, ToxFriend friend, ToxFileInfo info, string name, ToxFileKind kind) : this(tox, friend, info, name, stream.Length, kind)
+        protected ToxTransfer(ToxHL tox, Stream stream, ToxFriend friend, ToxFileInfo info, string name, ToxFileKind kind)
+            : this(tox, friend, info, name, stream.Length, kind)
         {
             _stream = stream;
         }
-        
+
+        protected ToxTransfer(ToxHL tox, ToxFriend friend, ToxTransferResumeData resumeData) : this(tox, resumeData.Stream, friend, resumeData.Info, resumeData.Name, resumeData.Kind)
+        {
+            TransferredBytes = resumeData.TransferredBytes;
+            State = ToxTransferState.Broken;
+        }
+
         private void OnFileControlReceived(object sender, ToxEventArgs.FileControlEventArgs e)
         {
             if (ShouldntHandle(e))
@@ -200,8 +207,9 @@ namespace SharpTox.HL.Transfers
                     return;
             }
         }
-        
-        protected virtual void OnConnectionStatusChanged(object sender, ToxFriendEventArgs.ConnectionStatusEventArgs connectionStatusEventArgs)
+
+        protected virtual void OnConnectionStatusChanged(object sender,
+            ToxFriendEventArgs.ConnectionStatusEventArgs connectionStatusEventArgs)
         {
             if (!Friend.IsOnline && IsActive)
             {
@@ -215,7 +223,7 @@ namespace SharpTox.HL.Transfers
             State = ToxTransferState.PausedByUser;
         }
 
-        public void Resume()
+        public virtual void Resume()
         {
             SendControl(ToxFileControl.Resume);
             State = ToxTransferState.InProgress;
@@ -253,6 +261,19 @@ namespace SharpTox.HL.Transfers
         protected bool ShouldntHandle(ToxEventArgs.FileBaseEventArgs e)
         {
             return e.FriendNumber != Friend.Number || e.FileNumber != Info.Number || !IsActive;
+        }
+        
+        public virtual ToxTransferResumeData GetResumeData()
+        {
+            return new ToxTransferResumeData
+            {
+                FriendNumber = Friend.Number,
+                Info = Info,
+                Name = Name,
+                Kind = Kind,
+                TransferredBytes = TransferredBytes,
+                Stream = _stream
+            };
         }
     }
 }

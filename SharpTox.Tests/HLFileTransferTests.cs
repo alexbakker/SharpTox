@@ -143,12 +143,12 @@ namespace SharpTox.Tests
         }
 
         [Test]
-        public void HLTestToxFileTransferStates()
+        public void HLTestToxFileTransferResuming()
         {
             var errored = false;
             var errorMessage = string.Empty;
             var finished = false;
-            var restarted = false;
+            var restartedCount = 0;
 
             var transfer = _tox1.Friends[0].SendFile(new MemoryStream(_dataToSend), "test.dat", ToxFileKind.Data);
 
@@ -156,10 +156,16 @@ namespace SharpTox.Tests
 
             transfer.ProgressChanged += (sender, args) =>
             {
-                if (0.1 <= args.Progress && args.Progress <= 0.11 && !restarted)
+                if (0.1 <= args.Progress && args.Progress <= 0.11 && restartedCount == 0)
                 {
                     RestartTox2();
-                    restarted = true;
+                    restartedCount++;
+                }
+
+                if (0.4 <= args.Progress && args.Progress <= 0.41 && restartedCount == 1)
+                {
+                    RestartTox2();
+                    restartedCount++;
                 }
 
                 Console.WriteLine(args.Progress.ToString("P"));
@@ -192,12 +198,17 @@ namespace SharpTox.Tests
 
         private void RestartTox2()
         {
+            var transferResumeData = _tox2.Friends[0].Transfers[0].GetResumeData();
+
             var tox2Data = _tox2.GetData();
             _tox2.Dispose();
             _tox2 = new ToxHL(ToxOptions.Default, tox2Data);
             _tox2.Start();
+
             _tox2.Friends[0].TransferRequestReceived +=
                 (s, e) => e.Transfer.Accept(new MemoryStream(new byte[e.Transfer.Size]));
+            
+            _tox2.Friends[0].ResumeBrokenTransfer(transferResumeData);
         }
     }
 }
