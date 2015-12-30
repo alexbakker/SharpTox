@@ -198,11 +198,12 @@ namespace SharpTox.HL
             if (resumeData.FriendNumber != Number)
                 return;
 
-            // TODO: What's the matter with the file number?
+            // TODO: What's the matter with the file number? Check id!
 
             switch (resumeData.Direction)
             {
                 case ToxTransferDirection.Outgoing:
+                    AddTransferToList(new ToxOutgoingTransfer(Tox, this, resumeData));
                     break;
                 case ToxTransferDirection.Incoming:
                     AddTransferToList(new ToxIncomingTransfer(Tox, this, resumeData));

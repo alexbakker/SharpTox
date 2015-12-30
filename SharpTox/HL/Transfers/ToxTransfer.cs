@@ -166,7 +166,8 @@ namespace SharpTox.HL.Transfers
 
             Tox.Core.OnFileControlReceived += OnFileControlReceived;
 
-            Friend.ConnectionStatusChanged += OnConnectionStatusChanged;
+            Friend.ConnectionStatusChanged += OnFriendConnectionStatusChanged;
+            Tox.ConnectionStatusChanged += OnUserConnectionStatusChanged;
 
             _speedUpdater = new Timer(SpeedUpdaterCallback, null,
                 Timeout.Infinite, Timeout.Infinite);
@@ -174,13 +175,15 @@ namespace SharpTox.HL.Transfers
             State = ToxTransferState.Pending;
         }
 
-        protected ToxTransfer(ToxHL tox, Stream stream, ToxFriend friend, ToxFileInfo info, string name, ToxFileKind kind)
+        protected ToxTransfer(ToxHL tox, Stream stream, ToxFriend friend, ToxFileInfo info, string name,
+            ToxFileKind kind)
             : this(tox, friend, info, name, stream.Length, kind)
         {
             _stream = stream;
         }
 
-        protected ToxTransfer(ToxHL tox, ToxFriend friend, ToxTransferResumeData resumeData) : this(tox, resumeData.Stream, friend, resumeData.Info, resumeData.Name, resumeData.Kind)
+        protected ToxTransfer(ToxHL tox, ToxFriend friend, ToxTransferResumeData resumeData)
+            : this(tox, resumeData.Stream, friend, resumeData.Info, resumeData.Name, resumeData.Kind)
         {
             TransferredBytes = resumeData.TransferredBytes;
             State = ToxTransferState.Broken;
@@ -208,10 +211,19 @@ namespace SharpTox.HL.Transfers
             }
         }
 
-        protected virtual void OnConnectionStatusChanged(object sender,
+        protected virtual void OnFriendConnectionStatusChanged(object sender,
             ToxFriendEventArgs.ConnectionStatusEventArgs connectionStatusEventArgs)
         {
             if (!Friend.IsOnline && IsActive)
+            {
+                State = ToxTransferState.Broken;
+            }
+        }
+
+        private void OnUserConnectionStatusChanged(object sender,
+            ToxEventArgs.ConnectionStatusEventArgs connectionStatusEventArgs)
+        {
+            if (!Tox.IsConnected && IsActive)
             {
                 State = ToxTransferState.Broken;
             }

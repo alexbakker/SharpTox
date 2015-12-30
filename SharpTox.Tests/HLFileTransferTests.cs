@@ -142,8 +142,11 @@ namespace SharpTox.Tests
             }
         }
 
+        /// <summary>
+        /// Restart the client which was receiving the file (tox2).
+        /// </summary>
         [Test]
-        public void HLTestToxFileTransferResuming()
+        public void HLTestToxFileTransferResumeIncoming()
         {
             var errored = false;
             var errorMessage = string.Empty;
@@ -158,13 +161,13 @@ namespace SharpTox.Tests
             {
                 if (0.1 <= args.Progress && args.Progress <= 0.11 && restartedCount == 0)
                 {
-                    RestartTox2();
+                    RestartReceiver();
                     restartedCount++;
                 }
 
                 if (0.4 <= args.Progress && args.Progress <= 0.41 && restartedCount == 1)
                 {
-                    RestartTox2();
+                    RestartReceiver();
                     restartedCount++;
                 }
 
@@ -196,7 +199,7 @@ namespace SharpTox.Tests
             }
         }
 
-        private void RestartTox2()
+        private void RestartReceiver()
         {
             var transferResumeData = _tox2.Friends[0].Transfers[0].GetResumeData();
 
@@ -207,8 +210,116 @@ namespace SharpTox.Tests
 
             _tox2.Friends[0].TransferRequestReceived +=
                 (s, e) => e.Transfer.Accept(new MemoryStream(new byte[e.Transfer.Size]));
-            
+
             _tox2.Friends[0].ResumeBrokenTransfer(transferResumeData);
+        }
+        
+        bool _errored;
+        string _errorMessage;
+        bool _finished;
+        int _restartedCount;
+
+        /// <summary>
+        /// Restart the client which was sending the file (tox2).
+        /// </summary>
+        [Test]
+        public void HLTestToxFileTransferResumeOutgoing()
+        {
+            _tox1.Friends[0].TransferRequestReceived +=
+                (s, e) => e.Transfer.Accept(new MemoryStream(new byte[e.Transfer.Size]));
+
+            while (!_tox2.Friends[0].IsOnline)
+            {
+                Thread.Sleep(100);
+            }
+
+            var transfer = _tox2.Friends[0].SendFile(new MemoryStream(_dataToSend), "test.dat", ToxFileKind.Data);
+
+            Console.WriteLine(transfer.Progress.ToString("P"));
+
+            transfer.ProgressChanged += (sender, args) =>
+            {
+                if (0.1 <= args.Progress && args.Progress <= 0.11 && _restartedCount == 0)
+                {
+                    RestartSender();
+                    _restartedCount++;
+                }
+                
+                Console.WriteLine(args.Progress.ToString("P"));
+            };
+
+            Console.WriteLine(transfer.State);
+
+            transfer.StateChanged += (sender, args) =>
+            {
+                Console.WriteLine(args.State);
+
+                if (args.State == ToxTransferState.Finished || args.State == ToxTransferState.Canceled)
+                {
+                    _finished = true;
+                }
+            };
+
+            transfer.Errored += (sender, args) =>
+            {
+                _errored = true;
+                _errorMessage = args.Error.Message;
+            };
+
+            while (!_finished)
+            {
+                Assert.IsTrue(!_errored, _errorMessage);
+                Thread.Sleep(100);
+            }
+        }
+
+        private void RestartSender()
+        {
+            var transferResumeData = _tox2.Friends[0].Transfers[0].GetResumeData();
+
+            var tox2Data = _tox2.GetData();
+            _tox2.Dispose();
+            _tox2 = new ToxHL(ToxOptions.Default, tox2Data);
+            _tox2.Start();
+
+            _tox1.Friends[0].TransferRequestReceived +=
+               (s, e) => e.Transfer.Accept(new MemoryStream(new byte[e.Transfer.Size]));
+
+            _tox2.Friends[0].ResumeBrokenTransfer(transferResumeData);
+
+            RegisterCallbacks(_tox2.Friends[0].Transfers[0]);
+        }
+
+        private void RegisterCallbacks(ToxTransfer transfer)
+        {
+            transfer.ProgressChanged += (sender, args) =>
+            {
+                Console.WriteLine(args.Progress.ToString("P"));
+
+                if (0.4 <= args.Progress && args.Progress <= 0.41 && _restartedCount == 1)
+                {
+                    RestartSender();
+                    _restartedCount++;
+                }
+            };
+
+            Console.WriteLine(transfer.State);
+
+            transfer.StateChanged += (sender, args) =>
+            {
+                Console.WriteLine(args.State);
+
+                if (args.State == ToxTransferState.Finished || args.State == ToxTransferState.Canceled)
+                {
+                    _finished = true;
+                }
+            };
+
+            transfer.Errored += (sender, args) =>
+            {
+                _errored = true;
+                _errorMessage = args.Error.Message;
+            };
         }
     }
 }
