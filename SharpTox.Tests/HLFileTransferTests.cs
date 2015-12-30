@@ -4,6 +4,7 @@ using SharpTox.HL;
 using SharpTox.HL.Transfers;
 using SharpTox.Core;
 using System.IO;
+using System.Linq;
 using System.Threading;
 
 namespace SharpTox.Tests
@@ -13,6 +14,7 @@ namespace SharpTox.Tests
     {
         private ToxHL _tox1, _tox2;
         private readonly byte[] _dataToSend = new byte[1 << 26];
+        private MemoryStream _receivedData;
 
         [TestFixtureSetUp]
         public void SetUp()
@@ -32,7 +34,7 @@ namespace SharpTox.Tests
                 var friend = _tox2.AddFriendNoRequest(args.PublicKey);
 
                 friend.TransferRequestReceived +=
-                    (s, e) => e.Transfer.Accept(new MemoryStream(new byte[e.Transfer.Size]));
+                    (s, e) => e.Transfer.Accept(_receivedData = new MemoryStream(new byte[e.Transfer.Size]));
             };
 
             while (!_tox1.Friends[0].IsOnline)
@@ -104,6 +106,8 @@ namespace SharpTox.Tests
                 Assert.IsTrue(!errored, errorMessage);
                 Thread.Sleep(100);
             }
+
+            Assert.IsTrue(_dataToSend.SequenceEqual(_receivedData.ToArray()), "Received data is not equal to sent data!");
         }
 
         [Test]
@@ -140,6 +144,8 @@ namespace SharpTox.Tests
                 Assert.IsTrue(!errored, errorMessage);
                 Thread.Sleep(100);
             }
+
+            Assert.IsTrue(_dataToSend.SequenceEqual(_receivedData.ToArray()), "Received data is not equal to sent data!");
         }
 
         /// <summary>
@@ -197,6 +203,8 @@ namespace SharpTox.Tests
                 Assert.IsTrue(!errored, errorMessage);
                 Thread.Sleep(100);
             }
+
+            Assert.IsTrue(_dataToSend.SequenceEqual(_receivedData.ToArray()), "Received data is not equal to sent data!");
         }
 
         private void RestartReceiver()
@@ -207,9 +215,6 @@ namespace SharpTox.Tests
             _tox2.Dispose();
             _tox2 = new ToxHL(ToxOptions.Default, tox2Data);
             _tox2.Start();
-
-            _tox2.Friends[0].TransferRequestReceived +=
-                (s, e) => e.Transfer.Accept(new MemoryStream(new byte[e.Transfer.Size]));
 
             _tox2.Friends[0].ResumeBrokenTransfer(transferResumeData);
         }
@@ -226,7 +231,7 @@ namespace SharpTox.Tests
         public void HLTestToxFileTransferResumeOutgoing()
         {
             _tox1.Friends[0].TransferRequestReceived +=
-                (s, e) => e.Transfer.Accept(new MemoryStream(new byte[e.Transfer.Size]));
+                (s, e) => e.Transfer.Accept(_receivedData = new MemoryStream(new byte[e.Transfer.Size]));
 
             while (!_tox2.Friends[0].IsOnline)
             {
@@ -271,6 +276,8 @@ namespace SharpTox.Tests
                 Assert.IsTrue(!_errored, _errorMessage);
                 Thread.Sleep(100);
             }
+
+            Assert.IsTrue(_dataToSend.SequenceEqual(_receivedData.ToArray()), "Received data is not equal to sent data!");
         }
 
         private void RestartSender()
@@ -281,10 +288,7 @@ namespace SharpTox.Tests
             _tox2.Dispose();
             _tox2 = new ToxHL(ToxOptions.Default, tox2Data);
             _tox2.Start();
-
-            _tox1.Friends[0].TransferRequestReceived +=
-               (s, e) => e.Transfer.Accept(new MemoryStream(new byte[e.Transfer.Size]));
-
+            
             _tox2.Friends[0].ResumeBrokenTransfer(transferResumeData);
 
             RegisterCallbacks(_tox2.Friends[0].Transfers[0]);
