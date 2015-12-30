@@ -193,12 +193,21 @@ namespace SharpTox.HL
                 throw new ToxException<ToxErrorFriendCustomPacket>(error);
         }
 
+        public void ResumeBrokenTransfers(IList<ToxTransferResumeData> resumeDatas)
+        {
+            foreach (var resumeData in resumeDatas)
+            {
+                ResumeBrokenTransfer(resumeData);
+            }
+        }
+
         public void ResumeBrokenTransfer(ToxTransferResumeData resumeData)
         {
             if (resumeData.FriendNumber != Number)
-                return;
+                throw new ArgumentException("Invalid friend number!");
 
-            // TODO: What's the matter with the file number? Check id!
+            if (IsTransferAlreadyResumed(resumeData)) // TODO: Write some tests for it!
+                throw new ArgumentException("Transfer is already resumed!");
 
             switch (resumeData.Direction)
             {
@@ -211,11 +220,11 @@ namespace SharpTox.HL
             }
         }
 
-        public void ResumeBrokenTransfers(IList<ToxTransferResumeData> resumeDatas)
+        private bool IsTransferAlreadyResumed(ToxTransferResumeData resumeData)
         {
-            foreach (var resumeData in resumeDatas)
+            lock (_transfersLock)
             {
-                ResumeBrokenTransfer(resumeData);
+                return _transfers.Any(transfer => transfer.Info.Id.SequenceEqual(resumeData.Info.Id));
             }
         }
 
