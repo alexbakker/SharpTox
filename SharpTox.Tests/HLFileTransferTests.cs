@@ -4,6 +4,7 @@ using SharpTox.HL;
 using SharpTox.HL.Transfers;
 using SharpTox.Core;
 using System.IO;
+using System.Linq;
 using System.Threading;
 
 namespace SharpTox.Tests
@@ -12,7 +13,8 @@ namespace SharpTox.Tests
     public class HLFileTransferTests
     {
         private ToxHL _tox1, _tox2;
-        private readonly byte[] _dataToSend = new byte[1 << 16];
+        private readonly byte[] _dataToSend = new byte[1 << 26];
+        private MemoryStream _receivedData;
 
         [TestFixtureSetUp]
         public void SetUp()
@@ -32,7 +34,7 @@ namespace SharpTox.Tests
                 var friend = _tox2.AddFriendNoRequest(args.PublicKey);
 
                 friend.TransferRequestReceived +=
-                    (s, e) => e.Transfer.Accept(new MemoryStream(new byte[e.Transfer.Size]));
+                    (s, e) => e.Transfer.Accept(_receivedData = new MemoryStream(new byte[e.Transfer.Size]));
             };
 
             while (!_tox1.Friends[0].IsOnline)
@@ -104,6 +106,8 @@ namespace SharpTox.Tests
                 Assert.IsTrue(!errored, errorMessage);
                 Thread.Sleep(100);
             }
+
+            Assert.IsTrue(_dataToSend.SequenceEqual(_receivedData.ToArray()), "Received data is not equal to sent data!");
         }
 
         [Test]
@@ -140,6 +144,186 @@ namespace SharpTox.Tests
                 Assert.IsTrue(!errored, errorMessage);
                 Thread.Sleep(100);
             }
+
+            Assert.IsTrue(_dataToSend.SequenceEqual(_receivedData.ToArray()), "Received data is not equal to sent data!");
+        }
+
+        /// <summary>
+        /// Restart the client which was receiving the file (tox2).
+        /// </summary>
+        [Test]
+        public void HLTestToxFileTransferResumeIncoming()
+        {
+            var errored = false;
+            var errorMessage = string.Empty;
+            var finished = false;
+            var restartedCount = 0;
+
+            var transfer = _tox1.Friends[0].SendFile(new MemoryStream(_dataToSend), "test.dat", ToxFileKind.Data);
+
+            Console.WriteLine(transfer.Progress.ToString("P"));
+
+            transfer.ProgressChanged += (sender, args) =>
+            {
+                if (0.1 <= args.Progress && args.Progress <= 0.11 && restartedCount == 0)
+                {
+                    RestartReceiver();
+                    restartedCount++;
+                }
+
+                if (0.4 <= args.Progress && args.Progress <= 0.41 && restartedCount == 1)
+                {
+                    RestartReceiver();
+                    restartedCount++;
+                }
+
+                Console.WriteLine(args.Progress.ToString("P"));
+            };
+
+            Console.WriteLine(transfer.State);
+
+            transfer.StateChanged += (sender, args) =>
+            {
+                Console.WriteLine(args.State);
+
+                if (args.State == ToxTransferState.Finished || args.State == ToxTransferState.Canceled)
+                {
+                    finished = true;
+                }
+            };
+
+            transfer.Errored += (sender, args) =>
+            {
+                errored = true;
+                errorMessage = args.Error.Message;
+            };
+
+            while (!finished)
+            {
+                Assert.IsTrue(!errored, errorMessage);
+                Thread.Sleep(100);
+            }
+
+            Assert.IsTrue(_dataToSend.SequenceEqual(_receivedData.ToArray()), "Received data is not equal to sent data!");
+        }
+
+        private void RestartReceiver()
+        {
+            var transferResumeData = _tox2.Friends[0].Transfers[0].GetResumeData();
+
+            var tox2Data = _tox2.GetData();
+            _tox2.Dispose();
+            _tox2 = new ToxHL(ToxOptions.Default, tox2Data);
+            _tox2.Start();
+
+            _tox2.Friends[0].ResumeBrokenTransfer(transferResumeData);
+        }
+        
+        bool _errored;
+        string _errorMessage;
+        bool _finished;
+        int _restartedCount;
+
+        /// <summary>
+        /// Restart the client which was sending the file (tox2).
+        /// </summary>
+        [Test]
+        public void HLTestToxFileTransferResumeOutgoing()
+        {
+            _tox1.Friends[0].TransferRequestReceived +=
+                (s, e) => e.Transfer.Accept(_receivedData = new MemoryStream(new byte[e.Transfer.Size]));
+
+            while (!_tox2.Friends[0].IsOnline)
+            {
+                Thread.Sleep(100);
+            }
+
+            var transfer = _tox2.Friends[0].SendFile(new MemoryStream(_dataToSend), "test.dat", ToxFileKind.Data);
+
+            Console.WriteLine(transfer.Progress.ToString("P"));
+
+            transfer.ProgressChanged += (sender, args) =>
+            {
+                if (0.1 <= args.Progress && args.Progress <= 0.11 && _restartedCount == 0)
+                {
+                    RestartSender();
+                    _restartedCount++;
+                }
+                
+                Console.WriteLine(args.Progress.ToString("P"));
+            };
+
+            Console.WriteLine(transfer.State);
+
+            transfer.StateChanged += (sender, args) =>
+            {
+                Console.WriteLine(args.State);
+
+                if (args.State == ToxTransferState.Finished || args.State == ToxTransferState.Canceled)
+                {
+                    _finished = true;
+                }
+            };
+
+            transfer.Errored += (sender, args) =>
+            {
+                _errored = true;
+                _errorMessage = args.Error.Message;
+            };
+
+            while (!_finished)
+            {
+                Assert.IsTrue(!_errored, _errorMessage);
+                Thread.Sleep(100);
+            }
+
+            Assert.IsTrue(_dataToSend.SequenceEqual(_receivedData.ToArray()), "Received data is not equal to sent data!");
+        }
+
+        private void RestartSender()
+        {
+            var transferResumeData = _tox2.Friends[0].Transfers[0].GetResumeData();
+
+            var tox2Data = _tox2.GetData();
+            _tox2.Dispose();
+            _tox2 = new ToxHL(ToxOptions.Default, tox2Data);
+            _tox2.Start();
+            
+            _tox2.Friends[0].ResumeBrokenTransfer(transferResumeData);
+
+            RegisterCallbacks(_tox2.Friends[0].Transfers[0]);
+        }
+
+        private void RegisterCallbacks(ToxTransfer transfer)
+        {
+            transfer.ProgressChanged += (sender, args) =>
+            {
+                Console.WriteLine(args.Progress.ToString("P"));
+
+                if (0.4 <= args.Progress && args.Progress <= 0.41 && _restartedCount == 1)
+                {
+                    RestartSender();
+                    _restartedCount++;
+                }
+            };
+
+            Console.WriteLine(transfer.State);
+
+            transfer.StateChanged += (sender, args) =>
+            {
+                Console.WriteLine(args.State);
+
+                if (args.State == ToxTransferState.Finished || args.State == ToxTransferState.Canceled)
+                {
+                    _finished = true;
+                }
+            };
+
+            transfer.Errored += (sender, args) =>
+            {
+                _errored = true;
+                _errorMessage = args.Error.Message;
+            };
         }
     }
 }

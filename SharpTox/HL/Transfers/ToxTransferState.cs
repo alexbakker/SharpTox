@@ -9,6 +9,7 @@ namespace SharpTox.HL.Transfers
         PausedByFriend,
         InProgress,
         Finished,
-        Canceled
+        Canceled,
+        Broken
     }
 }

@@ -6,8 +6,15 @@ namespace SharpTox.HL.Transfers
 {
     public class ToxIncomingTransfer : ToxTransfer
     {
-        internal ToxIncomingTransfer(ToxHL tox, ToxFriend friend, ToxFileInfo info, string name, long size, ToxFileKind kind)
+        internal ToxIncomingTransfer(ToxHL tox, ToxFriend friend, ToxFileInfo info, string name, long size,
+            ToxFileKind kind)
             : base(tox, friend, info, name, size, kind)
+        {
+            Tox.Core.OnFileChunkReceived += OnFileChunkReceived;
+        }
+
+        internal ToxIncomingTransfer(ToxHL tox, ToxFriend friend, ToxTransferResumeData resumeData)
+            : base(tox, friend, resumeData)
         {
             Tox.Core.OnFileChunkReceived += OnFileChunkReceived;
         }
@@ -18,7 +25,7 @@ namespace SharpTox.HL.Transfers
             Resume();
         }
 
-        private void OnFileChunkReceived (object sender, ToxEventArgs.FileChunkEventArgs e)
+        private void OnFileChunkReceived(object sender, ToxEventArgs.FileChunkEventArgs e)
         {
             if (ShouldntHandle(e))
                 return;
@@ -33,7 +40,10 @@ namespace SharpTox.HL.Transfers
             if (e.Position < _stream.Position)
             {
                 //we have to rewind the stream
-                try { _stream.Seek(e.Position, SeekOrigin.Begin); }
+                try
+                {
+                    _stream.Seek(e.Position, SeekOrigin.Begin);
+                }
                 catch (Exception ex)
                 {
                     //failed to rewind stream, we can't recover from this
@@ -48,14 +58,42 @@ namespace SharpTox.HL.Transfers
                 return;
             }
 
-            try { _stream.Write(e.Data, 0, e.Data.Length); }
-            catch (Exception ex) 
+            try
+            {
+                _stream.Write(e.Data, 0, e.Data.Length);
+            }
+            catch (Exception ex)
             {
                 //couldn't write to stream, cancel the transfer and fire an error event
                 OnError(new ToxTransferError("Failed to write to the stream", ex), true);
+                return;
             }
 
-            TransferredBytes += e.Data.Length;
+            TransferredBytes = _stream.Position;
+        }
+
+        public override ToxTransferResumeData GetResumeData()
+        {
+            var resumeData = base.GetResumeData();
+            resumeData.Direction = ToxTransferDirection.Incoming;
+            return resumeData;
+        }
+
+        public override void Resume()
+        {
+            if (State == ToxTransferState.Broken)
+            {
+                var error = ToxErrorFileSeek.Ok;
+                Tox.Core.FileSeek(Friend.Number, Info.Number, TransferredBytes, out error);
+
+                if (error != ToxErrorFileSeek.Ok)
+                {
+                    OnError(new ToxTransferError("Couldn't resume broken incoming file transfer, seeking failed! Error: " + error), true);
+                    return;
+                }
+            }
+
+            base.Resume();
         }
     }
 }
