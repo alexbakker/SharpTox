@@ -24,13 +24,9 @@ namespace SharpTox.HL
         public event EventHandler<ToxFriendEventArgs.CustomPacketEventArgs> CustomLosslessPacketReceived;
         public event EventHandler<ToxFriendEventArgs.ReadReceiptEventArgs> ReadReceiptReceived;
 
-        public ReadOnlyCollection<ToxTransfer> Transfers
+        public IReadOnlyList<ToxTransfer> Transfers
         {
-            get
-            {
-                lock (_transfersLock)
-                    return _transfers.AsReadOnly();
-            }
+            get { return _transfers; }
         }
 
         public string Name
@@ -91,55 +87,16 @@ namespace SharpTox.HL
             }
         }
 
-        private readonly List<ToxTransfer> _transfers = new List<ToxTransfer>();
-        private readonly object _transfersLock = new object();
+        private readonly ToxTransferCollection _transfers;
 
         internal ToxFriend(ToxHL tox, int friendNumber)
         {
             Tox = tox;
             Number = friendNumber;
+            
+            _transfers = new ToxTransferCollection(Tox, this);
 
-            Tox.Core.OnFileSendRequestReceived += Core_OnFileSendRequestReceived;
             HookEvents();
-        }
-
-        private void Core_OnFileSendRequestReceived(object sender, ToxEventArgs.FileSendRequestEventArgs e)
-        {
-            if (e.FriendNumber != Number)
-                return;
-
-            var id = Tox.Core.FileGetId(Number, e.FileNumber);
-            var resumed = TryResumeBrokenIncomingTransfer(id);
-
-            if (!resumed)
-            {
-                // If we couldn't find it amongst our broken incoming transfers, then it's a new incoming transfer:
-
-                var transfer = new ToxIncomingTransfer(Tox, this,
-                    new ToxFileInfo(e.FileNumber, id), e.FileName, e.FileSize, e.FileKind);
-                AddTransferToList(transfer);
-                
-                if (TransferRequestReceived != null)
-                    TransferRequestReceived(this, new ToxTransferEventArgs.RequestEventArgs(transfer));
-            }
-        }
-
-        private bool TryResumeBrokenIncomingTransfer(byte[] id)
-        {
-            lock (_transfersLock)
-            {
-                foreach (var transfer in _transfers)
-                {
-                    if (transfer is ToxIncomingTransfer && transfer.State == ToxTransferState.Broken &&
-                        transfer.Info.Id.SequenceEqual(id))
-                    {
-                        (transfer as ToxIncomingTransfer).Resume();
-                        return true;
-                    }
-                }
-            }
-
-            return false;
         }
 
         public int SendMessage(string message, ToxMessageType type)
@@ -158,21 +115,20 @@ namespace SharpTox.HL
 
         public ToxOutgoingTransfer SendFile(Stream stream, string fileName, ToxFileKind kind)
         {
-            if (stream == null)
-                throw new ArgumentNullException("stream");
+            return _transfers.SendFile(stream, fileName, kind);
+        }
 
-            if (fileName == null)
-                throw new ArgumentNullException("fileName");
+        public void ResumeBrokenTransfers(IList<ToxTransferResumeData> resumeDatas)
+        {
+            foreach (var resumeData in resumeDatas)
+            {
+                ResumeBrokenTransfer(resumeData);
+            }
+        }
 
-            var error = ToxErrorFileSend.Ok;
-            var fileInfo = Tox.Core.FileSend(Number, kind, stream.Length, fileName, out error);
-
-            if (error != ToxErrorFileSend.Ok)
-                throw new ToxException<ToxErrorFileSend>(error);
-
-            var transfer = new ToxOutgoingTransfer(Tox, stream, this, fileInfo, fileName, kind);
-            AddTransferToList(transfer);
-            return transfer;
+        public void ResumeBrokenTransfer(ToxTransferResumeData resumeData)
+        {
+            _transfers.ResumeBrokenTransfer(resumeData);
         }
 
         public void SendLossyPacket(byte[] packet)
@@ -192,61 +148,15 @@ namespace SharpTox.HL
             if (error != ToxErrorFriendCustomPacket.Ok)
                 throw new ToxException<ToxErrorFriendCustomPacket>(error);
         }
-
-        public void ResumeBrokenTransfers(IList<ToxTransferResumeData> resumeDatas)
-        {
-            foreach (var resumeData in resumeDatas)
-            {
-                ResumeBrokenTransfer(resumeData);
-            }
-        }
-
-        public void ResumeBrokenTransfer(ToxTransferResumeData resumeData)
-        {
-            if (resumeData.FriendNumber != Number)
-                throw new ArgumentException("Invalid friend number!");
-
-            if (IsTransferAlreadyResumed(resumeData)) // TODO: Write some tests for it!
-                throw new ArgumentException("Transfer is already resumed!");
-
-            switch (resumeData.Direction)
-            {
-                case ToxTransferDirection.Outgoing:
-                    AddTransferToList(new ToxOutgoingTransfer(Tox, this, resumeData));
-                    break;
-                case ToxTransferDirection.Incoming:
-                    AddTransferToList(new ToxIncomingTransfer(Tox, this, resumeData));
-                    break;
-            }
-        }
-
-        private bool IsTransferAlreadyResumed(ToxTransferResumeData resumeData)
-        {
-            lock (_transfersLock)
-            {
-                return _transfers.Any(transfer => transfer.Info.Id.SequenceEqual(resumeData.Info.Id));
-            }
-        }
-
-        private void AddTransferToList(ToxTransfer transfer)
-        {
-            transfer.StateChanged += OnRemoveTransfer;
-
-            lock (_transfersLock)
-                _transfers.Add(transfer);
-        }
-
-        private void OnRemoveTransfer(object sender, ToxTransferEventArgs.StateEventArgs e)
-        {
-            if (e.State != ToxTransferState.Canceled && e.State != ToxTransferState.Finished)
-                return;
-
-            lock (_transfersLock)
-                _transfers.Remove(sender as ToxTransfer);
-        }
-
+        
         private void HookEvents()
         {
+            _transfers.TransferRequestReceived += (sender, args) =>
+            {
+                if (TransferRequestReceived != null)
+                    TransferRequestReceived(this, args);
+            };
+
             Tox.Core.OnFriendConnectionStatusChanged += (sender, e) =>
                 RaiseFriendEvent(ConnectionStatusChanged, e, () =>
                     new ToxFriendEventArgs.ConnectionStatusEventArgs(e.Status));

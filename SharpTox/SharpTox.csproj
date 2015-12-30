@@ -165,6 +165,7 @@
     <Compile Include="Encryption\ToxEncryptionKey.cs" />
     <Compile Include="Encryption\ToxPassKey.cs" />
     <Compile Include="HL\ToxFriendEventArgs.cs" />
+    <Compile Include="HL\Transfers\ToxTransferCollection.cs" />
     <Compile Include="HL\Transfers\ToxTransferDirection.cs" />
     <Compile Include="HL\Transfers\ToxTransferResumeData.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
