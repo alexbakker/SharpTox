@@ -182,8 +182,8 @@ namespace SharpTox.HL.Transfers
             _stream = stream;
         }
 
-        protected ToxTransfer(ToxHL tox, ToxFriend friend, ToxTransferResumeData resumeData)
-            : this(tox, resumeData.Stream, friend, resumeData.Info, resumeData.Name, resumeData.Kind)
+        protected ToxTransfer(ToxHL tox, ToxFriend friend, ToxTransferResumeData resumeData, Stream stream)
+            : this(tox, stream, friend, resumeData.Info, resumeData.Name, resumeData.Kind)
         {
             TransferredBytes = resumeData.TransferredBytes;
             State = ToxTransferState.Broken;
@@ -283,8 +283,7 @@ namespace SharpTox.HL.Transfers
                 Info = Info,
                 Name = Name,
                 Kind = Kind,
-                TransferredBytes = TransferredBytes,
-                Stream = _stream
+                TransferredBytes = TransferredBytes
             };
         }
     }

@@ -118,17 +118,9 @@ namespace SharpTox.HL
             return _transfers.SendFile(stream, fileName, kind);
         }
 
-        public void ResumeBrokenTransfers(IList<ToxTransferResumeData> resumeDatas)
+        public void ResumeBrokenTransfer(ToxTransferResumeData resumeData, Stream stream)
         {
-            foreach (var resumeData in resumeDatas)
-            {
-                ResumeBrokenTransfer(resumeData);
-            }
-        }
-
-        public void ResumeBrokenTransfer(ToxTransferResumeData resumeData)
-        {
-            _transfers.ResumeBrokenTransfer(resumeData);
+            _transfers.ResumeBrokenTransfer(resumeData, stream);
         }
 
         public void SendLossyPacket(byte[] packet)

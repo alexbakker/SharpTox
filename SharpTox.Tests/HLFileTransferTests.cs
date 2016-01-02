@@ -14,6 +14,7 @@ namespace SharpTox.Tests
     {
         private ToxHL _tox1, _tox2;
         private readonly byte[] _dataToSend = new byte[1 << 26];
+        private MemoryStream _sentData;
         private MemoryStream _receivedData;
 
         [TestFixtureSetUp]
@@ -57,7 +58,7 @@ namespace SharpTox.Tests
             var errorMessage = string.Empty;
             var finished = false;
 
-            var transfer = _tox1.Friends[0].SendFile(new MemoryStream(_dataToSend), "test.dat", ToxFileKind.Data);
+            var transfer = _tox1.Friends[0].SendFile(_sentData = new MemoryStream(_dataToSend), "test.dat", ToxFileKind.Data);
 
             Console.WriteLine(transfer.Progress.ToString("P"));
 
@@ -123,7 +124,7 @@ namespace SharpTox.Tests
             var errorMessage = string.Empty;
             var finished = false;
 
-            var transfer = _tox1.Friends[0].SendFile(new MemoryStream(_dataToSend), "test.dat", ToxFileKind.Data);
+            var transfer = _tox1.Friends[0].SendFile(_sentData = new MemoryStream(_dataToSend), "test.dat", ToxFileKind.Data);
 
             transfer.StateChanged += (sender, args) =>
             {
@@ -159,7 +160,7 @@ namespace SharpTox.Tests
             var finished = false;
             var restartedCount = 0;
 
-            var transfer = _tox1.Friends[0].SendFile(new MemoryStream(_dataToSend), "test.dat", ToxFileKind.Data);
+            var transfer = _tox1.Friends[0].SendFile(_sentData = new MemoryStream(_dataToSend), "test.dat", ToxFileKind.Data);
 
             Console.WriteLine(transfer.Progress.ToString("P"));
 
@@ -216,7 +217,7 @@ namespace SharpTox.Tests
             _tox2 = new ToxHL(ToxOptions.Default, tox2Data);
             _tox2.Start();
 
-            _tox2.Friends[0].ResumeBrokenTransfer(transferResumeData);
+            _tox2.Friends[0].ResumeBrokenTransfer(transferResumeData, _receivedData);
         }
         
         bool _errored;
@@ -238,7 +239,7 @@ namespace SharpTox.Tests
                 Thread.Sleep(100);
             }
 
-            var transfer = _tox2.Friends[0].SendFile(new MemoryStream(_dataToSend), "test.dat", ToxFileKind.Data);
+            var transfer = _tox2.Friends[0].SendFile(_sentData = new MemoryStream(_dataToSend), "test.dat", ToxFileKind.Data);
 
             Console.WriteLine(transfer.Progress.ToString("P"));
 
@@ -289,7 +290,7 @@ namespace SharpTox.Tests
             _tox2 = new ToxHL(ToxOptions.Default, tox2Data);
             _tox2.Start();
             
-            _tox2.Friends[0].ResumeBrokenTransfer(transferResumeData);
+            _tox2.Friends[0].ResumeBrokenTransfer(transferResumeData, _sentData);
 
             RegisterCallbacks(_tox2.Friends[0].Transfers[0]);
         }

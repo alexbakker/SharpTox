@@ -12,8 +12,8 @@ namespace SharpTox.HL.Transfers
             Tox.Core.OnFileChunkRequested += OnFileChunkRequested;
         }
 
-        internal ToxOutgoingTransfer(ToxHL tox, ToxFriend friend, ToxTransferResumeData resumeData)
-            : base(tox, friend, resumeData)
+        internal ToxOutgoingTransfer(ToxHL tox, ToxFriend friend, ToxTransferResumeData resumeData, Stream stream)
+            : base(tox, friend, resumeData, stream)
         {
             Tox.Core.OnFileChunkRequested += OnFileChunkRequested;
         }

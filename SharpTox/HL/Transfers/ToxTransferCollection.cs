@@ -124,7 +124,7 @@ namespace SharpTox.HL.Transfers
                 _transfers.Remove(sender as ToxTransfer);
         }
 
-        public void ResumeBrokenTransfer(ToxTransferResumeData resumeData)
+        public void ResumeBrokenTransfer(ToxTransferResumeData resumeData, Stream stream)
         {
             if (resumeData == null)
                 throw new ArgumentNullException("resumeData");
@@ -138,10 +138,10 @@ namespace SharpTox.HL.Transfers
             switch (resumeData.Direction)
             {
                 case ToxTransferDirection.Outgoing:
-                    AddTransferToList(new ToxOutgoingTransfer(_tox, _friend, resumeData));
+                    AddTransferToList(new ToxOutgoingTransfer(_tox, _friend, resumeData, stream));
                     break;
                 case ToxTransferDirection.Incoming:
-                    AddTransferToList(new ToxIncomingTransfer(_tox, _friend, resumeData));
+                    AddTransferToList(new ToxIncomingTransfer(_tox, _friend, resumeData, stream));
                     break;
             }
         }

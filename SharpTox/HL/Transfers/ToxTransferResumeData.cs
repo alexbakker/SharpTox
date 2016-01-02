@@ -10,7 +10,6 @@ namespace SharpTox.HL.Transfers
         public string Name { get; set; }
         public ToxFileKind Kind { get; set; }
         public long TransferredBytes { get; set; }
-        public Stream Stream { get; set; }
         public ToxTransferDirection Direction { get; set; }
     }
 }
