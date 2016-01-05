@@ -8,7 +8,7 @@ namespace SharpTox.HL.Transfers
     public class ToxTransfer
     {
         public ToxHL Tox { get; private set; }
-        public ToxFileInfo Info { get; private set; }
+        public ToxFileInfo Info { get; protected set; }
         public ToxFriend Friend { get; private set; }
         public string Name { get; private set; }
         public long Size { get; private set; }
@@ -19,15 +19,16 @@ namespace SharpTox.HL.Transfers
         public ToxTransferState State
         {
             get { return _state; }
-            private set
+            protected set
             {
                 if (value == _state)
                     return;
-                
+
                 switch (value)
                 {
                     case ToxTransferState.PausedByUser:
                     case ToxTransferState.PausedByFriend:
+                    case ToxTransferState.Broken:
                         Speed = 0;
                         _speedUpdater.Change(Timeout.Infinite, Timeout.Infinite);
 
@@ -70,9 +71,9 @@ namespace SharpTox.HL.Transfers
                     return;
 
                 // We fire the ProgressChanged event if the progress goes up by at least a full percent.
-                var oldProgressPercentIntPart = (int)Math.Truncate(Progress * 100);
+                var oldProgressPercentIntPart = (int) Math.Truncate(Progress*100);
                 _transferredBytes = value;
-                var newProgressPercentIntPart = (int)Math.Truncate(Progress * 100);
+                var newProgressPercentIntPart = (int) Math.Truncate(Progress*100);
 
                 if (ProgressChanged != null && oldProgressPercentIntPart != newProgressPercentIntPart)
                 {
@@ -83,7 +84,7 @@ namespace SharpTox.HL.Transfers
 
         public float Progress
         {
-            get { return TransferredBytes / (float)Size; }
+            get { return TransferredBytes/(float) Size; }
         }
 
         private float _speed;
@@ -113,7 +114,7 @@ namespace SharpTox.HL.Transfers
         {
             // We know that the callback is called twice per second,
             // so the speed equals to the double of the amount of transferred bytes during this period:
-            Speed = (_transferredBytes - _lastTransferredBytes) * 2;
+            Speed = (_transferredBytes - _lastTransferredBytes)*2;
             _lastTransferredBytes = _transferredBytes;
         }
 
@@ -143,7 +144,7 @@ namespace SharpTox.HL.Transfers
                 {
                     return null;
                 }
-                return TimeSpan.FromSeconds((Size - _transferredBytes) / Speed);
+                return TimeSpan.FromSeconds((Size - _transferredBytes)/Speed);
             }
         }
 
@@ -154,10 +155,8 @@ namespace SharpTox.HL.Transfers
 
         protected Stream _stream;
 
-        internal ToxTransfer(ToxHL tox, ToxFriend friend, ToxFileInfo info, string name, long size, ToxFileKind kind)
+        protected ToxTransfer(ToxHL tox, ToxFriend friend, ToxFileInfo info, string name, long size, ToxFileKind kind)
         {
-            State = ToxTransferState.Pending;
-
             Tox = tox;
             Friend = friend;
             Info = info;
@@ -167,14 +166,29 @@ namespace SharpTox.HL.Transfers
 
             Tox.Core.OnFileControlReceived += OnFileControlReceived;
 
+            Friend.ConnectionStatusChanged += OnFriendConnectionStatusChanged;
+            Tox.ConnectionStatusChanged += OnUserConnectionStatusChanged;
+
             _speedUpdater = new Timer(SpeedUpdaterCallback, null,
                 Timeout.Infinite, Timeout.Infinite);
+
+            State = ToxTransferState.Pending;
         }
-        internal ToxTransfer(ToxHL tox, Stream stream, ToxFriend friend, ToxFileInfo info, string name, ToxFileKind kind) : this(tox, friend, info, name, stream.Length, kind)
+
+        protected ToxTransfer(ToxHL tox, Stream stream, ToxFriend friend, ToxFileInfo info, string name,
+            ToxFileKind kind)
+            : this(tox, friend, info, name, stream.Length, kind)
         {
             _stream = stream;
         }
-        
+
+        protected ToxTransfer(ToxHL tox, ToxFriend friend, ToxTransferResumeData resumeData, Stream stream)
+            : this(tox, stream, friend, resumeData.Info, resumeData.Name, resumeData.Kind)
+        {
+            TransferredBytes = resumeData.TransferredBytes;
+            State = ToxTransferState.Broken;
+        }
+
         private void OnFileControlReceived(object sender, ToxEventArgs.FileControlEventArgs e)
         {
             if (ShouldntHandle(e))
@@ -197,13 +211,31 @@ namespace SharpTox.HL.Transfers
             }
         }
 
+        protected virtual void OnFriendConnectionStatusChanged(object sender,
+            ToxFriendEventArgs.ConnectionStatusEventArgs connectionStatusEventArgs)
+        {
+            if (!Friend.IsOnline && IsActive)
+            {
+                State = ToxTransferState.Broken;
+            }
+        }
+
+        private void OnUserConnectionStatusChanged(object sender,
+            ToxEventArgs.ConnectionStatusEventArgs connectionStatusEventArgs)
+        {
+            if (!Tox.IsConnected && IsActive)
+            {
+                State = ToxTransferState.Broken;
+            }
+        }
+
         public void Pause()
         {
             SendControl(ToxFileControl.Pause);
             State = ToxTransferState.PausedByUser;
         }
 
-        public void Resume()
+        public virtual void Resume()
         {
             SendControl(ToxFileControl.Resume);
             State = ToxTransferState.InProgress;
@@ -241,6 +273,18 @@ namespace SharpTox.HL.Transfers
         protected bool ShouldntHandle(ToxEventArgs.FileBaseEventArgs e)
         {
             return e.FriendNumber != Friend.Number || e.FileNumber != Info.Number || !IsActive;
+        }
+
+        public virtual ToxTransferResumeData GetResumeData()
+        {
+            return new ToxTransferResumeData
+            {
+                FriendNumber = Friend.Number,
+                Info = Info,
+                Name = Name,
+                Kind = Kind,
+                TransferredBytes = TransferredBytes
+            };
         }
     }
 }
