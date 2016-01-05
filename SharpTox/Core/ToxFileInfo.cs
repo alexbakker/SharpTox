@@ -1,14 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SharpTox.Core
 {
     /// <summary>
     /// Represent information about a file transfer.
     /// </summary>
+    [Serializable]
     public class ToxFileInfo
     {
         /// <summary>

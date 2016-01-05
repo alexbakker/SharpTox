@@ -1,8 +1,9 @@
-﻿using System.IO;
+﻿using System;
 using SharpTox.Core;
 
 namespace SharpTox.HL.Transfers
 {
+    [Serializable]
     public class ToxTransferResumeData
     {
         public int FriendNumber { get; set; }
