@@ -274,7 +274,7 @@ namespace SharpTox.HL.Transfers
         {
             return e.FriendNumber != Friend.Number || e.FileNumber != Info.Number || !IsActive;
         }
-        
+
         public virtual ToxTransferResumeData GetResumeData()
         {
             return new ToxTransferResumeData

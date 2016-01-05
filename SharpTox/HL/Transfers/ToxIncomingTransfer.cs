@@ -32,28 +32,29 @@ namespace SharpTox.HL.Transfers
 
             if (e.Data == null || e.Data.Length == 0)
             {
-                //end of file transfer, fire the finished event
+                // End of file transfer, fire the finished event:
                 Finish();
                 return;
             }
 
             if (e.Position < _stream.Position)
             {
-                //we have to rewind the stream
+                // We have to rewind the stream:
                 try
                 {
                     _stream.Seek(e.Position, SeekOrigin.Begin);
                 }
                 catch (Exception ex)
                 {
-                    //failed to rewind stream, we can't recover from this
+                    // Failed to rewind stream, we can't recover from this.
                     OnError(new ToxTransferError("Failed to rewind the stream", ex), true);
                     return;
                 }
             }
             else if (e.Position > _stream.Position)
             {
-                //if this happens, we're missing some bytes for sure and we can't recover from that, cancel the transfer and fire an error event
+                // If this happens, we're missing some bytes for sure and we can't recover from that,
+                // cancel the transfer and fire an error event.
                 OnError(new ToxTransferError("Missing some chunks. This should never happen!"), true);
                 return;
             }
@@ -64,7 +65,7 @@ namespace SharpTox.HL.Transfers
             }
             catch (Exception ex)
             {
-                //couldn't write to stream, cancel the transfer and fire an error event
+                // Couldn't write to stream, cancel the transfer and fire an error event.
                 OnError(new ToxTransferError("Failed to write to the stream", ex), true);
                 return;
             }
@@ -81,6 +82,9 @@ namespace SharpTox.HL.Transfers
 
         public override void Resume()
         {
+            // In case of a broken transfer, we have to sync our progress with our friend before
+            // accepting the transfer by sending the Resume control:
+
             if (State == ToxTransferState.Broken)
             {
                 var error = ToxErrorFileSeek.Ok;
@@ -88,7 +92,9 @@ namespace SharpTox.HL.Transfers
 
                 if (error != ToxErrorFileSeek.Ok)
                 {
-                    OnError(new ToxTransferError("Couldn't resume broken incoming file transfer, seeking failed! Error: " + error), true);
+                    OnError(
+                        new ToxTransferError("Couldn't resume broken incoming file transfer, seeking failed! Error: " +
+                                             error), true);
                     return;
                 }
             }

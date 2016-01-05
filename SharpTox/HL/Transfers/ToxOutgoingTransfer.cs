@@ -6,7 +6,8 @@ namespace SharpTox.HL.Transfers
 {
     public class ToxOutgoingTransfer : ToxTransfer
     {
-        internal ToxOutgoingTransfer(ToxHL tox, Stream stream, ToxFriend friend, ToxFileInfo info, string name, ToxFileKind kind)
+        internal ToxOutgoingTransfer(ToxHL tox, Stream stream, ToxFriend friend, ToxFileInfo info, string name,
+            ToxFileKind kind)
             : base(tox, stream, friend, info, name, kind)
         {
             Tox.Core.OnFileChunkRequested += OnFileChunkRequested;
@@ -18,14 +19,14 @@ namespace SharpTox.HL.Transfers
             Tox.Core.OnFileChunkRequested += OnFileChunkRequested;
         }
 
-        private void OnFileChunkRequested (object sender, ToxEventArgs.FileRequestChunkEventArgs e)
+        private void OnFileChunkRequested(object sender, ToxEventArgs.FileRequestChunkEventArgs e)
         {
             if (ShouldntHandle(e))
                 return;
 
             if (e.Length == 0)
             {
-                //we're nice people, let's send an empty chunk so the other end knows we're done sending
+                // We're nice people, let's send an empty chunk so the other end knows we're done sending:
                 Tox.Core.FileSendChunk(Friend.Number, Info.Number, e.Position, new byte[0]);
                 Finish();
                 return;
@@ -33,21 +34,27 @@ namespace SharpTox.HL.Transfers
 
             if (_stream.Position != e.Position)
             {
-                //we have to rewind the stream
-                try { _stream.Seek(e.Position, SeekOrigin.Begin); }
+                // We have to rewind the stream:
+                try
+                {
+                    _stream.Seek(e.Position, SeekOrigin.Begin);
+                }
                 catch (Exception ex)
                 {
-                    //failed to rewind stream, we can't recover from this
+                    // Failed to rewind stream, we can't recover from this.
                     OnError(new ToxTransferError("Failed to rewind the stream", ex), true);
                     return;
                 }
             }
 
             byte[] chunk = new byte[e.Length];
-            try { _stream.Read(chunk, 0, e.Length); }
+            try
+            {
+                _stream.Read(chunk, 0, e.Length);
+            }
             catch (Exception ex)
             {
-                //could not read from stream, cancel the transfer and fire the error event
+                // Could not read from stream, cancel the transfer and fire the error event.
                 OnError(new ToxTransferError("Failed to read from the stream", ex), true);
                 return;
             }
@@ -59,8 +66,8 @@ namespace SharpTox.HL.Transfers
 
                 if (error != ToxErrorFileSendChunk.Ok)
                 {
-                    //could not send a chunk, cancel the transfer and fire the error event
-                    //TODO: or should we retry in a bit?
+                    // Could not send a chunk, cancel the transfer and fire the error event.
+                    // TODO: or should we retry in a bit?
                     OnError(new ToxTransferError("Could not send the next chunk. Error: " + error), true);
                     return;
                 }
@@ -75,9 +82,12 @@ namespace SharpTox.HL.Transfers
             TransferredBytes = _stream.Position;
         }
 
-        protected override void OnFriendConnectionStatusChanged(object sender, ToxFriendEventArgs.ConnectionStatusEventArgs connectionStatusEventArgs)
+        protected override void OnFriendConnectionStatusChanged(object sender,
+            ToxFriendEventArgs.ConnectionStatusEventArgs connectionStatusEventArgs)
         {
             base.OnFriendConnectionStatusChanged(sender, connectionStatusEventArgs);
+
+            // We automatically resume a broken outgoing transfer when the receiving friend comes back online:
 
             if (Friend.IsOnline && State == ToxTransferState.Broken)
             {
@@ -103,4 +113,3 @@ namespace SharpTox.HL.Transfers
         }
     }
 }
-

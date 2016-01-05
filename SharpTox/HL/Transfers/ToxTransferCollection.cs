@@ -55,11 +55,14 @@ namespace SharpTox.HL.Transfers
                 return;
 
             var id = _tox.Core.FileGetId(_friend.Number, e.FileNumber);
+
+            // Frist, we check if it's a broken incoming transfer. If it is, then we resume it:
             var resumed = TryResumeBrokenIncomingTransfer(id);
 
             if (!resumed)
             {
-                // If we couldn't find it amongst our broken incoming transfers, then it's a new incoming transfer:
+                // If we couldn't find it amongst our broken incoming transfers (and because of that couldn't
+                // resume it neither), then it's a new incoming transfer:
 
                 var transfer = new ToxIncomingTransfer(_tox, _friend,
                     new ToxFileInfo(e.FileNumber, id), e.FileName, e.FileSize, e.FileKind);
