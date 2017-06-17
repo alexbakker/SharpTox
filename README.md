@@ -23,7 +23,7 @@ Assuming you have the libraries mentioned above installed, it's time to compile 
 Or from the command line (Be sure to install [NUnit](http://www.nunit.org/index.php?p=download) and [NuGet](https://nuget.codeplex.com/) first):
 
 ```
-git clone https://github.com/Impyy/SharpTox
+git clone https://github.com/alexbakker/SharpTox
 nuget restore
 msbuild /p:Configuration:Debug
 nunit-console-x86 SharpTox.Tests/bin/Debug/SharpTox.Tests.dll
@@ -32,7 +32,7 @@ nunit-console-x86 SharpTox.Tests/bin/Debug/SharpTox.Tests.dll
 ##### Linux
 * Install 'mono-complete' (this should include nunit), grab the latest version of [NuGet](https://nuget.codeplex.com/) and execute the following commands:
 ```
-git clone https://github.com/Impyy/SharpTox
+git clone https://github.com/alexbakker/SharpTox
 mono NuGet.exe restore
 xbuild /p:Configuration="Debug POSIX"
 nunit-console4 SharpTox.Tests/bin/Debug/SharpTox.Tests.dll

@@ -5,8 +5,8 @@
     <version>1.0.0.0</version>
     <authors>Impy</authors>
     <owners>Impy</owners>
-    <licenseUrl>https://github.com/Impyy/SharpTox/blob/master/LICENSE</licenseUrl>
-    <projectUrl>https://github.com/Impyy/SharpTox</projectUrl>
+    <licenseUrl>https://github.com/alexbakker/SharpTox/blob/master/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/alexbakker/SharpTox</projectUrl>
     <iconUrl>https://github.com/Tox/Tox-Misc/blob/master/Icon_Vector.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>.NET wrapper for the Tox Library.</description>
