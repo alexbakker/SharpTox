@@ -15,7 +15,7 @@ namespace SharpTox.Test
         private Tox _tox1;
         private Tox _tox2;
 
-        [TestFixtureSetUp]
+        [OneTimeSetUp]
         public void Init()
         {
             var options = new ToxOptions(true, true);
@@ -31,7 +31,7 @@ namespace SharpTox.Test
             }
         }
 
-        [TestFixtureTearDown]
+        [OneTimeTearDown]
         public void Cleanup()
         {
             _running = false;

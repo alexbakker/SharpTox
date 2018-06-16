@@ -177,7 +177,7 @@ namespace SharpTox.Test
             tox2.Dispose();
         }
 
-        [Test, Timeout(120000), Ignore]
+        [Test, Timeout(120000), Ignore("requires a running socks proxy")]
         public void TestToxProxySocks5()
         {
             var options = new ToxOptions(true, ToxProxyType.Socks5, "127.0.0.1", 9050);
